@@ -509,8 +509,7 @@ func TestTokeniser(t *testing.T) {
 		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
-		var j jsParser
-		p.TokeniserState(j.inputElement)
+		SetTokeniser(&p)
 		for m, tkn := range test.Output {
 			tk, _ := p.GetToken()
 			if tk.Type != tkn.Type {
