@@ -82,6 +82,11 @@ type jsParser struct {
 	divisionAllowed bool
 }
 
+func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
+	t.TokeniserState(new(jsParser).inputElement)
+	return t
+}
+
 func (j *jsParser) inputElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(whitespace) {
 		t.AcceptRun(whitespace)
