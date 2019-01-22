@@ -1,6 +1,10 @@
 package javascript
 
-import "io"
+import (
+	"io"
+	"math"
+	"strconv"
+)
 
 type Token interface {
 	io.WriterTo
@@ -57,7 +61,7 @@ func (tk Whitespace) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
-func (tk LimeTerminators) WriteTo(w io.Writer) (int64, error) {
+func (tk LineTerminators) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.WriteString(w, string(tk))
 	return int64(n), err
 }
@@ -100,6 +104,15 @@ func (tk Punctuator) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
+func (tk Number) WriteTo(w io.Writer) (int64, error) {
+	if math.IsInf(float64(tk), 1) {
+		n, err := io.WriteString(w, "Infinity")
+		return int64(n), err
+	}
+	n, err := io.WriteString(w, strconv.FormatFloat(float64(tk), 'f', -1, 64))
+	return int64(n), err
+}
+
 func (tk String) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.WriteString(w, string(tk))
 	return int64(n), err
@@ -124,12 +137,7 @@ func (tk TemplateMiddle) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
-func (tk End) WriteTo(w io.Writer) (int64, error) {
-	n, err := io.WriteString(w, string(tk))
-	return int64(n), err
-}
-
-func (tk RightBrace) WriteTo(w io.Writer) (int64, error) {
+func (tk TemplateEnd) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.WriteString(w, string(tk))
 	return int64(n), err
 }
