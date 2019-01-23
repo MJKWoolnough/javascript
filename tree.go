@@ -3,7 +3,7 @@ package javascript
 
 import (
 	"math"
-	"strconv"
+	"strings"
 
 	"vimagination.zapto.org/parser"
 )
@@ -50,11 +50,14 @@ func Tree(t parser.Tokeniser) (Tokens, error) {
 			tree = append(tree, nil)
 			treeLen++
 		case TokenNumericLiteral:
-			if tk.Data == "Infinity" {
-				tree[treeLen] = append(tree[treeLen], Number(pInf))
+			if strings.HasPrefix(tk.Data, "0b") || strings.HasPrefix(tk.Data, "0B") {
+				tree[treeLen] = append(tree[treeLen], NumberBinary(tk.Data))
+			} else if strings.HasPrefix(tk.Data, "0o") || strings.HasPrefix(tk.Data, "0O") {
+				tree[treeLen] = append(tree[treeLen], NumberOctal(tk.Data))
+			} else if strings.HasPrefix(tk.Data, "0x") || strings.HasPrefix(tk.Data, "0X") {
+				tree[treeLen] = append(tree[treeLen], NumberHexadecimal(tk.Data))
 			} else {
-				n, _ := strconv.ParseFloat(tk.Data, 64)
-				tree[treeLen] = append(tree[treeLen], Number(n))
+				tree[treeLen] = append(tree[treeLen], Number(tk.Data))
 			}
 		case TokenStringLiteral:
 			tree[treeLen] = append(tree[treeLen], String(tk.Data))

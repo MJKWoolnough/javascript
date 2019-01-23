@@ -2,8 +2,6 @@ package javascript
 
 import (
 	"io"
-	"math"
-	"strconv"
 )
 
 type Token interface {
@@ -28,7 +26,13 @@ type Keyword string
 
 type Punctuator string
 
-type Number float64
+type Number string
+
+type NumberBinary string
+
+type NumberOctal string
+
+type NumberHexadecimal string
 
 type String string
 
@@ -105,11 +109,22 @@ func (tk Punctuator) WriteTo(w io.Writer) (int64, error) {
 }
 
 func (tk Number) WriteTo(w io.Writer) (int64, error) {
-	if math.IsInf(float64(tk), 1) {
-		n, err := io.WriteString(w, "Infinity")
-		return int64(n), err
-	}
-	n, err := io.WriteString(w, strconv.FormatFloat(float64(tk), 'f', -1, 64))
+	n, err := io.WriteString(w, string(tk))
+	return int64(n), err
+}
+
+func (tk NumberBinary) WriteTo(w io.Writer) (int64, error) {
+	n, err := io.WriteString(w, string(tk))
+	return int64(n), err
+}
+
+func (tk NumberOctal) WriteTo(w io.Writer) (int64, error) {
+	n, err := io.WriteString(w, string(tk))
+	return int64(n), err
+}
+
+func (tk NumberHexadecimal) WriteTo(w io.Writer) (int64, error) {
+	n, err := io.WriteString(w, string(tk))
 	return int64(n), err
 }
 
