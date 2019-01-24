@@ -45,10 +45,20 @@ func Tree(t parser.Tokeniser) (Tokens, error) {
 			}
 		case TokenKeyword:
 			tree[treeLen] = append(tree[treeLen], Keyword(tk.Data))
-		case TokenPunctuator:
-			tree[treeLen] = append(tree[treeLen], Punctuator(tk.Data))
-			tree = append(tree, nil)
-			treeLen++
+		case TokenPunctuator, TokenRightBracePunctuator, TokenDivPunctuator:
+			switch tk.Data {
+			case "{", "(", "[":
+				tree[treeLen] = append(tree[treeLen], Punctuator(tk.Data))
+				tree = append(tree, nil)
+				treeLen++
+			case "}", ")", "]":
+				tree[treeLen-1] = append(tree[treeLen-1], tree[treeLen])
+				tree = tree[:treeLen]
+				treeLen--
+				tree[treeLen] = append(tree[treeLen], Punctuator(tk.Data))
+			default:
+				tree[treeLen] = append(tree[treeLen], Punctuator(tk.Data))
+			}
 		case TokenNumericLiteral:
 			if strings.HasPrefix(tk.Data, "0b") || strings.HasPrefix(tk.Data, "0B") {
 				tree[treeLen] = append(tree[treeLen], NumberBinary(tk.Data))
@@ -74,11 +84,6 @@ func Tree(t parser.Tokeniser) (Tokens, error) {
 			treeLen--
 			tree[treeLen] = append(tree[treeLen], Template(tree[treeLen+1]))
 			tree = tree[:treeLen+1]
-		case TokenDivPunctuator, TokenRightBracePunctuator:
-			tree[treeLen-1] = append(tree[treeLen-1], tree[treeLen])
-			tree = tree[:treeLen]
-			treeLen--
-			tree[treeLen] = append(tree[treeLen], Punctuator(tk.Data))
 		case TokenRegularExpressionLiteral:
 			tree[treeLen] = append(tree[treeLen], Regex(tk.Data))
 		}
