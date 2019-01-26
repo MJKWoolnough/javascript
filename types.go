@@ -38,7 +38,11 @@ type String string
 
 type NoSubstitutionTemplate string
 
-type Template Tokens
+type Template struct {
+	TemplateStart
+	TemplateMiddle Tokens
+	TemplateEnd
+}
 
 type TemplateStart string
 
@@ -139,7 +143,17 @@ func (tk NoSubstitutionTemplate) WriteTo(w io.Writer) (int64, error) {
 }
 
 func (tk Template) WriteTo(w io.Writer) (int64, error) {
-	return Tokens(tk).WriteTo(w)
+	n, err := io.WriteString(w, string(tk.TemplateStart))
+	if err != nil {
+		return int64(n), err
+	}
+	m, err := tk.TemplateMiddle.WriteTo(w)
+	m += int64(n)
+	if err != nil {
+		return m, err
+	}
+	n, err = io.WriteString(w, string(tk.TemplateEnd))
+	return m + int64(n), err
 }
 
 func (tk TemplateStart) WriteTo(w io.Writer) (int64, error) {

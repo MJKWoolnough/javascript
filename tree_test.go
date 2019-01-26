@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"fmt"
 	"testing"
 
 	"vimagination.zapto.org/parser"
@@ -50,11 +51,49 @@ func TestTree(t *testing.T) {
 				Punctuator("}"),
 			},
 		},
+		{
+			"const a = `Fifteen is ${a + b} and not ${2 * a + b}.`;",
+			Tokens{
+				Keyword("const"),
+				Whitespace(" "),
+				Identifier("a"),
+				Whitespace(" "),
+				Punctuator("="),
+				Whitespace(" "),
+				Template{
+					TemplateStart("`Fifteen is ${"),
+					Tokens{
+						Tokens{
+							Identifier("a"),
+							Whitespace(" "),
+							Punctuator("+"),
+							Whitespace(" "),
+							Identifier("b"),
+						},
+						TemplateMiddle("} and not ${"),
+						Tokens{
+							Number("2"),
+							Whitespace(" "),
+							Punctuator("*"),
+							Whitespace(" "),
+							Identifier("a"),
+							Whitespace(" "),
+							Punctuator("+"),
+							Whitespace(" "),
+							Identifier("b"),
+						},
+					},
+					TemplateEnd("}.`"),
+				},
+				Punctuator(";"),
+			},
+		},
 	} {
 		out, err := Tree(parser.NewStringTokeniser(test.Input))
 		if err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if !matchTokens(test.Output, out) {
+			fmt.Printf("%#v", out)
 			t.Errorf("test %d: bad match, expecting %v, got %v", n+1, test.Output, out)
 		}
 	}
@@ -73,7 +112,7 @@ func matchTokens(a, b Tokens) bool {
 			}
 		case Template:
 			tb, ok := b[n].(Template)
-			if !ok || !matchTokens(Tokens(ta), Tokens(tb)) {
+			if !ok || ta.TemplateStart != tb.TemplateStart || ta.TemplateEnd != tb.TemplateEnd || !matchTokens(ta.TemplateMiddle, tb.TemplateMiddle) {
 				return false
 			}
 		default:

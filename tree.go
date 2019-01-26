@@ -74,15 +74,22 @@ func Tree(t parser.Tokeniser) (Tokens, error) {
 		case TokenNoSubstitutionTemplate:
 			tree[treeLen] = append(tree[treeLen], NoSubstitutionTemplate(tk.Data))
 		case TokenTemplateHead:
-			tree = append(tree, nil)
+			tree = append(tree, nil, nil)
 			treeLen++
 			tree[treeLen] = append(tree[treeLen], TemplateStart(tk.Data))
+			treeLen++
 		case TokenTemplateMiddle:
-			tree[treeLen] = append(tree[treeLen], TemplateMiddle(tk.Data))
+			tree[treeLen-1] = append(tree[treeLen-1], tree[treeLen], TemplateMiddle(tk.Data))
+			tree = append(tree[:treeLen], nil)
 		case TokenTemplateTail:
-			tree[treeLen] = append(tree[treeLen], TemplateEnd(tk.Data))
 			treeLen--
-			tree[treeLen] = append(tree[treeLen], Template(tree[treeLen+1]))
+			tree[treeLen] = append(tree[treeLen], tree[treeLen+1])
+			treeLen--
+			tree[treeLen] = append(tree[treeLen], Template{
+				tree[treeLen+1][0].(TemplateStart),
+				tree[treeLen+1][1:],
+				TemplateEnd(tk.Data),
+			})
 			tree = tree[:treeLen+1]
 		case TokenRegularExpressionLiteral:
 			tree[treeLen] = append(tree[treeLen], Regex(tk.Data))
