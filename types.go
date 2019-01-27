@@ -2,10 +2,16 @@ package javascript
 
 import (
 	"io"
+	"math"
+	"strconv"
+	"strings"
+
+	"vimagination.zapto.org/parser"
 )
 
 type Token interface {
 	io.WriterTo
+	Data() interface{}
 }
 
 type Tokens []Token
@@ -174,4 +180,226 @@ func (tk TemplateEnd) WriteTo(w io.Writer) (int64, error) {
 func (tk Regex) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.WriteString(w, string(tk))
 	return int64(n), err
+}
+
+func (tk Tokens) Data() interface{} {
+	return tk
+}
+
+func (tk Whitespace) Data() interface{} {
+	return string(tk)
+}
+
+func (tk LineTerminators) Data() interface{} {
+	return string(tk)
+}
+
+func (tk SingleLineComment) Data() interface{} {
+	return tk.Comment()
+}
+
+func (tk SingleLineComment) Comment() string {
+	return string(tk[2:])
+}
+
+func (tk MultiLineComment) Data() interface{} {
+	return tk.Comment()
+}
+
+func (tk MultiLineComment) Comment() string {
+	return string(tk[2 : len(tk)-2])
+}
+
+func (tk Identifier) Data() interface{} {
+	return tk.String()
+}
+
+func (tk Identifier) String() string {
+	return unescape(string(tk))
+}
+
+func (tk Boolean) Data() interface{} {
+	return bool(tk)
+}
+
+func (tk Keyword) Data() interface{} {
+	return string(tk)
+}
+
+func (tk Punctuator) Data() interface{} {
+	return string(tk)
+}
+
+func (tk Number) Data() interface{} {
+	return tk.Number()
+}
+
+func (tk Number) Number() float64 {
+	var co, ex string
+	if pos := strings.IndexAny(string(tk), "Ee"); pos < 0 {
+		co = string(tk)
+		ex = "0"
+	} else {
+		co = string(tk[:pos])
+		ex = string(tk[pos+1:])
+	}
+	c, _ := strconv.ParseFloat(co, 64)
+	e, _ := strconv.ParseInt(ex, 10, 64)
+	return math.Pow(c, math.Pow10(int(e)))
+}
+
+func (tk NumberBinary) Data() interface{} {
+	return tk.Number()
+}
+
+func (tk NumberBinary) Number() float64 {
+	n, _ := strconv.ParseUint(string(tk[2:]), 2, 64)
+	return float64(n)
+}
+
+func (tk NumberOctal) Data() interface{} {
+	return tk.Number()
+}
+
+func (tk NumberOctal) Number() float64 {
+	n, _ := strconv.ParseUint(string(tk[2:]), 8, 64)
+	return float64(n)
+}
+
+func (tk NumberHexadecimal) Data() interface{} {
+	return tk.Number()
+}
+
+func (tk NumberHexadecimal) Number() float64 {
+	n, _ := strconv.ParseUint(string(tk[2:]), 16, 64)
+	return float64(n)
+}
+
+func (tk String) Data() interface{} {
+	return tk.String()
+}
+
+func (tk String) String() string {
+	if len(tk) < 2 {
+		return ""
+	}
+	return unescape(string(tk[1 : len(tk)-1]))
+}
+
+func (tk NoSubstitutionTemplate) Data() interface{} {
+	return tk.String()
+}
+
+func (tk NoSubstitutionTemplate) String() string {
+	return unescape(string(tk))
+}
+
+func (tk Template) Data() interface{} {
+	return tk
+}
+
+func (tk TemplateStart) Data() interface{} {
+	return tk.String()
+}
+
+func (tk TemplateStart) String() string {
+	if len(tk) < 3 {
+		return ""
+	}
+	return unescape(string(tk[1 : len(tk)-2]))
+}
+
+func (tk TemplateMiddle) Data() interface{} {
+	return tk.String()
+}
+
+func (tk TemplateMiddle) String() string {
+	if len(tk) < 3 {
+		return ""
+	}
+	return unescape(string(tk[1 : len(tk)-2]))
+}
+
+func (tk TemplateEnd) Data() interface{} {
+	return tk.String()
+}
+
+func (tk TemplateEnd) String() string {
+	if len(tk) < 2 {
+		return ""
+	}
+	return unescape(string(tk[1 : len(tk)-1]))
+}
+
+func (tk Regex) Data() interface{} {
+	return tk
+}
+
+func unescape(str string) string {
+	if !strings.ContainsRune(str, '\\') {
+		return str
+	}
+	s := make([]byte, 0, len(str))
+	p := parser.NewStringTokeniser(str)
+	for {
+		switch p.ExceptRun("\\") {
+		case -1:
+			s = append(s, p.Get()...)
+			return string(s)
+		case '\\':
+			s = append(s, p.Get()...)
+			p.Accept("\\")
+			p.Get()
+			p.Except("")
+			switch b := p.Get(); b {
+			case "'":
+				s = append(s, '\'')
+			case "\"":
+				s = append(s, '"')
+			case "\\":
+				s = append(s, '\\')
+			case "`":
+				s = append(s, '`')
+			case "b":
+				s = append(s, '\b')
+			case "f":
+				s = append(s, '\f')
+			case "n":
+				s = append(s, '\n')
+			case "r":
+				s = append(s, '\r')
+			case "t":
+				s = append(s, '	')
+			case "u":
+				var n string
+				if p.Accept("{") {
+					p.Get()
+					p.ExceptRun("}")
+					n = p.Get()
+					p.Accept("}")
+				} else {
+					p.Get()
+					p.Accept(hexDigit)
+					p.Accept(hexDigit)
+					p.Accept(hexDigit)
+					p.Accept(hexDigit)
+					n = p.Get()
+				}
+				c, _ := strconv.ParseUint(n, 16, 64)
+				s = append(s, string(rune(c))...)
+			case "v":
+				s = append(s, '\v')
+			case "x":
+				p.Accept(hexDigit)
+				p.Accept(hexDigit)
+				n, _ := strconv.ParseUint(p.Get(), 16, 8)
+				s = append(s, byte(n))
+			case "0":
+				s = append(s, 0)
+			default:
+				s = append(s, '\\')
+				s = append(s, b...)
+			}
+		}
+	}
 }
