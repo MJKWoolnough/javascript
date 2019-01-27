@@ -1,13 +1,14 @@
 package javascript
 
 import (
-	"fmt"
 	"testing"
 
+	"vimagination.zapto.org/memio"
 	"vimagination.zapto.org/parser"
 )
 
 func TestTree(t *testing.T) {
+	var buf memio.Buffer
 	for n, test := range [...]struct {
 		Input  string
 		Output Tokens
@@ -93,8 +94,12 @@ func TestTree(t *testing.T) {
 		if err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if !matchTokens(test.Output, out) {
-			fmt.Printf("%#v", out)
 			t.Errorf("test %d: bad match, expecting %v, got %v", n+1, test.Output, out)
+		}
+		buf = buf[:0]
+		out.WriteTo(&buf)
+		if string(buf) != test.Input {
+			t.Errorf("test %d: output mismatch, expecting %s, got %s", n+1, test.Input, buf)
 		}
 	}
 }
