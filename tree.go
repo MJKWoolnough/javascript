@@ -80,7 +80,7 @@ func Tree(t parser.Tokeniser) (Tokens, error) {
 			treeLen++
 		case TokenTemplateMiddle:
 			tree[treeLen-1] = append(tree[treeLen-1], tree[treeLen], TemplateMiddle(tk.Data))
-			tree = append(tree[:treeLen], nil)
+			tree[treeLen] = nil
 		case TokenTemplateTail:
 			treeLen--
 			tree[treeLen] = append(tree[treeLen], tree[treeLen+1])
