@@ -235,17 +235,13 @@ func (tk Number) Data() interface{} {
 }
 
 func (tk Number) Number() float64 {
-	var co, ex string
-	if pos := strings.IndexAny(string(tk), "Ee"); pos < 0 {
-		co = string(tk)
-		ex = "0"
-	} else {
-		co = string(tk[:pos])
-		ex = string(tk[pos+1:])
+	if pos := strings.IndexAny(string(tk), "Ee"); pos > 0 {
+		co, _ := strconv.ParseFloat(string(tk[:pos]), 64)
+		ex, _ := strconv.ParseInt(string(tk[pos+1:]), 10, 64)
+		return math.Pow(co, math.Pow10(int(ex)))
 	}
-	c, _ := strconv.ParseFloat(co, 64)
-	e, _ := strconv.ParseInt(ex, 10, 64)
-	return math.Pow(c, math.Pow10(int(e)))
+	co, _ := strconv.FormatFloat(string(tk), 64)
+	return co
 }
 
 func (tk NumberBinary) Data() interface{} {
