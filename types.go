@@ -240,7 +240,7 @@ func (tk Number) Number() float64 {
 		ex, _ := strconv.ParseInt(string(tk[pos+1:]), 10, 64)
 		return math.Pow(co, math.Pow10(int(ex)))
 	}
-	co, _ := strconv.FormatFloat(string(tk), 64)
+	co, _ := strconv.ParseFloat(string(tk), 64)
 	return co
 }
 
