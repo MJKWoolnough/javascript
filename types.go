@@ -234,7 +234,12 @@ func (tk Number) Data() interface{} {
 	return tk.Number()
 }
 
+var pInf = math.Inf(1)
+
 func (tk Number) Number() float64 {
+	if tk == "Infinity" {
+		return pInf
+	}
 	if pos := strings.IndexAny(string(tk), "Ee"); pos > 0 {
 		co, _ := strconv.ParseFloat(string(tk[:pos]), 64)
 		ex, _ := strconv.ParseInt(string(tk[pos+1:]), 10, 64)
