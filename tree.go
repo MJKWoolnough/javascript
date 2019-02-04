@@ -1,17 +1,13 @@
 // Package javascript provides tools to tokenise and parse javascript source files
-package javascript
+package javascript // import "vimagination.zapto.org/javascript"
 
 import (
-	"math"
 	"strings"
 
 	"vimagination.zapto.org/parser"
 )
 
-var (
-	pInf = math.Inf(1)
-)
-
+// Tree uses the given Tokeniser to produce a tree of tokens
 func Tree(t parser.Tokeniser) (Tokens, error) {
 	var (
 		j       jsParser
