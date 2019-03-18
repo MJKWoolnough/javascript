@@ -78,18 +78,18 @@ func isIDContinue(c rune) bool {
 	return unicode.In(c, idContinue...) && !unicode.In(c, notID...)
 }
 
-type jsParser struct {
+type jsTokeniser struct {
 	tokenDepth      []byte
 	divisionAllowed bool
 }
 
 // SetTokeniser provides javascript parsing functions to a Tokeniser
 func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
-	t.TokeniserState(new(jsParser).inputElement)
+	t.TokeniserState(new(jsTokeniser).inputElement)
 	return t
 }
 
-func (j *jsParser) inputElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(whitespace) {
 		t.AcceptRun(whitespace)
 		return parser.Token{
@@ -272,7 +272,7 @@ func (j *jsParser) inputElement(t *parser.Tokeniser) (parser.Token, parser.Token
 	}
 }
 
-func (j *jsParser) regexpBackslashSequence(t *parser.Tokeniser) bool {
+func (j *jsTokeniser) regexpBackslashSequence(t *parser.Tokeniser) bool {
 	t.Except("")
 	if !t.Except(lineTerminators) {
 		if t.Peek() == -1 {
@@ -286,7 +286,7 @@ func (j *jsParser) regexpBackslashSequence(t *parser.Tokeniser) bool {
 	return true
 }
 
-func (j *jsParser) regexpExpressionClass(t *parser.Tokeniser) bool {
+func (j *jsTokeniser) regexpExpressionClass(t *parser.Tokeniser) bool {
 	t.Except("")
 	for {
 		switch t.ExceptRun("]\\") {
@@ -304,7 +304,7 @@ func (j *jsParser) regexpExpressionClass(t *parser.Tokeniser) bool {
 	}
 }
 
-func (j *jsParser) regexp(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) regexp(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	switch c := t.Peek(); c {
 	case -1:
 		t.Err = io.ErrUnexpectedEOF
@@ -361,7 +361,7 @@ Loop:
 	}, j.inputElement
 }
 
-func (j *jsParser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept("0") {
 		if t.Accept("bB") {
 			if !t.Accept(binaryDigit) {
@@ -401,7 +401,7 @@ func (j *jsParser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) 
 	}, j.inputElement
 }
 
-func (j *jsParser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	c := t.Peek()
 	t.Except("")
 	if c == '\\' {
@@ -429,7 +429,7 @@ func (j *jsParser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFu
 	}, j.inputElement
 }
 
-func (j *jsParser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
+func (j *jsTokeniser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
 	if t.Accept("{") {
 		if !t.Accept(hexDigit) {
 			t.Except("")
@@ -448,14 +448,14 @@ func (j *jsParser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
 	return true
 }
 
-func (j *jsParser) lastDepth() rune {
+func (j *jsTokeniser) lastDepth() rune {
 	if len(j.tokenDepth) == 0 {
 		return -1
 	}
 	return rune(j.tokenDepth[len(j.tokenDepth)-1])
 }
 
-func (j *jsParser) escapeSequence(t *parser.Tokeniser) bool {
+func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
 	t.Accept("\\")
 	if t.Accept("x") {
 		return t.Accept(hexDigit) && t.Accept(hexDigit)
@@ -467,7 +467,7 @@ func (j *jsParser) escapeSequence(t *parser.Tokeniser) bool {
 	return t.Accept(singleEscapeChar)
 }
 
-func (j *jsParser) stringToken(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) stringToken(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	const (
 		singleStringChars = "'\\" + lineTerminators
 		doubleStringChars = "\"\\" + lineTerminators
@@ -507,7 +507,7 @@ Loop:
 	}, j.inputElement
 }
 
-func (j *jsParser) template(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) template(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 Loop:
 	for {
 		switch t.ExceptRun("`\\$") {
