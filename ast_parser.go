@@ -73,7 +73,7 @@ func (j jsParser) NewGoal() jsParser {
 }
 
 func (j *jsParser) Score(k jsParser) {
-	*j = (*j)[len(k):]
+	*j = (*j)[:len(*j)+len(k)]
 }
 
 func (j *jsParser) next() TokenPos {
