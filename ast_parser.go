@@ -152,6 +152,10 @@ func (j *jsParser) AcceptToken(tk parser.Token) bool {
 	return false
 }
 
+func (j *jsParser) ToTokens() []TokenPos {
+	return (*j)[:len(*j):len(*j)]
+}
+
 type Error struct {
 	Err error
 	TokenPos
