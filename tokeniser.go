@@ -189,7 +189,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					tk.Type = TokenNullLiteral
 				} else if tk.Data == "enum" {
 					j.divisionAllowed = true
-					tk.Type == TokenFutureReservedWord
+					tk.Type = TokenFutureReservedWord
 				} else if tk.Data == "Infinity" {
 					j.divisionAllowed = true
 					tk.Type = TokenNumericLiteral
