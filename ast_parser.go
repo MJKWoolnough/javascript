@@ -175,10 +175,10 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 }
 
 func (j *jsParser) GetLastToken() *TokenPos {
-	if len(j) == 0 {
+	if len(*j) == 0 {
 		return nil
 	}
-	return &(*j)[len(j)-1]
+	return &(*j)[len(*j)-1]
 }
 
 type Error struct {
