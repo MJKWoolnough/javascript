@@ -44,6 +44,8 @@ const (
 	TokenDivPunctuator
 	TokenRightBracePunctuator
 	TokenRegularExpressionLiteral
+	TokenNullLiteral
+	TokenFutureReservedWord
 )
 
 var (
@@ -182,6 +184,12 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 				if tk.Data == "true" || tk.Data == "false" {
 					j.divisionAllowed = true
 					tk.Type = TokenBooleanLiteral
+				} else if tk.Data == "null" {
+					j.divisionAllowed = true
+					tk.Type = TokenNullLiteral
+				} else if tk.Data == "enum" {
+					j.divisionAllowed = true
+					tk.Type == TokenFutureReservedWord
 				} else if tk.Data == "Infinity" {
 					j.divisionAllowed = true
 					tk.Type = TokenNumericLiteral
