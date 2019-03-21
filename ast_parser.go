@@ -156,6 +156,24 @@ func (j *jsParser) ToTokens() []TokenPos {
 	return (*j)[:len(*j):len(*j)]
 }
 
+func (j *jsParser) AcceptRunWhitespace() parser.TokenType {
+	return j.AcceptRun(TokenWhitespace, TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment)
+}
+
+func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
+	var tt parser.TokenType
+	for {
+		tt = j.AcceptRun(TokenWhitespace)
+		if tt != TokenMultiLineComment {
+			return tt
+		}
+		if strings.ContainsAny(j.Peek().Data, lineTerminators) {
+			return tt
+		}
+		j.Except()
+	}
+}
+
 type Error struct {
 	Err error
 	TokenPos
