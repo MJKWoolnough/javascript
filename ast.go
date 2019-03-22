@@ -86,21 +86,186 @@ func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
 }
 
 type FunctionDeclaration struct {
-	Tokens []TokenPos
+	BindingIdentifier *BindingIdentifier
+	FormalParameters  FormalParameters
+	FunctionBody      FunctionBody
+	Tokens            []TokenPos
 }
 
 func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDeclaration, error) {
 	var fd FunctionDeclaration
+	j.AcceptToken(parser.Token{TokenKeyword, "function"})
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	bi, err := g.parseBindingIdentifier(yield, await)
+	if err != nil {
+		if !def {
+			return fd, j.Error(err)
+		}
+	} else {
+		j.Score(g)
+		fd.BindingIdentifier = &bi
+		j.AcceptRunWhitespace()
+	}
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return fd, j.Error(ErrMissingOpeningParentheses)
+	}
+	g = j.NewGoal()
+	fd.FormalParameters, err = g.parseFormalParameters(false, false)
+	if err != nil {
+		return fd, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return fd, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return fd, j.Error(ErrMissingOpeningBrace)
+	}
+	g = j.NewGoal()
+	fd.FunctionBody, err = j.parseFunctionBody(false, false)
+	if err != nil {
+		return fd, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.Accept(TokenRightBracePunctuator) {
+		return fd, j.Error(ErrMissingClosingBrace)
+	}
+	fd.Tokens = j.ToTokens()
 	return fd, nil
 }
 
 type AsyncFunctionDeclaration struct {
-	Tokens []TokenPos
+	BindingIdentifier *BindingIdentifier
+	FormalParameters  FormalParameters
+	FunctionBody      FunctionBody
+	Tokens            []TokenPos
 }
 
 func (j *jsParser) parseAsyncFunctionDeclaration(yield, await, def bool) (AsyncFunctionDeclaration, error) {
 	var af AsyncFunctionDeclaration
+	j.AcceptToken(parser.Token{TokenKeyword, "async"})
+	j.AcceptRunWhitespaceNoNewLine()
+	if !j.AcceptToken(parser.Token{TokenKeyword, "function"}) {
+		return af, j.Error(ErrMissingFunction)
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	bi, err := g.parseBindingIdentifier(yield, await)
+	if err != nil {
+		if !def {
+			return af, j.Error(err)
+		}
+	} else {
+		j.Score(g)
+		af.BindingIdentifier = &bi
+		j.AcceptRunWhitespace()
+	}
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return af, j.Error(ErrMissingOpeningParentheses)
+	}
+	g = j.NewGoal()
+	af.FormalParameters, err = g.parseFormalParameters(false, await)
+	if err != nil {
+		return af, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return af, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return af, j.Error(ErrMissingOpeningBrace)
+	}
+	g = j.NewGoal()
+	af.FunctionBody, err = j.parseFunctionBody(false, true)
+	if err != nil {
+		return af, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.Accept(TokenRightBracePunctuator) {
+		return af, j.Error(ErrMissingClosingBrace)
+	}
+	af.Tokens = j.ToTokens()
 	return af, nil
+}
+
+type GeneratorDeclaration struct {
+	BindingIdentifier *BindingIdentifier
+	FormalParameters  FormalParameters
+	FunctionBody      FunctionBody
+	Tokens            []TokenPos
+}
+
+func (j *jsParser) parseGeneratorDeclaration(yield, await, def bool) (GeneratorDeclaration, error) {
+	var gd GeneratorDeclaration
+	j.AcceptToken(parser.Token{TokenKeyword, "function"})
+	j.AcceptRunWhitespace()
+	j.AcceptToken(parser.Token{TokenPunctuator, "*"})
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	bi, err := g.parseBindingIdentifier(yield, await)
+	if err != nil {
+		if !def {
+			return gd, j.Error(err)
+		}
+	} else {
+		j.Score(g)
+		gd.BindingIdentifier = &bi
+		j.AcceptRunWhitespace()
+	}
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return gd, j.Error(ErrMissingOpeningParentheses)
+	}
+	g = j.NewGoal()
+	gd.FormalParameters, err = g.parseFormalParameters(true, false)
+	if err != nil {
+		return gd, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return gd, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return gd, j.Error(ErrMissingOpeningBrace)
+	}
+	g = j.NewGoal()
+	gd.FunctionBody, err = j.parseFunctionBody(true, false)
+	if err != nil {
+		return gd, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.Accept(TokenRightBracePunctuator) {
+		return gd, j.Error(ErrMissingClosingBrace)
+	}
+	gd.Tokens = j.ToTokens()
+	return gd, nil
+}
+
+type FormalParameters struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, error) {
+	var fp FormalParameters
+	return fp, nil
+}
+
+type FunctionBody struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseFunctionBody(yield, await bool) (FunctionBody, error) {
+	var fb FunctionBody
+	return fb, nil
 }
 
 type ClassDeclaration struct {
@@ -131,8 +296,13 @@ func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement,
 }
 
 const (
-	ErrInvalidStatementList errors.Error = "invalid statement list"
-	ErrMissingSemiColon     errors.Error = "missing semi-colon"
-	ErrNoIdentifier         errors.Error = "missing identifier"
-	ErrReservedIdentifier   errors.Error = "reserved identifier"
+	ErrInvalidStatementList      errors.Error = "invalid statement list"
+	ErrMissingSemiColon          errors.Error = "missing semi-colon"
+	ErrNoIdentifier              errors.Error = "missing identifier"
+	ErrReservedIdentifier        errors.Error = "reserved identifier"
+	ErrMissingFunction           errors.Error = "missing function"
+	ErrMissingOpeningParentheses errors.Error = "missing opening parentheses"
+	ErrMissingClosingParentheses errors.Error = "missing closing parentheses"
+	ErrMissingOpeningBrace       errors.Error = "missing opening brace"
+	ErrMissingClosingBrace       errors.Error = "missing closing brace"
 )
