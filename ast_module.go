@@ -238,12 +238,22 @@ func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 		g := j.NewGoal()
 		switch tk.Data {
 		case "function":
-			fd, err := g.parseFunctionDeclaration(false, false, true)
-			if err != nil {
-				return ed, j.Error(err)
+			g.AcceptRunWhitespace()
+			if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+				gd, err := g.parseGeneratorDeclaration(false, false, true)
+				if err != nil {
+					return ed, j.Error(err)
+				}
+				j.Score(g)
+				ed.Default = &gd
+			} else {
+				fd, err := g.parseFunctionDeclaration(false, false, true)
+				if err != nil {
+					return ed, j.Error(err)
+				}
+				j.Score(g)
+				ed.Default = &fd
 			}
-			j.Score(g)
-			ed.Default = &fd
 		case "async":
 			af, err := g.parseAsyncFunctionDeclaration(false, false, true)
 			if err != nil {
