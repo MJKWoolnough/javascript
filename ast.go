@@ -251,12 +251,100 @@ func (j *jsParser) parseGeneratorDeclaration(yield, await, def bool) (GeneratorD
 }
 
 type FormalParameters struct {
-	Tokens []TokenPos
+	FormalParameterList   []BindingElement
+	FunctionRestParameter *FunctionRestParameter
+	Tokens                []TokenPos
 }
 
 func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, error) {
 	var fp FormalParameters
+	for {
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+			break
+		}
+		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+			fr, err := g.parseFunctionRestParameter(yield, await)
+			if err != nil {
+				return fp, j.Error(err)
+			}
+			j.Score(g)
+			fp.FunctionRestParameter = &fr
+			break
+		}
+		be, err := g.parseBindingElement(yield, await)
+		if err != nil {
+			return fp, err
+		}
+		j.Score(g)
+		fp.FormalParameterList = append(fp.FormalParameterList, be)
+		j.AcceptRunWhitespace()
+		if j.Peek().Token == (parser.Token{TokenPunctuator, ")"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return fp, j.Error(ErrInvalidFormalParameterList)
+		}
+	}
+	fp.Tokens = j.ToTokens()
 	return fp, nil
+}
+
+type BindingElement struct {
+	SingleNameBinding    *BindingIdentifier
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Initializer          *AssignmentExpression
+	Tokens               []TokenPos
+}
+
+func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error) {
+	var be BindingElement
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		ab, err := g.parseArrayBindingPattern(yield, await)
+		if err != nil {
+			return be, j.Error(err)
+		}
+		be.ArrayBindingPattern = &ab
+	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		ob, err := g.parseObjectBindingPattern(yield, await)
+		if err != nil {
+			return be, j.Error(err)
+		}
+		be.ObjectBindingPattern = &ob
+	} else {
+		bi, err := g.parseBindingIdentifier(yield, await)
+		if err != nil {
+			return be, j.Error(err)
+		}
+		be.SingleNameBinding = &bi
+	}
+	j.Score(g)
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+		g.AcceptRunWhitespace()
+		j.Score(g)
+		g = j.NewGoal()
+		ae, err := g.parseAssignmentExpression(true, yield, await)
+		if err != nil {
+			return be, j.Error(err)
+		}
+		j.Score(g)
+		be.Initializer = &ae
+	}
+	be.Tokens = j.ToTokens()
+	return be, nil
+}
+
+type FunctionRestParameter struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestParameter, error) {
+	var fr FunctionRestParameter
+	return fr, nil
 }
 
 type FunctionBody struct {
@@ -275,6 +363,24 @@ type ClassDeclaration struct {
 func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclaration, error) {
 	var cd ClassDeclaration
 	return cd, nil
+}
+
+type ArrayBindingPattern struct {
+	Token []TokenPos
+}
+
+func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPattern, error) {
+	var ab ArrayBindingPattern
+	return ab, nil
+}
+
+type ObjectBindingPattern struct {
+	Token []TokenPos
+}
+
+func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPattern, error) {
+	var ob ObjectBindingPattern
+	return ob, nil
 }
 
 type AssignmentExpression struct {
@@ -296,13 +402,14 @@ func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement,
 }
 
 const (
-	ErrInvalidStatementList      errors.Error = "invalid statement list"
-	ErrMissingSemiColon          errors.Error = "missing semi-colon"
-	ErrNoIdentifier              errors.Error = "missing identifier"
-	ErrReservedIdentifier        errors.Error = "reserved identifier"
-	ErrMissingFunction           errors.Error = "missing function"
-	ErrMissingOpeningParentheses errors.Error = "missing opening parentheses"
-	ErrMissingClosingParentheses errors.Error = "missing closing parentheses"
-	ErrMissingOpeningBrace       errors.Error = "missing opening brace"
-	ErrMissingClosingBrace       errors.Error = "missing closing brace"
+	ErrInvalidStatementList       errors.Error = "invalid statement list"
+	ErrMissingSemiColon           errors.Error = "missing semi-colon"
+	ErrNoIdentifier               errors.Error = "missing identifier"
+	ErrReservedIdentifier         errors.Error = "reserved identifier"
+	ErrMissingFunction            errors.Error = "missing function"
+	ErrMissingOpeningParentheses  errors.Error = "missing opening parentheses"
+	ErrMissingClosingParentheses  errors.Error = "missing closing parentheses"
+	ErrMissingOpeningBrace        errors.Error = "missing opening brace"
+	ErrMissingClosingBrace        errors.Error = "missing closing brace"
+	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
 )
