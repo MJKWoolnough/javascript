@@ -112,6 +112,15 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 	return ae, nil
 }
 
+type LeftHandSideExpression struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
+	var lhs LeftHandSideExpression
+	return lhs, nil
+}
+
 type VariableStatement struct {
 	Tokens []TokenPos
 }
