@@ -219,10 +219,158 @@ func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 }
 
 type ExportDeclaration struct {
+	ExportClause      *ExportClause
+	FromClause        *FromClause
+	VariableStatement *VariableStatement
+	Declaration       *Declaration
+	Default           Token
+	Tokens            []TokenPos
 }
 
 func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
-	return ExportDeclaration{}, nil
+	var ed ExportDeclaration
+	j.AcceptRunWhitespace()
+	if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
+		j.AcceptRunWhitespace()
+		tk := j.Peek()
+		g := j.NewGoal()
+		switch tk.Data {
+		case "function":
+			fd, err := g.parseFunctionDeclaration(false, false, true)
+			if err != nil {
+				return ed, j.Error(err)
+			}
+			j.Score(g)
+			ed.Default = &fd
+		case "async":
+			af, err := g.parseAsyncFunctionDeclaration(false, false, true)
+			if err != nil {
+				return ed, j.Error(err)
+			}
+			j.Score(g)
+			ed.Default = &af
+		case "class":
+			cd, err := g.parseClassDeclaration(false, false, true)
+			if err != nil {
+				return ed, j.Error(err)
+			}
+			j.Score(g)
+			ed.Default = &cd
+		default:
+			ae, err := g.parseAssignmentExpression(true, false, false)
+			if err != nil {
+				return ed, j.Error(err)
+			}
+			j.Score(g)
+			ed.Default = &ae
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+				return ed, j.Error(ErrMissingSemiColon)
+			}
+		}
+	} else if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		fc, err := g.parseFromClause()
+		if err != nil {
+			return ed, j.Error(err)
+		}
+		j.Score(g)
+		ed.FromClause = &fc
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			return ed, j.Error(ErrMissingSemiColon)
+		}
+	} else if g := j.NewGoal(); g.AcceptToken(parser.Token{TokenKeyword, "var"}) {
+		v, err := j.parseVariableStatement(false, false)
+		if err != nil {
+			return ed, j.Error(err)
+		}
+		ed.VariableStatement = &v
+	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		ec, err := g.parseExportClause()
+		if err != nil {
+			return ed, j.Error(err)
+		}
+		j.Score(g)
+		ed.ExportClause = &ec
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			g = j.NewGoal()
+			fc, err := g.parseFromClause()
+			if err != nil {
+				return ed, j.Error(err)
+			}
+			ed.FromClause = &fc
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+				return ed, j.Error(ErrMissingSemiColon)
+			}
+		}
+	} else {
+		d, err := j.parseDeclaration(false, false)
+		if err != nil {
+			return ed, j.Error(err)
+		}
+		ed.Declaration = &d
+	}
+	ed.Tokens = j.ToTokens()
+	return ed, nil
+}
+
+type ExportClause struct {
+	ExportList []ExportSpecifier
+	Tokens     []TokenPos
+}
+
+func (j *jsParser) parseExportClause() (ExportClause, error) {
+	var ec ExportClause
+	for {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+			break
+		}
+		g := j.NewGoal()
+		es, err := g.parseExportSpecifier()
+		if err != nil {
+			return ec, j.Error(err)
+		}
+		j.Score(g)
+		ec.ExportList = append(ec.ExportList, es)
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return ec, j.Error(ErrInvalidExportClause)
+		}
+	}
+	ec.Tokens = j.ToTokens()
+	return ec, nil
+}
+
+type ExportSpecifier struct {
+	IdentifierName, EIdentifierName *TokenPos
+	Tokens                          []TokenPos
+}
+
+func (j *jsParser) parseExportSpecifier() (ExportSpecifier, error) {
+	var es ExportSpecifier
+	if !j.Accept(TokenIdentifier) {
+		return es, j.Error(ErrMissingIdentifier)
+	}
+	es.IdentifierName = j.GetLastToken()
+	g := j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+		g.AcceptRunWhitespace()
+		if !g.Accept(TokenIdentifier) {
+			return es, j.Error(ErrMissingIdentifier)
+		}
+		j.Score(g)
+		es.EIdentifierName = j.GetLastToken()
+	}
+	es.Tokens = j.ToTokens()
+	return es, nil
 }
 
 const (
@@ -232,4 +380,6 @@ const (
 	ErrMissingModuleSpecifier errors.Error = "missing module specifier"
 	ErrInvalidNamedImport     errors.Error = "invalid named import list"
 	ErrInvalidImportSpecifier errors.Error = "invalid import specifier"
+	ErrMissingIdentifier      errors.Error = "missing identifier"
+	ErrInvalidExportClause    errors.Error = "invalid export clause"
 )
