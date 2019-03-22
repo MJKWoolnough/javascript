@@ -58,7 +58,7 @@ type ImportDeclaration struct {
 
 func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 	var id ImportDeclaration
-	j.Accept(parser.Token{TokenKeyword, "import"})
+	j.AcceptToken(parser.Token{TokenKeyword, "import"})
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
 	if g.Accept(TokenStringLiteral) {
@@ -230,7 +230,7 @@ type ExportDeclaration struct {
 
 func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 	var ed ExportDeclaration
-	j.Accept(parser.Token{TokenKeyword, "export"})
+	j.AcceptToken(parser.Token{TokenKeyword, "export"})
 	j.AcceptRunWhitespace()
 	if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
 		j.AcceptRunWhitespace()
