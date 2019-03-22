@@ -169,7 +169,7 @@ func (j *jsParser) parseNamedImports() (NamedImports, error) {
 	var ni NamedImports
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		if j.Accept(TokenRightBracePunctuator) {
 			break
 		}
 		g := j.NewGoal()
@@ -180,7 +180,7 @@ func (j *jsParser) parseNamedImports() (NamedImports, error) {
 		ni.ImportList = append(ni.ImportList, is)
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		if j.Accept(TokenRightBracePunctuator) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 			return ni, j.Error(ErrInvalidNamedImport)
@@ -329,7 +329,7 @@ func (j *jsParser) parseExportClause() (ExportClause, error) {
 	var ec ExportClause
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		if j.Accept(TokenRightBracePunctuator) {
 			break
 		}
 		g := j.NewGoal()
@@ -340,7 +340,7 @@ func (j *jsParser) parseExportClause() (ExportClause, error) {
 		j.Score(g)
 		ec.ExportList = append(ec.ExportList, es)
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		if j.Accept(TokenRightBracePunctuator) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 			return ec, j.Error(ErrInvalidExportClause)
