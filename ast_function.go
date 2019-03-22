@@ -5,7 +5,7 @@ import "vimagination.zapto.org/parser"
 type FunctionDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	FormalParameters  FormalParameters
-	FunctionBody      FunctionBody
+	FunctionBody      StatementList
 	Tokens            []TokenPos
 }
 
@@ -42,7 +42,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		return fd, j.Error(ErrMissingOpeningBrace)
 	}
 	g = j.NewGoal()
-	fd.FunctionBody, err = j.parseFunctionBody(false, false)
+	fd.FunctionBody, err = j.parseStatementList(false, false, true)
 	if err != nil {
 		return fd, j.Error(err)
 	}
@@ -58,7 +58,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 type AsyncFunctionDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	FormalParameters  FormalParameters
-	FunctionBody      FunctionBody
+	FunctionBody      StatementList
 	Tokens            []TokenPos
 }
 
@@ -99,7 +99,7 @@ func (j *jsParser) parseAsyncFunctionDeclaration(yield, await, def bool) (AsyncF
 		return af, j.Error(ErrMissingOpeningBrace)
 	}
 	g = j.NewGoal()
-	af.FunctionBody, err = j.parseFunctionBody(false, true)
+	af.FunctionBody, err = j.parseStatementList(false, true, true)
 	if err != nil {
 		return af, j.Error(err)
 	}
@@ -115,7 +115,7 @@ func (j *jsParser) parseAsyncFunctionDeclaration(yield, await, def bool) (AsyncF
 type GeneratorDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	FormalParameters  FormalParameters
-	FunctionBody      FunctionBody
+	FunctionBody      StatementList
 	Tokens            []TokenPos
 }
 
@@ -154,7 +154,7 @@ func (j *jsParser) parseGeneratorDeclaration(yield, await, def bool) (GeneratorD
 		return gd, j.Error(ErrMissingOpeningBrace)
 	}
 	g = j.NewGoal()
-	gd.FunctionBody, err = j.parseFunctionBody(true, false)
+	gd.FunctionBody, err = j.parseStatementList(true, false, true)
 	if err != nil {
 		return gd, j.Error(err)
 	}
@@ -287,13 +287,4 @@ func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestPa
 	j.Score(g)
 	fr.Tokens = j.ToTokens()
 	return fr, nil
-}
-
-type FunctionBody struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseFunctionBody(yield, await bool) (FunctionBody, error) {
-	var fb FunctionBody
-	return fb, nil
 }
