@@ -256,11 +256,36 @@ func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error
 }
 
 type FunctionRestParameter struct {
-	Tokens []TokenPos
+	BindingIdentifier    *BindingIdentifier
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               []TokenPos
 }
 
 func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestParameter, error) {
 	var fr FunctionRestParameter
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		ab, err := g.parseArrayBindingPattern(yield, await)
+		if err != nil {
+			return fr, j.Error(err)
+		}
+		fr.ArrayBindingPattern = &ab
+	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		ob, err := g.parseObjectBindingPattern(yield, await)
+		if err != nil {
+			return fr, j.Error(err)
+		}
+		fr.ObjectBindingPattern = &ob
+	} else {
+		bi, err := g.parseBindingIdentifier(yield, await)
+		if err != nil {
+			return fr, j.Error(err)
+		}
+		fr.BindingIdentifier = &bi
+	}
+	j.Score(g)
+	fr.Tokens = j.ToTokens()
 	return fr, nil
 }
 
