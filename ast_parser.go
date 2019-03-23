@@ -90,8 +90,8 @@ func (j *jsParser) backup() {
 	*j = (*j)[:len(*j)-1]
 }
 
-func (j *jsParser) Peek() TokenPos {
-	tk := j.next()
+func (j *jsParser) Peek() parser.Token {
+	tk := j.next().Token
 	j.backup()
 	return tk
 }
@@ -193,6 +193,6 @@ func (e Error) Error() string {
 func (j *jsParser) Error(err error) error {
 	return Error{
 		Err:      err,
-		TokenPos: j.Peek(),
+		TokenPos: j.next(),
 	}
 }
