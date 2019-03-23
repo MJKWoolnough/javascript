@@ -1,18 +1,40 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"vimagination.zapto.org/errors"
+	"vimagination.zapto.org/parser"
+)
+
+type FunctionType uint8
+
+const (
+	FunctionNormal FunctionType = iota
+	FunctionGenerator
+	FunctionAsync
+)
 
 type FunctionDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	FormalParameters  FormalParameters
 	FunctionBody      StatementList
+	Type              FunctionType
 	Tokens            []TokenPos
 }
 
 func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDeclaration, error) {
 	var fd FunctionDeclaration
-	j.AcceptToken(parser.Token{TokenKeyword, "function"})
+	if j.AcceptToken(parser.Token{TokenKeyword, "async"}) {
+		fd.Type = FunctionAsync
+		j.AcceptRunWhitespaceNoNewLine()
+	}
+	if !j.AcceptToken(parser.Token{TokenKeyword, "function"}) {
+		return fd, j.Error(ErrInvalidFunction)
+	}
 	j.AcceptRunWhitespace()
+	if fd.Type == 0 && j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+		fd.Type = FunctionGenerator
+		j.AcceptRunWhitespace()
+	}
 	g := j.NewGoal()
 	bi, err := g.parseBindingIdentifier(yield, await)
 	if err != nil {
@@ -28,7 +50,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		return fd, j.Error(ErrMissingOpeningParentheses)
 	}
 	g = j.NewGoal()
-	fd.FormalParameters, err = g.parseFormalParameters(false, false)
+	fd.FormalParameters, err = g.parseFormalParameters(fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await)
 	if err != nil {
 		return fd, j.Error(err)
 	}
@@ -42,7 +64,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		return fd, j.Error(ErrMissingOpeningBrace)
 	}
 	g = j.NewGoal()
-	fd.FunctionBody, err = j.parseStatementList(false, false, true)
+	fd.FunctionBody, err = j.parseStatementList(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
 	if err != nil {
 		return fd, j.Error(err)
 	}
@@ -53,118 +75,6 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 	}
 	fd.Tokens = j.ToTokens()
 	return fd, nil
-}
-
-type AsyncFunctionDeclaration struct {
-	BindingIdentifier *BindingIdentifier
-	FormalParameters  FormalParameters
-	FunctionBody      StatementList
-	Tokens            []TokenPos
-}
-
-func (j *jsParser) parseAsyncFunctionDeclaration(yield, await, def bool) (AsyncFunctionDeclaration, error) {
-	var af AsyncFunctionDeclaration
-	j.AcceptToken(parser.Token{TokenKeyword, "async"})
-	j.AcceptRunWhitespaceNoNewLine()
-	if !j.AcceptToken(parser.Token{TokenKeyword, "function"}) {
-		return af, j.Error(ErrMissingFunction)
-	}
-	j.AcceptRunWhitespace()
-	g := j.NewGoal()
-	bi, err := g.parseBindingIdentifier(yield, await)
-	if err != nil {
-		if !def {
-			return af, j.Error(err)
-		}
-	} else {
-		j.Score(g)
-		af.BindingIdentifier = &bi
-		j.AcceptRunWhitespace()
-	}
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return af, j.Error(ErrMissingOpeningParentheses)
-	}
-	g = j.NewGoal()
-	af.FormalParameters, err = g.parseFormalParameters(false, await)
-	if err != nil {
-		return af, j.Error(err)
-	}
-	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return af, j.Error(ErrMissingClosingParentheses)
-	}
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return af, j.Error(ErrMissingOpeningBrace)
-	}
-	g = j.NewGoal()
-	af.FunctionBody, err = j.parseStatementList(false, true, true)
-	if err != nil {
-		return af, j.Error(err)
-	}
-	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.Accept(TokenRightBracePunctuator) {
-		return af, j.Error(ErrMissingClosingBrace)
-	}
-	af.Tokens = j.ToTokens()
-	return af, nil
-}
-
-type GeneratorDeclaration struct {
-	BindingIdentifier *BindingIdentifier
-	FormalParameters  FormalParameters
-	FunctionBody      StatementList
-	Tokens            []TokenPos
-}
-
-func (j *jsParser) parseGeneratorDeclaration(yield, await, def bool) (GeneratorDeclaration, error) {
-	var gd GeneratorDeclaration
-	j.AcceptToken(parser.Token{TokenKeyword, "function"})
-	j.AcceptRunWhitespace()
-	j.AcceptToken(parser.Token{TokenPunctuator, "*"})
-	j.AcceptRunWhitespace()
-	g := j.NewGoal()
-	bi, err := g.parseBindingIdentifier(yield, await)
-	if err != nil {
-		if !def {
-			return gd, j.Error(err)
-		}
-	} else {
-		j.Score(g)
-		gd.BindingIdentifier = &bi
-		j.AcceptRunWhitespace()
-	}
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return gd, j.Error(ErrMissingOpeningParentheses)
-	}
-	g = j.NewGoal()
-	gd.FormalParameters, err = g.parseFormalParameters(true, false)
-	if err != nil {
-		return gd, j.Error(err)
-	}
-	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return gd, j.Error(ErrMissingClosingParentheses)
-	}
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return gd, j.Error(ErrMissingOpeningBrace)
-	}
-	g = j.NewGoal()
-	gd.FunctionBody, err = j.parseStatementList(true, false, true)
-	if err != nil {
-		return gd, j.Error(err)
-	}
-	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.Accept(TokenRightBracePunctuator) {
-		return gd, j.Error(ErrMissingClosingBrace)
-	}
-	gd.Tokens = j.ToTokens()
-	return gd, nil
 }
 
 type FormalParameters struct {
@@ -197,7 +107,7 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 		j.Score(g)
 		fp.FormalParameterList = append(fp.FormalParameterList, be)
 		j.AcceptRunWhitespace()
-		if j.Peek().Token == (parser.Token{TokenPunctuator, ")"}) {
+		if j.Peek() == (parser.Token{TokenPunctuator, ")"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 			return fp, j.Error(ErrInvalidFormalParameterList)
@@ -288,3 +198,7 @@ func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestPa
 	fr.Tokens = j.ToTokens()
 	return fr, nil
 }
+
+const (
+	ErrInvalidFunction errors.Error = "invalid function"
+)
