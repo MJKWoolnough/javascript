@@ -77,12 +77,48 @@ type VariableDeclaration struct {
 }
 
 type Declaration struct {
-	Tokens []TokenPos
+	ClassDeclaration    *ClassDeclaration
+	FunctionDeclaration *FunctionDeclaration
+	LexicalDeclaration  *LexicalDeclaration
+	Tokens              []TokenPos
 }
 
 func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
 	var d Declaration
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenKeyword, "class"}) {
+		cd, err := g.parseClassDeclaration(yield, await, false)
+		if err != nil {
+			return d, j.Error(err)
+		}
+		d.ClassDeclaration = &cd
+	} else if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "const"}) || tk == (parser.Token{TokenIdentifier, "let"}) {
+		ld, err := g.parseLexicalDeclaration(true, yield, await)
+		if err != nil {
+			return d, j.Error(err)
+		}
+		d.LexicalDeclaration = &ld
+	} else if tk == (parser.Token{TokenKeyword, "async"}) || tk == (parser.Token{TokenKeyword, "function"}) {
+		fd, err := g.parseFunctionDeclaration(yield, await, false)
+		if err != nil {
+			return d, j.Error(err)
+		}
+		d.FunctionDeclaration = &fd
+	} else {
+		return d, j.Error(ErrInvalidDeclaration)
+	}
+	j.Score(g)
+	d.Tokens = j.ToTokens()
 	return d, nil
+}
+
+type LexicalDeclaration struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclaration, error) {
+	var ld LexicalDeclaration
+	return ld, nil
 }
 
 type ArrayBindingPattern struct {
@@ -141,4 +177,5 @@ const (
 	ErrMissingOpeningBrace        errors.Error = "missing opening brace"
 	ErrMissingClosingBrace        errors.Error = "missing closing brace"
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
+	ErrInvalidDeclaration         errors.Error = "invalid declaration"
 )
