@@ -112,13 +112,78 @@ func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
 	return d, nil
 }
 
+type LetOrConst bool
+
+const (
+	Let   LetOrConst = false
+	Const LetOrConst = true
+)
+
 type LexicalDeclaration struct {
-	Tokens []TokenPos
+	LetOrConst
+	BindingList []LexicalBinding
+	Tokens      []TokenPos
 }
 
 func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclaration, error) {
 	var ld LexicalDeclaration
+	if !j.AcceptToken(parser.Token{TokenIdentifier, "let"}) {
+		if !j.AcceptToken(parser.Token{TokenKeyword, "const"}) {
+			return ld, j.Error(ErrInvalidLexicalDeclaration)
+		}
+		ld.LetOrConst = Const
+	}
+	for {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			break
+		}
+		g := j.NewGoal()
+		lb, err := g.parseLexicalBinding(in, yield, await)
+		if err != nil {
+			return ld, j.Error(err)
+		}
+		j.Score(g)
+		ld.BindingList = append(ld.BindingList, lb)
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return ld, j.Error(ErrInvalidLexicalDeclaration)
+		}
+	}
+	ld.Tokens = j.ToTokens()
 	return ld, nil
+}
+
+type LexicalBinding struct {
+	BindingIdentifier *BindingIdentifier
+	BindingPattern    *BindingPattern
+	Initializer       *Initializer
+	Tokens            []TokenPos
+}
+
+func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, error) {
+	var lb LexicalBinding
+	return lb, nil
+}
+
+type BindingPattern struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseBindingPattern(yield, await bool) (BindingPattern, error) {
+	var bp BindingPattern
+	return bp, nil
+}
+
+type Initializer struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseInitializer(in, yield, await bool) (Initializer, error) {
+	var i Initializer
+	return i, nil
 }
 
 type ArrayBindingPattern struct {
@@ -178,4 +243,5 @@ const (
 	ErrMissingClosingBrace        errors.Error = "missing closing brace"
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration         errors.Error = "invalid declaration"
+	ErrInvalidLexicalDeclaration  errors.Error = "invalid lexical declaration"
 )
