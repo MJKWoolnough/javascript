@@ -190,6 +190,13 @@ func (e Error) Error() string {
 	return fmt.Sprintf("error at position %d (%d:%d):\n%s", e.Pos, e.Line, e.LinePos, e.Err)
 }
 
+func (e Error) getLastPos() uint64 {
+	if e, ok := e.Err.(Error); ok {
+		return e.getLastPos()
+	}
+	return e.Pos
+}
+
 func (j *jsParser) Error(err error) error {
 	return Error{
 		Err:      err,

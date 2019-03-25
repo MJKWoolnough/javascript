@@ -249,12 +249,87 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 }
 
 type ObjectBindingPattern struct {
-	Token []TokenPos
+	BindingPropertyList []BindingProperty
+	Token               []TokenPos
 }
 
 func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPattern, error) {
 	var ob ObjectBindingPattern
+	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
+	for {
+		j.AcceptRunWhitespace()
+		if j.Accept(TokenRightBracePunctuator) {
+			break
+		}
+		g := j.NewGoal()
+		bp, err := g.parseBindingProperty(yield, await)
+		if err != nil {
+			return ob, j.Error(err)
+		}
+		j.Score(g)
+		ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
+		j.AcceptRunWhitespace()
+		if j.Accept(TokenRightBracePunctuator) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return ob, j.Error(ErrMissingComma)
+		}
+	}
 	return ob, nil
+}
+
+type BindingProperty struct {
+	SingleNameBinding *BindingIdentifier
+	Initializer       *AssignmentExpression
+	PropertyName      *PropertyName
+	BindingElement    *BindingElement
+	Tokens            []TokenPos
+}
+
+func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, error) {
+	var bp BindingProperty
+	g := j.NewGoal()
+	pn, err := g.parsePropertyName(yield, await)
+	if err == nil {
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+			err = j.Error(ErrMissingColon)
+			g = j.NewGoal()
+		} else {
+			g.AcceptRunWhitespace()
+			var be BindingElement
+			h := g.NewGoal()
+			be, err = h.parseBindingElement(yield, await)
+			if err == nil {
+				bp.PropertyName = &pn
+				bp.BindingElement = &be
+			}
+		}
+	}
+	if err != nil {
+		bi, errr := g.parseBindingIdentifier(yield, await)
+		if errr != nil {
+			if err.(Error).getLastPos() > errr.(Error).getLastPos() {
+				return bp, j.Error(err)
+			}
+			return bp, j.Error(errr)
+		}
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+			g.AcceptRunWhitespace()
+			h := g.NewGoal()
+			i, err := h.parseAssignmentExpression(true, yield, await)
+			if err != nil {
+				return bp, g.Error(err)
+			}
+			g.Score(h)
+			bp.Initializer = &i
+		}
+		bp.SingleNameBinding = &bi
+	}
+	j.Score(g)
+	bp.Tokens = j.ToTokens()
+	return bp, nil
 }
 
 type AssignmentExpression struct {
@@ -287,6 +362,7 @@ func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement,
 const (
 	ErrInvalidStatementList       errors.Error = "invalid statement list"
 	ErrMissingSemiColon           errors.Error = "missing semi-colon"
+	ErrMissingColon               errors.Error = "missing colon"
 	ErrNoIdentifier               errors.Error = "missing identifier"
 	ErrReservedIdentifier         errors.Error = "reserved identifier"
 	ErrMissingFunction            errors.Error = "missing function"
