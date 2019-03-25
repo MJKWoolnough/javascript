@@ -234,12 +234,13 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					return t.Error()
 				}
 			}
-		case '<', '>':
-			if !t.Accept("=") { //>=, <=
-				if t.Peek() == c { // >>, <<
+		case '<', '>', '*':
+			if !t.Accept("=") { //>=, <=, *=
+				if t.Peek() == c { // >>, <<, **
 					t.Except("")
-					if !t.Accept("=") && c == '>' { // >>=, <<=
+					if !t.Accept("=") && c == '>' { // >>=, <<=, **=
 						t.Accept(">") // >>>
+						t.Accept("=") /// >>>=
 					}
 				}
 			}
@@ -253,19 +254,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			if t.Accept("=") { // !=
 				t.Accept("=") // !==
 			}
-		case '+', '-':
+		case '+', '-', '&', '|':
 			if t.Peek() == c {
-				t.Except("") // ++, --
+				t.Except("") // ++, --, &&, ||
 			} else {
-				t.Accept("=") // +=, -=
-			}
-		case '*':
-			t.Accept("*=") // **, *=
-		case '&', '|':
-			if t.Peek() == c {
-				t.Except("") // &&, ||
-			} else {
-				t.Accept("=") // &=, |=
+				t.Accept("=") // +=, -=, &=, |=
 			}
 		case '%', '^':
 			t.Accept("=") // %=, ^=
