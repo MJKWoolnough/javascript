@@ -157,33 +157,51 @@ func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclar
 }
 
 type LexicalBinding struct {
-	BindingIdentifier *BindingIdentifier
-	BindingPattern    *BindingPattern
-	Initializer       *Initializer
-	Tokens            []TokenPos
+	BindingIdentifier    *BindingIdentifier
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Initializer          *AssignmentExpression
+	Tokens               []TokenPos
 }
 
 func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, error) {
 	var lb LexicalBinding
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		ab, err := g.parseArrayBindingPattern(yield, await)
+		if err != nil {
+			return lb, j.Error(err)
+		}
+		lb.ArrayBindingPattern = &ab
+	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		ob, err := g.parseObjectBindingPattern(yield, await)
+		if err != nil {
+			return lb, j.Error(err)
+		}
+		lb.ObjectBindingPattern = &ob
+	} else {
+		bi, err := g.parseBindingIdentifier(yield, await)
+		if err != nil {
+			return lb, j.Error(err)
+		}
+		lb.BindingIdentifier = &bi
+	}
+	j.Score(g)
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+		g.AcceptRunWhitespace()
+		j.Score(g)
+		g = j.NewGoal()
+		ae, err := g.parseAssignmentExpression(in, yield, await)
+		if err != nil {
+			return lb, j.Error(err)
+		}
+		j.Score(g)
+		lb.Initializer = &ae
+	}
+	lb.Tokens = j.ToTokens()
 	return lb, nil
-}
-
-type BindingPattern struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseBindingPattern(yield, await bool) (BindingPattern, error) {
-	var bp BindingPattern
-	return bp, nil
-}
-
-type Initializer struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseInitializer(in, yield, await bool) (Initializer, error) {
-	var i Initializer
-	return i, nil
 }
 
 type ArrayBindingPattern struct {
