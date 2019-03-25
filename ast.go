@@ -205,11 +205,46 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 }
 
 type ArrayBindingPattern struct {
-	Token []TokenPos
+	BindingElementList []BindingElement
+	BindingRestElement *BindingElement
+	Token              []TokenPos
 }
 
 func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPattern, error) {
 	var ab ArrayBindingPattern
+	j.AcceptToken(parser.Token{TokenPunctuator, "["})
+	for {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			break
+		} else if j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
+			continue
+		}
+		g := j.NewGoal()
+		rest := g.AcceptToken(parser.Token{TokenPunctuator, "..."})
+		g.AcceptRunWhitespace()
+		be, err := g.parseBindingElement(yield, await)
+		if err != nil {
+			return ab, j.Error(err)
+		}
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if rest {
+			ab.BindingRestElement = &be
+			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+				return ab, j.Error(ErrMissingClosingBracket)
+			}
+			break
+		}
+		ab.BindingElementList = append(ab.BindingElementList, be)
+		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return ab, j.Error(ErrMissingComma)
+		}
+	}
+	ab.Token = j.ToTokens()
 	return ab, nil
 }
 
@@ -259,6 +294,8 @@ const (
 	ErrMissingClosingParentheses  errors.Error = "missing closing parentheses"
 	ErrMissingOpeningBrace        errors.Error = "missing opening brace"
 	ErrMissingClosingBrace        errors.Error = "missing closing brace"
+	ErrMissingClosingBracket      errors.Error = "missing closing bracket"
+	ErrMissingComma               errors.Error = "missing comma"
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration         errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration  errors.Error = "invalid lexical declaration"
