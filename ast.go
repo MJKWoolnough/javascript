@@ -72,10 +72,6 @@ func (j *jsParser) parseIdentifier(yield, await bool) (Identifier, error) {
 	return Identifier{}, j.Error(ErrNoIdentifier)
 }
 
-type VariableDeclaration struct {
-	Tokens []TokenPos
-}
-
 type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
@@ -351,12 +347,41 @@ func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideE
 }
 
 type VariableStatement struct {
-	Tokens []TokenPos
+	VariableDeclarationList []VariableDeclaration
+	Tokens                  []TokenPos
 }
 
 func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement, error) {
 	var vs VariableStatement
+	j.AcceptToken(parser.Token{TokenKeyword, "var"})
+	for {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			break
+		}
+		g := j.NewGoal()
+		vd, err := g.parseVariableDeclaration(true, yield, await)
+		if err != nil {
+			return vs, j.Error(err)
+		}
+		j.Score(g)
+		vs.VariableDeclarationList = append(vs.VariableDeclarationList, vd)
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return vs, j.Error(ErrMissingComma)
+		}
+	}
+	vs.Tokens = j.ToTokens()
 	return vs, nil
+}
+
+type VariableDeclaration LexicalBinding
+
+func (j *jsParser) parseVariableDeclaration(in, yield, await bool) (VariableDeclaration, error) {
+	lb, err := j.parseLexicalBinding(in, yield, await)
+	return VariableDeclaration(lb), err
 }
 
 const (
