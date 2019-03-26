@@ -328,24 +328,6 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 	return bp, nil
 }
 
-type AssignmentExpression struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentExpression, error) {
-	var ae AssignmentExpression
-	return ae, nil
-}
-
-type LeftHandSideExpression struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
-	var lhs LeftHandSideExpression
-	return lhs, nil
-}
-
 type VariableStatement struct {
 	VariableDeclarationList []VariableDeclaration
 	Tokens                  []TokenPos
@@ -384,6 +366,161 @@ func (j *jsParser) parseVariableDeclaration(in, yield, await bool) (VariableDecl
 	return VariableDeclaration(lb), err
 }
 
+type AssignmentOperator uint8
+
+const (
+	AssignmentNone AssignmentOperator = iota
+	AssignmentAssign
+	AssignmentMultiply
+	AssignmentDivide
+	AssignmentRemainder
+	AssignmentAdd
+	AssignmentSubtract
+	AssignmentLeftShift
+	AssignmentSignPropagatinRightShift
+	AssignmentZeroFillRightShift
+	AssignmentBitwiseAND
+	AssignmentBitwiseXOR
+	AssignmentBitwiseOR
+	AssignmentExponentiation
+)
+
+func (j *jsParser) parseAssignmentOperator() (AssignmentOperator, error) {
+	var ao AssignmentOperator
+	switch j.Peek() {
+	case parser.Token{TokenPunctuator, "="}:
+		ao = AssignmentAssign
+	case parser.Token{TokenPunctuator, "*="}:
+		ao = AssignmentMultiply
+	case parser.Token{TokenPunctuator, "/="}:
+		ao = AssignmentDivide
+	case parser.Token{TokenPunctuator, "%="}:
+		ao = AssignmentRemainder
+	case parser.Token{TokenPunctuator, "+="}:
+		ao = AssignmentAdd
+	case parser.Token{TokenPunctuator, "-="}:
+		ao = AssignmentSubtract
+	case parser.Token{TokenPunctuator, "<<="}:
+		ao = AssignmentLeftShift
+	case parser.Token{TokenPunctuator, ">>="}:
+		ao = AssignmentSignPropagatinRightShift
+	case parser.Token{TokenPunctuator, ">>>="}:
+		ao = AssignmentZeroFillRightShift
+	case parser.Token{TokenPunctuator, "&="}:
+		ao = AssignmentBitwiseAND
+	case parser.Token{TokenPunctuator, "^="}:
+		ao = AssignmentBitwiseXOR
+	case parser.Token{TokenPunctuator, "|="}:
+		ao = AssignmentBitwiseOR
+	case parser.Token{TokenPunctuator, "**="}:
+		ao = AssignmentExponentiation
+	default:
+		return 0, ErrInvalidAssignment
+	}
+	j.Except()
+	return ao, nil
+}
+
+type AssignmentExpression struct {
+	ConditionalExpression  *ConditionalExpression
+	ArrowFunction          *ArrowFunction
+	LeftHandSideExpression *LeftHandSideExpression
+	Yield                  bool
+	Delegate               bool
+	AssignmentOperator     AssignmentOperator
+	AssignmentExpression   *AssignmentExpression
+	Tokens                 []TokenPos
+}
+
+func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentExpression, error) {
+	var ae AssignmentExpression
+	if yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
+		ae.Yield = true
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+			ae.Delegate = true
+			j.AcceptRunWhitespace()
+		}
+		g := j.NewGoal()
+		nae, err := g.parseAssignmentExpression(in, true, await)
+		if err != nil {
+			return ae, j.Error(err)
+		}
+		j.Score(g)
+		ae.AssignmentExpression = &nae
+	} else {
+		g := j.NewGoal()
+		af, err := g.parseArrowFunction(in, yield, await)
+		if err != nil {
+			g = j.NewGoal()
+			ce, errr := g.parseConditionalExpression(in, yield, await)
+			if errr != nil {
+				g = j.NewGoal()
+				lhs, errrr := g.parseLeftHandSideExpression(yield, await)
+				if errrr != nil {
+					if err.(Error).getLastPos() < errr.(Error).getLastPos() {
+						err = errr
+					}
+					if err.(Error).getLastPos() < errrr.(Error).getLastPos() {
+						err = errrr
+					}
+					return ae, j.Error(err)
+				} else {
+					j.Score(g)
+					ae.LeftHandSideExpression = &lhs
+					j.AcceptRunWhitespace()
+					ae.AssignmentOperator, err = j.parseAssignmentOperator()
+					if err != nil {
+						return ae, j.Error(err)
+					}
+					j.AcceptRunWhitespace()
+					g = j.NewGoal()
+					nae, err := g.parseAssignmentExpression(in, yield, await)
+					if err != nil {
+						return ae, j.Error(err)
+					}
+					j.Score(g)
+					ae.AssignmentExpression = &nae
+				}
+			} else {
+				ae.ConditionalExpression = &ce
+			}
+		} else {
+			ae.ArrowFunction = &af
+		}
+		j.Score(g)
+	}
+	ae.Tokens = j.ToTokens()
+	return ae, nil
+}
+
+type LeftHandSideExpression struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
+	var lhs LeftHandSideExpression
+	return lhs, nil
+}
+
+type ConditionalExpression struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseConditionalExpression(in, yield, await bool) (ConditionalExpression, error) {
+	var ce ConditionalExpression
+	return ce, nil
+}
+
+type ArrowFunction struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, error) {
+	var af ArrowFunction
+	return af, nil
+}
+
 const (
 	ErrInvalidStatementList       errors.Error = "invalid statement list"
 	ErrMissingSemiColon           errors.Error = "missing semi-colon"
@@ -400,4 +537,5 @@ const (
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration         errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration  errors.Error = "invalid lexical declaration"
+	ErrInvalidAssignment          errors.Error = "invalid assignment operator"
 )
