@@ -197,6 +197,15 @@ func (e Error) getLastPos() uint64 {
 	return e.Pos
 }
 
+func farthestError(err error, errs ...error) error {
+	for _, e := range errs {
+		if err.(Error).getLastPos() < e.(Error).getLastPos() {
+			err = e
+		}
+	}
+	return err
+}
+
 func (j *jsParser) Error(err error) error {
 	return Error{
 		Err:      err,

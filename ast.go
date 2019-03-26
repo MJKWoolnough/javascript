@@ -305,10 +305,7 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 	if err != nil {
 		bi, errr := g.parseBindingIdentifier(yield, await)
 		if errr != nil {
-			if err.(Error).getLastPos() > errr.(Error).getLastPos() {
-				return bp, j.Error(err)
-			}
-			return bp, j.Error(errr)
+			return bp, j.Error(farthestError(err, errr))
 		}
 		g.AcceptRunWhitespace()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
@@ -458,13 +455,7 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 				g = j.NewGoal()
 				lhs, errrr := g.parseLeftHandSideExpression(yield, await)
 				if errrr != nil {
-					if err.(Error).getLastPos() < errr.(Error).getLastPos() {
-						err = errr
-					}
-					if err.(Error).getLastPos() < errrr.(Error).getLastPos() {
-						err = errrr
-					}
-					return ae, j.Error(err)
+					return ae, j.Error(farthestError(err, errr, errrr))
 				} else {
 					j.Score(g)
 					ae.LeftHandSideExpression = &lhs
