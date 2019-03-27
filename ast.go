@@ -431,7 +431,10 @@ type AssignmentExpression struct {
 
 func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentExpression, error) {
 	var ae AssignmentExpression
-	if yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
+	if err := j.findGoal(func(j *jsParser) error {
+		if !yield || !j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
+			return errNotApplicable
+		}
 		ae.Yield = true
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
@@ -441,45 +444,47 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 		g := j.NewGoal()
 		nae, err := g.parseAssignmentExpression(in, true, await)
 		if err != nil {
-			return ae, j.Error(err)
+			return err
 		}
 		j.Score(g)
 		ae.AssignmentExpression = &nae
-	} else {
-		g := j.NewGoal()
-		af, err := g.parseArrowFunction(in, yield, await)
+		return nil
+	}, func(j *jsParser) error {
+		af, err := j.parseArrowFunction(in, yield, await)
 		if err != nil {
-			g = j.NewGoal()
-			ce, errr := g.parseConditionalExpression(in, yield, await)
-			if errr != nil {
-				g = j.NewGoal()
-				lhs, errrr := g.parseLeftHandSideExpression(yield, await)
-				if errrr != nil {
-					return ae, j.Error(farthestError(err, errr, errrr))
-				} else {
-					j.Score(g)
-					ae.LeftHandSideExpression = &lhs
-					j.AcceptRunWhitespace()
-					ae.AssignmentOperator, err = j.parseAssignmentOperator()
-					if err != nil {
-						return ae, j.Error(err)
-					}
-					j.AcceptRunWhitespace()
-					g = j.NewGoal()
-					nae, err := g.parseAssignmentExpression(in, yield, await)
-					if err != nil {
-						return ae, j.Error(err)
-					}
-					j.Score(g)
-					ae.AssignmentExpression = &nae
-				}
-			} else {
-				ae.ConditionalExpression = &ce
-			}
-		} else {
-			ae.ArrowFunction = &af
+			return err
+		}
+		ae.ArrowFunction = &af
+		return nil
+	}, func(j *jsParser) error {
+		ce, err := j.parseConditionalExpression(in, yield, await)
+		if err != nil {
+			return err
+		}
+		ae.ConditionalExpression = &ce
+		return nil
+	}, func(j *jsParser) error {
+		lhs, err := j.parseLeftHandSideExpression(yield, await)
+		if err != nil {
+			return err
+		}
+		ae.LeftHandSideExpression = &lhs
+		j.AcceptRunWhitespace()
+		ae.AssignmentOperator, err = j.parseAssignmentOperator()
+		if err != nil {
+			return err
+		}
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		nae, err := g.parseAssignmentExpression(in, yield, await)
+		if err != nil {
+			return err
 		}
 		j.Score(g)
+		ae.AssignmentExpression = &nae
+		return nil
+	}); err != nil {
+		return ae, err
 	}
 	ae.Tokens = j.ToTokens()
 	return ae, nil

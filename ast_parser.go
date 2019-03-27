@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -212,3 +213,21 @@ func (j *jsParser) Error(err error) error {
 		TokenPos: j.next(),
 	}
 }
+
+func (j *jsParser) findGoal(fns ...func(*jsParser) error) error {
+	var err error
+	for _, fn := range fns {
+		g := j.NewGoal()
+		if errr := fn(g); errr == nil {
+			j.Score(g)
+			return nil
+		} else if err != errNotApplicable && (err == nil || err.(Error).getLastPos() < errr.(Error).getLastPos()) {
+			err == errr
+		}
+	}
+	return j.Error(err)
+}
+
+const (
+	errNotApplicable errors.Error = ""
+)
