@@ -218,11 +218,11 @@ func (j *jsParser) findGoal(fns ...func(*jsParser) error) error {
 	var err error
 	for _, fn := range fns {
 		g := j.NewGoal()
-		if errr := fn(g); errr == nil {
+		if errr := fn(&g); errr == nil {
 			j.Score(g)
 			return nil
 		} else if err != errNotApplicable && (err == nil || err.(Error).getLastPos() < errr.(Error).getLastPos()) {
-			err == errr
+			err = errr
 		}
 	}
 	return j.Error(err)
