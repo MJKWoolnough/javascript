@@ -787,11 +787,48 @@ func (j *jsParser) parserPrimaryExpression(yield, await bool) (PrimaryExpression
 }
 
 type ArrayLiteral struct {
-	Tokens []TokenPos
+	ElementList   []AssignmentExpression
+	SpreadElement *AssignmentExpression
+	Tokens        []TokenPos
 }
 
 func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 	var al ArrayLiteral
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		return al, j.Error(ErrMissingOpeningBracket)
+	}
+	for {
+		var spread bool
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			break
+		} else if j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			al.ElementList = append(al.ElementList, AssignmentExpression{})
+			continue
+		} else if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+			spread = true
+		}
+		g := j.NewGoal()
+		ae, err := j.parseAssignmentExpression(true, yield, await)
+		if err != nil {
+			return al, j.Error(err)
+		}
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if spread {
+			al.SpreadElement = &ae
+			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+				return al, j.Error(ErrMissingClosingBracket)
+			}
+			break
+		}
+		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return al, j.Error(ErrMissingComma)
+		}
+	}
+	al.Tokens = j.ToTokens()
 	return al, nil
 }
 
@@ -869,6 +906,7 @@ const (
 	ErrMissingClosingParentheses  errors.Error = "missing closing parentheses"
 	ErrMissingOpeningBrace        errors.Error = "missing opening brace"
 	ErrMissingClosingBrace        errors.Error = "missing closing brace"
+	ErrMissingOpeningBracket      errors.Error = "missing opening bracket"
 	ErrMissingClosingBracket      errors.Error = "missing closing bracket"
 	ErrMissingComma               errors.Error = "missing comma"
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
