@@ -833,12 +833,50 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 }
 
 type ObjectLiteral struct {
-	Tokens []TokenPos
+	PropertyDefinitionList []PropertyDefinition
+	Tokens                 []TokenPos
 }
 
 func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) {
 	var ol ObjectLiteral
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return ol, j.Error(ErrMissingOpeningBrace)
+	}
+	for {
+		j.AcceptRunWhitespace()
+		if j.Accept(TokenRightBracePunctuator) {
+			break
+		}
+		g := j.NewGoal()
+		pd, err := g.parsePropertyDefinition(yield, await)
+		if err != nil {
+			return ol, j.Error(err)
+		}
+		j.Score(g)
+		ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, pd)
+		j.AcceptRunWhitespace()
+		if j.Accept(TokenRightBracePunctuator) {
+			break
+		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			return ol, j.Error(ErrMissingComma)
+		}
+	}
+	ol.Tokens = j.ToTokens()
 	return ol, nil
+}
+
+type PropertyDefinition struct {
+	IdentifierReference  *IdentifierReference
+	PropertyName         *PropertyName
+	AssignmentExpression *AssignmentExpression
+	MethodDefinition     *MethodDefinition
+	Tokens               []TokenPos
+}
+
+func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinition, error) {
+	var pd PropertyDefinition
+
+	return pd, nil
 }
 
 type CoverParenthesizedExpressionAndArrowParameterList struct {
