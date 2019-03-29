@@ -875,7 +875,56 @@ type PropertyDefinition struct {
 
 func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinition, error) {
 	var pd PropertyDefinition
-
+	if err := j.findGoal(
+		func(j *jsParser) error {
+			ir, err := j.parseIdentifierReference(yield, await)
+			if err != nil {
+				return err
+			}
+			j.AcceptRunWhitespace()
+			if j.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+				g := j.NewGoal()
+				ae, err := g.parseAssignmentExpression(true, yield, await)
+				if err != nil {
+					return err
+				}
+				j.Score(g)
+				pd.AssignmentExpression = &ae
+			}
+			pd.IdentifierReference = &ir
+			return nil
+		},
+		func(j *jsParser) error {
+			pn, err := j.parsePropertyName(yield, await)
+			if err != nil {
+				return err
+			}
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+				return j.Error(ErrMissingColon)
+			}
+			j.AcceptRunWhitespace()
+			g := j.NewGoal()
+			ae, err := j.parseAssignmentExpression(true, yield, await)
+			if err != nil {
+				return err
+			}
+			j.Score(g)
+			pd.PropertyName = &pn
+			pd.AssignmentExpression = &ae
+			return nil
+		},
+		func(j *jsParser) error {
+			md, err := j.parseMethodDefinition(yield, await)
+			if err != nil {
+				return err
+			}
+			pd.MethodDefinition = &md
+			return nil
+		},
+	); err != nil {
+		return pd, err
+	}
 	return pd, nil
 }
 
