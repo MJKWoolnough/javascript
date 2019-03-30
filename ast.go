@@ -929,11 +929,68 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 }
 
 type CoverParenthesizedExpressionAndArrowParameterList struct {
-	Tokens []TokenPos
+	Expression           []AssignmentExpression
+	BindingIdentifier    *BindingIdentifier
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               []TokenPos
 }
 
 func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield, await bool) (CoverParenthesizedExpressionAndArrowParameterList, error) {
 	var cp CoverParenthesizedExpressionAndArrowParameterList
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return cp, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		for {
+			if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				j.AcceptRunWhitespace()
+				g := j.NewGoal()
+				if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+					ab, err := j.parseArrayBindingPattern(yield, await)
+					if err != nil {
+						return cp, j.Error(err)
+					}
+					cp.ArrayBindingPattern = &ab
+
+				} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+					ob, err := j.parseObjectBindingPattern(yield, await)
+					if err != nil {
+						return cp, j.Error(err)
+					}
+					cp.ObjectBindingPattern = &ob
+				} else {
+					bi, err := g.parseBindingIdentifier(yield, await)
+					if err != nil {
+						return cp, j.Error(err)
+					}
+					cp.BindingIdentifier = &bi
+				}
+				j.Score(g)
+				j.AcceptRunWhitespace()
+				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+					return cp, j.Error(ErrMissingClosingParentheses)
+				}
+				break
+			}
+			g := j.NewGoal()
+			ae, err := g.parseAssignmentExpression(true, yield, await)
+			if err != nil {
+				return cp, j.Error(err)
+			}
+			j.Score(g)
+			cp.Expression = append(cp.Expression, ae)
+			j.AcceptRunWhitespace()
+			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				break
+			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+				return cp, j.Error(ErrMissingComma)
+			}
+			j.AcceptRunWhitespace()
+		}
+	}
+	cp.Tokens = j.ToTokens()
 	return cp, nil
 }
 
