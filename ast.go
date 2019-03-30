@@ -995,11 +995,42 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 }
 
 type TemplateLiteral struct {
-	Tokens []TokenPos
+	NoSubstitutionTemplate *TokenPos
+	TemplateHead           *TokenPos
+	Expressions            []Expression
+	TemplateMiddleList     []*TokenPos
+	TemplateTail           *TokenPos
+	Tokens                 []TokenPos
 }
 
 func (j *jsParser) parserTemplateLiteral(yield, await bool) (TemplateLiteral, error) {
 	var tl TemplateLiteral
+	if j.Accept(TokenNoSubstitutionTemplate) {
+		tl.NoSubstitutionTemplate = j.GetLastToken()
+	} else if !j.Accept(TokenTemplateHead) {
+		return tl, j.Error(ErrInvalidTemplate)
+	} else {
+		tl.TemplateHead = j.GetLastToken()
+		for {
+			j.AcceptRunWhitespace()
+			g := j.NewGoal()
+			e, err := j.parseExpression(true, yield, await)
+			if err != nil {
+				return tl, j.Error(err)
+			}
+			j.Score(g)
+			tl.Expressions = append(tl.Expressions, e)
+			j.AcceptRunWhitespace()
+			if j.Accept(TokenTemplateTail) {
+				tl.TemplateTail = j.GetLastToken()
+				break
+			} else if !j.Accept(TokenTemplateMiddle) {
+				return tl, j.Error(ErrInvalidTemplate)
+			}
+			tl.TemplateMiddleList = append(tl.TemplateMiddleList, j.GetLastToken())
+		}
+	}
+	tl.Tokens = j.ToTokens()
 	return tl, nil
 }
 
@@ -1059,4 +1090,5 @@ const (
 	ErrInvalidAssignment          errors.Error = "invalid assignment operator"
 	ErrInvalidSuperProperty       errors.Error = "invalid super property"
 	ErrInvalidMetaProperty        errors.Error = "invalid meta property"
+	ErrInvalidTemplate            errors.Error = "invalid template"
 )
