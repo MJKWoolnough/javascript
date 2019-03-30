@@ -929,7 +929,7 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 }
 
 type CoverParenthesizedExpressionAndArrowParameterList struct {
-	Expression           []AssignmentExpression
+	Expressions          []Expression
 	BindingIdentifier    *BindingIdentifier
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
@@ -975,12 +975,12 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 				break
 			}
 			g := j.NewGoal()
-			ae, err := g.parseAssignmentExpression(true, yield, await)
+			e, err := g.parseExpression(true, yield, await)
 			if err != nil {
 				return cp, j.Error(err)
 			}
 			j.Score(g)
-			cp.Expression = append(cp.Expression, ae)
+			cp.Expressions = append(cp.Expressions, e)
 			j.AcceptRunWhitespace()
 			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				break
