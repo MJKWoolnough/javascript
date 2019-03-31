@@ -1035,11 +1035,48 @@ func (j *jsParser) parserTemplateLiteral(yield, await bool) (TemplateLiteral, er
 }
 
 type Arguments struct {
-	Tokens []TokenPos
+	ArgumentList   []AssignmentExpression
+	SpreadArgument *AssignmentExpression
+	Tokens         []TokenPos
 }
 
 func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 	var a Arguments
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return a, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		for {
+			var spread bool
+			if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				spread = true
+				j.AcceptRunWhitespace()
+			}
+			g := j.NewGoal()
+			ae, err := g.parseAssignmentExpression()
+			if err != nil {
+				return a, j.Error(err)
+			}
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			if spread {
+				a.SpreadArgument = &ae
+				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+					return a, j.Error(err)
+				}
+				break
+			}
+			a.ArgumentList = append(a.ArgumentList, ae)
+			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				break
+			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+				return a, j.Error(ErrMissingComma)
+			}
+			j.AcceptRunWhitespace()
+		}
+	}
+	a.Tokens = j.ToTokens()
 	return a, nil
 }
 
