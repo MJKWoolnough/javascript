@@ -220,12 +220,14 @@ func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 }
 
 type ExportDeclaration struct {
-	ExportClause      *ExportClause
-	FromClause        *FromClause
-	VariableStatement *VariableStatement
-	Declaration       *Declaration
-	Default           Token
-	Tokens            []TokenPos
+	ExportClause                *ExportClause
+	FromClause                  *FromClause
+	VariableStatement           *VariableStatement
+	Declaration                 *Declaration
+	DefaultFunction             *FunctionDeclaration
+	DefaultClass                *ClassDeclaration
+	DefaultAssignmentExpression *AssignmentExpression
+	Tokens                      []TokenPos
 }
 
 func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
@@ -243,21 +245,21 @@ func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 				return ed, j.Error(err)
 			}
 			j.Score(g)
-			ed.Default = &fd
+			ed.DefaultFunction = &fd
 		case "class":
 			cd, err := g.parseClassDeclaration(false, false, true)
 			if err != nil {
 				return ed, j.Error(err)
 			}
 			j.Score(g)
-			ed.Default = &cd
+			ed.DefaultClass = &cd
 		default:
 			ae, err := g.parseAssignmentExpression(true, false, false)
 			if err != nil {
 				return ed, j.Error(err)
 			}
 			j.Score(g)
-			ed.Default = &ae
+			ed.DefaultAssignmentExpression = &ae
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return ed, j.Error(ErrMissingSemiColon)
