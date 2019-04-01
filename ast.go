@@ -1217,7 +1217,7 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		return af, j.Error(ErrMissingArrow)
 	}
 	j.AcceptRunWhitespace()
-	if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
+	if j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
 		sl, err := g.parseStatementList(false, af.Async, true)
 		if err != nil {
@@ -1225,6 +1225,10 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		}
 		j.Score(g)
 		af.FunctionBody = &sl
+		j.AcceptRunWhitespace()
+		if !j.Accept(TokenRightBracePunctuator) {
+			return af, j.Error(ErrMissingClosingBrace)
+		}
 	} else {
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(in, false, af.Async)
