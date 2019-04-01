@@ -1163,6 +1163,81 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 	return ce, nil
 }
 
+type ArrowFunction struct {
+	Async                                             bool
+	BindingIdentifier                                 *BindingIdentifier
+	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
+	FormalParameters                                  *FormalParameters
+	AssignmentExpression                              *AssignmentExpression
+	FunctionBody                                      *StatementList
+	Tokens                                            []TokenPos
+}
+
+func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, error) {
+	var af ArrowFunction
+	if j.AcceptToken(parser.Token{TokenKeyword, "async"}) {
+		af.Async = true
+		j.AcceptRunWhitespaceNoNewLine()
+		if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
+			g := j.NewGoal()
+			fp, err := g.parseFormalParameters(false, true)
+			if err != nil {
+				return af, j.Error(err)
+			}
+			j.Score(g)
+			af.FormalParameters = &fp
+		} else {
+			g := j.NewGoal()
+			bi, err := g.parseBindingIdentifier(yield, true)
+			if err != nil {
+				return af, j.Error(err)
+			}
+			j.Score(g)
+			af.BindingIdentifier = &bi
+		}
+	} else if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
+		g := j.NewGoal()
+		cp, err := g.parseCoverParenthesizedExpressionAndArrowParameterList(yield, await)
+		if err != nil {
+			return af, j.Error(err)
+		}
+		j.Score(g)
+		af.CoverParenthesizedExpressionAndArrowParameterList = &cp
+	} else {
+		g := j.NewGoal()
+		bi, err := g.parseBindingIdentifier(yield, true)
+		if err != nil {
+			return af, j.Error(err)
+		}
+		j.Score(g)
+		af.BindingIdentifier = &bi
+	}
+	j.AcceptRunWhitespaceNoNewLine()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "=>"}) {
+		return af, j.Error(ErrMissingArrow)
+	}
+	j.AcceptRunWhitespace()
+	if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
+		g := j.NewGoal()
+		sl, err := g.parseStatementList(false, af.Async, true)
+		if err != nil {
+			return af, j.Error(err)
+		}
+		j.Score(g)
+		af.FunctionBody = &sl
+	} else {
+		g := j.NewGoal()
+		ae, err := g.parseAssignmentExpression(in, false, af.Async)
+		if err != nil {
+			return af, j.Error(err)
+		}
+		j.Score(g)
+		af.AssignmentExpression = &ae
+	}
+	af.Tokens = j.ToTokens()
+	return af, nil
+}
+
 type ConditionalExpression struct {
 	Tokens []TokenPos
 }
@@ -1170,15 +1245,6 @@ type ConditionalExpression struct {
 func (j *jsParser) parseConditionalExpression(in, yield, await bool) (ConditionalExpression, error) {
 	var ce ConditionalExpression
 	return ce, nil
-}
-
-type ArrowFunction struct {
-	Tokens []TokenPos
-}
-
-func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, error) {
-	var af ArrowFunction
-	return af, nil
 }
 
 const (
@@ -1195,6 +1261,7 @@ const (
 	ErrMissingOpeningBracket      errors.Error = "missing opening bracket"
 	ErrMissingClosingBracket      errors.Error = "missing closing bracket"
 	ErrMissingComma               errors.Error = "missing comma"
+	ErrMissingArrow               errors.Error = "missing arrow"
 	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration         errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration  errors.Error = "invalid lexical declaration"
