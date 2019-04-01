@@ -1054,7 +1054,7 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 				j.AcceptRunWhitespace()
 			}
 			g := j.NewGoal()
-			ae, err := g.parseAssignmentExpression()
+			ae, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
 				return a, j.Error(err)
 			}
@@ -1081,11 +1081,85 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 }
 
 type CallExpression struct {
-	Tokens []TokenPos
+	CoverCallExpressionAndAsyncArrowHead *MemberExpression
+	SuperCall                            bool
+	CallExpression                       *CallExpression
+	Arguments                            *Arguments
+	Expression                           *Expression
+	IdentifierName                       *TokenPos
+	TemplateLiteral                      *TemplateLiteral
+	Tokens                               []TokenPos
 }
 
 func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error) {
 	var ce CallExpression
+	if j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
+		ce.SuperCall = true
+	} else {
+		g := j.NewGoal()
+		me, err := g.parseMemberExpression(yield, await)
+		if err != nil {
+			return ce, j.Error(err)
+		}
+		ce.CoverCallExpressionAndAsyncArrowHead = &me
+	}
+	j.AcceptRunWhitespace()
+	a, err := j.parseArguments(yield, await)
+	if err != nil {
+		return ce, err
+	}
+	ce.Arguments = &a
+	for {
+		oce := ce
+		nce := CallExpression{
+			CallExpression: &oce,
+		}
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		if tk := g.Peek(); tk == (parser.Token{TokenPunctuator, "("}) {
+			h := g.NewGoal()
+			a, err := h.parseArguments(yield, await)
+			if err != nil {
+				return ce, j.Error(err)
+			}
+			g.Score(h)
+			nce.Arguments = &a
+		} else if tk == (parser.Token{TokenPunctuator, "["}) {
+			g.Except()
+			g.AcceptRunWhitespace()
+			h := g.NewGoal()
+			e, err := h.parseExpression(true, yield, await)
+			if err != nil {
+				return ce, j.Error(err)
+			}
+			g.Score(h)
+			if !g.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+				return ce, j.Error(ErrMissingClosingBracket)
+			}
+			nce.Expression = &e
+		} else if tk == (parser.Token{TokenPunctuator, "."}) {
+			g.Except()
+			g.AcceptRunWhitespace()
+			if !g.Accept(TokenIdentifier, TokenKeyword) {
+				return ce, j.Error(ErrNoIdentifier)
+			}
+			nce.IdentifierName = g.GetLastToken()
+		} else if tk.Type == TokenTemplateHead || tk.Type == TokenNoSubstitutionTemplate {
+			h := g.NewGoal()
+			tl, err := h.parserTemplateLiteral(yield, await)
+			if err != nil {
+				return ce, j.Error(err)
+			}
+			g.Score(h)
+			nce.TemplateLiteral = &tl
+		} else {
+			break
+		}
+		j.Score(g)
+		nce.Tokens = j.ToTokens()
+		ce = nce
+	}
+	ce.Tokens = j.ToTokens()
 	return ce, nil
 }
 
