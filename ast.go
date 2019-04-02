@@ -5,9 +5,6 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-type Token interface {
-}
-
 type Script StatementList
 
 func ParseScript(t parser.Tokeniser) (Script, error) {
@@ -23,21 +20,142 @@ func ParseScript(t parser.Tokeniser) (Script, error) {
 }
 
 type StatementList struct {
-	Tokens []TokenPos
+	StatementListItems []StatementListItem
+	Tokens             []TokenPos
 }
 
 func (j *jsParser) parseStatementList(yield, await, ret bool) (StatementList, error) {
 	var sl StatementList
+	for {
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		h := g.NewGoal()
+		si, err := h.parseStatementListItem(yield, await, ret)
+		if err != nil {
+			if err == errNotApplicable {
+				break
+			}
+			return sl, g.Error(err)
+		}
+		g.Score(h)
+		j.Score(g)
+		sl.StatementListItems = append(sl.StatementListItems, si)
+	}
+	sl.Tokens = j.ToTokens()
 	return sl, nil
 }
 
 type StatementListItem struct {
-	Tokens []TokenPos
+	Statement   *Statement
+	Declaration *Declaration
+	Tokens      []TokenPos
 }
 
 func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementListItem, error) {
 	var si StatementListItem
+	if err := j.findGoal(
+		func(j *jsParser) error {
+			s, err := j.parseStatement(yield, await, ret)
+			if err != nil {
+				return err
+			}
+			si.Statement = &s
+			return nil
+		},
+		func(j *jsParser) error {
+			d, err := j.parseDeclaration(yield, ret)
+			if err != nil {
+				if err.(Error).Err == ErrInvalidDeclaration {
+					return errNotApplicable
+				}
+				return err
+			}
+			si.Declaration = &d
+			return nil
+		},
+	); err != nil {
+		return si, err
+	}
+	if si.Statement == nil && si.Declaration == nil {
+		return si, errNotApplicable
+	}
+	si.Tokens = j.ToTokens()
 	return si, nil
+}
+
+type Statement struct {
+	BlockStatement          *StatementList
+	VariableStatement       *VariableStatement
+	IfStatement             *IfStatement
+	ReturnStatement         *Expression
+	IterationStatementDo    *IterationStatementDo
+	IterationStatementWhile *IterationStatementWhile
+	IterationStatementFor   *IterationStatementFor
+	SwitchStatement         *SwitchStatement
+	DebuggerStatement       *TokenPos
+	Tokens                  []TokenPos
+}
+
+func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
+	var s Statement
+	switch j.Peek() {
+	case parser.Token{TokenPunctuator, "{"}:
+		j.Except()
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		sl, err := g.parseStatementList(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		j.Score(g)
+		s.Block = &sl
+	case parser.Token{TokenKeyword, "var"}:
+		g := j.NewGoal()
+		vs, err := g.parseVariableStatement(yield, await)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		j.Score(g)
+		s.VariableStatement = &vs
+	case parser.Token{TokenPunctuator, ";"}:
+		j.Except()
+	case parser.Token{TokenKeyword, "if"}:
+		g := j.NewGoal()
+		i, err := j.parseIfStatement(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		j.Score(g)
+		s.IfStatement = &i
+	case parser.Token{TokenKeyword, "do"}:
+	case parser.Token{TokenKeyword, "while"}:
+	case parser.Token{TokenKeyword, "for"}:
+	case parser.Token{TokenKeyword, "switch"}:
+	case parser.Token{TokenKeyword, "continue"}:
+	case parser.Token{TokenKeyword, "break"}:
+	case parser.Token{TokenKeyword, "return"}:
+		if !ret {
+			return s, j.Error(ErrInvalidStatment)
+		}
+	case parser.Token{TokenKeyword, "with"}:
+	case parser.Token{TokenKeyword, "throw"}:
+	case parser.Token{TokenKeyword, "try"}:
+	case parser.Token{TokenKeyword, "debugger"}:
+		j.Except()
+		s.DebuggerStatement = j.GetLastToken()
+	default:
+		//expression, Labelled
+	}
+	s.Tokens = j.ToTokens()
+	return s, nil
+}
+
+type IfStatement struct {
+	Tokens []TokenPos
+}
+
+func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error) {
+
 }
 
 type IdentifierReference Identifier
@@ -1253,6 +1371,7 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 
 const (
 	ErrInvalidStatementList       errors.Error = "invalid statement list"
+	ErrInvalidStatement           errors.Error = "invalid statement"
 	ErrMissingSemiColon           errors.Error = "missing semi-colon"
 	ErrMissingColon               errors.Error = "missing colon"
 	ErrNoIdentifier               errors.Error = "missing identifier"
