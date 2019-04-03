@@ -98,36 +98,43 @@ type Statement struct {
 
 func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	var s Statement
-	switch j.Peek() {
+	g := j.NewGoal()
+	switch g.Peek() {
 	case parser.Token{TokenPunctuator, "{"}:
-		j.Except()
-		j.AcceptRunWhitespace()
-		g := j.NewGoal()
-		sl, err := g.parseStatementList(yield, await, ret)
+		g.Except()
+		g.AcceptRunWhitespace()
+		h := g.NewGoal()
+		sl, err := h.parseStatementList(yield, await, ret)
 		if err != nil {
-			return s, j.Error(err)
+			return s, g.Error(err)
 		}
-		j.Score(g)
+		g.Score(h)
 		s.BlockStatement = &sl
 	case parser.Token{TokenKeyword, "var"}:
-		g := j.NewGoal()
-		vs, err := g.parseVariableStatement(yield, await)
+		h := j.NewGoal()
+		vs, err := h.parseVariableStatement(yield, await)
 		if err != nil {
-			return s, j.Error(err)
+			return s, g.Error(err)
 		}
-		j.Score(g)
+		g.Score(h)
 		s.VariableStatement = &vs
 	case parser.Token{TokenPunctuator, ";"}:
-		j.Except()
+		g.Except()
 	case parser.Token{TokenKeyword, "if"}:
-		g := j.NewGoal()
-		i, err := j.parseIfStatement(yield, await, ret)
+		h := j.NewGoal()
+		is, err := h.parseIfStatement(yield, await, ret)
 		if err != nil {
-			return s, j.Error(err)
+			return s, g.Error(err)
 		}
-		j.Score(g)
-		s.IfStatement = &i
+		g.Score(h)
+		s.IfStatement = &is
 	case parser.Token{TokenKeyword, "do"}:
+		h := g.NewGoal()
+		ds, err := h.parseIterationStatementDo(yield, await, ret)
+		if err != nil {
+			return s, g.Error(err)
+		}
+		s.IterationStatementDo = &ds
 	case parser.Token{TokenKeyword, "while"}:
 	case parser.Token{TokenKeyword, "for"}:
 	case parser.Token{TokenKeyword, "switch"}:
@@ -135,17 +142,18 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	case parser.Token{TokenKeyword, "break"}:
 	case parser.Token{TokenKeyword, "return"}:
 		if !ret {
-			return s, j.Error(ErrInvalidStatement)
+			return s, g.Error(ErrInvalidStatement)
 		}
 	case parser.Token{TokenKeyword, "with"}:
 	case parser.Token{TokenKeyword, "throw"}:
 	case parser.Token{TokenKeyword, "try"}:
 	case parser.Token{TokenKeyword, "debugger"}:
-		j.Except()
-		s.DebuggerStatement = j.GetLastToken()
+		g.Except()
+		s.DebuggerStatement = g.GetLastToken()
 	default:
 		//expression, Labelled
 	}
+	j.Score(g)
 	s.Tokens = j.ToTokens()
 	return s, nil
 }
@@ -158,14 +166,16 @@ type IfStatement struct {
 }
 
 func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error) {
-	var is IfStatement
+	var (
+		is  IfStatement
+		err error
+	)
 	j.AcceptToken(parser.Token{TokenKeyword, "if"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return is, j.Error(ErrMissingOpeningParentheses)
 	}
 	j.AcceptRunWhitespace()
-	var err error
 	g := j.NewGoal()
 	is.Expression, err = g.parseExpression(true, yield, await)
 	if err != nil {
@@ -200,14 +210,57 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 }
 
 type IterationStatementDo struct {
+	Statement  Statement
+	Expression Expression
+	Tokens     []TokenPos
+}
+
+func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationStatementDo, error) {
+	var (
+		is  IterationStatementDo
+		err error
+	)
+	j.AcceptToken(parser.Token{TokenKeyword, "do"})
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	is.Statement, err = g.parseStatement(yield, await, ret)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	g = j.NewGoal()
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenKeyword, "while"}) {
+		return is, j.Error(ErrInvalidIterationStatementDo)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return is, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g = j.NewGoal()
+	is.Expression, err = g.parseExpression(true, yield, await)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return is, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		return is, j.Error(ErrMissingSemiColon)
+	}
+	is.Tokens = j.ToTokens()
+	return is, nil
+}
+
+type IterationStatementWhile struct {
 	Tokens []TokenPos
 }
 
 type IterationStatementFor struct {
-	Tokens []TokenPos
-}
-
-type IterationStatementWhile struct {
 	Tokens []TokenPos
 }
 
@@ -1427,26 +1480,27 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 }
 
 const (
-	ErrInvalidStatementList       errors.Error = "invalid statement list"
-	ErrInvalidStatement           errors.Error = "invalid statement"
-	ErrMissingSemiColon           errors.Error = "missing semi-colon"
-	ErrMissingColon               errors.Error = "missing colon"
-	ErrNoIdentifier               errors.Error = "missing identifier"
-	ErrReservedIdentifier         errors.Error = "reserved identifier"
-	ErrMissingFunction            errors.Error = "missing function"
-	ErrMissingOpeningParentheses  errors.Error = "missing opening parentheses"
-	ErrMissingClosingParentheses  errors.Error = "missing closing parentheses"
-	ErrMissingOpeningBrace        errors.Error = "missing opening brace"
-	ErrMissingClosingBrace        errors.Error = "missing closing brace"
-	ErrMissingOpeningBracket      errors.Error = "missing opening bracket"
-	ErrMissingClosingBracket      errors.Error = "missing closing bracket"
-	ErrMissingComma               errors.Error = "missing comma"
-	ErrMissingArrow               errors.Error = "missing arrow"
-	ErrInvalidFormalParameterList errors.Error = "invalid formal parameter list"
-	ErrInvalidDeclaration         errors.Error = "invalid declaration"
-	ErrInvalidLexicalDeclaration  errors.Error = "invalid lexical declaration"
-	ErrInvalidAssignment          errors.Error = "invalid assignment operator"
-	ErrInvalidSuperProperty       errors.Error = "invalid super property"
-	ErrInvalidMetaProperty        errors.Error = "invalid meta property"
-	ErrInvalidTemplate            errors.Error = "invalid template"
+	ErrInvalidStatementList        errors.Error = "invalid statement list"
+	ErrInvalidStatement            errors.Error = "invalid statement"
+	ErrMissingSemiColon            errors.Error = "missing semi-colon"
+	ErrMissingColon                errors.Error = "missing colon"
+	ErrNoIdentifier                errors.Error = "missing identifier"
+	ErrReservedIdentifier          errors.Error = "reserved identifier"
+	ErrMissingFunction             errors.Error = "missing function"
+	ErrMissingOpeningParentheses   errors.Error = "missing opening parentheses"
+	ErrMissingClosingParentheses   errors.Error = "missing closing parentheses"
+	ErrMissingOpeningBrace         errors.Error = "missing opening brace"
+	ErrMissingClosingBrace         errors.Error = "missing closing brace"
+	ErrMissingOpeningBracket       errors.Error = "missing opening bracket"
+	ErrMissingClosingBracket       errors.Error = "missing closing bracket"
+	ErrMissingComma                errors.Error = "missing comma"
+	ErrMissingArrow                errors.Error = "missing arrow"
+	ErrInvalidFormalParameterList  errors.Error = "invalid formal parameter list"
+	ErrInvalidDeclaration          errors.Error = "invalid declaration"
+	ErrInvalidLexicalDeclaration   errors.Error = "invalid lexical declaration"
+	ErrInvalidAssignment           errors.Error = "invalid assignment operator"
+	ErrInvalidSuperProperty        errors.Error = "invalid super property"
+	ErrInvalidMetaProperty         errors.Error = "invalid meta property"
+	ErrInvalidTemplate             errors.Error = "invalid template"
+	ErrInvalidIterationStatementDo errors.Error = "invalid do interation statement"
 )
