@@ -111,31 +111,31 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.Score(h)
 		s.BlockStatement = &sl
 	case parser.Token{TokenKeyword, "var"}:
-		h := j.NewGoal()
-		vs, err := h.parseVariableStatement(yield, await)
+		vs, err := g.parseVariableStatement(yield, await)
 		if err != nil {
-			return s, g.Error(err)
+			return s, j.Error(err)
 		}
-		g.Score(h)
 		s.VariableStatement = &vs
 	case parser.Token{TokenPunctuator, ";"}:
 		g.Except()
 	case parser.Token{TokenKeyword, "if"}:
-		h := j.NewGoal()
-		is, err := h.parseIfStatement(yield, await, ret)
+		is, err := g.parseIfStatement(yield, await, ret)
 		if err != nil {
-			return s, g.Error(err)
+			return s, j.Error(err)
 		}
-		g.Score(h)
 		s.IfStatement = &is
 	case parser.Token{TokenKeyword, "do"}:
-		h := g.NewGoal()
-		ds, err := h.parseIterationStatementDo(yield, await, ret)
+		ds, err := g.parseIterationStatementDo(yield, await, ret)
 		if err != nil {
-			return s, g.Error(err)
+			return s, j.Error(err)
 		}
 		s.IterationStatementDo = &ds
 	case parser.Token{TokenKeyword, "while"}:
+		ws, err := g.parseIterationStatementWhile(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		s.IterationStatementWhile = &ws
 	case parser.Token{TokenKeyword, "for"}:
 	case parser.Token{TokenKeyword, "switch"}:
 	case parser.Token{TokenKeyword, "continue"}:
@@ -257,7 +257,41 @@ func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationS
 }
 
 type IterationStatementWhile struct {
-	Tokens []TokenPos
+	Expression Expression
+	Statement  Statement
+	Tokens     []TokenPos
+}
+
+func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (IterationStatementWhile, error) {
+	var (
+		is  IterationStatementWhile
+		err error
+	)
+	j.AcceptToken(parser.Token{TokenKeyword, "while"})
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return is, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	is.Expression, err = g.parseExpression(true, await, ret)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return is, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g = j.NewGoal()
+	is.Statement, err = g.parseStatement(yield, await, ret)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	is.Tokens = j.ToTokens()
+	return is, nil
 }
 
 type IterationStatementFor struct {
