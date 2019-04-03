@@ -108,7 +108,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			return s, j.Error(err)
 		}
 		j.Score(g)
-		s.Block = &sl
+		s.BlockStatement = &sl
 	case parser.Token{TokenKeyword, "var"}:
 		g := j.NewGoal()
 		vs, err := g.parseVariableStatement(yield, await)
@@ -135,7 +135,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	case parser.Token{TokenKeyword, "break"}:
 	case parser.Token{TokenKeyword, "return"}:
 		if !ret {
-			return s, j.Error(ErrInvalidStatment)
+			return s, j.Error(ErrInvalidStatement)
 		}
 	case parser.Token{TokenKeyword, "with"}:
 	case parser.Token{TokenKeyword, "throw"}:
@@ -151,11 +151,68 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 }
 
 type IfStatement struct {
-	Tokens []TokenPos
+	Expression    Expression
+	Statement     Statement
+	ElseStatement *Statement
+	Tokens        []TokenPos
 }
 
 func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error) {
+	var is IfStatement
+	j.AcceptToken(parser.Token{TokenKeyword, "if"})
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return is, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	var err error
+	g := j.NewGoal()
+	is.Expression, err = g.parseExpression(true, yield, await)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return is, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g = j.NewGoal()
+	is.Statement, err = g.parseStatement(yield, await, ret)
+	if err != nil {
+		return is, j.Error(err)
+	}
+	j.Score(g)
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenKeyword, "else"}) {
+		h := g.NewGoal()
+		s, err := h.parseStatement(yield, await, ret)
+		if err != nil {
+			return is, g.Error(err)
+		}
+		g.Score(h)
+		j.Score(g)
+		is.ElseStatement = &s
+	}
+	is.Tokens = j.ToTokens()
+	return is, nil
+}
 
+type IterationStatementDo struct {
+	Tokens []TokenPos
+}
+
+type IterationStatementFor struct {
+	Tokens []TokenPos
+}
+
+type IterationStatementWhile struct {
+	Tokens []TokenPos
+}
+
+type SwitchStatement struct {
+	Tokens []TokenPos
 }
 
 type IdentifierReference Identifier
