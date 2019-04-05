@@ -330,6 +330,8 @@ type IterationStatementFor struct {
 	ForBindingIdentifier    *BindingIdentifier
 	ForBindingPatternObject *ObjectBindingPattern
 	ForBindingPatternArray  *ArrayBindingPattern
+	In                      *Expression
+	Of                      *AssignmentExpression
 
 	Expression *Expression
 
@@ -433,6 +435,88 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			return nil
 		},
 		func(j *jsParser) error {
+			if err := j.findGoal(
+				func(j *jsParser) error {
+					if j.AcceptToken(parser.Token{TokenKeyword, "var"}) {
+						is.Type = ForInVar
+					} else if j.AcceptToken(parser.Token{TokenKeyword, "const"}) {
+						is.Type = ForInConst
+					} else if j.AcceptToken(parser.Token{TokenIdentifier, "let"}) {
+						is.Type = ForInLet
+					} else {
+						return errNotApplicable
+					}
+					j.AcceptRunWhitespace()
+					g := j.NewGoal()
+					if tk := g.Peek(); tk == (parser.Token{TokenPunctuator, "["}) {
+						ab, err := g.parseArrayBindingPattern(yield, await)
+						if err != nil {
+							return err
+						}
+						is.ForBindingPatternArray = &ab
+					} else if tk == (parser.Token{TokenPunctuator, "{"}) {
+						ob, err := g.parseObjectBindingPattern(yield, await)
+						if err != nil {
+							return err
+						}
+						is.ForBindingPatternObject = &ob
+					} else {
+						bi, err := g.parseBindingIdentifier(yield, await)
+						if err != nil {
+							return err
+						}
+						is.ForBindingIdentifier = &bi
+					}
+					j.Score(g)
+					return nil
+				},
+				func(j *jsParser) error {
+					g := j.NewGoal()
+					lhs, err := g.parseLeftHandSideExpression(yield, await)
+					if err != nil {
+						return err
+					}
+					j.Score(g)
+					is.LeftHandSideExpression = &lhs
+					is.Type = ForInLeftHandSide
+					return nil
+				},
+			); err != nil {
+				return err
+			}
+			j.AcceptRunWhitespace()
+			in := true
+			if j.AcceptToken(parser.Token{TokenKeyword, "of"}) {
+				in = false
+				switch is.Type {
+				case ForInVar:
+					is.Type = ForOfVar
+				case ForInConst:
+					is.Type = ForOfConst
+				case ForInLet:
+					is.Type = ForOfLet
+				case ForInLeftHandSide:
+					is.Type = ForOfLeftHandSide
+				}
+			} else if !j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
+				return ErrInvalidForLoop
+			}
+			j.AcceptRunWhitespace()
+			g := j.NewGoal()
+			if in {
+				e, err := g.parseExpression(true, yield, await)
+				if err != nil {
+					return err
+				}
+				is.In = &e
+			} else {
+				ae, err := j.parseAssignmentExpression(true, yield, await)
+				if err != nil {
+					return err
+				}
+				is.Of = &ae
+			}
+			j.Score(g)
 			return nil
 		},
 	); err != nil {
@@ -1693,4 +1777,5 @@ const (
 	ErrInvalidMetaProperty         errors.Error = "invalid meta property"
 	ErrInvalidTemplate             errors.Error = "invalid template"
 	ErrInvalidIterationStatementDo errors.Error = "invalid do interation statement"
+	ErrInvalidForLoop              errors.Error = "invalid for loop"
 )
