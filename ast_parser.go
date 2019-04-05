@@ -215,14 +215,18 @@ func (j *jsParser) Error(err error) error {
 }
 
 func (j *jsParser) findGoal(fns ...func(*jsParser) error) error {
-	var err error
+	var (
+		err     error
+		lastPos uint64
+	)
 	for _, fn := range fns {
 		g := j.NewGoal()
 		if errr := fn(&g); errr == nil {
 			j.Score(g)
 			return nil
-		} else if err != errNotApplicable && (err == nil || err.(Error).getLastPos() < errr.(Error).getLastPos()) {
-			err = errr
+		} else if p := g.next().Pos; errr != errNotApplicable && (err == nil || lastPos < p) {
+			err = g.Error(errr)
+			lastPos = p
 		}
 	}
 	return j.Error(err)
