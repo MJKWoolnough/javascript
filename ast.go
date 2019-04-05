@@ -143,6 +143,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		}
 		s.IterationStatementFor = &fs
 	case parser.Token{TokenKeyword, "switch"}:
+		ss, err := j.parseSwitchStatement(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		s.SwitchStatement = &ss
 	case parser.Token{TokenKeyword, "continue"}:
 	case parser.Token{TokenKeyword, "break"}:
 	case parser.Token{TokenKeyword, "return"}:
@@ -539,7 +544,111 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 }
 
 type SwitchStatement struct {
-	Tokens []TokenPos
+	Expression             Expression
+	CaseClauses            []CaseClause
+	DefaultClause          *StatementList
+	PostDefaultCaseClauses []CaseClause
+	Tokens                 []TokenPos
+}
+
+func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement, error) {
+	var (
+		ss  SwitchStatement
+		err error
+	)
+	j.AcceptToken(parser.Token{TokenKeyword, "switch"})
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return ss, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	ss.Expression, err = g.parseExpression(true, yield, await)
+	if err != nil {
+		return ss, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return ss, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return ss, j.Error(ErrMissingOpeningBrace)
+	}
+	for {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+			break
+		} else if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+				return ss, j.Error(ErrMissingColon)
+			}
+			g = j.NewGoal()
+			sl, err := g.parseStatementList(yield, await, ret)
+			if err != nil {
+				return ss, j.Error(err)
+			}
+			j.Score(g)
+			ss.DefaultClause = &sl
+		} else {
+			g := j.NewGoal()
+			cc, err := g.parseCaseClause(yield, await, ret)
+			if err != nil {
+				return ss, j.Error(err)
+			}
+			j.Score(g)
+			if ss.DefaultClause == nil {
+				ss.CaseClauses = append(ss.CaseClauses, cc)
+			} else {
+				ss.PostDefaultCaseClauses = append(ss.PostDefaultCaseClauses, cc)
+			}
+		}
+	}
+	ss.Tokens = j.ToTokens()
+	return ss, nil
+}
+
+type CaseClause struct {
+	Expression    Expression
+	StatementList *StatementList
+	Tokens        []TokenPos
+}
+
+func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
+	var (
+		cc  CaseClause
+		err error
+	)
+	if !j.AcceptToken(parser.Token{TokenKeyword, "case"}) {
+		return cc, ErrMissingCaseClause
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	cc.Expression, err = g.parseExpression(true, yield, await)
+	if err != nil {
+		return cc, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+		return cc, j.Error(ErrMissingColon)
+	}
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if tk := g.Peek(); tk != (parser.Token{TokenKeyword, "case"}) && tk != (parser.Token{TokenKeyword, "default"}) && tk != (parser.Token{TokenPunctuator, "}"}) {
+		h := g.NewGoal()
+		sl, err := h.parseStatementList(yield, await, ret)
+		if err != nil {
+			return cc, g.Error(err)
+		}
+		g.Score(h)
+		j.Score(g)
+		cc.StatementList = &sl
+	}
+	cc.Tokens = j.ToTokens()
+	return cc, nil
 }
 
 type IdentifierReference Identifier
@@ -1769,6 +1878,7 @@ const (
 	ErrMissingClosingBracket       errors.Error = "missing closing bracket"
 	ErrMissingComma                errors.Error = "missing comma"
 	ErrMissingArrow                errors.Error = "missing arrow"
+	ErrMissingCaseClause           errors.Error = "missing case clause"
 	ErrInvalidFormalParameterList  errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration          errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration   errors.Error = "invalid lexical declaration"
