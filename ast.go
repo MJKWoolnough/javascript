@@ -107,6 +107,7 @@ type Statement struct {
 	ReturnStatement         *Expression
 	WithStatement           *WithStatement
 	ThrowStatement          *Expression
+	TryStatement            *TryStatement
 	DebuggerStatement       *TokenPos
 	Tokens                  []TokenPos
 }
@@ -238,6 +239,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			return s, g.Error(ErrMissingSemiColon)
 		}
 	case parser.Token{TokenKeyword, "try"}:
+		ts, err := g.parseTryStatement(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		s.TryStatement = &ts
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
@@ -768,6 +774,112 @@ func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, er
 	j.Score(g)
 	ws.Tokens = j.ToTokens()
 	return ws, nil
+}
+
+type TryStatement struct {
+	TryBlock                           StatementList
+	CatchParameterBindingIdentifier    *BindingIdentifier
+	CatchParameterObjectBindingPattern *ObjectBindingPattern
+	CatchParameterArrayBindingPattern  *ArrayBindingPattern
+	CatchBlock                         *StatementList
+	FinallyBlock                       *StatementList
+	Tokens                             []TokenPos
+}
+
+func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, error) {
+	var (
+		ts  TryStatement
+		err error
+	)
+	j.AcceptToken(parser.Token{TokenKeyword, "try"})
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return ts, j.Error(ErrMissingOpeningBrace)
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	ts.TryBlock, err = g.parseStatementList(yield, await, ret)
+	if err != nil {
+		return ts, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		return ts, j.Error(ErrMissingClosingBrace)
+	}
+	j.AcceptRunWhitespace()
+	if j.AcceptToken(parser.Token{TokenKeyword, "catch"}) {
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+			return ts, j.Error(ErrMissingOpeningParentheses)
+		}
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "{"}:
+			ob, err := g.parseObjectBindingPattern(yield, await)
+			if err != nil {
+				return ts, j.Error(err)
+			}
+			ts.CatchParameterObjectBindingPattern = &ob
+		case parser.Token{TokenPunctuator, "["}:
+			ob, err := g.parseArrayBindingPattern(yield, await)
+			if err != nil {
+				return ts, j.Error(err)
+			}
+			ts.CatchParameterArrayBindingPattern = &ob
+		default:
+			bi, err := g.parseBindingIdentifier(yield, await)
+			if err != nil {
+				return ts, j.Error(err)
+			}
+			ts.CatchParameterBindingIdentifier = &bi
+		}
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+			return ts, j.Error(ErrMissingClosingParentheses)
+		}
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+			return ts, j.Error(ErrMissingOpeningParentheses)
+		}
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		cb, err := g.parseStatementList(yield, await, ret)
+		if err != nil {
+			return ts, j.Error(err)
+		}
+		j.Score(g)
+		ts.CatchBlock = &cb
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+			return ts, j.Error(ErrMissingClosingBrace)
+		}
+	}
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenKeyword, "finally"}) {
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+			return ts, g.Error(ErrMissingOpeningBrace)
+		}
+		g.AcceptRunWhitespace()
+		h := g.NewGoal()
+		fb, err := h.parseStatementList(yield, await, ret)
+		if err != nil {
+			return ts, g.Error(err)
+		}
+		g.Score(h)
+		ts.FinallyBlock = &fb
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+			return ts, g.Error(ErrMissingClosingBrace)
+		}
+		j.Score(g)
+	}
+	ts.Tokens = j.ToTokens()
+	return ts, nil
 }
 
 type IdentifierReference Identifier
