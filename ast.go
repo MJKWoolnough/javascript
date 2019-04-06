@@ -104,6 +104,7 @@ type Statement struct {
 	ContinueStatement       *LabelIdentifier
 	BreakStatement          *LabelIdentifier
 	ReturnStatement         *Expression
+	WithStatement           *WithStatement
 	DebuggerStatement       *TokenPos
 	Tokens                  []TokenPos
 }
@@ -212,6 +213,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			}
 		}
 	case parser.Token{TokenKeyword, "with"}:
+		ws, err := j.parseWithStatement(yield, await, ret)
+		if err != nil {
+			return s, j.Error(err)
+		}
+		s.WithStatement = &ws
 	case parser.Token{TokenKeyword, "throw"}:
 	case parser.Token{TokenKeyword, "try"}:
 	case parser.Token{TokenKeyword, "debugger"}:
@@ -706,6 +712,44 @@ func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
 	}
 	cc.Tokens = j.ToTokens()
 	return cc, nil
+}
+
+type WithStatement struct {
+	Expression Expression
+	Statement  Statement
+	Tokens     []TokenPos
+}
+
+func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, error) {
+	var (
+		ws  WithStatement
+		err error
+	)
+	j.AcceptToken(parser.Token{TokenKeyword, "with"})
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return ws, j.Error(ErrMissingOpeningParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	ws.Expression, err = g.parseExpression(true, yield, await)
+	if err != nil {
+		return ws, j.Error(err)
+	}
+	j.Score(g)
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		return ws, j.Error(ErrMissingClosingParentheses)
+	}
+	j.AcceptRunWhitespace()
+	g = j.NewGoal()
+	ws.Statement, err = g.parseStatement(yield, await, ret)
+	if err != nil {
+		return ws, j.Error(err)
+	}
+	j.Score(g)
+	ws.Tokens = j.ToTokens()
+	return ws, nil
 }
 
 type IdentifierReference Identifier
