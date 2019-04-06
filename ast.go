@@ -83,15 +83,27 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 	return si, nil
 }
 
+type StatementType int
+
+const (
+	StatementNormal StatementType = iota
+	StatementContinue
+	StatementBreak
+	StatementReturn
+)
+
 type Statement struct {
+	Type                    StatementType
 	BlockStatement          *StatementList
 	VariableStatement       *VariableStatement
 	IfStatement             *IfStatement
-	ReturnStatement         *Expression
 	IterationStatementDo    *IterationStatementDo
 	IterationStatementWhile *IterationStatementWhile
 	IterationStatementFor   *IterationStatementFor
 	SwitchStatement         *SwitchStatement
+	ContinueStatement       *LabelIdentifier
+	BreakStatement          *LabelIdentifier
+	ReturnStatement         *Expression
 	DebuggerStatement       *TokenPos
 	Tokens                  []TokenPos
 }
@@ -143,16 +155,61 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		}
 		s.IterationStatementFor = &fs
 	case parser.Token{TokenKeyword, "switch"}:
-		ss, err := j.parseSwitchStatement(yield, await, ret)
+		ss, err := g.parseSwitchStatement(yield, await, ret)
 		if err != nil {
 			return s, j.Error(err)
 		}
 		s.SwitchStatement = &ss
 	case parser.Token{TokenKeyword, "continue"}:
+		g.Except()
+		s.Type = StatementContinue
+		g.AcceptRunWhitespaceNoNewLine()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			h := g.NewGoal()
+			li, err := h.parseLabelIdentifier(yield, await)
+			if err != nil {
+				return s, g.Error(err)
+			}
+			s.ContinueStatement = &li
+			g.Score(h)
+			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+				return s, g.Error(ErrMissingSemiColon)
+			}
+		}
 	case parser.Token{TokenKeyword, "break"}:
+		g.Except()
+		s.Type = StatementBreak
+		g.AcceptRunWhitespaceNoNewLine()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			h := g.NewGoal()
+			li, err := h.parseLabelIdentifier(yield, await)
+			if err != nil {
+				return s, g.Error(err)
+			}
+			s.BreakStatement = &li
+			g.Score(h)
+			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+				return s, g.Error(ErrMissingSemiColon)
+			}
+		}
 	case parser.Token{TokenKeyword, "return"}:
 		if !ret {
 			return s, g.Error(ErrInvalidStatement)
+		}
+		g.Except()
+		s.Type = StatementReturn
+		g.AcceptRunWhitespaceNoNewLine()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			h := g.NewGoal()
+			e, err := h.parseExpression(true, yield, await)
+			if err != nil {
+				return s, g.Error(err)
+			}
+			s.ReturnStatement = &e
+			g.Score(h)
+			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+				return s, g.Error(ErrMissingSemiColon)
+			}
 		}
 	case parser.Token{TokenKeyword, "with"}:
 	case parser.Token{TokenKeyword, "throw"}:
