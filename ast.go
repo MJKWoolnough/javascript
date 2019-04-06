@@ -90,6 +90,7 @@ const (
 	StatementContinue
 	StatementBreak
 	StatementReturn
+	StatementThrow
 )
 
 type Statement struct {
@@ -105,6 +106,7 @@ type Statement struct {
 	BreakStatement          *LabelIdentifier
 	ReturnStatement         *Expression
 	WithStatement           *WithStatement
+	ThrowStatement          *Expression
 	DebuggerStatement       *TokenPos
 	Tokens                  []TokenPos
 }
@@ -219,6 +221,22 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		}
 		s.WithStatement = &ws
 	case parser.Token{TokenKeyword, "throw"}:
+		g.Except()
+		s.Type = StatementThrow
+		g.AcceptRunWhitespaceNoNewLine()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			return s, g.Error(ErrMissingExpression)
+		}
+		h := g.NewGoal()
+		e, err := h.parseExpression(true, yield, await)
+		if err != nil {
+			return s, g.Error(err)
+		}
+		s.ThrowStatement = &e
+		g.Score(h)
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			return s, g.Error(ErrMissingSemiColon)
+		}
 	case parser.Token{TokenKeyword, "try"}:
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Except()
@@ -1980,6 +1998,7 @@ const (
 	ErrMissingComma                errors.Error = "missing comma"
 	ErrMissingArrow                errors.Error = "missing arrow"
 	ErrMissingCaseClause           errors.Error = "missing case clause"
+	ErrMissingExpression           errors.Error = "missing expression"
 	ErrInvalidFormalParameterList  errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration          errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration   errors.Error = "invalid lexical declaration"
