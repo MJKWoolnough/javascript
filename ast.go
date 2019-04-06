@@ -97,6 +97,7 @@ type Statement struct {
 	Type                    StatementType
 	BlockStatement          *StatementList
 	VariableStatement       *VariableStatement
+	ExpressionStatement     *Expression
 	IfStatement             *IfStatement
 	IterationStatementDo    *IterationStatementDo
 	IterationStatementWhile *IterationStatementWhile
@@ -106,6 +107,9 @@ type Statement struct {
 	BreakStatement          *LabelIdentifier
 	ReturnStatement         *Expression
 	WithStatement           *WithStatement
+	LabelIdentifier         *LabelIdentifier
+	LabelledItemFunction    *FunctionDeclaration
+	LabelledItemStatement   *Statement
 	ThrowStatement          *Expression
 	TryStatement            *TryStatement
 	DebuggerStatement       *TokenPos
@@ -248,7 +252,46 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
 	default:
-		//expression, Labelled
+		if err := g.findGoal(
+			func(j *jsParser) error {
+				i, err := j.parseLabelIdentifier(yield, await)
+				if err != nil {
+					return err
+				}
+				j.AcceptRunWhitespace()
+				if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+					return ErrMissingColon
+				}
+				j.AcceptRunWhitespace()
+				g := j.NewGoal()
+				if g.Peek() == (parser.Token{TokenKeyword, "function"}) {
+					fd, err := g.parseFunctionDeclaration(yield, await, false)
+					if err != nil {
+						return err
+					}
+					s.LabelledItemFunction = &fd
+				} else {
+					s, err := g.parseStatement(yield, await, ret)
+					if err != nil {
+						return err
+					}
+					s.LabelledItemStatement = &s
+				}
+				j.Score(g)
+				s.LabelIdentifier = &i
+				return nil
+			},
+			func(j *jsParser) error {
+				e, err := j.parseExpression(true, yield, await)
+				if err != nil {
+					return err
+				}
+				s.ExpressionStatement = &e
+				return nil
+			},
+		); err != nil {
+			return s, err
+		}
 	}
 	j.Score(g)
 	s.Tokens = j.ToTokens()
