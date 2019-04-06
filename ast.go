@@ -878,6 +878,9 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 		}
 		j.Score(g)
 	}
+	if ts.CatchBlock == nil && ts.FinallyBlock == nil {
+		return ts, j.Error(ErrMissingCatchFinally)
+	}
 	ts.Tokens = j.ToTokens()
 	return ts, nil
 }
@@ -2094,12 +2097,8 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 }
 
 const (
-	ErrInvalidStatementList        errors.Error = "invalid statement list"
-	ErrInvalidStatement            errors.Error = "invalid statement"
-	ErrMissingSemiColon            errors.Error = "missing semi-colon"
-	ErrMissingColon                errors.Error = "missing colon"
-	ErrNoIdentifier                errors.Error = "missing identifier"
 	ErrReservedIdentifier          errors.Error = "reserved identifier"
+	ErrNoIdentifier                errors.Error = "missing identifier"
 	ErrMissingFunction             errors.Error = "missing function"
 	ErrMissingOpeningParentheses   errors.Error = "missing opening parentheses"
 	ErrMissingClosingParentheses   errors.Error = "missing closing parentheses"
@@ -2111,6 +2110,11 @@ const (
 	ErrMissingArrow                errors.Error = "missing arrow"
 	ErrMissingCaseClause           errors.Error = "missing case clause"
 	ErrMissingExpression           errors.Error = "missing expression"
+	ErrMissingCatchFinally         errors.Error = "missing catch/finally block"
+	ErrMissingSemiColon            errors.Error = "missing semi-colon"
+	ErrMissingColon                errors.Error = "missing colon"
+	ErrInvalidStatementList        errors.Error = "invalid statement list"
+	ErrInvalidStatement            errors.Error = "invalid statement"
 	ErrInvalidFormalParameterList  errors.Error = "invalid formal parameter list"
 	ErrInvalidDeclaration          errors.Error = "invalid declaration"
 	ErrInvalidLexicalDeclaration   errors.Error = "invalid lexical declaration"
