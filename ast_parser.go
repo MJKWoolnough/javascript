@@ -8,12 +8,12 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-type TokenPos struct {
+type Token struct {
 	parser.Token
 	Pos, Line, LinePos uint64
 }
 
-type jsParser []TokenPos
+type jsParser []Token
 
 func newJSParser(t parser.Tokeniser) (jsParser, error) {
 	t.TokeniserState(new(jsTokeniser).inputElement)
@@ -23,7 +23,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 	)
 	for {
 		tk, _ := t.GetToken()
-		tokens = append(tokens, TokenPos{
+		tokens = append(tokens, Token{
 			Token:   tk,
 			Pos:     pos,
 			Line:    line,
@@ -77,7 +77,7 @@ func (j *jsParser) Score(k jsParser) {
 	*j = (*j)[:len(*j)+len(k)]
 }
 
-func (j *jsParser) next() TokenPos {
+func (j *jsParser) next() Token {
 	l := len(*j)
 	*j = (*j)[:l+1]
 	tk := (*j)[l]
@@ -153,7 +153,7 @@ func (j *jsParser) AcceptToken(tk parser.Token) bool {
 	return false
 }
 
-func (j *jsParser) ToTokens() []TokenPos {
+func (j *jsParser) ToTokens() []Token {
 	return (*j)[:len(*j):len(*j)]
 }
 
@@ -175,7 +175,7 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 	}
 }
 
-func (j *jsParser) GetLastToken() *TokenPos {
+func (j *jsParser) GetLastToken() *Token {
 	if len(*j) == 0 {
 		return nil
 	}
@@ -184,7 +184,7 @@ func (j *jsParser) GetLastToken() *TokenPos {
 
 type Error struct {
 	Err error
-	TokenPos
+	Token
 }
 
 func (e Error) Error() string {
@@ -209,8 +209,8 @@ func farthestError(err error, errs ...error) error {
 
 func (j *jsParser) Error(err error) error {
 	return Error{
-		Err:      err,
-		TokenPos: j.next(),
+		Err:   err,
+		Token: j.next(),
 	}
 }
 

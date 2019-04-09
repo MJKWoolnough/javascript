@@ -9,7 +9,7 @@ type Module struct {
 	Imports    []ImportDeclaration
 	Statements []StatementListItem
 	Exports    []ExportDeclaration
-	Tokens     []TokenPos
+	Tokens     []Token
 }
 
 func ParseModule(t parser.Tokeniser) (Module, error) {
@@ -53,7 +53,7 @@ func (j *jsParser) parseModule() (Module, error) {
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
-	Tokens []TokenPos
+	Tokens []Token
 }
 
 func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
@@ -87,10 +87,10 @@ func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 }
 
 type ImportClause struct {
-	ImportedDefaultBinding *TokenPos
+	ImportedDefaultBinding *Token
 	NamespaceImport        *ImportedBinding
 	NamedImports           *NamedImports
-	Tokens                 []TokenPos
+	Tokens                 []Token
 }
 
 func (j *jsParser) parseImportClause() (ImportClause, error) {
@@ -141,8 +141,8 @@ func (j *jsParser) parseImportedBinding() (ImportedBinding, error) {
 }
 
 type FromClause struct {
-	ModuleSpecifier *TokenPos
-	Tokens          []TokenPos
+	ModuleSpecifier *Token
+	Tokens          []Token
 }
 
 func (j *jsParser) parseFromClause() (FromClause, error) {
@@ -162,7 +162,7 @@ func (j *jsParser) parseFromClause() (FromClause, error) {
 
 type NamedImports struct {
 	ImportList []ImportSpecifier
-	Tokens     []TokenPos
+	Tokens     []Token
 }
 
 func (j *jsParser) parseNamedImports() (NamedImports, error) {
@@ -191,9 +191,9 @@ func (j *jsParser) parseNamedImports() (NamedImports, error) {
 }
 
 type ImportSpecifier struct {
-	IdentifierName  *TokenPos
+	IdentifierName  *Token
 	ImportedBinding ImportedBinding
-	Tokens          []TokenPos
+	Tokens          []Token
 }
 
 func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
@@ -227,7 +227,7 @@ type ExportDeclaration struct {
 	DefaultFunction             *FunctionDeclaration
 	DefaultClass                *ClassDeclaration
 	DefaultAssignmentExpression *AssignmentExpression
-	Tokens                      []TokenPos
+	Tokens                      []Token
 }
 
 func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
@@ -317,7 +317,7 @@ func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 
 type ExportClause struct {
 	ExportList []ExportSpecifier
-	Tokens     []TokenPos
+	Tokens     []Token
 }
 
 func (j *jsParser) parseExportClause() (ExportClause, error) {
@@ -346,8 +346,8 @@ func (j *jsParser) parseExportClause() (ExportClause, error) {
 }
 
 type ExportSpecifier struct {
-	IdentifierName, EIdentifierName *TokenPos
-	Tokens                          []TokenPos
+	IdentifierName, EIdentifierName *Token
+	Tokens                          []Token
 }
 
 func (j *jsParser) parseExportSpecifier() (ExportSpecifier, error) {

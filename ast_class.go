@@ -9,7 +9,7 @@ type ClassDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	Extends           *LeftHandSideExpression
 	ClassBody         ClassBody
-	Tokens            []TokenPos
+	Tokens            []Token
 }
 
 func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclaration, error) {
@@ -56,7 +56,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 type ClassBody struct {
 	Methods       []MethodDefinition
 	StaticMethods []MethodDefinition
-	Tokens        []TokenPos
+	Tokens        []Token
 }
 
 func (j *jsParser) parseClassBody(yield, await bool) (ClassBody, error) {
@@ -101,7 +101,7 @@ type MethodDefinition struct {
 	Params       FormalParameters
 	FunctionBody StatementList
 	Type         MethodType
-	Tokens       []TokenPos
+	Tokens       []Token
 }
 
 func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, error) {
@@ -161,9 +161,9 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 }
 
 type PropertyName struct {
-	LiteralPropertyName  *TokenPos
+	LiteralPropertyName  *Token
 	ComputedPropertyName *AssignmentExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parsePropertyName(yield, await bool) (PropertyName, error) {

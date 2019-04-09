@@ -18,7 +18,7 @@ type FunctionDeclaration struct {
 	FormalParameters  FormalParameters
 	FunctionBody      StatementList
 	Type              FunctionType
-	Tokens            []TokenPos
+	Tokens            []Token
 }
 
 func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDeclaration, error) {
@@ -80,7 +80,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 type FormalParameters struct {
 	FormalParameterList   []BindingElement
 	FunctionRestParameter *FunctionRestParameter
-	Tokens                []TokenPos
+	Tokens                []Token
 }
 
 func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, error) {
@@ -122,7 +122,7 @@ type BindingElement struct {
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error) {
@@ -169,7 +169,7 @@ type FunctionRestParameter struct {
 	BindingIdentifier    *BindingIdentifier
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestParameter, error) {

@@ -65,7 +65,7 @@ type AssignmentExpression struct {
 	Delegate               bool
 	AssignmentOperator     AssignmentOperator
 	AssignmentExpression   *AssignmentExpression
-	Tokens                 []TokenPos
+	Tokens                 []Token
 }
 
 func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentExpression, error) {
@@ -132,7 +132,7 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 type LeftHandSideExpression struct {
 	NewExpression  *NewExpression
 	CallExpression *CallExpression
-	Tokens         []TokenPos
+	Tokens         []Token
 }
 
 func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
@@ -160,7 +160,7 @@ func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideE
 
 type Expression struct {
 	Expressions []AssignmentExpression
-	Tokens      []TokenPos
+	Tokens      []Token
 }
 
 func (j *jsParser) parseExpression(in, yield, await bool) (Expression, error) {
@@ -187,7 +187,7 @@ func (j *jsParser) parseExpression(in, yield, await bool) (Expression, error) {
 type NewExpression struct {
 	NewExpression    *NewExpression
 	MemberExpression *MemberExpression
-	Tokens           []TokenPos
+	Tokens           []Token
 }
 
 func (j *jsParser) parseNewExpression(yield, await bool) (NewExpression, error) {
@@ -200,14 +200,14 @@ type MemberExpression struct {
 	MemberExpression    *MemberExpression
 	PrimaryExpression   *PrimaryExpression
 	Expression          *Expression
-	IdentifierName      *TokenPos
+	IdentifierName      *Token
 	TemplateLiteral     *TemplateLiteral
 	SuperProperty       bool
 	MetaProperty        bool
 	NewTarget           bool
 	NewMemberExpression *MemberExpression
 	Arguments           *Arguments
-	Tokens              []TokenPos
+	Tokens              []Token
 }
 
 func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, error) {
@@ -335,14 +335,14 @@ Loop:
 type PrimaryExpression struct {
 	This                                              bool
 	IdentifierReference                               *IdentifierReference
-	Literal                                           *TokenPos
+	Literal                                           *Token
 	ArrayLiteral                                      *ArrayLiteral
 	ObjectLiteral                                     *ObjectLiteral
 	FunctionExpression                                *FunctionDeclaration
 	ClassExpression                                   *ClassDeclaration
 	TemplateLiteral                                   *TemplateLiteral
 	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
-	Tokens                                            []TokenPos
+	Tokens                                            []Token
 }
 
 func (j *jsParser) parserPrimaryExpression(yield, await bool) (PrimaryExpression, error) {
@@ -430,7 +430,7 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 	BindingIdentifier    *BindingIdentifier
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield, await bool) (CoverParenthesizedExpressionAndArrowParameterList, error) {
@@ -494,7 +494,7 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 type Arguments struct {
 	ArgumentList   []AssignmentExpression
 	SpreadArgument *AssignmentExpression
-	Tokens         []TokenPos
+	Tokens         []Token
 }
 
 func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
@@ -543,9 +543,9 @@ type CallExpression struct {
 	CallExpression                       *CallExpression
 	Arguments                            *Arguments
 	Expression                           *Expression
-	IdentifierName                       *TokenPos
+	IdentifierName                       *Token
 	TemplateLiteral                      *TemplateLiteral
-	Tokens                               []TokenPos
+	Tokens                               []Token
 }
 
 func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error) {

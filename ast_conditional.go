@@ -6,7 +6,7 @@ type ConditionalExpression struct {
 	LogicalORExpression LogicalORExpression
 	True                *AssignmentExpression
 	False               *AssignmentExpression
-	Tokens              []TokenPos
+	Tokens              []Token
 }
 
 func (j *jsParser) parseConditionalExpression(in, yield, await bool) (ConditionalExpression, error) {
@@ -52,7 +52,7 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 type LogicalORExpression struct {
 	LogicalORExpression  *LogicalORExpression
 	LogicalANDExpression LogicalANDExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseLogicalORExpression(in, yield, await bool) (LogicalORExpression, error) {
@@ -89,7 +89,7 @@ func (j *jsParser) parseLogicalORExpression(in, yield, await bool) (LogicalORExp
 type LogicalANDExpression struct {
 	LogicalANDExpression *LogicalANDExpression
 	BitwiseORExpression  BitwiseORExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseLogicalANDExpression(in, yield, await bool) (LogicalANDExpression, error) {
@@ -126,7 +126,7 @@ func (j *jsParser) parseLogicalANDExpression(in, yield, await bool) (LogicalANDE
 type BitwiseORExpression struct {
 	BitwiseORExpression  *BitwiseORExpression
 	BitwiseXORExpression BitwiseXORExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseBitwiseORExpression(in, yield, await bool) (BitwiseORExpression, error) {
@@ -163,7 +163,7 @@ func (j *jsParser) parseBitwiseORExpression(in, yield, await bool) (BitwiseORExp
 type BitwiseXORExpression struct {
 	BitwiseXORExpression *BitwiseXORExpression
 	BitwiseANDExpression BitwiseANDExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseBitwiseXORExpression(in, yield, await bool) (BitwiseXORExpression, error) {
@@ -200,7 +200,7 @@ func (j *jsParser) parseBitwiseXORExpression(in, yield, await bool) (BitwiseXORE
 type BitwiseANDExpression struct {
 	BitwiseANDExpression *BitwiseANDExpression
 	EqualityExpression   EqualityExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseBitwiseANDExpression(in, yield, await bool) (BitwiseANDExpression, error) {
@@ -248,7 +248,7 @@ type EqualityExpression struct {
 	EqualityExpression   *EqualityExpression
 	EqualityOperator     EqualityOperator
 	RelationalExpression RelationalExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseEqualityExpression(in, yield, await bool) (EqualityExpression, error) {
@@ -311,7 +311,7 @@ type RelationalExpression struct {
 	RelationalExpression *RelationalExpression
 	RelationshipOperator RelationshipOperator
 	ShiftExpression      ShiftExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseRelationalExpression(in, yield, await bool) (RelationalExpression, error) {
@@ -377,7 +377,7 @@ type ShiftExpression struct {
 	ShiftExpression    *ShiftExpression
 	ShiftOperator      ShiftOperator
 	AdditiveExpression AdditiveExpression
-	Tokens             []TokenPos
+	Tokens             []Token
 }
 
 func (j *jsParser) parseShiftExpression(yield, await bool) (ShiftExpression, error) {
@@ -433,7 +433,7 @@ type AdditiveExpression struct {
 	AdditiveExpression       *AdditiveExpression
 	AdditiveOperator         AdditiveOperator
 	MultiplicativeExpression MultiplicativeExpression
-	Tokens                   []TokenPos
+	Tokens                   []Token
 }
 
 func (j *jsParser) parseAdditiveExpression(yield, await bool) (AdditiveExpression, error) {
@@ -488,7 +488,7 @@ type MultiplicativeExpression struct {
 	MultiplicativeExpression *MultiplicativeExpression
 	MultiplicativeOperator   MultiplicativeOperator
 	ExponentiationExpression ExponentiationExpression
-	Tokens                   []TokenPos
+	Tokens                   []Token
 }
 
 func (j *jsParser) parseMultiplicativeExpression(yield, await bool) (MultiplicativeExpression, error) {
@@ -535,7 +535,7 @@ func (j *jsParser) parseMultiplicativeExpression(yield, await bool) (Multiplicat
 type ExponentiationExpression struct {
 	ExponentiationExpression *ExponentiationExpression
 	UnaryExpression          UnaryExpression
-	Tokens                   []TokenPos
+	Tokens                   []Token
 }
 
 func (j *jsParser) parseExponentiationExpression(yield, await bool) (ExponentiationExpression, error) {
@@ -589,7 +589,7 @@ const (
 type UnaryExpression struct {
 	UnaryOperators   []UnaryOperator
 	UpdateExpression UpdateExpression
-	Tokens           []TokenPos
+	Tokens           []Token
 }
 
 func (j *jsParser) parseUnaryExpression(yield, await bool) (UnaryExpression, error) {
@@ -649,7 +649,7 @@ type UpdateExpression struct {
 	LeftHandSideExpression *LeftHandSideExpression
 	UpdateOperator         UpdateOperator
 	UnaryExpression        *UnaryExpression
-	Tokens                 []TokenPos
+	Tokens                 []Token
 }
 
 func (j *jsParser) parseUpdateExpression(yield, await bool) (UpdateExpression, error) {

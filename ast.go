@@ -41,7 +41,7 @@ func (j *jsParser) parseLabelIdentifier(yield, await bool) (LabelIdentifier, err
 }
 
 type Identifier struct {
-	Identifier *TokenPos
+	Identifier *Token
 }
 
 func (j *jsParser) parseIdentifier(yield, await bool) (Identifier, error) {
@@ -55,7 +55,7 @@ type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
 	LexicalDeclaration  *LexicalDeclaration
-	Tokens              []TokenPos
+	Tokens              []Token
 }
 
 func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
@@ -97,7 +97,7 @@ const (
 type LexicalDeclaration struct {
 	LetOrConst
 	BindingList []LexicalBinding
-	Tokens      []TokenPos
+	Tokens      []Token
 }
 
 func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclaration, error) {
@@ -136,7 +136,7 @@ type LexicalBinding struct {
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, error) {
@@ -182,7 +182,7 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 type ArrayBindingPattern struct {
 	BindingElementList []BindingElement
 	BindingRestElement *BindingElement
-	Token              []TokenPos
+	Token              []Token
 }
 
 func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPattern, error) {
@@ -225,7 +225,7 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
-	Token               []TokenPos
+	Token               []Token
 }
 
 func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPattern, error) {
@@ -258,7 +258,7 @@ type BindingProperty struct {
 	Initializer       *AssignmentExpression
 	PropertyName      *PropertyName
 	BindingElement    *BindingElement
-	Tokens            []TokenPos
+	Tokens            []Token
 }
 
 func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, error) {
@@ -314,7 +314,7 @@ func (j *jsParser) parseVariableDeclaration(in, yield, await bool) (VariableDecl
 type ArrayLiteral struct {
 	ElementList   []AssignmentExpression
 	SpreadElement *AssignmentExpression
-	Tokens        []TokenPos
+	Tokens        []Token
 }
 
 func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
@@ -359,7 +359,7 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 
 type ObjectLiteral struct {
 	PropertyDefinitionList []PropertyDefinition
-	Tokens                 []TokenPos
+	Tokens                 []Token
 }
 
 func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) {
@@ -395,7 +395,7 @@ type PropertyDefinition struct {
 	PropertyName         *PropertyName
 	AssignmentExpression *AssignmentExpression
 	MethodDefinition     *MethodDefinition
-	Tokens               []TokenPos
+	Tokens               []Token
 }
 
 func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinition, error) {
@@ -454,12 +454,12 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 }
 
 type TemplateLiteral struct {
-	NoSubstitutionTemplate *TokenPos
-	TemplateHead           *TokenPos
+	NoSubstitutionTemplate *Token
+	TemplateHead           *Token
 	Expressions            []Expression
-	TemplateMiddleList     []*TokenPos
-	TemplateTail           *TokenPos
-	Tokens                 []TokenPos
+	TemplateMiddleList     []*Token
+	TemplateTail           *Token
+	Tokens                 []Token
 }
 
 func (j *jsParser) parserTemplateLiteral(yield, await bool) (TemplateLiteral, error) {
@@ -500,7 +500,7 @@ type ArrowFunction struct {
 	FormalParameters                                  *FormalParameters
 	AssignmentExpression                              *AssignmentExpression
 	FunctionBody                                      *StatementList
-	Tokens                                            []TokenPos
+	Tokens                                            []Token
 }
 
 func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, error) {
