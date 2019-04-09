@@ -79,11 +79,11 @@ func (j *jsParser) Score(k jsParser) {
 
 func (j *jsParser) next() Token {
 	l := len(*j)
+	if l == cap(*j) {
+		return (*j)[l-1]
+	}
 	*j = (*j)[:l+1]
 	tk := (*j)[l]
-	if tk.Type == parser.TokenDone {
-		*j = (*j)[:l]
-	}
 	return tk
 }
 
