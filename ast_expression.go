@@ -288,7 +288,7 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 Loop:
 	for {
 		var nme MemberExpression
-		g := *j
+		g := j.NewGoal()
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
 		switch tk := h.Peek(); tk.Type {
@@ -326,7 +326,7 @@ Loop:
 		ome.Tokens = j.ToTokens()
 		nme.MemberExpression = &ome
 		me = nme
-		*j = g
+		j.Score(g)
 	}
 	me.Tokens = j.ToTokens()
 	return me, nil
