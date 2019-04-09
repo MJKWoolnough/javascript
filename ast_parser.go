@@ -29,7 +29,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 			Line:    line,
 			LinePos: linePos,
 		})
-		switch tk, _ := t.GetToken(); tk.Type {
+		switch tk.Type {
 		case parser.TokenDone:
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
