@@ -263,7 +263,7 @@ type BindingProperty struct {
 
 func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, error) {
 	var bp BindingProperty
-	if err := j.findGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			pn, err := j.parsePropertyName(yield, await)
 			if err != nil {
@@ -408,7 +408,7 @@ type PropertyDefinition struct {
 
 func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinition, error) {
 	var pd PropertyDefinition
-	if err := j.findGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			ir, err := j.parseIdentifierReference(yield, await)
 			if err != nil {

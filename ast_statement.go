@@ -36,7 +36,7 @@ type StatementListItem struct {
 
 func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementListItem, error) {
 	var si StatementListItem
-	if err := j.findGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			s, err := j.parseStatement(yield, await, ret)
 			if err != nil {
@@ -235,7 +235,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
 	default:
-		if err := g.findGoal(
+		if err := g.FindGoal(
 			func(j *jsParser) error {
 				i, err := j.parseLabelIdentifier(yield, await)
 				if err != nil {
@@ -469,9 +469,9 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 	}
 	j.AcceptRunWhitespace()
 
-	if err = j.findGoal(
+	if err = j.FindGoal(
 		func(j *jsParser) error {
-			if err = j.findGoal(
+			if err = j.FindGoal(
 				func(j *jsParser) error {
 					if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 						return errNotApplicable
@@ -553,7 +553,7 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			return nil
 		},
 		func(j *jsParser) error {
-			if err := j.findGoal(
+			if err := j.FindGoal(
 				func(j *jsParser) error {
 					if j.AcceptToken(parser.Token{TokenKeyword, "var"}) {
 						is.Type = ForInVar

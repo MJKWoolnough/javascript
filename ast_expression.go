@@ -70,7 +70,7 @@ type AssignmentExpression struct {
 
 func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentExpression, error) {
 	var ae AssignmentExpression
-	if err := j.findGoal(func(j *jsParser) error {
+	if err := j.FindGoal(func(j *jsParser) error {
 		if !yield || !j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
 			return errNotApplicable
 		}
@@ -137,7 +137,7 @@ type LeftHandSideExpression struct {
 
 func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
 	var lhs LeftHandSideExpression
-	if err := j.findGoal(func(j *jsParser) error {
+	if err := j.FindGoal(func(j *jsParser) error {
 		ne, err := j.parseNewExpression(yield, await)
 		if err != nil {
 			return err
@@ -212,7 +212,7 @@ type MemberExpression struct {
 
 func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, error) {
 	var me MemberExpression
-	if err := j.findGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			pe, err := j.parserPrimaryExpression(yield, await)
 			if err != nil {
@@ -347,7 +347,7 @@ type PrimaryExpression struct {
 
 func (j *jsParser) parserPrimaryExpression(yield, await bool) (PrimaryExpression, error) {
 	var pe PrimaryExpression
-	if err := j.findGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			if !j.AcceptToken(parser.Token{TokenKeyword, "this"}) {
 				return errNotApplicable

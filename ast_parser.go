@@ -205,7 +205,7 @@ func (j *jsParser) Error(err error) error {
 	}
 }
 
-func (j *jsParser) findGoal(fns ...func(*jsParser) error) error {
+func (j *jsParser) FindGoal(fns ...func(*jsParser) error) error {
 	var (
 		err     error
 		lastPos uint64
