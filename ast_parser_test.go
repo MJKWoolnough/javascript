@@ -70,80 +70,23 @@ func TestNewJSParser(t *testing.T) {
 		},
 	} {
 		j, err := newJSParser(parser.NewStringTokeniser(test.Source))
-		j = j[:cap(j)]
 		if !reflect.DeepEqual(err, test.Err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
-		} else if !reflect.DeepEqual(j, test.JSParser) {
-			t.Errorf("test %d: expecting %v, got %v", n+1, test.JSParser, j)
 		}
-	}
-}
-
-func TestJSParserNext(t *testing.T) {
-	j := jsParser{
-		{
-			parser.Token{TokenStringLiteral, "\"use strict\""},
-			0, 0, 0,
-		},
-		{
-			parser.Token{TokenPunctuator, ";"},
-			12, 0, 12,
-		},
-		{
-			parser.Token{TokenLineTerminator, "\n\n"},
-			13, 0, 13,
-		},
-		{
-			parser.Token{TokenKeyword, "var"},
-			15, 2, 0,
-		},
-		{
-			parser.Token{TokenWhitespace, " "},
-			18, 2, 3,
-		},
-		{
-			parser.Token{TokenIdentifier, "hello"},
-			19, 2, 4,
-		},
-		{
-			parser.Token{TokenWhitespace, " "},
-			24, 2, 9,
-		},
-		{
-			parser.Token{TokenPunctuator, "="},
-			25, 2, 10,
-		},
-		{
-			parser.Token{TokenWhitespace, " "},
-			26, 2, 11,
-		},
-		{
-			parser.Token{TokenNoSubstitutionTemplate, "`World\n!`"},
-			27, 2, 12,
-		},
-		{
-			parser.Token{TokenPunctuator, ";"},
-			36, 3, 2,
-		},
-		{
-			parser.Token{parser.TokenDone, ""},
-			37, 3, 3,
-		},
-	}
-	j = j[:0:len(j)]
-	for n, tk := range j[:cap(j)] {
-		tkp := j.Peek()
-		tkn := j.next()
-		tkl := j.GetLastToken()
-		if tkn != tk {
-			t.Errorf("test %d.1: expecting %v, got %v", n+1, tk, tkn)
-		} else if tkp != tkn.Token {
-			t.Errorf("test %d.2: expecting to Peek %v, got %v", n+1, tkn.Token, tkp)
-		} else if *tkl != tkn {
-			t.Errorf("test %d.3: expectign to GetLast %v, got %v", n+1, tkn, *tkl)
+		for m, tk := range j[:cap(j)] {
+			tkp := j.Peek()
+			tkn := j.next()
+			tkl := j.GetLastToken()
+			if tkn != tk {
+				t.Errorf("test %d.%d.1: expecting %v, got %v", n+1, m+1, tk, tkn)
+			} else if tkp != tkn.Token {
+				t.Errorf("test %d.%d.2: expecting to Peek %v, got %v", n+1, m+1, tkn.Token, tkp)
+			} else if *tkl != tkn {
+				t.Errorf("test %d.%d.3: expectign to GetLast %v, got %v", n+1, m+1, tkn, *tkl)
+			}
 		}
-	}
-	if tk := j.next(); tk.Type != parser.TokenDone {
-		t.Errorf("test %d: expecting TokenDone, got %v", cap(j)+1, tk)
+		if tk := j.next(); tk.Type != parser.TokenDone {
+			t.Errorf("test %d: expecting TokenDone, got %v", cap(j)+1, tk)
+		}
 	}
 }
