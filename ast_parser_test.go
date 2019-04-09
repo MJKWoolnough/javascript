@@ -132,9 +132,12 @@ func TestJSParserNext(t *testing.T) {
 	}
 	j = j[:0:len(j)]
 	for n, tk := range j[:cap(j)] {
+		tkp := j.Peek()
 		tkn := j.next()
 		if tkn != tk {
-			t.Errorf("test %d: expecting %v, got %v", n+1, tk, tkn)
+			t.Errorf("test %d.1: expecting %v, got %v", n+1, tk, tkn)
+		} else if tkp != tkn.Token {
+			t.Errorf("test %d.2: expecting to Peek %v, got %v", n+1, tkn.Token, tkp)
 		}
 	}
 	if tk := j.next(); tk.Type != parser.TokenDone {
