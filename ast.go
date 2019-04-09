@@ -263,43 +263,51 @@ type BindingProperty struct {
 
 func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, error) {
 	var bp BindingProperty
-	g := j.NewGoal()
-	pn, err := g.parsePropertyName(yield, await)
-	if err == nil {
-		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-			err = j.Error(ErrMissingColon)
-			g = j.NewGoal()
-		} else {
-			g.AcceptRunWhitespace()
-			var be BindingElement
-			h := g.NewGoal()
-			be, err = h.parseBindingElement(yield, await)
-			if err == nil {
-				bp.PropertyName = &pn
-				bp.BindingElement = &be
-			}
-		}
-	}
-	if err != nil {
-		bi, errr := g.parseBindingIdentifier(yield, await)
-		if errr != nil {
-			return bp, j.Error(farthestError(err, errr))
-		}
-		g.AcceptRunWhitespace()
-		if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
-			g.AcceptRunWhitespace()
-			h := g.NewGoal()
-			i, err := h.parseAssignmentExpression(true, yield, await)
+	if err := j.findGoal(
+		func(j *jsParser) error {
+			pn, err := j.parsePropertyName(yield, await)
 			if err != nil {
-				return bp, g.Error(err)
+				return err
 			}
-			g.Score(h)
-			bp.Initializer = &i
-		}
-		bp.SingleNameBinding = &bi
+			j.AcceptRunWhitespace()
+			if j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+				return ErrMissingColon
+			}
+			j.AcceptRunWhitespace()
+			g := j.NewGoal()
+			be, err := g.parseBindingElement(yield, await)
+			if err != nil {
+				return j.Error(err)
+			}
+			j.Score(g)
+			bp.PropertyName = &pn
+			bp.BindingElement = &be
+			return nil
+		},
+		func(j *jsParser) error {
+			bi, err := j.parseBindingIdentifier(yield, await)
+			if err != nil {
+				return err
+			}
+			g := j.NewGoal()
+			g.AcceptRunWhitespace()
+			if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+				g.AcceptRunWhitespace()
+				h := g.NewGoal()
+				i, err := h.parseAssignmentExpression(true, yield, await)
+				if err != nil {
+					return g.Error(err)
+				}
+				g.Score(h)
+				j.Score(g)
+				bp.Initializer = &i
+			}
+			bp.SingleNameBinding = &bi
+			return nil
+		},
+	); err != nil {
+		return bp, err
 	}
-	j.Score(g)
 	bp.Tokens = j.ToTokens()
 	return bp, nil
 }
