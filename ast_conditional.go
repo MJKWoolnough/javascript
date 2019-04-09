@@ -1,5 +1,7 @@
 package javascript
 
+import "vimagination.zapto.org/parser"
+
 type ConditionalExpression struct {
 	LogicalORExpression LogicalORExpression
 	True                *AssignmentExpression
@@ -8,7 +10,42 @@ type ConditionalExpression struct {
 }
 
 func (j *jsParser) parseConditionalExpression(in, yield, await bool) (ConditionalExpression, error) {
-	var ce ConditionalExpression
+	var (
+		ce  ConditionalExpression
+		err error
+	)
+	g := j.NewGoal()
+	ce.LogicalORExpression, err = g.parseLogicalORExpression(in, yield, await)
+	if err != nil {
+		return ce, j.Error(err)
+	}
+	j.Score(g)
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenPunctuator, "?"}) {
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		t, err := g.parseAssignmentExpression(true, yield, await)
+		if err != nil {
+			return ce, j.Error(err)
+		}
+		j.Score(g)
+		ce.True = &t
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+			return ce, j.Error(ErrMissingColon)
+		}
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		f, err := g.parseAssignmentExpression(true, yield, await)
+		if err != nil {
+			return ce, j.Error(err)
+		}
+		j.Score(g)
+		ce.False = &f
+	}
+	ce.Tokens = j.ToTokens()
 	return ce, nil
 }
 
@@ -18,10 +55,72 @@ type LogicalORExpression struct {
 	Tokens               []TokenPos
 }
 
+func (j *jsParser) parseLogicalORExpression(in, yield, await bool) (LogicalORExpression, error) {
+	var (
+		lo  LogicalORExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		lo.LogicalANDExpression, err = g.parseLogicalANDExpression(in, yield, await)
+		if err != nil {
+			return lo, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "||"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		lo = LogicalORExpression{
+			LogicalORExpression: &LogicalORExpression{
+				LogicalORExpression:  lo.LogicalORExpression,
+				LogicalANDExpression: lo.LogicalANDExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	lo.Tokens = j.ToTokens()
+	return lo, nil
+}
+
 type LogicalANDExpression struct {
 	LogicalANDExpression *LogicalANDExpression
 	BitwiseORExpression  BitwiseORExpression
 	Tokens               []TokenPos
+}
+
+func (j *jsParser) parseLogicalANDExpression(in, yield, await bool) (LogicalANDExpression, error) {
+	var (
+		la  LogicalANDExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		la.BitwiseORExpression, err = g.parseBitwiseORExpression(in, yield, await)
+		if err != nil {
+			return la, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "&&"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		la = LogicalANDExpression{
+			LogicalANDExpression: &LogicalANDExpression{
+				LogicalANDExpression: la.LogicalANDExpression,
+				BitwiseORExpression:  la.BitwiseORExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	la.Tokens = j.ToTokens()
+	return la, nil
 }
 
 type BitwiseORExpression struct {
@@ -30,16 +129,109 @@ type BitwiseORExpression struct {
 	Tokens               []TokenPos
 }
 
+func (j *jsParser) parseBitwiseORExpression(in, yield, await bool) (BitwiseORExpression, error) {
+	var (
+		bo  BitwiseORExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		bo.BitwiseXORExpression, err = g.parseBitwiseXORExpression(in, yield, await)
+		if err != nil {
+			return bo, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "|"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		bo = BitwiseORExpression{
+			BitwiseORExpression: &BitwiseORExpression{
+				BitwiseORExpression:  bo.BitwiseORExpression,
+				BitwiseXORExpression: bo.BitwiseXORExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	bo.Tokens = j.ToTokens()
+	return bo, nil
+}
+
 type BitwiseXORExpression struct {
 	BitwiseXORExpression *BitwiseXORExpression
 	BitwiseANDExpression BitwiseANDExpression
 	Tokens               []TokenPos
 }
 
+func (j *jsParser) parseBitwiseXORExpression(in, yield, await bool) (BitwiseXORExpression, error) {
+	var (
+		bx  BitwiseXORExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		bx.BitwiseANDExpression, err = g.parseBitwiseANDExpression(in, yield, await)
+		if err != nil {
+			return bx, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "^"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		bx = BitwiseXORExpression{
+			BitwiseXORExpression: &BitwiseXORExpression{
+				BitwiseXORExpression: bx.BitwiseXORExpression,
+				BitwiseANDExpression: bx.BitwiseANDExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	bx.Tokens = j.ToTokens()
+	return bx, nil
+}
+
 type BitwiseANDExpression struct {
 	BitwiseANDExpression *BitwiseANDExpression
 	EqualityExpression   EqualityExpression
 	Tokens               []TokenPos
+}
+
+func (j *jsParser) parseBitwiseANDExpression(in, yield, await bool) (BitwiseANDExpression, error) {
+	var (
+		ba  BitwiseANDExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		ba.EqualityExpression, err = g.parseEqualityExpression(in, yield, await)
+		if err != nil {
+			return ba, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "&"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		ba = BitwiseANDExpression{
+			BitwiseANDExpression: &BitwiseANDExpression{
+				EqualityExpression:   ba.EqualityExpression,
+				BitwiseANDExpression: ba.BitwiseANDExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	ba.Tokens = j.ToTokens()
+	return ba, nil
 }
 
 type EqualityOperator int
@@ -57,6 +249,50 @@ type EqualityExpression struct {
 	EqualityOperator     EqualityOperator
 	RelationalExpression RelationalExpression
 	Tokens               []TokenPos
+}
+
+func (j *jsParser) parseEqualityExpression(in, yield, await bool) (EqualityExpression, error) {
+	var (
+		ee  EqualityExpression
+		err error
+		eo  EqualityOperator
+	)
+Loop:
+	for {
+		g := j.NewGoal()
+		ee.RelationalExpression, err = g.parseRelationalExpression(in, yield, await)
+		if err != nil {
+			return ee, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "=="}:
+			eo = EqualityEqual
+		case parser.Token{TokenPunctuator, "!="}:
+			eo = EqualityNotEqual
+		case parser.Token{TokenPunctuator, "==="}:
+			eo = EqualityStrictEqual
+		case parser.Token{TokenPunctuator, "!=="}:
+			eo = EqualityStrictNotEqual
+		default:
+			break Loop
+		}
+		g.Except()
+		g.AcceptRunWhitespace()
+		ee = EqualityExpression{
+			EqualityExpression: &EqualityExpression{
+				EqualityExpression:   ee.EqualityExpression,
+				EqualityOperator:     eo,
+				RelationalExpression: ee.RelationalExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	ee.Tokens = j.ToTokens()
+	return ee, nil
 }
 
 type RelationshipOperator int
@@ -78,6 +314,56 @@ type RelationalExpression struct {
 	Tokens               []TokenPos
 }
 
+func (j *jsParser) parseRelationalExpression(in, yield, await bool) (RelationalExpression, error) {
+	var (
+		re  RelationalExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		re.ShiftExpression, err = g.parseShiftExpression(yield, await)
+		if err != nil {
+			return re, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		var ro RelationshipOperator
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "<"}:
+			ro = RelationshipLessThan
+		case parser.Token{TokenPunctuator, ">"}:
+			ro = RelationshipGreaterThan
+		case parser.Token{TokenPunctuator, "<="}:
+			ro = RelationshipLessThanEqual
+		case parser.Token{TokenPunctuator, ">="}:
+			ro = RelationshipGreaterThanEqual
+		case parser.Token{TokenKeyword, "instanceof"}:
+			ro = RelationshipInstanceOf
+		case parser.Token{TokenKeyword, "in"}:
+			if !in {
+				break
+			}
+			ro = RelationshipIn
+		default:
+			break
+		}
+		g.Except()
+		g.AcceptRunWhitespace()
+		re = RelationalExpression{
+			RelationalExpression: &RelationalExpression{
+				RelationalExpression: re.RelationalExpression,
+				RelationshipOperator: ro,
+				ShiftExpression:      re.ShiftExpression,
+				Tokens:               j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	re.Tokens = j.ToTokens()
+	return re, nil
+}
+
 type ShiftOperator int
 
 const (
@@ -94,6 +380,47 @@ type ShiftExpression struct {
 	Tokens             []TokenPos
 }
 
+func (j *jsParser) parseShiftExpression(yield, await bool) (ShiftExpression, error) {
+	var (
+		se  ShiftExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		se.AdditiveExpression, err = g.parseAdditiveExpression(yield, await)
+		if err != nil {
+			return se, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		var so ShiftOperator
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "<<"}:
+			so = ShiftLeft
+		case parser.Token{TokenPunctuator, ">>"}:
+			so = ShiftRight
+		case parser.Token{TokenPunctuator, ">>>"}:
+			so = ShiftUnsignedRight
+		default:
+			break
+		}
+		g.Except()
+		g.AcceptRunWhitespace()
+		se = ShiftExpression{
+			ShiftExpression: &ShiftExpression{
+				ShiftExpression:    se.ShiftExpression,
+				ShiftOperator:      so,
+				AdditiveExpression: se.AdditiveExpression,
+				Tokens:             j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	se.Tokens = j.ToTokens()
+	return se, nil
+}
+
 type AdditiveOperator int
 
 const (
@@ -107,6 +434,45 @@ type AdditiveExpression struct {
 	AdditiveOperator         AdditiveOperator
 	MultiplicativeExpression MultiplicativeExpression
 	Tokens                   []TokenPos
+}
+
+func (j *jsParser) parseAdditiveExpression(yield, await bool) (AdditiveExpression, error) {
+	var (
+		ae  AdditiveExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		ae.MultiplicativeExpression, err = g.parseMultiplicativeExpression(yield, await)
+		if err != nil {
+			return ae, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		var ao AdditiveOperator
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "+"}:
+			ao = AdditiveAdd
+		case parser.Token{TokenPunctuator, "-"}:
+			ao = AdditiveMinus
+		default:
+			break
+		}
+		g.Except()
+		g.AcceptRunWhitespace()
+		ae = AdditiveExpression{
+			AdditiveExpression: &AdditiveExpression{
+				AdditiveExpression:       ae.AdditiveExpression,
+				AdditiveOperator:         ao,
+				MultiplicativeExpression: ae.MultiplicativeExpression,
+				Tokens:                   j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	ae.Tokens = j.ToTokens()
+	return ae, nil
 }
 
 type MultiplicativeOperator int
@@ -125,14 +491,88 @@ type MultiplicativeExpression struct {
 	Tokens                   []TokenPos
 }
 
+func (j *jsParser) parseMultiplicativeExpression(yield, await bool) (MultiplicativeExpression, error) {
+	var (
+		me  MultiplicativeExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		me.ExponentiationExpression, err = g.parseExponentiationExpression(yield, await)
+		if err != nil {
+			return me, j.Error(err)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		var mo MultiplicativeOperator
+		switch g.Peek() {
+		case parser.Token{TokenPunctuator, "*"}:
+			mo = MultiplicativeMultiply
+		case parser.Token{TokenPunctuator, "/"}:
+			mo = MultiplicativeDivide
+		case parser.Token{TokenPunctuator, "%"}:
+			mo = MultiplicativeRemainder
+		default:
+			break
+		}
+		g.Except()
+		g.AcceptRunWhitespace()
+		me = MultiplicativeExpression{
+			MultiplicativeExpression: &MultiplicativeExpression{
+				MultiplicativeExpression: me.MultiplicativeExpression,
+				MultiplicativeOperator:   mo,
+				ExponentiationExpression: me.ExponentiationExpression,
+				Tokens:                   j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	me.Tokens = j.ToTokens()
+	return me, nil
+}
+
 type ExponentiationExpression struct {
-	UnaryExpression          *UnaryExpression
-	UpdateExpression         *UpdateExpression
 	ExponentiationExpression *ExponentiationExpression
+	UnaryExpression          UnaryExpression
 	Tokens                   []TokenPos
 }
 
-type UnaryOperator int
+func (j *jsParser) parseExponentiationExpression(yield, await bool) (ExponentiationExpression, error) {
+	var (
+		ee  ExponentiationExpression
+		err error
+	)
+	for {
+		g := j.NewGoal()
+		ee.UnaryExpression, err = g.parseUnaryExpression(yield, await)
+		if err != nil {
+			return ee, j.Error(err)
+		}
+		j.Score(g)
+		if len(ee.UnaryExpression.UnaryOperators) == 0 {
+			break
+		}
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "**"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		ee = ExponentiationExpression{
+			ExponentiationExpression: &ExponentiationExpression{
+				ExponentiationExpression: ee.ExponentiationExpression,
+				UnaryExpression:          ee.UnaryExpression,
+				Tokens:                   j.ToTokens(),
+			},
+		}
+		j.Score(g)
+	}
+	ee.Tokens = j.ToTokens()
+	return ee, nil
+}
+
+type UnaryOperator byte
 
 const (
 	UnaryNone UnaryOperator = iota
@@ -143,13 +583,56 @@ const (
 	UnaryMinus
 	UnaryBitwiseNot
 	UnaryLogicalNot
+	UnaryAwait
 )
 
 type UnaryExpression struct {
-	UpdateExpression *UpdateExpression
-	UnaryOperator    UnaryOperator
-	AwaitExpression  *AwaitExpression
+	UnaryOperators   []UnaryOperator
+	UpdateExpression UpdateExpression
 	Tokens           []TokenPos
+}
+
+func (j *jsParser) parseUnaryExpression(yield, await bool) (UnaryExpression, error) {
+	var (
+		ue  UnaryExpression
+		err error
+	)
+Loop:
+	for {
+		switch j.Peek() {
+		case parser.Token{TokenKeyword, "delete"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryDelete)
+		case parser.Token{TokenKeyword, "void"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryVoid)
+		case parser.Token{TokenKeyword, "typeof"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryTypeof)
+		case parser.Token{TokenPunctuator, "+"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryAdd)
+		case parser.Token{TokenPunctuator, "-"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryMinus)
+		case parser.Token{TokenPunctuator, "~"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryBitwiseNot)
+		case parser.Token{TokenPunctuator, "!"}:
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryLogicalNot)
+		case parser.Token{TokenKeyword, "await"}:
+			if !await {
+				break Loop
+			}
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryAwait)
+		default:
+			break Loop
+		}
+		j.Except()
+		j.AcceptRunWhitespace()
+	}
+	g := j.NewGoal()
+	ue.UpdateExpression, err = g.parseUpdateExpression(yield, await)
+	if err != nil {
+		return ue, j.Error(err)
+	}
+	j.Score(g)
+	ue.Tokens = j.ToTokens()
+	return ue, nil
 }
 
 type UpdateOperator int
@@ -164,12 +647,45 @@ const (
 
 type UpdateExpression struct {
 	LeftHandSideExpression *LeftHandSideExpression
-	UnaryExpression        *UnaryExpression
 	UpdateOperator         UpdateOperator
+	UnaryExpression        *UnaryExpression
 	Tokens                 []TokenPos
 }
 
-type AwaitExpression struct {
-	UnaryExpression UnaryExpression
-	Tokens          []TokenPos
+func (j *jsParser) parseUpdateExpression(yield, await bool) (UpdateExpression, error) {
+	var ue UpdateExpression
+	if j.AcceptToken(parser.Token{TokenPunctuator, "++"}) || j.AcceptToken(parser.Token{TokenPunctuator, "--"}) {
+		if j.GetLastToken().Data == "++" {
+			ue.UpdateOperator = UpdatePostIncrement
+		} else {
+			ue.UpdateOperator = UpdatePostDecrement
+		}
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		une, err := g.parseUnaryExpression(yield, await)
+		if err != nil {
+			return ue, j.Error(err)
+		}
+		j.Score(g)
+		ue.UnaryExpression = &une
+	} else {
+		g := j.NewGoal()
+		lhs, err := g.parseLeftHandSideExpression(yield, await)
+		if err != nil {
+			return ue, j.Error(err)
+		}
+		j.Score(g)
+		ue.LeftHandSideExpression = &lhs
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenPunctuator, "++"}) {
+			j.Score(g)
+			ue.UpdateOperator = UpdatePostIncrement
+		} else if g.AcceptToken(parser.Token{TokenPunctuator, "--"}) {
+			j.Score(g)
+			ue.UpdateOperator = UpdatePostDecrement
+		}
+	}
+	ue.Tokens = j.ToTokens()
+	return ue, nil
 }
