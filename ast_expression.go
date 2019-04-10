@@ -185,13 +185,29 @@ func (j *jsParser) parseExpression(in, yield, await bool) (Expression, error) {
 }
 
 type NewExpression struct {
-	NewExpression    *NewExpression
-	MemberExpression *MemberExpression
+	News             uint
+	MemberExpression MemberExpression
 	Tokens           []Token
 }
 
 func (j *jsParser) parseNewExpression(yield, await bool) (NewExpression, error) {
-	var ne NewExpression
+	var (
+		ne  NewExpression
+		err error
+	)
+	for {
+		if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+			break
+		}
+		ne.News++
+		j.AcceptRunWhitespace()
+	}
+	g := j.NewGoal()
+	ne.MemberExpression, err = g.parseMemberExpression(yield, await)
+	if err != nil {
+		return ne, j.Error(err)
+	}
+	j.Score(g)
 	ne.Tokens = j.ToTokens()
 	return ne, nil
 }
