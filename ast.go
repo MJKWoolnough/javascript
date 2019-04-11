@@ -45,7 +45,7 @@ type Identifier struct {
 }
 
 func (j *jsParser) parseIdentifier(yield, await bool) (Identifier, error) {
-	if j.Accept(TokenIdentifier) || (!yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) || !await && j.AcceptToken(parser.Token{TokenKeyword, "await"})) {
+	if j.Accept(TokenIdentifier) || (!yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) || (!await && j.AcceptToken(parser.Token{TokenKeyword, "await"}))) {
 		return Identifier{j.GetLastToken()}, nil
 	}
 	return Identifier{}, j.Error(ErrNoIdentifier)
@@ -470,7 +470,7 @@ type TemplateLiteral struct {
 	Tokens                 []Token
 }
 
-func (j *jsParser) parserTemplateLiteral(yield, await bool) (TemplateLiteral, error) {
+func (j *jsParser) parseTemplateLiteral(yield, await bool) (TemplateLiteral, error) {
 	var tl TemplateLiteral
 	if j.Accept(TokenNoSubstitutionTemplate) {
 		tl.NoSubstitutionTemplate = j.GetLastToken()

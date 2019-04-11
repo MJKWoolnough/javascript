@@ -230,7 +230,7 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 	var me MemberExpression
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			pe, err := j.parserPrimaryExpression(yield, await)
+			pe, err := j.parsePrimaryExpression(yield, await)
 			if err != nil {
 				return err
 			}
@@ -309,7 +309,7 @@ Loop:
 		h := g.NewGoal()
 		switch tk := h.Peek(); tk.Type {
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
-			tl, err := h.parserTemplateLiteral(yield, await)
+			tl, err := h.parseTemplateLiteral(yield, await)
 			if err != nil {
 				return me, g.Error(err)
 			}
@@ -361,7 +361,7 @@ type PrimaryExpression struct {
 	Tokens                                            []Token
 }
 
-func (j *jsParser) parserPrimaryExpression(yield, await bool) (PrimaryExpression, error) {
+func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression, error) {
 	var pe PrimaryExpression
 	if err := j.FindGoal(
 		func(j *jsParser) error {
@@ -419,7 +419,7 @@ func (j *jsParser) parserPrimaryExpression(yield, await bool) (PrimaryExpression
 			return nil
 		},
 		func(j *jsParser) error {
-			tl, err := j.parserTemplateLiteral(yield, await)
+			tl, err := j.parseTemplateLiteral(yield, await)
 			if err != nil {
 				return err
 			}
@@ -619,7 +619,7 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 			nce.IdentifierName = g.GetLastToken()
 		} else if tk.Type == TokenTemplateHead || tk.Type == TokenNoSubstitutionTemplate {
 			h := g.NewGoal()
-			tl, err := h.parserTemplateLiteral(yield, await)
+			tl, err := h.parseTemplateLiteral(yield, await)
 			if err != nil {
 				return ce, j.Error(err)
 			}
