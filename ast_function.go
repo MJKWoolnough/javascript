@@ -16,7 +16,7 @@ const (
 type FunctionDeclaration struct {
 	BindingIdentifier *BindingIdentifier
 	FormalParameters  FormalParameters
-	FunctionBody      StatementList
+	FunctionBody      Block
 	Type              FunctionType
 	Tokens            []Token
 }
@@ -60,19 +60,12 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		return fd, j.Error(ErrMissingClosingParentheses)
 	}
 	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return fd, j.Error(ErrMissingOpeningBrace)
-	}
 	g = j.NewGoal()
-	fd.FunctionBody, err = j.parseStatementList(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
+	fd.FunctionBody, err = j.parseBlock(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
 	if err != nil {
 		return fd, j.Error(err)
 	}
 	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.Accept(TokenRightBracePunctuator) {
-		return fd, j.Error(ErrMissingClosingBrace)
-	}
 	fd.Tokens = j.ToTokens()
 	return fd, nil
 }

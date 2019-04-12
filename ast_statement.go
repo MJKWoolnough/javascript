@@ -15,9 +15,6 @@ func (j *jsParser) parseStatementList(yield, await, ret bool) (StatementList, er
 		h := g.NewGoal()
 		si, err := h.parseStatementListItem(yield, await, ret)
 		if err != nil {
-			if err == errNotApplicable {
-				break
-			}
 			return sl, g.Error(err)
 		}
 		g.Score(h)
@@ -26,6 +23,29 @@ func (j *jsParser) parseStatementList(yield, await, ret bool) (StatementList, er
 	}
 	sl.Tokens = j.ToTokens()
 	return sl, nil
+}
+
+type Block StatementList
+
+func (j *jsParser) parseBlock(yield, await, ret bool) (Block, error) {
+	var b Block
+	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
+	j.AcceptRunWhitespace()
+	for {
+		if j.Accept(TokenRightBracePunctuator) {
+			break
+		}
+		g := j.NewGoal()
+		si, err := g.parseStatementListItem(yield, await, ret)
+		if err != nil {
+			return b, j.Error(err)
+		}
+		j.Score(g)
+		b.StatementListItems = append(b.StatementListItems, si)
+		j.AcceptRunWhitespace()
+	}
+	b.Tokens = j.ToTokens()
+	return b, nil
 }
 
 type StatementListItem struct {
