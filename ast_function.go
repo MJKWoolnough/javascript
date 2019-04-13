@@ -61,7 +61,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	fd.FunctionBody, err = j.parseBlock(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
+	fd.FunctionBody, err = g.parseBlock(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
 	if err != nil {
 		return fd, j.Error(err)
 	}
