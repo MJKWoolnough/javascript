@@ -23,7 +23,7 @@ type FunctionDeclaration struct {
 
 func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDeclaration, error) {
 	var fd FunctionDeclaration
-	if j.AcceptToken(parser.Token{TokenKeyword, "async"}) {
+	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
 		fd.Type = FunctionAsync
 		j.AcceptRunWhitespaceNoNewLine()
 	}

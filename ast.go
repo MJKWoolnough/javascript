@@ -73,7 +73,7 @@ func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
 			return d, j.Error(err)
 		}
 		d.LexicalDeclaration = &ld
-	} else if tk == (parser.Token{TokenKeyword, "async"}) || tk == (parser.Token{TokenKeyword, "function"}) {
+	} else if tk == (parser.Token{TokenIdentifier, "async"}) || tk == (parser.Token{TokenKeyword, "function"}) {
 		fd, err := g.parseFunctionDeclaration(yield, await, false)
 		if err != nil {
 			return d, j.Error(err)
@@ -513,7 +513,7 @@ type ArrowFunction struct {
 
 func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, error) {
 	var af ArrowFunction
-	if j.AcceptToken(parser.Token{TokenKeyword, "async"}) {
+	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
 		af.Async = true
 		j.AcceptRunWhitespaceNoNewLine()
 		if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
