@@ -85,10 +85,12 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 			break
 		}
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-			fr, err := g.parseFunctionRestParameter(yield, await)
+			h := g.NewGoal()
+			fr, err := h.parseFunctionRestParameter(yield, await)
 			if err != nil {
 				return fp, j.Error(err)
 			}
+			g.Score(h)
 			j.Score(g)
 			fp.FunctionRestParameter = &fr
 			break
