@@ -13,7 +13,9 @@ type Token struct {
 	Pos, Line, LinePos uint64
 }
 
-type jsParser []Token
+type Tokens []Token
+
+type jsParser Tokens
 
 func newJSParser(t parser.Tokeniser) (jsParser, error) {
 	t.TokeniserState(new(jsTokeniser).inputElement)
@@ -153,8 +155,8 @@ func (j *jsParser) AcceptToken(tk parser.Token) bool {
 	return false
 }
 
-func (j *jsParser) ToTokens() []Token {
-	return (*j)[:len(*j):len(*j)]
+func (j *jsParser) ToTokens() Tokens {
+	return Tokens((*j)[:len(*j):len(*j)])
 }
 
 func (j *jsParser) AcceptRunWhitespace() parser.TokenType {

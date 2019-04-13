@@ -4,7 +4,7 @@ import "vimagination.zapto.org/parser"
 
 type StatementList struct {
 	StatementListItems []StatementListItem
-	Tokens             []Token
+	Tokens             Tokens
 }
 
 func (j *jsParser) parseStatementList(yield, await, ret bool) (StatementList, error) {
@@ -51,7 +51,7 @@ func (j *jsParser) parseBlock(yield, await, ret bool) (Block, error) {
 type StatementListItem struct {
 	Statement   *Statement
 	Declaration *Declaration
-	Tokens      []Token
+	Tokens      Tokens
 }
 
 func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementListItem, error) {
@@ -116,7 +116,7 @@ type Statement struct {
 	ThrowStatement          *Expression
 	TryStatement            *TryStatement
 	DebuggerStatement       *Token
-	Tokens                  []Token
+	Tokens                  Tokens
 }
 
 func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
@@ -305,7 +305,7 @@ type IfStatement struct {
 	Expression    Expression
 	Statement     Statement
 	ElseStatement *Statement
-	Tokens        []Token
+	Tokens        Tokens
 }
 
 func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error) {
@@ -355,7 +355,7 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 type IterationStatementDo struct {
 	Statement  Statement
 	Expression Expression
-	Tokens     []Token
+	Tokens     Tokens
 }
 
 func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationStatementDo, error) {
@@ -402,7 +402,7 @@ func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationS
 type IterationStatementWhile struct {
 	Expression Expression
 	Statement  Statement
-	Tokens     []Token
+	Tokens     Tokens
 }
 
 func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (IterationStatementWhile, error) {
@@ -474,7 +474,7 @@ type IterationStatementFor struct {
 	Expression *Expression
 
 	Statement Statement
-	Tokens    []Token
+	Tokens    Tokens
 }
 
 func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (IterationStatementFor, error) {
@@ -681,7 +681,7 @@ type SwitchStatement struct {
 	CaseClauses            []CaseClause
 	DefaultClause          *StatementList
 	PostDefaultCaseClauses []CaseClause
-	Tokens                 []Token
+	Tokens                 Tokens
 }
 
 func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement, error) {
@@ -746,7 +746,7 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 type CaseClause struct {
 	Expression    Expression
 	StatementList *StatementList
-	Tokens        []Token
+	Tokens        Tokens
 }
 
 func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
@@ -787,7 +787,7 @@ func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
 type WithStatement struct {
 	Expression Expression
 	Statement  Statement
-	Tokens     []Token
+	Tokens     Tokens
 }
 
 func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, error) {
@@ -829,7 +829,7 @@ type TryStatement struct {
 	CatchParameterArrayBindingPattern  *ArrayBindingPattern
 	CatchBlock                         *StatementList
 	FinallyBlock                       *StatementList
-	Tokens                             []Token
+	Tokens                             Tokens
 }
 
 func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, error) {
@@ -933,7 +933,7 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 
 type VariableStatement struct {
 	VariableDeclarationList []VariableDeclaration
-	Tokens                  []Token
+	Tokens                  Tokens
 }
 
 func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement, error) {
