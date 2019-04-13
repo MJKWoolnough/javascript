@@ -93,10 +93,12 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 			fp.FunctionRestParameter = &fr
 			break
 		}
-		be, err := g.parseBindingElement(yield, await)
+		h := g.NewGoal()
+		be, err := h.parseBindingElement(yield, await)
 		if err != nil {
-			return fp, err
+			return fp, g.Error(err)
 		}
+		g.Score(h)
 		j.Score(g)
 		fp.FormalParameterList = append(fp.FormalParameterList, be)
 		j.AcceptRunWhitespace()
