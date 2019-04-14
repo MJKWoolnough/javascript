@@ -2,6 +2,7 @@ package javascript
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 
 	"vimagination.zapto.org/errors"
@@ -185,25 +186,37 @@ func (j *jsParser) GetLastToken() *Token {
 }
 
 type Error struct {
-	Err error
-	Token
+	Err     error
+	Parsing string
+	Token   Token
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("error at position %d (%d:%d):\n%s", e.Pos, e.Line, e.LinePos, e.Err)
+	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos, e.Token.Line, e.Token.LinePos, e.Err)
 }
 
 func (e Error) getLastPos() uint64 {
 	if e, ok := e.Err.(Error); ok {
 		return e.getLastPos()
 	}
-	return e.Pos
+	return e.Token.Pos
 }
 
 func (j *jsParser) Error(err error) error {
+	const prefix = "vimagination.zapto.org/javascript.(*jsParser).parse"
+	ptrs := make([]uintptr, 1000)
+	var parsing string
+	for _, ptr := range ptrs[:runtime.Callers(2, ptrs)] {
+		fn := runtime.FuncForPC(ptr).Name()
+		if strings.HasPrefix(fn, prefix) {
+			parsing = fn[len(prefix):]
+			break
+		}
+	}
 	return Error{
-		Err:   err,
-		Token: j.next(),
+		Err:     err,
+		Parsing: parsing,
+		Token:   j.next(),
 	}
 }
 
