@@ -43,6 +43,36 @@ func TestIdentifier(t *testing.T) {
 		{`hello_world`, func(t *test, tk Tokens) {
 			t.Output = Identifier{&tk[0]}
 		}},
+		{`yield`, func(t *test, tk Tokens) {
+			t.Output = Identifier{&tk[0]}
+		}},
+		{`yield`, func(t *test, tk Tokens) {
+			t.Await = true
+			t.Output = Identifier{&tk[0]}
+		}},
+		{`yield`, func(t *test, tk Tokens) {
+			t.Yield = true
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Identifier",
+				Token:   tk[0],
+			}
+		}},
+		{`await`, func(t *test, tk Tokens) {
+			t.Output = Identifier{&tk[0]}
+		}},
+		{`await`, func(t *test, tk Tokens) {
+			t.Yield = true
+			t.Output = Identifier{&tk[0]}
+		}},
+		{`await`, func(t *test, tk Tokens) {
+			t.Await = true
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Identifier",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseIdentifier(t.Yield, t.Await)
 	})
