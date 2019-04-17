@@ -28,6 +28,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 		j.AcceptRunWhitespace()
 	}
 	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {
+		j.AcceptRunWhitespace()
 		g = j.NewGoal()
 		lhs, err := g.parseLeftHandSideExpression(yield, await)
 		if err != nil {
