@@ -13,6 +13,30 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`class myClass extends OtherClass{}`, func(t *test, tk Tokens) {
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				Extends: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &IdentifierReference{
+									Identifier: &tk[6],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				ClassBody: ClassBody{
+					Tokens: tk[7:7],
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
 	})
