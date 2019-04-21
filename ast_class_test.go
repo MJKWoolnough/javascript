@@ -37,6 +37,30 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`class myClass {constructor(){}}`, func(t *test, tk Tokens) {
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				ClassBody: ClassBody{
+					Methods: []MethodDefinition{
+						{
+							PropertyName: PropertyName{
+								LiteralPropertyName: &tk[5],
+								Tokens:              tk[5:6],
+							},
+							Params: FormalParameters{
+								Tokens: tk[7:7],
+							},
+							FunctionBody: Block{
+								Tokens: tk[8:10],
+							},
+							Tokens: tk[5:10],
+						},
+					},
+					Tokens: tk[5:10],
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
 	})
