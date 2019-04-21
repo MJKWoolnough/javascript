@@ -100,7 +100,7 @@ const (
 type MethodDefinition struct {
 	PropertyName PropertyName
 	Params       FormalParameters
-	FunctionBody StatementList
+	FunctionBody Block
 	Type         MethodType
 	Tokens       Tokens
 }
@@ -144,19 +144,11 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 		return md, j.Error(ErrMissingClosingParentheses)
 	}
 	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return md, j.Error(ErrMissingOpeningBrace)
-	}
-	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	if md.FunctionBody, err = g.parseStatementList(md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
+	if md.FunctionBody, err = g.parseBlock(md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
 		return md, j.Error(err)
 	}
 	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.Accept(TokenRightBracePunctuator) {
-		return md, j.Error(ErrMissingClosingBrace)
-	}
 	md.Tokens = j.ToTokens()
 	return md, nil
 }
