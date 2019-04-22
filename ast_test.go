@@ -20,6 +20,7 @@ type test struct {
 }
 
 func doTests(t *testing.T, tests []sourceFn, fn func(*test) (interface{}, error)) {
+	t.Helper()
 	var err error
 	for n, tt := range tests {
 		var ts test
