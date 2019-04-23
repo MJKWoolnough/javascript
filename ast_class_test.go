@@ -146,6 +146,68 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{`` +
+			`class myClass {
+	get value(){}
+	set value(v){}
+	static hello(){}
+}`, func(t *test, tk Tokens) {
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				ClassBody: ClassBody{
+					Methods: []MethodDefinition{
+						{
+							Type: MethodGetter,
+							PropertyName: PropertyName{
+								LiteralPropertyName: &tk[9],
+								Tokens:              tk[9:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[12:14],
+							},
+							Tokens: tk[7:14],
+						},
+						{
+							Type: MethodSetter,
+							PropertyName: PropertyName{
+								LiteralPropertyName: &tk[18],
+								Tokens:              tk[18:19],
+							},
+							Params: FormalParameters{
+								FormalParameterList: []BindingElement{
+									{
+										SingleNameBinding: &BindingIdentifier{Identifier: &tk[20]},
+										Tokens:            tk[20:21],
+									},
+								},
+								Tokens: tk[20:21],
+							},
+							FunctionBody: Block{
+								Tokens: tk[22:24],
+							},
+							Tokens: tk[16:24],
+						},
+					},
+					StaticMethods: []MethodDefinition{
+						{
+							PropertyName: PropertyName{
+								LiteralPropertyName: &tk[28],
+								Tokens:              tk[28:29],
+							},
+							Params: FormalParameters{
+								Tokens: tk[30:30],
+							},
+							FunctionBody: Block{
+								Tokens: tk[31:33],
+							},
+							Tokens: tk[26:33],
+						},
+					},
+					Tokens: tk[5:34],
+				},
+				Tokens: tk[:35],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
 	})
