@@ -208,6 +208,26 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:35],
 			}
 		}},
+		{`class{}`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Identifier",
+					Token:   tk[1],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[1],
+			}
+		}},
+		{`class{}`, func(t *test, tk Tokens) {
+			t.Def = true
+			t.Output = ClassDeclaration{
+				ClassBody: ClassBody{
+					Tokens: tk[2:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
 	})
