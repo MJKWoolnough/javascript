@@ -39,7 +39,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return cd, j.Error(ErrMissingSemiColon)
+		return cd, j.Error(ErrMissingOpeningBrace)
 	}
 	g = j.NewGoal()
 	cd.ClassBody, err = g.parseClassBody(yield, await)
