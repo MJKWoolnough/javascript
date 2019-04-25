@@ -47,9 +47,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 		return cd, j.Error(err)
 	}
 	j.Score(g)
-	if !j.Accept(TokenRightBracePunctuator) {
-		return cd, j.Error(ErrMissingClosingBrace)
-	}
+	j.Accept(TokenRightBracePunctuator)
 	cd.Tokens = j.ToTokens()
 	return cd, nil
 }
