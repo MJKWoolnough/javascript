@@ -228,6 +228,13 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`class beep`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "ClassDeclaration",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
 	})
