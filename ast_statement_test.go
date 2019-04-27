@@ -30,6 +30,27 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`break;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementBreak,
+				Tokens: tk[:2],
+			}
+		}},
+		{`break ;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementBreak,
+				Tokens: tk[:3],
+			}
+		}},
+		{`break Name;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type: StatementBreak,
+				BreakStatement: &LabelIdentifier{
+					Identifier: &tk[2],
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatement(t.Yield, t.Await, t.Ret)
 	})
