@@ -51,6 +51,12 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`debugger;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				DebuggerStatement: &tk[0],
+				Tokens:            tk[:2],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatement(t.Yield, t.Await, t.Ret)
 	})
