@@ -254,6 +254,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			g.Score(h)
+		}
 	default:
 		if err := g.FindGoal(
 			func(j *jsParser) error {
