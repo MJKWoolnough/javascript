@@ -28,6 +28,32 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
+		{`new someIdentifier`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				News: 1,
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+						Tokens:              tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`new new someIdentifier`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				News: 2,
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+						Tokens:              tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
 		{`null`, func(t *test, tk Tokens) {
 			t.Output = NewExpression{
 				MemberExpression: MemberExpression{
@@ -114,6 +140,16 @@ func TestNewExpression(t *testing.T) {
 					Tokens: tk[:2],
 				},
 				Tokens: tk[:2],
+			}
+		}},
+		{`super.runMe`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					SuperProperty:  true,
+					IdentifierName: &tk[2],
+					Tokens:         tk[:3],
+				},
+				Tokens: tk[:3],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
