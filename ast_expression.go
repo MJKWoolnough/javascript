@@ -249,6 +249,9 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 					return err
 				}
 				j.Score(g)
+				if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+					return ErrInvalidSuperProperty
+				}
 				me.Expression = &e
 			} else if j.AcceptToken(parser.Token{TokenPunctuator, "."}) {
 				if !j.Accept(TokenIdentifier) {
