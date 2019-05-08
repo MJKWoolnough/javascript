@@ -86,7 +86,7 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 	return si, nil
 }
 
-type StatementType int
+type StatementType uint8
 
 const (
 	StatementNormal StatementType = iota
@@ -442,7 +442,7 @@ func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (Iterati
 	return is, nil
 }
 
-type ForType int
+type ForType uint8
 
 const (
 	ForNormal ForType = iota
