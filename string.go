@@ -342,7 +342,6 @@ func (f ImportSpecifier) Format(s fmt.State, v rune)          { format(s, v, f) 
 func (f ExportDeclaration) Format(s fmt.State, v rune)        { format(s, v, f) }
 func (f ExportClause) Format(s fmt.State, v rune)             { format(s, v, f) }
 func (f ExportSpecifier) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f jsParser) Format(s fmt.State, v rune)                 { format(s, v, f) }
 func (f StatementList) Format(s fmt.State, v rune)            { format(s, v, f) }
 func (f Block) Format(s fmt.State, v rune)                    { format(s, v, f) }
 func (f StatementListItem) Format(s fmt.State, v rune)        { format(s, v, f) }
