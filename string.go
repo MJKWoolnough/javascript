@@ -262,7 +262,7 @@ func (ft ForType) String() string {
 	case ForInLet:
 		return "ForInLet"
 	case ForInConst:
-		return "ForInConst:"
+		return "ForInConst"
 	case ForOfLeftHandSide:
 		return "ForOfLeftHandSide"
 	case ForOfVar:
