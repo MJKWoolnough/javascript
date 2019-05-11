@@ -231,7 +231,7 @@ func (j *jsParser) FindGoal(fns ...func(*jsParser) error) error {
 			j.Score(g)
 			return nil
 		} else if p := g.next().Pos; errr != errNotApplicable && (err == nil || lastPos < p) {
-			err = g.Error(errr)
+			err = errr
 			lastPos = p
 		}
 	}
