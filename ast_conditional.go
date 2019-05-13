@@ -319,6 +319,7 @@ func (j *jsParser) parseRelationalExpression(in, yield, await bool) (RelationalE
 		re  RelationalExpression
 		err error
 	)
+Loop:
 	for {
 		g := j.NewGoal()
 		re.ShiftExpression, err = g.parseShiftExpression(yield, await)
@@ -342,11 +343,11 @@ func (j *jsParser) parseRelationalExpression(in, yield, await bool) (RelationalE
 			ro = RelationshipInstanceOf
 		case parser.Token{TokenKeyword, "in"}:
 			if !in {
-				break
+				break Loop
 			}
 			ro = RelationshipIn
 		default:
-			break
+			break Loop
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
@@ -385,6 +386,7 @@ func (j *jsParser) parseShiftExpression(yield, await bool) (ShiftExpression, err
 		se  ShiftExpression
 		err error
 	)
+Loop:
 	for {
 		g := j.NewGoal()
 		se.AdditiveExpression, err = g.parseAdditiveExpression(yield, await)
@@ -403,7 +405,7 @@ func (j *jsParser) parseShiftExpression(yield, await bool) (ShiftExpression, err
 		case parser.Token{TokenPunctuator, ">>>"}:
 			so = ShiftUnsignedRight
 		default:
-			break
+			break Loop
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
@@ -441,6 +443,7 @@ func (j *jsParser) parseAdditiveExpression(yield, await bool) (AdditiveExpressio
 		ae  AdditiveExpression
 		err error
 	)
+Loop:
 	for {
 		g := j.NewGoal()
 		ae.MultiplicativeExpression, err = g.parseMultiplicativeExpression(yield, await)
@@ -457,7 +460,7 @@ func (j *jsParser) parseAdditiveExpression(yield, await bool) (AdditiveExpressio
 		case parser.Token{TokenPunctuator, "-"}:
 			ao = AdditiveMinus
 		default:
-			break
+			break Loop
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
@@ -496,6 +499,7 @@ func (j *jsParser) parseMultiplicativeExpression(yield, await bool) (Multiplicat
 		me  MultiplicativeExpression
 		err error
 	)
+Loop:
 	for {
 		g := j.NewGoal()
 		me.ExponentiationExpression, err = g.parseExponentiationExpression(yield, await)
@@ -514,7 +518,7 @@ func (j *jsParser) parseMultiplicativeExpression(yield, await bool) (Multiplicat
 		case parser.Token{TokenPunctuator, "%"}:
 			mo = MultiplicativeRemainder
 		default:
-			break
+			break Loop
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
@@ -543,6 +547,7 @@ func (j *jsParser) parseExponentiationExpression(yield, await bool) (Exponentiat
 		ee  ExponentiationExpression
 		err error
 	)
+Loop:
 	for {
 		g := j.NewGoal()
 		ee.UnaryExpression, err = g.parseUnaryExpression(yield, await)
@@ -556,7 +561,7 @@ func (j *jsParser) parseExponentiationExpression(yield, await bool) (Exponentiat
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, "**"}) {
-			break
+			break Loop
 		}
 		g.AcceptRunWhitespace()
 		ee = ExponentiationExpression{
@@ -578,7 +583,7 @@ const (
 	UnaryNone UnaryOperator = iota
 	UnaryDelete
 	UnaryVoid
-	UnaryTypeof
+	UnaryTypeOf
 	UnaryAdd
 	UnaryMinus
 	UnaryBitwiseNot
@@ -605,7 +610,7 @@ Loop:
 		case parser.Token{TokenKeyword, "void"}:
 			ue.UnaryOperators = append(ue.UnaryOperators, UnaryVoid)
 		case parser.Token{TokenKeyword, "typeof"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryTypeof)
+			ue.UnaryOperators = append(ue.UnaryOperators, UnaryTypeOf)
 		case parser.Token{TokenPunctuator, "+"}:
 			ue.UnaryOperators = append(ue.UnaryOperators, UnaryAdd)
 		case parser.Token{TokenPunctuator, "-"}:
