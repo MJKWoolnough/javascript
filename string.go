@@ -276,6 +276,129 @@ func (ft ForType) String() string {
 	}
 }
 
+func (e EqualityOperator) String() string {
+	switch e {
+	case EqualityNone:
+		return ""
+	case EqualityEqual:
+		return "=="
+	case EqualityNotEqual:
+		return "!="
+	case EqualityStrictEqual:
+		return "==="
+	case EqualityStrictNotEqual:
+		return "!=="
+	default:
+		return "unknown"
+	}
+}
+
+func (r RelationshipOperator) String() string {
+	switch r {
+	case RelationshipNone:
+		return ""
+	case RelationshipLessThan:
+		return "<"
+	case RelationshipGreaterThan:
+		return ">"
+	case RelationshipLessThanEqual:
+		return "<="
+	case RelationshipGreaterThanEqual:
+		return ">="
+	case RelationshipInstanceOf:
+		return "instanceof"
+	case RelationshipIn:
+		return "in"
+	default:
+		return "unknown"
+	}
+}
+
+func (s ShiftOperator) String() string {
+	switch s {
+	case ShiftNone:
+		return ""
+	case ShiftLeft:
+		return "<<"
+	case ShiftRight:
+		return ">>"
+	case ShiftUnsignedRight:
+		return ">>>"
+	default:
+		return "unknown"
+	}
+}
+
+func (a AdditiveOperator) String() string {
+	switch a {
+	case AdditiveNone:
+		return ""
+	case AdditiveAdd:
+		return "+"
+	case AdditiveMinus:
+		return "-"
+	default:
+		return "unknown"
+	}
+}
+
+func (m MultiplicativeOperator) String() string {
+	switch m {
+	case MultiplicativeNone:
+		return ""
+	case MultiplicativeMultiply:
+		return "*"
+	case MultiplicativeDivide:
+		return "/"
+	case MultiplicativeRemainder:
+		return "%"
+	default:
+		return "unknown"
+	}
+}
+
+func (u UnaryOperator) String() string {
+	switch u {
+	case UnaryNone:
+		return ""
+	case UnaryDelete:
+		return "delete"
+	case UnaryVoid:
+		return "void"
+	case UnaryTypeOf:
+		return "typeof"
+	case UnaryAdd:
+		return "+"
+	case UnaryMinus:
+		return "-"
+	case UnaryBitwiseNot:
+		return "~"
+	case UnaryLogicalNot:
+		return "!"
+	case UnaryAwait:
+		return "await"
+	default:
+		return "unknown"
+	}
+}
+
+func (u UpdateOperator) String() string {
+	switch u {
+	case UpdateNone:
+		return ""
+	case UpdatePostIncrement:
+		return " ++"
+	case UpdatePostDecrement:
+		return " --"
+	case UpdatePreIncrement:
+		return "++"
+	case UpdatePreDecrement:
+		return "--"
+	default:
+		return "unknown"
+	}
+}
+
 func (f ClassDeclaration) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f ClassBody) Format(s fmt.State, v rune)                { format(s, v, f) }
 func (f MethodDefinition) Format(s fmt.State, v rune)         { format(s, v, f) }
@@ -286,22 +409,14 @@ func (f LogicalANDExpression) Format(s fmt.State, v rune)     { format(s, v, f) 
 func (f BitwiseORExpression) Format(s fmt.State, v rune)      { format(s, v, f) }
 func (f BitwiseXORExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
 func (f BitwiseANDExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f EqualityOperator) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f EqualityExpression) Format(s fmt.State, v rune)       { format(s, v, f) }
-func (f RelationshipOperator) Format(s fmt.State, v rune)     { format(s, v, f) }
 func (f RelationalExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f ShiftOperator) Format(s fmt.State, v rune)            { format(s, v, f) }
 func (f ShiftExpression) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f AdditiveOperator) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f AdditiveExpression) Format(s fmt.State, v rune)       { format(s, v, f) }
-func (f MultiplicativeOperator) Format(s fmt.State, v rune)   { format(s, v, f) }
 func (f MultiplicativeExpression) Format(s fmt.State, v rune) { format(s, v, f) }
 func (f ExponentiationExpression) Format(s fmt.State, v rune) { format(s, v, f) }
-func (f UnaryOperator) Format(s fmt.State, v rune)            { format(s, v, f) }
 func (f UnaryExpression) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f UpdateOperator) Format(s fmt.State, v rune)           { format(s, v, f) }
 func (f UpdateExpression) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f AssignmentOperator) Format(s fmt.State, v rune)       { format(s, v, f) }
 func (f AssignmentExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
 func (f LeftHandSideExpression) Format(s fmt.State, v rune)   { format(s, v, f) }
 func (f Expression) Format(s fmt.State, v rune)               { format(s, v, f) }
