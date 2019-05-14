@@ -106,15 +106,17 @@ func (t Token) Format(s fmt.State, v rune) {
 }
 
 func (t Tokens) Format(s fmt.State, v rune) {
-	format(s, v, t)
+	formatArray(s, s.Flag('+'), reflect.ValueOf(t))
 }
 
 var (
-	space       = []byte{' '}
-	arrayOpen   = []byte{'['}
-	arrayClose  = []byte{'\n', ']'}
-	objectOpen  = []byte{'{'}
-	objectClose = []byte{'\n', '}'}
+	space          = []byte{' '}
+	arrayOpen      = []byte{'['}
+	arrayClose     = []byte{'\n', ']'}
+	arrayOpenClose = []byte{'[', ']'}
+	objectOpen     = []byte{'{'}
+	objectClose    = []byte{'\n', '}'}
+	pointer        = []byte{'*'}
 )
 
 func format(s fmt.State, v rune, f interface{}) {
@@ -124,25 +126,16 @@ func format(s fmt.State, v rune, f interface{}) {
 		t := v.Type()
 		name := t.Name()
 		io.WriteString(s, name)
-		ip := indentPrinter{s}
 		for v.Kind() == reflect.Ptr && !v.IsNil() {
+			s.Write(pointer)
 			v = v.Elem()
 		}
+		ip := indentPrinter{s}
 		if k := v.Kind(); k == reflect.Slice || k == reflect.Array {
 			if name != "" {
 				s.Write(space)
 			}
-			s.Write(arrayOpen)
-			ipp := indentPrinter{&ip}
-			for i := 0; i < v.Len(); i++ {
-				p := v.Index(i)
-				if verbose {
-					ipp.Printf("\n%d: %+v", i, p.Interface())
-				} else {
-					ipp.Printf("\n%d: %v", i, p.Interface())
-				}
-			}
-			s.Write(arrayClose)
+			formatArray(&ip, verbose, v)
 		} else {
 			t := v.Type()
 			s.Write(objectOpen)
@@ -153,17 +146,57 @@ func format(s fmt.State, v rune, f interface{}) {
 				}
 				if f.Name == "Tokens" {
 					if verbose {
-						ip.Printf("\n%+v", v.Field(i).Interface())
+						ip.Printf("\nTokens: %+v", v.Field(i).Interface())
 					}
+				} else if k := f.Type.Kind(); k == reflect.Slice || k == reflect.Array {
+					ip.Printf("\n%s: ", f.Name)
+					formatArray(&ip, verbose, v.Field(i))
 				} else if verbose {
 					ip.Printf("\n%s: %+v", f.Name, v.Field(i).Interface())
 				} else {
+					vf := v.Field(i)
+					switch k {
+					case reflect.Map, reflect.Ptr, reflect.Slice:
+						if vf.IsNil() {
+							continue
+						}
+					case reflect.Bool:
+						if !vf.Bool() {
+							continue
+						}
+					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+						if vf.Uint() == 0 {
+							continue
+						}
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						if vf.Int() == 0 {
+							continue
+						}
+					}
 					ip.Printf("\n%s: %v", f.Name, v.Field(i).Interface())
 				}
 			}
 			s.Write(objectClose)
 		}
 	}
+}
+
+func formatArray(ip io.Writer, verbose bool, v reflect.Value) {
+	if v.Len() == 0 {
+		ip.Write(arrayOpenClose)
+		return
+	}
+	ip.Write(arrayOpen)
+	ipp := indentPrinter{ip}
+	for i := 0; i < v.Len(); i++ {
+		p := v.Index(i)
+		if verbose {
+			ipp.Printf("\n%d: %+v", i, p.Interface())
+		} else {
+			ipp.Printf("\n%d: %v", i, p.Interface())
+		}
+	}
+	ip.Write(arrayClose)
 }
 
 func (ft FunctionType) Format(s fmt.State, _ rune) {
