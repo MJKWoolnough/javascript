@@ -152,6 +152,78 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`super[runMe]`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					SuperProperty: true,
+					Expression: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &ConditionalExpression{
+									LogicalORExpression: LogicalORExpression{
+										LogicalANDExpression: LogicalANDExpression{
+											BitwiseORExpression: BitwiseORExpression{
+												BitwiseXORExpression: BitwiseXORExpression{
+													BitwiseANDExpression: BitwiseANDExpression{
+														EqualityExpression: EqualityExpression{
+															RelationalExpression: RelationalExpression{
+																ShiftExpression: ShiftExpression{
+																	AdditiveExpression: AdditiveExpression{
+																		MultiplicativeExpression: MultiplicativeExpression{
+																			ExponentiationExpression: ExponentiationExpression{
+																				UnaryExpression: UnaryExpression{
+																					UpdateExpression: UpdateExpression{
+																						LeftHandSideExpression: &LeftHandSideExpression{
+																							NewExpression: &NewExpression{
+																								MemberExpression: MemberExpression{
+																									PrimaryExpression: &PrimaryExpression{
+																										IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+																										Tokens:              tk[2:3],
+																									},
+																									Tokens: tk[2:3],
+																								},
+																								Tokens: tk[2:3],
+																							},
+																							Tokens: tk[2:3],
+																						},
+																						Tokens: tk[2:3],
+																					},
+																					Tokens: tk[2:3],
+																				},
+																				Tokens: tk[2:3],
+																			},
+																			Tokens: tk[2:3],
+																		},
+																		Tokens: tk[2:3],
+																	},
+																	Tokens: tk[2:3],
+																},
+																Tokens: tk[2:3],
+															},
+															Tokens: tk[2:3],
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[2:3],
+											},
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseNewExpression(t.Yield, t.Await)
 	})
