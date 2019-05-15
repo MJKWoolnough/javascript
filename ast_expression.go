@@ -321,22 +321,34 @@ Loop:
 			h.Except()
 			nme.IdentifierName = h.GetLastToken()
 		case TokenPunctuator:
-			if tk.Data != "[" {
+			switch tk.Data {
+			case ".":
+				h.Except()
+				h.AcceptRunWhitespace()
+				i := h.NewGoal()
+				in, err := i.parseIdentifier(yield, await)
+				if err != nil {
+					return me, g.Error(err)
+				}
+				h.Score(i)
+				nme.IdentifierName = in.Identifier
+			case "[":
+				h.Except()
+				h.AcceptRunWhitespace()
+				i := h.NewGoal()
+				e, err := i.parseExpression(true, yield, await)
+				if err != nil {
+					return me, g.Error(err)
+				}
+				h.Score(i)
+				h.AcceptRunWhitespace()
+				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+					return me, g.Error(ErrMissingClosingBracket)
+				}
+				nme.Expression = &e
+			default:
 				break Loop
 			}
-			h.Except()
-			h.AcceptRunWhitespace()
-			i := h.NewGoal()
-			e, err := i.parseExpression(true, yield, await)
-			if err != nil {
-				return me, g.Error(err)
-			}
-			h.Score(i)
-			h.AcceptRunWhitespace()
-			if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-				return me, g.Error(ErrMissingClosingBracket)
-			}
-			nme.Expression = &e
 		default:
 			break Loop
 		}
