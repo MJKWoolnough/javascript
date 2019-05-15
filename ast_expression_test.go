@@ -224,6 +224,30 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`this.key.field.next`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						MemberExpression: &MemberExpression{
+							MemberExpression: &MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									This:   true,
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							IdentifierName: &tk[2],
+							Tokens:         tk[:3],
+						},
+						IdentifierName: &tk[4],
+						Tokens:         tk[:5],
+					},
+					IdentifierName: &tk[6],
+					Tokens:         tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseNewExpression(t.Yield, t.Await)
 	})
