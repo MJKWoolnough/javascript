@@ -252,3 +252,16 @@ func TestNewExpression(t *testing.T) {
 		return t.Tokens.parseNewExpression(t.Yield, t.Await)
 	})
 }
+
+func TestMemberExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`new.target`, func(t *test, tk Tokens) {
+			t.Output = MemberExpression{
+				MetaProperty: true,
+				Tokens:       tk[:3],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		return t.Tokens.parseMemberExpression(t.Yield, t.Await)
+	})
+}
