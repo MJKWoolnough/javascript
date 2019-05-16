@@ -220,7 +220,6 @@ type MemberExpression struct {
 	TemplateLiteral     *TemplateLiteral
 	SuperProperty       bool
 	MetaProperty        bool
-	NewTarget           bool
 	NewMemberExpression *MemberExpression
 	Arguments           *Arguments
 	Tokens              Tokens
