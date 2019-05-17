@@ -267,7 +267,6 @@ func TestNewExpression(t *testing.T) {
 						},
 						Tokens: tk[2:3],
 					},
-					New: true,
 					Arguments: &Arguments{
 						Tokens: tk[3:5],
 					},
