@@ -196,33 +196,31 @@ func (j *jsParser) parseNewExpression(yield, await bool) (NewExpression, error) 
 		err error
 	)
 	for {
-		if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+		g := j.NewGoal()
+		ne.MemberExpression, err = g.parseMemberExpression(yield, await)
+		if err == nil {
+			j.Score(g)
 			break
+		} else if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+			return ne, j.Error(err)
 		}
 		ne.News++
 		j.AcceptRunWhitespace()
 	}
-	g := j.NewGoal()
-	ne.MemberExpression, err = g.parseMemberExpression(yield, await)
-	if err != nil {
-		return ne, j.Error(err)
-	}
-	j.Score(g)
 	ne.Tokens = j.ToTokens()
 	return ne, nil
 }
 
 type MemberExpression struct {
-	MemberExpression    *MemberExpression
-	PrimaryExpression   *PrimaryExpression
-	Expression          *Expression
-	IdentifierName      *Token
-	TemplateLiteral     *TemplateLiteral
-	SuperProperty       bool
-	MetaProperty        bool
-	NewMemberExpression *MemberExpression
-	Arguments           *Arguments
-	Tokens              Tokens
+	MemberExpression  *MemberExpression
+	PrimaryExpression *PrimaryExpression
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	SuperProperty     bool
+	MetaProperty      bool
+	Arguments         *Arguments
+	Tokens            Tokens
 }
 
 func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, error) {
@@ -296,7 +294,7 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 				return err
 			}
 			j.Score(g)
-			me.NewMemberExpression = &nme
+			me.MemberExpression = &nme
 			me.Arguments = &a
 			return nil
 		},
