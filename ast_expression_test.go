@@ -248,20 +248,35 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseNewExpression(t.Yield, t.Await)
-	})
-}
-
-func TestMemberExpression(t *testing.T) {
-	doTests(t, []sourceFn{
 		{`new.target`, func(t *test, tk Tokens) {
-			t.Output = MemberExpression{
-				MetaProperty: true,
-				Tokens:       tk[:3],
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					MetaProperty: true,
+					Tokens:       tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`new className()`, func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					New: true,
+					Arguments: &Arguments{
+						Tokens: tk[3:5],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseMemberExpression(t.Yield, t.Await)
+		return t.Tokens.parseNewExpression(t.Yield, t.Await)
 	})
 }
