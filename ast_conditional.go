@@ -666,9 +666,9 @@ func (j *jsParser) parseUpdateExpression(yield, await bool) (UpdateExpression, e
 	var ue UpdateExpression
 	if j.AcceptToken(parser.Token{TokenPunctuator, "++"}) || j.AcceptToken(parser.Token{TokenPunctuator, "--"}) {
 		if j.GetLastToken().Data == "++" {
-			ue.UpdateOperator = UpdatePostIncrement
+			ue.UpdateOperator = UpdatePreIncrement
 		} else {
-			ue.UpdateOperator = UpdatePostDecrement
+			ue.UpdateOperator = UpdatePreDecrement
 		}
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
