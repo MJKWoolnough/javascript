@@ -863,15 +863,31 @@ func TestConditional(t *testing.T) {
 				Tokens:          tk[:2],
 			})
 		}},
-		/*
-			{`++!1`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 2)
+		{`++!1`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = wrapConditional(UpdateExpression{
+				UpdateOperator: UpdatePreIncrement,
+				UnaryExpression: &UnaryExpression{
+					UnaryOperators:   []UnaryOperator{UnaryLogicalNot},
+					UpdateExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+					Tokens:           tk[1:3],
+				},
+				Tokens: tk[:3],
+			})
+		}},
+		{`--!1`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = wrapConditional(UpdateExpression{
+				UpdateOperator: UpdatePreDecrement,
+				UnaryExpression: &UnaryExpression{
+					UnaryOperators:   []UnaryOperator{UnaryLogicalNot},
+					UpdateExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+					Tokens:           tk[1:3],
+				},
+				Tokens: tk[:3],
+			})
 
-			}},
-			{`--!1`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 1)
-
-			}},*/
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseConditionalExpression(t.In, t.Yield, t.Await)
 	})
