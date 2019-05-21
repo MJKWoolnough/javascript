@@ -355,11 +355,12 @@ Loop:
 		re = RelationalExpression{
 			RelationalExpression: &RelationalExpression{
 				RelationalExpression: re.RelationalExpression,
-				RelationshipOperator: ro,
+				RelationshipOperator: re.RelationshipOperator,
 				ShiftExpression:      re.ShiftExpression,
 				Tokens:               j.ToTokens(),
 			},
 		}
+		re.RelationshipOperator = ro
 		j.Score(g)
 	}
 	re.Tokens = j.ToTokens()
@@ -413,11 +414,12 @@ Loop:
 		se = ShiftExpression{
 			ShiftExpression: &ShiftExpression{
 				ShiftExpression:    se.ShiftExpression,
-				ShiftOperator:      so,
+				ShiftOperator:      se.ShiftOperator,
 				AdditiveExpression: se.AdditiveExpression,
 				Tokens:             j.ToTokens(),
 			},
 		}
+		se.ShiftOperator = so
 		j.Score(g)
 	}
 	se.Tokens = j.ToTokens()
@@ -468,11 +470,12 @@ Loop:
 		ae = AdditiveExpression{
 			AdditiveExpression: &AdditiveExpression{
 				AdditiveExpression:       ae.AdditiveExpression,
-				AdditiveOperator:         ao,
+				AdditiveOperator:         ae.AdditiveOperator,
 				MultiplicativeExpression: ae.MultiplicativeExpression,
 				Tokens:                   j.ToTokens(),
 			},
 		}
+		ae.AdditiveOperator = ao
 		j.Score(g)
 	}
 	ae.Tokens = j.ToTokens()
@@ -526,11 +529,12 @@ Loop:
 		me = MultiplicativeExpression{
 			MultiplicativeExpression: &MultiplicativeExpression{
 				MultiplicativeExpression: me.MultiplicativeExpression,
-				MultiplicativeOperator:   mo,
+				MultiplicativeOperator:   me.MultiplicativeOperator,
 				ExponentiationExpression: me.ExponentiationExpression,
 				Tokens:                   j.ToTokens(),
 			},
 		}
+		me.MultiplicativeOperator = mo
 		j.Score(g)
 	}
 	me.Tokens = j.ToTokens()
