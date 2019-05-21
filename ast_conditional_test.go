@@ -257,52 +257,119 @@ func TestConditional(t *testing.T) {
 				Tokens:               tk[:5],
 			})
 		}},
+		{`1 == 2 != true`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &EqualityExpression{
+					EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+					EqualityOperator:     EqualityEqual,
+					RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+					Tokens:               tk[:5],
+				},
+				EqualityOperator:     EqualityNotEqual,
+				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`1 != 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityNotEqual,
+				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 != 2 == true`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &EqualityExpression{
+					EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+					EqualityOperator:     EqualityNotEqual,
+					RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+					Tokens:               tk[:5],
+				},
+				EqualityOperator:     EqualityEqual,
+				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`1 === 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityStrictEqual,
+				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 === 2 !== true`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &EqualityExpression{
+					EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+					EqualityOperator:     EqualityStrictEqual,
+					RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+					Tokens:               tk[:5],
+				},
+				EqualityOperator:     EqualityStrictNotEqual,
+				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`1 !== 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityStrictNotEqual,
+				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:5],
+			})
+
+		}},
+		{`1 !== 2 === true`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &EqualityExpression{
+					EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+					EqualityOperator:     EqualityStrictNotEqual,
+					RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+					Tokens:               tk[:5],
+				},
+				EqualityOperator:     EqualityStrictEqual,
+				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:9],
+			})
+
+		}},
+		{`1 < 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipLessThan,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+		}},
 		/*
-			{`1 == 2 != true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 != 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 != 2 == true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 === 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 === 2 !== true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 !== 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 !== 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 < 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
 			{`1 < 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`true === 1 < 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
 
@@ -312,21 +379,9 @@ func TestConditional(t *testing.T) {
 				litB := makeConditionLiteral(tk, 4)
 
 			}},
-			{`1 > 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
 			{`1 <= 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 <= 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
 
 			}},
 			{`1 >= 2`, func(t *test, tk Tokens) {
@@ -334,21 +389,9 @@ func TestConditional(t *testing.T) {
 				litB := makeConditionLiteral(tk, 4)
 
 			}},
-			{`1 >= 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
 			{`1 instanceof 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 instanceof 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
 
 			}},
 			{`1 in 2`, func(t *test, tk Tokens) {
@@ -356,15 +399,15 @@ func TestConditional(t *testing.T) {
 				litB := makeConditionLiteral(tk, 4)
 
 			}},
-			{`1 in 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
 			{`1 << 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 << 2 << 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
 
 			}},
 			{`1 >> 2`, func(t *test, tk Tokens) {
@@ -372,9 +415,22 @@ func TestConditional(t *testing.T) {
 				litB := makeConditionLiteral(tk, 4)
 
 			}},
+			{`1 >> 2 >> 3`, func(t *test, tk Tokens) {
+
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
 			{`1 >>> 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 >>> 2 >>> 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
 
 			}},
 			{`1 + 2`, func(t *test, tk Tokens) {
