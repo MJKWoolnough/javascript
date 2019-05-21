@@ -363,143 +363,342 @@ func TestConditional(t *testing.T) {
 				Tokens:               tk[:5],
 			})
 		}},
+		{`1 < 2 === true`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &EqualityExpression{
+					RelationalExpression: RelationalExpression{
+						RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+						RelationshipOperator: RelationshipLessThan,
+						ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+						Tokens:               tk[:5],
+					},
+					Tokens: tk[:5],
+				},
+				EqualityOperator:     EqualityStrictEqual,
+				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`true === 1 < 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:   EqualityStrictEqual,
+				RelationalExpression: RelationalExpression{
+					RelationalExpression: &litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+					RelationshipOperator: RelationshipLessThan,
+					ShiftExpression:      litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+					Tokens:               tk[4:9],
+				},
+				Tokens: tk[:9],
+			})
+		}},
+		{`1 > 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipGreaterThan,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+
+		}},
+		{`1 <= 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipLessThanEqual,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+
+		}},
+		{`1 >= 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipGreaterThanEqual,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 instanceof 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipInstanceOf,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 in 2`, func(t *test, tk Tokens) {
+			t.Output = makeConditionLiteral(tk, 0)
+		}},
+		{`1 in 2`, func(t *test, tk Tokens) {
+			t.In = true
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipIn,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 << 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				ShiftOperator:      ShiftLeft,
+				AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:5],
+			})
+		}},
+		{`1 << 2 << 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression: &ShiftExpression{
+					ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+					ShiftOperator:      ShiftLeft,
+					AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					Tokens:             tk[:5],
+				},
+				ShiftOperator:      ShiftLeft,
+				AdditiveExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:9],
+			})
+		}},
+		{`1 >> 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				ShiftOperator:      ShiftRight,
+				AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:5],
+			})
+		}},
+		{`1 >> 2 >> 3`, func(t *test, tk Tokens) {
+
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression: &ShiftExpression{
+					ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+					ShiftOperator:      ShiftRight,
+					AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					Tokens:             tk[:5],
+				},
+				ShiftOperator:      ShiftRight,
+				AdditiveExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:9],
+			})
+		}},
+		{`1 >>> 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				ShiftOperator:      ShiftUnsignedRight,
+				AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:5],
+			})
+		}},
+		{`1 >>> 2 >>> 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(ShiftExpression{
+				ShiftExpression: &ShiftExpression{
+					ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+					ShiftOperator:      ShiftUnsignedRight,
+					AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					Tokens:             tk[:5],
+				},
+				ShiftOperator:      ShiftUnsignedRight,
+				AdditiveExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				Tokens:             tk[:9],
+			})
+		}},
+		{`1 + 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				AdditiveOperator:         AdditiveAdd,
+				MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 + 2 + 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression: &AdditiveExpression{
+					AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					AdditiveOperator:         AdditiveAdd,
+					MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					Tokens:                   tk[:5],
+				},
+				AdditiveOperator:         AdditiveAdd,
+				MultiplicativeExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 - 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				AdditiveOperator:         AdditiveMinus,
+				MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 + 2 - 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression: &AdditiveExpression{
+					AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					AdditiveOperator:         AdditiveAdd,
+					MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					Tokens:                   tk[:5],
+				},
+				AdditiveOperator:         AdditiveMinus,
+				MultiplicativeExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 - 2 - 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression: &AdditiveExpression{
+					AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					AdditiveOperator:         AdditiveMinus,
+					MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					Tokens:                   tk[:5],
+				},
+				AdditiveOperator:         AdditiveMinus,
+				MultiplicativeExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 - 2 + 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+
+			t.Output = wrapConditional(AdditiveExpression{
+				AdditiveExpression: &AdditiveExpression{
+					AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+					AdditiveOperator:         AdditiveMinus,
+					MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					Tokens:                   tk[:5],
+				},
+				AdditiveOperator:         AdditiveAdd,
+				MultiplicativeExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 * 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				MultiplicativeOperator:   MultiplicativeMultiply,
+				ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 * 2 * 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &MultiplicativeExpression{
+					MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					MultiplicativeOperator:   MultiplicativeMultiply,
+					ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+					Tokens:                   tk[:5],
+				},
+				MultiplicativeOperator:   MultiplicativeMultiply,
+				ExponentiationExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 / 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				MultiplicativeOperator:   MultiplicativeDivide,
+				ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 / 2 / 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &MultiplicativeExpression{
+					MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					MultiplicativeOperator:   MultiplicativeDivide,
+					ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+					Tokens:                   tk[:5],
+				},
+				MultiplicativeOperator:   MultiplicativeDivide,
+				ExponentiationExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
+		{`1 % 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				MultiplicativeOperator:   MultiplicativeRemainder,
+				ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 % 2 % 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(MultiplicativeExpression{
+				MultiplicativeExpression: &MultiplicativeExpression{
+					MultiplicativeExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+					MultiplicativeOperator:   MultiplicativeRemainder,
+					ExponentiationExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+					Tokens:                   tk[:5],
+				},
+				MultiplicativeOperator:   MultiplicativeRemainder,
+				ExponentiationExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				Tokens:                   tk[:9],
+			})
+		}},
 		/*
-			{`1 < 2 === true`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`true === 1 < 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 > 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 <= 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 >= 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 instanceof 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 in 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 << 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 << 2 << 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 >> 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 >> 2 >> 3`, func(t *test, tk Tokens) {
-
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 >>> 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 >>> 2 >>> 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 + 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 + 2 + 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 + 2 - 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 - 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 - 2 - 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 - 2 + 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 * 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 * 2 * 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 / 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 / 2 / 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
-			{`1 % 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 % 2 % 3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
 			{`1 ** 2`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 0)
 				litB := makeConditionLiteral(tk, 4)
