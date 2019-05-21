@@ -517,7 +517,7 @@ Loop:
 		switch g.Peek() {
 		case parser.Token{TokenPunctuator, "*"}:
 			mo = MultiplicativeMultiply
-		case parser.Token{TokenPunctuator, "/"}:
+		case parser.Token{TokenDivPunctuator, "/"}:
 			mo = MultiplicativeDivide
 		case parser.Token{TokenPunctuator, "%"}:
 			mo = MultiplicativeRemainder
