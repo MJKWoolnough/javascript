@@ -284,11 +284,12 @@ Loop:
 		ee = EqualityExpression{
 			EqualityExpression: &EqualityExpression{
 				EqualityExpression:   ee.EqualityExpression,
-				EqualityOperator:     eo,
+				EqualityOperator:     ee.EqualityOperator,
 				RelationalExpression: ee.RelationalExpression,
 				Tokens:               j.ToTokens(),
 			},
 		}
+		ee.EqualityOperator = eo
 		j.Score(g)
 	}
 	ee.Tokens = j.ToTokens()
