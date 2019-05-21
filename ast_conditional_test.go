@@ -3,52 +3,13 @@ package javascript
 import "testing"
 
 func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
-	return ConditionalExpression{
-		LogicalORExpression: LogicalORExpression{
-			LogicalANDExpression: LogicalANDExpression{
-				BitwiseORExpression: BitwiseORExpression{
-					BitwiseXORExpression: BitwiseXORExpression{
-						BitwiseANDExpression: BitwiseANDExpression{
-							EqualityExpression: EqualityExpression{
-								RelationalExpression: RelationalExpression{
-									ShiftExpression: ShiftExpression{
-										AdditiveExpression: AdditiveExpression{
-											MultiplicativeExpression: MultiplicativeExpression{
-												ExponentiationExpression: ExponentiationExpression{
-													UnaryExpression: UnaryExpression{
-														UpdateExpression: UpdateExpression{
-															LeftHandSideExpression: &LeftHandSideExpression{
-																NewExpression: &NewExpression{
-																	MemberExpression: MemberExpression{
-																		PrimaryExpression: &PrimaryExpression{
-																			Literal: &tk[pos],
-																			Tokens:  tk[pos : pos+1],
-																		},
-																		Tokens: tk[pos : pos+1],
-																	},
-																	Tokens: tk[pos : pos+1],
-																},
-																Tokens: tk[pos : pos+1],
-															},
-															Tokens: tk[pos : pos+1],
-														},
-														Tokens: tk[pos : pos+1],
-													},
-													Tokens: tk[pos : pos+1],
-												},
-												Tokens: tk[pos : pos+1],
-											},
-											Tokens: tk[pos : pos+1],
-										},
-										Tokens: tk[pos : pos+1],
-									},
-									Tokens: tk[pos : pos+1],
-								},
-								Tokens: tk[pos : pos+1],
-							},
-							Tokens: tk[pos : pos+1],
-						},
-						Tokens: tk[pos : pos+1],
+	return wrapConditional(UpdateExpression{
+		LeftHandSideExpression: &LeftHandSideExpression{
+			NewExpression: &NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Literal: &tk[pos],
+						Tokens:  tk[pos : pos+1],
 					},
 					Tokens: tk[pos : pos+1],
 				},
@@ -57,7 +18,7 @@ func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
 			Tokens: tk[pos : pos+1],
 		},
 		Tokens: tk[pos : pos+1],
-	}
+	})
 }
 
 func wrapConditional(p interface{}) ConditionalExpression {
@@ -101,10 +62,12 @@ func wrapConditional(p interface{}) ConditionalExpression {
 		goto unaryExpression
 	case UpdateExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression = p
+	default:
+		panic("invalid conditional type")
 	}
-	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens
+	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens
 unaryExpression:
-	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.MultiplicativeExpression.ExponentiationExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.Tokens
+	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.Tokens
 exponentiationExpression:
 	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.Tokens
 multiplicativeExpression:
