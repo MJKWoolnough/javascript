@@ -187,6 +187,334 @@ func TestConditional(t *testing.T) {
 				Tokens:               tk[:5],
 			})
 		}},
+		{`1 | 2 | 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(BitwiseORExpression{
+				BitwiseORExpression: &BitwiseORExpression{
+					BitwiseORExpression:  &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+					BitwiseXORExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression,
+					Tokens:               tk[:5],
+				},
+				BitwiseXORExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`1 ^ 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(BitwiseXORExpression{
+				BitwiseXORExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression,
+				BitwiseANDExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 ^ 2 ^ 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(BitwiseXORExpression{
+				BitwiseXORExpression: &BitwiseXORExpression{
+					BitwiseXORExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression,
+					BitwiseANDExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression,
+					Tokens:               tk[:5],
+				},
+				BitwiseANDExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression,
+				Tokens:               tk[:9],
+			})
+		}},
+		{`1 & 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(BitwiseANDExpression{
+				BitwiseANDExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression,
+				EqualityExpression:   litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		{`1 & 2 & 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(BitwiseANDExpression{
+				BitwiseANDExpression: &BitwiseANDExpression{
+					BitwiseANDExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression,
+					EqualityExpression:   litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+					Tokens:               tk[:5],
+				},
+				EqualityExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				Tokens:             tk[:9],
+			})
+		}},
+		{`1 == 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(EqualityExpression{
+				EqualityExpression:   &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityEqual,
+				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[:5],
+			})
+		}},
+		/*
+			{`1 == 2 != true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 != 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 != 2 == true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 === 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 === 2 !== true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 !== 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 !== 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 < 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 < 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 > 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 > 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 <= 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 <= 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 >= 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 >= 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 instanceof 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 instanceof 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 in 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 in 2 === true`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 << 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 >> 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 >>> 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 + 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 + 2 + 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 + 2 - 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 - 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 - 2 - 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 - 2 + 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 * 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 * 2 * 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 / 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 / 2 / 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 % 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 % 2 % 3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`1 ** 2`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+
+			}},
+			{`1 ** 2 ** -3`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+				litB := makeConditionLiteral(tk, 4)
+				litC := makeConditionLiteral(tk, 8)
+
+			}},
+			{`delete 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`void 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`typeof 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`+ 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`- 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 3)
+
+			}},
+			{`~ 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`! 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`await 1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`await!~1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 3)
+
+			}},
+			{`1++`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+
+			}},
+			{`1--`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 0)
+
+			}},
+			{`++1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 1)
+
+			}},
+			{`++!1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 2)
+
+			}},
+			{`--1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 1)
+
+			}},
+			{`--!1`, func(t *test, tk Tokens) {
+				litA := makeConditionLiteral(tk, 1)
+
+			}},*/
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseConditionalExpression(t.In, t.Yield, t.Await)
 	})
