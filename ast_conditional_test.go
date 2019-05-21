@@ -888,6 +888,66 @@ func TestConditional(t *testing.T) {
 			})
 
 		}},
+		{`true ? 1 : 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = ConditionalExpression{
+				LogicalORExpression: litA.LogicalORExpression,
+				True: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[4:5],
+				},
+				False: &AssignmentExpression{
+					ConditionalExpression: &litC,
+					Tokens:                tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`true ? 1 ? 2 : 3 : 4 ? 5 : 6`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			litD := makeConditionLiteral(tk, 12)
+			litE := makeConditionLiteral(tk, 16)
+			litF := makeConditionLiteral(tk, 20)
+			litG := makeConditionLiteral(tk, 24)
+			t.Output = ConditionalExpression{
+				LogicalORExpression: litA.LogicalORExpression,
+				True: &AssignmentExpression{
+					ConditionalExpression: &ConditionalExpression{
+						LogicalORExpression: litB.LogicalORExpression,
+						True: &AssignmentExpression{
+							ConditionalExpression: &litC,
+							Tokens:                tk[8:9],
+						},
+						False: &AssignmentExpression{
+							ConditionalExpression: &litD,
+							Tokens:                tk[12:13],
+						},
+						Tokens: tk[4:13],
+					},
+					Tokens: tk[4:13],
+				},
+				False: &AssignmentExpression{
+					ConditionalExpression: &ConditionalExpression{
+						LogicalORExpression: litE.LogicalORExpression,
+						True: &AssignmentExpression{
+							ConditionalExpression: &litF,
+							Tokens:                tk[20:21],
+						},
+						False: &AssignmentExpression{
+							ConditionalExpression: &litG,
+							Tokens:                tk[24:25],
+						},
+						Tokens: tk[16:25],
+					},
+					Tokens: tk[16:25],
+				},
+				Tokens: tk[:25],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseConditionalExpression(t.In, t.Yield, t.Await)
 	})
