@@ -698,18 +698,30 @@ func TestConditional(t *testing.T) {
 				Tokens:                   tk[:9],
 			})
 		}},
+		{`1 ** 2`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = wrapConditional(ExponentiationExpression{
+				ExponentiationExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+				UnaryExpression:          litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression,
+				Tokens:                   tk[:5],
+			})
+		}},
+		{`1 ** 2 ** 3`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = wrapConditional(ExponentiationExpression{
+				ExponentiationExpression: &ExponentiationExpression{
+					ExponentiationExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression,
+					UnaryExpression:          litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression,
+					Tokens:                   tk[:5],
+				},
+				UnaryExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression,
+				Tokens:          tk[:9],
+			})
+		}},
 		/*
-			{`1 ** 2`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-
-			}},
-			{`1 ** 2 ** -3`, func(t *test, tk Tokens) {
-				litA := makeConditionLiteral(tk, 0)
-				litB := makeConditionLiteral(tk, 4)
-				litC := makeConditionLiteral(tk, 8)
-
-			}},
 			{`delete 1`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 2)
 
@@ -722,19 +734,19 @@ func TestConditional(t *testing.T) {
 				litA := makeConditionLiteral(tk, 2)
 
 			}},
-			{`+ 1`, func(t *test, tk Tokens) {
+			{`+1`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 2)
 
 			}},
-			{`- 1`, func(t *test, tk Tokens) {
+			{`-1`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 3)
 
 			}},
-			{`~ 1`, func(t *test, tk Tokens) {
+			{`~1`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 2)
 
 			}},
-			{`! 1`, func(t *test, tk Tokens) {
+			{`!1`, func(t *test, tk Tokens) {
 				litA := makeConditionLiteral(tk, 2)
 
 			}},
