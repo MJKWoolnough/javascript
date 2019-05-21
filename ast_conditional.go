@@ -560,7 +560,7 @@ Loop:
 			return ee, j.Error(err)
 		}
 		j.Score(g)
-		if len(ee.UnaryExpression.UnaryOperators) == 0 {
+		if len(ee.UnaryExpression.UnaryOperators) > 0 {
 			break
 		}
 		g = j.NewGoal()
