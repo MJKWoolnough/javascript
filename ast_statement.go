@@ -98,7 +98,7 @@ const (
 
 type Statement struct {
 	Type                    StatementType
-	BlockStatement          *StatementList
+	BlockStatement          *Block
 	VariableStatement       *VariableStatement
 	ExpressionStatement     *Expression
 	IfStatement             *IfStatement
@@ -127,12 +127,12 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.Except()
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		sl, err := h.parseStatementList(yield, await, ret)
+		b, err := h.parseBlock(yield, await, ret)
 		if err != nil {
 			return s, g.Error(err)
 		}
 		g.Score(h)
-		s.BlockStatement = &sl
+		s.BlockStatement = &b
 	case parser.Token{TokenKeyword, "var"}:
 		vs, err := g.parseVariableStatement(yield, await)
 		if err != nil {
