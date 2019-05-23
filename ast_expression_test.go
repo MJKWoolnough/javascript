@@ -376,6 +376,123 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`(a, b) => c`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 1)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 9)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[1:2],
+							},
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[4:5],
+							},
+						},
+						Tokens: tk[:6],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litC,
+						Tokens:                tk[9:10],
+					},
+					Tokens: tk[:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`(a, b, c) => d`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 1)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 7)
+			litD := makeConditionLiteral(tk, 12)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[1:2],
+							},
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[4:5],
+							},
+							{
+								ConditionalExpression: &litC,
+								Tokens:                tk[7:8],
+							},
+						},
+						Tokens: tk[:9],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litD,
+						Tokens:                tk[12:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`(a, ...b) => c`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 1)
+			litC := makeConditionLiteral(tk, 10)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[1:2],
+							},
+						},
+						BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+						Tokens:            tk[:7],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litC,
+						Tokens:                tk[10:11],
+					},
+					Tokens: tk[:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`(a, ...[b]) => c`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 1)
+			litC := makeConditionLiteral(tk, 12)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[1:2],
+							},
+						},
+						ArrayBindingPattern: &ArrayBindingPattern{
+							BindingElementList: []BindingElement{
+								{
+									SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+									Tokens:            tk[6:7],
+								},
+							},
+							Tokens: tk[5:8],
+						},
+						Tokens: tk[:9],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litC,
+						Tokens:                tk[12:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
 	})
