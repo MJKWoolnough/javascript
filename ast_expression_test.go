@@ -493,6 +493,38 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{`(a, ...{b}) => c`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 1)
+			litC := makeConditionLiteral(tk, 12)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[1:2],
+							},
+						},
+						ObjectBindingPattern: &ObjectBindingPattern{
+							BindingPropertyList: []BindingProperty{
+								{
+									SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+									Tokens:            tk[6:7],
+								},
+							},
+							Tokens: tk[5:8],
+						},
+						Tokens: tk[:9],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litC,
+						Tokens:                tk[12:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
 	})
