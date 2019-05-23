@@ -3,15 +3,20 @@ package javascript
 import "testing"
 
 func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
+	p := PrimaryExpression{
+		Tokens: tk[pos : pos+1],
+	}
+	if tk[pos].Type == TokenIdentifier || tk[pos].Type == TokenKeyword {
+		p.IdentifierReference = &IdentifierReference{Identifier: &tk[pos]}
+	} else {
+		p.Literal = &tk[pos]
+	}
 	return wrapConditional(UpdateExpression{
 		LeftHandSideExpression: &LeftHandSideExpression{
 			NewExpression: &NewExpression{
 				MemberExpression: MemberExpression{
-					PrimaryExpression: &PrimaryExpression{
-						Literal: &tk[pos],
-						Tokens:  tk[pos : pos+1],
-					},
-					Tokens: tk[pos : pos+1],
+					PrimaryExpression: &p,
+					Tokens:            tk[pos : pos+1],
 				},
 				Tokens: tk[pos : pos+1],
 			},
@@ -778,22 +783,7 @@ func TestConditional(t *testing.T) {
 			})
 		}},
 		{`await 1`, func(t *test, tk Tokens) {
-			t.Output = wrapConditional(UpdateExpression{
-				LeftHandSideExpression: &LeftHandSideExpression{
-					NewExpression: &NewExpression{
-						MemberExpression: MemberExpression{
-							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{&tk[0]},
-								Tokens:              tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			})
+			t.Output = makeConditionLiteral(tk, 0)
 		}},
 		{`await 1`, func(t *test, tk Tokens) {
 			t.Await = true
@@ -805,22 +795,7 @@ func TestConditional(t *testing.T) {
 			})
 		}},
 		{`await!~-1`, func(t *test, tk Tokens) {
-			t.Output = wrapConditional(UpdateExpression{
-				LeftHandSideExpression: &LeftHandSideExpression{
-					NewExpression: &NewExpression{
-						MemberExpression: MemberExpression{
-							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{&tk[0]},
-								Tokens:              tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			})
+			t.Output = makeConditionLiteral(tk, 0)
 		}},
 		{`await!~-1`, func(t *test, tk Tokens) {
 			t.Await = true
