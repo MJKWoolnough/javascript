@@ -525,6 +525,30 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{`a = 1`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
 	})
