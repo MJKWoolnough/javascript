@@ -321,7 +321,7 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 	j.AcceptToken(parser.Token{TokenKeyword, "if"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error(ErrMissingOpeningParentheses)
+		return is, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
@@ -332,7 +332,7 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error(ErrMissingClosingParentheses)
+		return is, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
@@ -383,7 +383,7 @@ func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationS
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error(ErrMissingOpeningParentheses)
+		return is, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
@@ -394,7 +394,7 @@ func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationS
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error(ErrMissingClosingParentheses)
+		return is, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
@@ -418,7 +418,7 @@ func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (Iterati
 	j.AcceptToken(parser.Token{TokenKeyword, "while"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error(ErrMissingOpeningParentheses)
+		return is, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
@@ -429,7 +429,7 @@ func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (Iterati
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error(ErrMissingClosingParentheses)
+		return is, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
@@ -490,7 +490,7 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 	j.AcceptToken(parser.Token{TokenKeyword, "for"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error(ErrMissingOpeningParentheses)
+		return is, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 
@@ -668,7 +668,7 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error(ErrMissingClosingParentheses)
+		return is, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
@@ -697,7 +697,7 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 	j.AcceptToken(parser.Token{TokenKeyword, "switch"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return ss, j.Error(ErrMissingOpeningParentheses)
+		return ss, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
@@ -708,7 +708,7 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return ss, j.Error(ErrMissingClosingParentheses)
+		return ss, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
@@ -803,7 +803,7 @@ func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, er
 	j.AcceptToken(parser.Token{TokenKeyword, "with"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return ws, j.Error(ErrMissingOpeningParentheses)
+		return ws, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
@@ -814,7 +814,7 @@ func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, er
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return ws, j.Error(ErrMissingClosingParentheses)
+		return ws, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
@@ -862,7 +862,7 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 	if j.AcceptToken(parser.Token{TokenKeyword, "catch"}) {
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-			return ts, j.Error(ErrMissingOpeningParentheses)
+			return ts, j.Error(ErrMissingOpeningParenthesis)
 		}
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()
@@ -889,11 +889,11 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			return ts, j.Error(ErrMissingClosingParentheses)
+			return ts, j.Error(ErrMissingClosingParenthesis)
 		}
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-			return ts, j.Error(ErrMissingOpeningParentheses)
+			return ts, j.Error(ErrMissingOpeningParenthesis)
 		}
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()

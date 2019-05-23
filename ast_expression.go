@@ -464,7 +464,7 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield, await bool) (CoverParenthesizedExpressionAndArrowParameterList, error) {
 	var cp CoverParenthesizedExpressionAndArrowParameterList
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return cp, j.Error(ErrMissingOpeningParentheses)
+		return cp, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
@@ -495,7 +495,7 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 				j.Score(g)
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-					return cp, j.Error(ErrMissingClosingParentheses)
+					return cp, j.Error(ErrMissingClosingParenthesis)
 				}
 				break
 			}
@@ -528,7 +528,7 @@ type Arguments struct {
 func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 	var a Arguments
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return a, j.Error(ErrMissingOpeningParentheses)
+		return a, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {

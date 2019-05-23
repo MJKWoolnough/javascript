@@ -47,7 +47,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return fd, j.Error(ErrMissingOpeningParentheses)
+		return fd, j.Error(ErrMissingOpeningParenthesis)
 	}
 	g = j.NewGoal()
 	fd.FormalParameters, err = g.parseFormalParameters(fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await)
@@ -57,7 +57,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return fd, j.Error(ErrMissingClosingParentheses)
+		return fd, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()

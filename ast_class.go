@@ -127,7 +127,7 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return md, j.Error(ErrMissingOpeningParentheses)
+		return md, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if md.Type != MethodGetter {
@@ -139,7 +139,7 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return md, j.Error(ErrMissingClosingParentheses)
+		return md, j.Error(ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
