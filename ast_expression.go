@@ -96,18 +96,10 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 		ae.ArrowFunction = &af
 		return nil
 	}, func(j *jsParser) error {
-		ce, err := j.parseConditionalExpression(in, yield, await)
-		if err != nil {
-			return err
-		}
-		ae.ConditionalExpression = &ce
-		return nil
-	}, func(j *jsParser) error {
 		lhs, err := j.parseLeftHandSideExpression(yield, await)
 		if err != nil {
 			return err
 		}
-		ae.LeftHandSideExpression = &lhs
 		j.AcceptRunWhitespace()
 		ae.AssignmentOperator, err = j.parseAssignmentOperator()
 		if err != nil {
@@ -120,7 +112,15 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 			return err
 		}
 		j.Score(g)
+		ae.LeftHandSideExpression = &lhs
 		ae.AssignmentExpression = &nae
+		return nil
+	}, func(j *jsParser) error {
+		ce, err := j.parseConditionalExpression(in, yield, await)
+		if err != nil {
+			return err
+		}
+		ae.ConditionalExpression = &ce
 		return nil
 	}); err != nil {
 		return ae, err
