@@ -454,7 +454,7 @@ func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression,
 }
 
 type CoverParenthesizedExpressionAndArrowParameterList struct {
-	Expressions          []Expression
+	Expressions          []AssignmentExpression
 	BindingIdentifier    *BindingIdentifier
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
@@ -500,7 +500,7 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 				break
 			}
 			g := j.NewGoal()
-			e, err := g.parseExpression(true, yield, await)
+			e, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
 				return cp, j.Error(err)
 			}
