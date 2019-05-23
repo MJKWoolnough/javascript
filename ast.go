@@ -182,7 +182,7 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 type ArrayBindingPattern struct {
 	BindingElementList []BindingElement
 	BindingRestElement *BindingElement
-	Token              Tokens
+	Tokens             Tokens
 }
 
 func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPattern, error) {
@@ -219,7 +219,7 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 			return ab, j.Error(ErrMissingComma)
 		}
 	}
-	ab.Token = j.ToTokens()
+	ab.Tokens = j.ToTokens()
 	return ab, nil
 }
 
