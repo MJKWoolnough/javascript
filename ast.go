@@ -507,7 +507,7 @@ type ArrowFunction struct {
 	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
 	FormalParameters                                  *FormalParameters
 	AssignmentExpression                              *AssignmentExpression
-	FunctionBody                                      *StatementList
+	FunctionBody                                      *Block
 	Tokens                                            Tokens
 }
 
@@ -555,18 +555,14 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		return af, j.Error(ErrMissingArrow)
 	}
 	j.AcceptRunWhitespace()
-	if j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
-		sl, err := g.parseStatementList(false, af.Async, true)
+		b, err := g.parseBlock(false, af.Async, true)
 		if err != nil {
 			return af, j.Error(err)
 		}
 		j.Score(g)
-		af.FunctionBody = &sl
-		j.AcceptRunWhitespace()
-		if !j.Accept(TokenRightBracePunctuator) {
-			return af, j.Error(ErrMissingClosingBrace)
-		}
+		af.FunctionBody = &b
 	} else {
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(in, false, af.Async)
