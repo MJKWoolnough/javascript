@@ -473,14 +473,14 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 				j.AcceptRunWhitespace()
 				g := j.NewGoal()
 				if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-					ab, err := j.parseArrayBindingPattern(yield, await)
+					ab, err := g.parseArrayBindingPattern(yield, await)
 					if err != nil {
 						return cp, j.Error(err)
 					}
 					cp.ArrayBindingPattern = &ab
 
 				} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-					ob, err := j.parseObjectBindingPattern(yield, await)
+					ob, err := g.parseObjectBindingPattern(yield, await)
 					if err != nil {
 						return cp, j.Error(err)
 					}
