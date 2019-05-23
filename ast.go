@@ -225,7 +225,7 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
-	Token               Tokens
+	Tokens              Tokens
 }
 
 func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPattern, error) {
@@ -250,6 +250,7 @@ func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPa
 			return ob, j.Error(ErrMissingComma)
 		}
 	}
+	ob.Tokens = j.ToTokens()
 	return ob, nil
 }
 
