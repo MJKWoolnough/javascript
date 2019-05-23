@@ -322,3 +322,48 @@ func TestNewExpression(t *testing.T) {
 		return t.Tokens.parseNewExpression(t.Yield, t.Await)
 	})
 }
+
+func TestAssignmentExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`yield 1`, func(t *test, tk Tokens) {}},
+		{`yield 1`, func(t *test, tk Tokens) {
+			t.Yield = true
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = AssignmentExpression{
+				Yield: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`yield *1`, func(t *test, tk Tokens) {
+			t.Yield = true
+			litA := makeConditionLiteral(tk, 3)
+			t.Output = AssignmentExpression{
+				Yield:    true,
+				Delegate: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a => {}`, func(t *test, tk Tokens) {
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					BindingIdentifier: &BindingIdentifier{Identifier: &tk[0]},
+					FunctionBody: &Block{
+						Tokens: tk[4:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
+	})
+}
