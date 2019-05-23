@@ -28,7 +28,7 @@ func (j *jsParser) parseAssignmentOperator() (AssignmentOperator, error) {
 		ao = AssignmentAssign
 	case parser.Token{TokenPunctuator, "*="}:
 		ao = AssignmentMultiply
-	case parser.Token{TokenPunctuator, "/="}:
+	case parser.Token{TokenDivPunctuator, "/="}:
 		ao = AssignmentDivide
 	case parser.Token{TokenPunctuator, "%="}:
 		ao = AssignmentRemainder
