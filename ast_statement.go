@@ -124,14 +124,10 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{TokenPunctuator, "{"}:
-		g.Except()
-		g.AcceptRunWhitespace()
-		h := g.NewGoal()
-		b, err := h.parseBlock(yield, await, ret)
+		b, err := g.parseBlock(yield, await, ret)
 		if err != nil {
-			return s, g.Error(err)
+			return s, j.Error(err)
 		}
-		g.Score(h)
 		s.BlockStatement = &b
 	case parser.Token{TokenKeyword, "var"}:
 		vs, err := g.parseVariableStatement(yield, await)
