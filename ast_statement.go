@@ -340,6 +340,7 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
 	if g.AcceptToken(parser.Token{TokenKeyword, "else"}) {
+		g.AcceptRunWhitespace()
 		h := g.NewGoal()
 		s, err := h.parseStatement(yield, await, ret)
 		if err != nil {
