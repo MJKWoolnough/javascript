@@ -465,7 +465,6 @@ type IterationStatementFor struct {
 	Conditional    *Expression
 	Afterthought   *Expression
 
-	VariableDeclarationList *VariableDeclaration
 	LeftHandSideExpression  *LeftHandSideExpression
 	ForBindingIdentifier    *BindingIdentifier
 	ForBindingPatternObject *ObjectBindingPattern
