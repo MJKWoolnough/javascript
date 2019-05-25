@@ -179,6 +179,65 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
+		{`var {a, b} = {c, d};`, func(t *test, tk Tokens) {
+			obj := wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								ObjectLiteral: &ObjectLiteral{
+									PropertyDefinitionList: []PropertyDefinition{
+										{
+											IdentifierReference: &IdentifierReference{Identifier: &tk[12]},
+											Tokens:              tk[12:13],
+										},
+										{
+											IdentifierReference: &IdentifierReference{Identifier: &tk[15]},
+											Tokens:              tk[15:16],
+										},
+									},
+									Tokens: tk[11:17],
+								},
+								Tokens: tk[11:17],
+							},
+							Tokens: tk[11:17],
+						},
+						Tokens: tk[11:17],
+					},
+					Tokens: tk[11:17],
+				},
+				Tokens: tk[11:17],
+			})
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								BindingPropertyList: []BindingProperty{
+									{
+										SingleNameBinding: &BindingIdentifier{Identifier: &tk[3]},
+										Tokens:            tk[3:4],
+									},
+									{
+										SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+										Tokens:            tk[6:7],
+									},
+								},
+								Tokens: tk[2:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &obj,
+								Tokens:                tk[11:17],
+							},
+							Tokens: tk[2:17],
+						},
+					},
+					Tokens: tk[:18],
+				},
+				Tokens: tk[:18],
+			}
+
+		}},
 		{`;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Tokens: tk[:1],
