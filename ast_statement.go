@@ -625,7 +625,7 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			}
 			j.AcceptRunWhitespace()
 			in := true
-			if j.AcceptToken(parser.Token{TokenKeyword, "of"}) {
+			if j.AcceptToken(parser.Token{TokenIdentifier, "of"}) {
 				in = false
 				switch is.Type {
 				case ForInVar:
@@ -649,7 +649,7 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 				}
 				is.In = &e
 			} else {
-				ae, err := j.parseAssignmentExpression(true, yield, await)
+				ae, err := g.parseAssignmentExpression(true, yield, await)
 				if err != nil {
 					return err
 				}
