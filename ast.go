@@ -461,6 +461,7 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 	); err != nil {
 		return pd, err
 	}
+	pd.Tokens = j.ToTokens()
 	return pd, nil
 }
 
