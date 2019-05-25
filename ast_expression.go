@@ -314,9 +314,6 @@ Loop:
 				return me, g.Error(err)
 			}
 			nme.TemplateLiteral = &tl
-		case TokenIdentifier:
-			h.Except()
-			nme.IdentifierName = h.GetLastToken()
 		case TokenPunctuator:
 			switch tk.Data {
 			case ".":
