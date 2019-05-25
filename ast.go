@@ -343,7 +343,7 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 			spread = true
 		}
 		g := j.NewGoal()
-		ae, err := j.parseAssignmentExpression(true, yield, await)
+		ae, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
 			return al, j.Error(err)
 		}
@@ -355,6 +355,8 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 				return al, j.Error(ErrMissingClosingBracket)
 			}
 			break
+		} else {
+			al.ElementList = append(al.ElementList, ae)
 		}
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			break
