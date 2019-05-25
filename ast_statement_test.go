@@ -24,7 +24,7 @@ func TestStatement(t *testing.T) {
 		{`continue Name;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Type: StatementContinue,
-				ContinueStatement: &LabelIdentifier{
+				LabelIdentifier: &LabelIdentifier{
 					Identifier: &tk[2],
 				},
 				Tokens: tk[:4],
@@ -45,7 +45,7 @@ func TestStatement(t *testing.T) {
 		{`break Name;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Type: StatementBreak,
-				BreakStatement: &LabelIdentifier{
+				LabelIdentifier: &LabelIdentifier{
 					Identifier: &tk[2],
 				},
 				Tokens: tk[:4],

@@ -106,14 +106,10 @@ type Statement struct {
 	IterationStatementWhile *IterationStatementWhile
 	IterationStatementFor   *IterationStatementFor
 	SwitchStatement         *SwitchStatement
-	ContinueStatement       *LabelIdentifier
-	BreakStatement          *LabelIdentifier
-	ReturnStatement         *Expression
 	WithStatement           *WithStatement
 	LabelIdentifier         *LabelIdentifier
 	LabelledItemFunction    *FunctionDeclaration
 	LabelledItemStatement   *Statement
-	ThrowStatement          *Expression
 	TryStatement            *TryStatement
 	DebuggerStatement       *Token
 	Tokens                  Tokens
@@ -177,7 +173,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			if err != nil {
 				return s, g.Error(err)
 			}
-			s.ContinueStatement = &li
+			s.LabelIdentifier = &li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return s, g.Error(ErrMissingSemiColon)
@@ -193,7 +189,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			if err != nil {
 				return s, g.Error(err)
 			}
-			s.BreakStatement = &li
+			s.LabelIdentifier = &li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return s, g.Error(ErrMissingSemiColon)
@@ -212,7 +208,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			if err != nil {
 				return s, g.Error(err)
 			}
-			s.ReturnStatement = &e
+			s.ExpressionStatement = &e
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return s, g.Error(ErrMissingSemiColon)
@@ -236,7 +232,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		if err != nil {
 			return s, g.Error(err)
 		}
-		s.ThrowStatement = &e
+		s.ExpressionStatement = &e
 		g.Score(h)
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			return s, g.Error(ErrMissingSemiColon)
