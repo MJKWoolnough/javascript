@@ -4,6 +4,181 @@ import "testing"
 
 func TestStatement(t *testing.T) {
 	doTests(t, []sourceFn{
+		{`{}`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				BlockStatement: &Block{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`var a;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+							Tokens:            tk[2:3],
+						},
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`var a = 1;`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 6)
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[6:7],
+							},
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`var a = 1, b;`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 6)
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[6:7],
+							},
+							Tokens: tk[2:7],
+						},
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[9]},
+							Tokens:            tk[9:10],
+						},
+					},
+					Tokens: tk[:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`var a = 1, b = 2;`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 6)
+			litB := makeConditionLiteral(tk, 13)
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[6:7],
+							},
+							Tokens: tk[2:7],
+						},
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[9]},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litB,
+								Tokens:                tk[13:14],
+							},
+							Tokens: tk[9:14],
+						},
+					},
+					Tokens: tk[:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{`var a, b = 1;`, func(t *test, tk Tokens) {
+			litB := makeConditionLiteral(tk, 9)
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+							Tokens:            tk[2:3],
+						},
+						{
+							BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litB,
+								Tokens:                tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+					},
+					Tokens: tk[:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`var [a, b] = [1, 2];`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 12)
+			litB := makeConditionLiteral(tk, 15)
+			arr := wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								ArrayLiteral: &ArrayLiteral{
+									ElementList: []AssignmentExpression{
+										{
+											ConditionalExpression: &litA,
+											Tokens:                tk[12:13],
+										},
+										{
+											ConditionalExpression: &litB,
+											Tokens:                tk[15:16],
+										},
+									},
+									Tokens: tk[11:17],
+								},
+								Tokens: tk[11:17],
+							},
+							Tokens: tk[11:17],
+						},
+						Tokens: tk[11:17],
+					},
+					Tokens: tk[11:17],
+				},
+				Tokens: tk[11:17],
+			})
+			t.Output = Statement{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							ArrayBindingPattern: &ArrayBindingPattern{
+								BindingElementList: []BindingElement{
+									{
+										SingleNameBinding: &BindingIdentifier{Identifier: &tk[3]},
+										Tokens:            tk[3:4],
+									},
+									{
+										SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+										Tokens:            tk[6:7],
+									},
+								},
+								Tokens: tk[2:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &arr,
+								Tokens:                tk[11:17],
+							},
+							Tokens: tk[2:17],
+						},
+					},
+					Tokens: tk[:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
 		{`;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Tokens: tk[:1],
