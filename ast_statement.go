@@ -767,7 +767,7 @@ func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
 	}
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
-	if tk := g.Peek(); tk != (parser.Token{TokenKeyword, "case"}) && tk != (parser.Token{TokenKeyword, "default"}) && tk != (parser.Token{TokenPunctuator, "}"}) {
+	if tk := g.Peek(); tk != (parser.Token{TokenKeyword, "case"}) && tk != (parser.Token{TokenKeyword, "default"}) && tk != (parser.Token{TokenRightBracePunctuator, "}"}) {
 		h := g.NewGoal()
 		sl, err := h.parseStatementList(yield, await, ret)
 		if err != nil {
