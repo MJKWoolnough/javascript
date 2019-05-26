@@ -886,6 +886,52 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`switch(a){case 0:case 1:}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 7)
+			litC := makeConditionLiteral(tk, 11)
+			t.Output = Statement{
+				SwitchStatement: &SwitchStatement{
+					Expression: Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					CaseClauses: []CaseClause{
+						{
+							Expression: Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litB,
+										Tokens:                tk[7:8],
+									},
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[5:9],
+						},
+						{
+							Expression: Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litC,
+										Tokens:                tk[11:12],
+									},
+								},
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[9:13],
+						},
+					},
+					Tokens: tk[:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
 		{`;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Tokens: tk[:1],
