@@ -708,7 +708,7 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 	}
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, "}"}) {
+		if j.AcceptToken(parser.Token{TokenRightBracePunctuator, "}"}) {
 			break
 		} else if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
 			j.AcceptRunWhitespace()
