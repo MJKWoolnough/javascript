@@ -238,59 +238,6 @@ func TestStatement(t *testing.T) {
 			}
 
 		}},
-		{`;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Tokens: tk[:1],
-			}
-		}},
-		{`continue;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type:   StatementContinue,
-				Tokens: tk[:2],
-			}
-		}},
-		{`continue ;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type:   StatementContinue,
-				Tokens: tk[:3],
-			}
-		}},
-		{`continue Name;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type: StatementContinue,
-				LabelIdentifier: &LabelIdentifier{
-					Identifier: &tk[2],
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`break;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type:   StatementBreak,
-				Tokens: tk[:2],
-			}
-		}},
-		{`break ;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type:   StatementBreak,
-				Tokens: tk[:3],
-			}
-		}},
-		{`break Name;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Type: StatementBreak,
-				LabelIdentifier: &LabelIdentifier{
-					Identifier: &tk[2],
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`debugger;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				DebuggerStatement: &tk[0],
-				Tokens:            tk[:2],
-			}
-		}},
 		{`if (1) {}`, func(t *test, tk Tokens) {
 			litA := makeConditionLiteral(tk, 3)
 			t.Output = Statement{
@@ -919,6 +866,77 @@ func TestStatement(t *testing.T) {
 					Tokens: tk[:15],
 				},
 				Tokens: tk[:15],
+			}
+		}},
+		{`switch(true){}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Statement{
+				SwitchStatement: &SwitchStatement{
+					Expression: Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Tokens: tk[:1],
+			}
+		}},
+		{`continue;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementContinue,
+				Tokens: tk[:2],
+			}
+		}},
+		{`continue ;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementContinue,
+				Tokens: tk[:3],
+			}
+		}},
+		{`continue Name;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type: StatementContinue,
+				LabelIdentifier: &LabelIdentifier{
+					Identifier: &tk[2],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`break;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementBreak,
+				Tokens: tk[:2],
+			}
+		}},
+		{`break ;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type:   StatementBreak,
+				Tokens: tk[:3],
+			}
+		}},
+		{`break Name;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Type: StatementBreak,
+				LabelIdentifier: &LabelIdentifier{
+					Identifier: &tk[2],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`debugger;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				DebuggerStatement: &tk[0],
+				Tokens:            tk[:2],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
