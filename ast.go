@@ -5,18 +5,22 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-type Script StatementList
+type Script []StatementListItem
 
 func ParseScript(t parser.Tokeniser) (Script, error) {
 	j, err := newJSParser(t)
 	if err != nil {
-		return Script{}, err
+		return nil, err
 	}
-	s, err := j.parseStatementList(false, false, false)
-	if err != nil {
-		return Script{}, err
+	var s Script
+	for j.Peek().Type != parser.TokenDone {
+		si, err := j.parseStatementListItem(false, false, false)
+		if err != nil {
+			return nil, err
+		}
+		s = append(s, si)
 	}
-	return Script(s), nil
+	return s, nil
 }
 
 type IdentifierReference Identifier
