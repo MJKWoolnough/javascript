@@ -269,6 +269,10 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 				if err != nil {
 					return err
 				}
+				j.AcceptRunWhitespace()
+				if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+					return ErrMissingSemiColon
+				}
 				s.ExpressionStatement = &e
 				return nil
 			},
