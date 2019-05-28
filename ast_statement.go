@@ -207,9 +207,6 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.Except()
 		s.Type = StatementThrow
 		g.AcceptRunWhitespaceNoNewLine()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			return s, g.Error(ErrMissingExpression)
-		}
 		h := g.NewGoal()
 		e, err := h.parseExpression(true, yield, await)
 		if err != nil {
