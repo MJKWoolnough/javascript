@@ -1308,6 +1308,22 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`throw a;`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Statement{
+				Type: StatementThrow,
+				ExpressionStatement: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[0:4],
+			}
+		}},
 		{`debugger;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				DebuggerStatement: &tk[0],
