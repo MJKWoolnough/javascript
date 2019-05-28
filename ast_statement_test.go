@@ -238,6 +238,11 @@ func TestStatement(t *testing.T) {
 			}
 
 		}},
+		{`;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				Tokens: tk[:1],
+			}
+		}},
 		{`if (1) {}`, func(t *test, tk Tokens) {
 			litA := makeConditionLiteral(tk, 3)
 			t.Output = Statement{
@@ -1206,11 +1211,6 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:28],
 			}
 		}},
-		{`;`, func(t *test, tk Tokens) {
-			t.Output = Statement{
-				Tokens: tk[:1],
-			}
-		}},
 		{`continue;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				Type:   StatementContinue,
@@ -1251,6 +1251,61 @@ func TestStatement(t *testing.T) {
 					Identifier: &tk[2],
 				},
 				Tokens: tk[:4],
+			}
+		}},
+		{`return;`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     ErrInvalidStatement,
+				Parsing: "Statement",
+				Token:   tk[0],
+			}
+		}},
+		{`return;`, func(t *test, tk Tokens) {
+			t.Ret = true
+			t.Output = Statement{
+				Type:   StatementReturn,
+				Tokens: tk[:2],
+			}
+		}},
+		{`return 1;`, func(t *test, tk Tokens) {
+			t.Ret = true
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Statement{
+				Type: StatementReturn,
+				ExpressionStatement: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`with(a){}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Statement{
+				WithStatement: &WithStatement{
+					Expression: Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Statement: Statement{
+						BlockStatement: &Block{
+							Tokens: tk[4:6],
+						},
+						Tokens: tk[4:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
 			}
 		}},
 		{`debugger;`, func(t *test, tk Tokens) {
