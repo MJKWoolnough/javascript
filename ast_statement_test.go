@@ -1324,10 +1324,260 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[0:4],
 			}
 		}},
+		{`try{a;}catch(e){b;}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = Statement{
+				TryStatement: &TryStatement{
+					TryBlock: Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litA,
+												Tokens:                tk[2:3],
+											},
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:4],
+								},
+								Tokens: tk[2:4],
+							},
+						},
+						Tokens: tk[1:5],
+					},
+					CatchParameterBindingIdentifier: &BindingIdentifier{Identifier: &tk[7]},
+					CatchBlock: &Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litB,
+												Tokens:                tk[10:11],
+											},
+										},
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[10:12],
+								},
+								Tokens: tk[10:12],
+							},
+						},
+						Tokens: tk[9:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`try{a;}catch({e}){b;}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = Statement{
+				TryStatement: &TryStatement{
+					TryBlock: Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litA,
+												Tokens:                tk[2:3],
+											},
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:4],
+								},
+								Tokens: tk[2:4],
+							},
+						},
+						Tokens: tk[1:5],
+					},
+					CatchParameterObjectBindingPattern: &ObjectBindingPattern{
+						BindingPropertyList: []BindingProperty{
+							{
+								SingleNameBinding: &BindingIdentifier{Identifier: &tk[8]},
+								Tokens:            tk[8:9],
+							},
+						},
+						Tokens: tk[7:10],
+					},
+					CatchBlock: &Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litB,
+												Tokens:                tk[12:13],
+											},
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:14],
+								},
+								Tokens: tk[12:14],
+							},
+						},
+						Tokens: tk[11:15],
+					},
+					Tokens: tk[:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{`try{a;}finally{b;}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 7)
+			t.Output = Statement{
+				TryStatement: &TryStatement{
+					TryBlock: Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litA,
+												Tokens:                tk[2:3],
+											},
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:4],
+								},
+								Tokens: tk[2:4],
+							},
+						},
+						Tokens: tk[1:5],
+					},
+					FinallyBlock: &Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litB,
+												Tokens:                tk[7:8],
+											},
+										},
+										Tokens: tk[7:8],
+									},
+									Tokens: tk[7:9],
+								},
+								Tokens: tk[7:9],
+							},
+						},
+						Tokens: tk[6:10],
+					},
+					Tokens: tk[:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`try{a;}catch([e]){b;}finally{c;}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 12)
+			litC := makeConditionLiteral(tk, 17)
+			t.Output = Statement{
+				TryStatement: &TryStatement{
+					TryBlock: Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litA,
+												Tokens:                tk[2:3],
+											},
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:4],
+								},
+								Tokens: tk[2:4],
+							},
+						},
+						Tokens: tk[1:5],
+					},
+					CatchParameterArrayBindingPattern: &ArrayBindingPattern{
+						BindingElementList: []BindingElement{
+							{
+								SingleNameBinding: &BindingIdentifier{Identifier: &tk[8]},
+								Tokens:            tk[8:9],
+							},
+						},
+						Tokens: tk[7:10],
+					},
+					CatchBlock: &Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litB,
+												Tokens:                tk[12:13],
+											},
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:14],
+								},
+								Tokens: tk[12:14],
+							},
+						},
+						Tokens: tk[11:15],
+					},
+					FinallyBlock: &Block{
+						StatementListItems: []StatementListItem{
+							{
+								Statement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litC,
+												Tokens:                tk[17:18],
+											},
+										},
+										Tokens: tk[17:18],
+									},
+									Tokens: tk[17:19],
+								},
+								Tokens: tk[17:19],
+							},
+						},
+						Tokens: tk[16:20],
+					},
+					Tokens: tk[:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
 		{`debugger;`, func(t *test, tk Tokens) {
 			t.Output = Statement{
 				DebuggerStatement: &tk[0],
 				Tokens:            tk[:2],
+			}
+		}},
+		{`label: debugger;`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				LabelIdentifier: &LabelIdentifier{Identifier: &tk[0]},
+				LabelledItemStatement: &Statement{
+					DebuggerStatement: &tk[3],
+					Tokens:            tk[3:5],
+				},
+				Tokens: tk[0:5],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
