@@ -198,7 +198,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			}
 		}
 	case parser.Token{TokenKeyword, "with"}:
-		ws, err := j.parseWithStatement(yield, await, ret)
+		ws, err := g.parseWithStatement(yield, await, ret)
 		if err != nil {
 			return s, j.Error(err)
 		}
