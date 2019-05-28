@@ -251,11 +251,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 					}
 					s.LabelledItemFunction = &fd
 				} else {
-					s, err := g.parseStatement(yield, await, ret)
+					ss, err := g.parseStatement(yield, await, ret)
 					if err != nil {
 						return err
 					}
-					s.LabelledItemStatement = &s
+					s.LabelledItemStatement = &ss
 				}
 				j.Score(g)
 				s.LabelIdentifier = &i
