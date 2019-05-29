@@ -262,6 +262,24 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 				return nil
 			},
 			func(j *jsParser) error {
+				switch j.Peek() {
+				case parser.Token{TokenPunctuator, "{"}, parser.Token{TokenKeyword, "function"}, parser.Token{TokenKeyword, "class"}:
+					return errNotApplicable
+				case parser.Token{TokenIdentifier, "async"}:
+					g := j.NewGoal()
+					g.Except()
+					g.AcceptRunWhitespaceNoNewLine()
+					if g.AcceptToken(parser.Token{TokenKeyword, "function"}) {
+						return errNotApplicable
+					}
+				case parser.Token{TokenIdentifier, "let"}:
+					g := j.NewGoal()
+					g.Except()
+					g.AcceptRunWhitespace()
+					if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+						return errNotApplicable
+					}
+				}
 				e, err := j.parseExpression(true, yield, await)
 				if err != nil {
 					return err
