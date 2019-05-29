@@ -1580,6 +1580,22 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[0:5],
 			}
 		}},
+		{`label: function fn(){}`, func(t *test, tk Tokens) {
+			t.Output = Statement{
+				LabelIdentifier: &LabelIdentifier{Identifier: &tk[0]},
+				LabelledItemFunction: &FunctionDeclaration{
+					BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+					FormalParameters: FormalParameters{
+						Tokens: tk[7:7],
+					},
+					FunctionBody: Block{
+						Tokens: tk[8:10],
+					},
+					Tokens: tk[3:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatement(t.Yield, t.Await, t.Ret)
 	})
