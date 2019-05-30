@@ -41,14 +41,6 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 	var si StatementListItem
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			s, err := j.parseStatement(yield, await, ret)
-			if err != nil {
-				return err
-			}
-			si.Statement = &s
-			return nil
-		},
-		func(j *jsParser) error {
 			d, err := j.parseDeclaration(yield, ret)
 			if err != nil {
 				if err.(Error).Err == ErrInvalidDeclaration {
@@ -57,6 +49,14 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 				return err
 			}
 			si.Declaration = &d
+			return nil
+		},
+		func(j *jsParser) error {
+			s, err := j.parseStatement(yield, await, ret)
+			if err != nil {
+				return err
+			}
+			si.Statement = &s
 			return nil
 		},
 	); err != nil {
@@ -270,13 +270,6 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 					g.Except()
 					g.AcceptRunWhitespaceNoNewLine()
 					if g.AcceptToken(parser.Token{TokenKeyword, "function"}) {
-						return errNotApplicable
-					}
-				case parser.Token{TokenIdentifier, "let"}:
-					g := j.NewGoal()
-					g.Except()
-					g.AcceptRunWhitespace()
-					if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
 						return errNotApplicable
 					}
 				}
