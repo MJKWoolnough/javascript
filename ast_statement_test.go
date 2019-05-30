@@ -1596,6 +1596,38 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
+		{`a = b;`, func(t *test, tk Tokens) {
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = Statement{
+				ExpressionStatement: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+											Tokens:              tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							AssignmentOperator: AssignmentAssign,
+							AssignmentExpression: &AssignmentExpression{
+								ConditionalExpression: &litB,
+								Tokens:                tk[4:5],
+							},
+							Tokens: tk[:5],
+						},
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:6],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatement(t.Yield, t.Await, t.Ret)
 	})
