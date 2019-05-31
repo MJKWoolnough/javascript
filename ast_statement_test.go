@@ -1782,6 +1782,79 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`class a{}`, func(t *test, tk Tokens) { // 52
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					ClassDeclaration: &ClassDeclaration{
+						BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+						ClassBody: ClassBody{
+							Tokens: tk[4:4],
+						},
+						Tokens: tk[:5],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`function a(){}`, func(t *test, tk Tokens) { // 53
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					FunctionDeclaration: &FunctionDeclaration{
+						BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+						FormalParameters: FormalParameters{
+							Tokens: tk[4:4],
+						},
+						FunctionBody: Block{
+							Tokens: tk[5:7],
+						},
+						Tokens: tk[:7],
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`let a;`, func(t *test, tk Tokens) { // 54
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					LexicalDeclaration: &LexicalDeclaration{
+						BindingList: []LexicalBinding{
+							{
+								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								Tokens:            tk[2:3],
+							},
+						},
+						Tokens: tk[:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`const a = 1;`, func(t *test, tk Tokens) { // 55
+			litA := makeConditionLiteral(tk, 6)
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					LexicalDeclaration: &LexicalDeclaration{
+						LetOrConst: Const,
+						BindingList: []LexicalBinding{
+							{
+								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								Initializer: &AssignmentExpression{
+									ConditionalExpression: &litA,
+									Tokens:                tk[6:7],
+								},
+								Tokens: tk[2:7],
+							},
+						},
+						Tokens: tk[:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatementListItem(t.Yield, t.Await, t.Ret)
 	})
