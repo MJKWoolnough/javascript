@@ -524,13 +524,17 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
 		af.Async = true
 		j.AcceptRunWhitespaceNoNewLine()
-		if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
+		if j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 			g := j.NewGoal()
 			fp, err := g.parseFormalParameters(false, true)
 			if err != nil {
 				return af, j.Error(err)
 			}
 			j.Score(g)
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				return af, j.Error(ErrMissingClosingParenthesis)
+			}
 			af.FormalParameters = &fp
 		} else {
 			g := j.NewGoal()
