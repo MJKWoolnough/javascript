@@ -43,9 +43,6 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 		func(j *jsParser) error {
 			d, err := j.parseDeclaration(yield, ret)
 			if err != nil {
-				if err.(Error).Err == ErrInvalidDeclaration {
-					return errNotApplicable
-				}
 				return err
 			}
 			si.Declaration = &d
@@ -61,9 +58,6 @@ func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementList
 		},
 	); err != nil {
 		return si, err
-	}
-	if si.Statement == nil && si.Declaration == nil {
-		return si, errNotApplicable
 	}
 	si.Tokens = j.ToTokens()
 	return si, nil
