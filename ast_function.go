@@ -81,7 +81,7 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 	for {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
-		if g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		if g.Peek() == (parser.Token{TokenPunctuator, ")"}) {
 			break
 		}
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
