@@ -319,6 +319,24 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`call()`, func(t *test, tk Tokens) { // 19
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[1:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseLeftHandSideExpression(t.Yield, t.Await)
 	})
