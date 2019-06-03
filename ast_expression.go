@@ -138,20 +138,21 @@ type LeftHandSideExpression struct {
 func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
 	var lhs LeftHandSideExpression
 	if err := j.FindGoal(func(j *jsParser) error {
-		ne, err := j.parseNewExpression(yield, await)
-		if err != nil {
-			return err
-		}
-		lhs.NewExpression = &ne
-		return nil
-	}, func(j *jsParser) error {
 		ce, err := j.parseCallExpression(yield, await)
 		if err != nil {
 			return err
 		}
 		lhs.CallExpression = &ce
 		return nil
-	}); err != nil {
+	},
+		func(j *jsParser) error {
+			ne, err := j.parseNewExpression(yield, await)
+			if err != nil {
+				return err
+			}
+			lhs.NewExpression = &ne
+			return nil
+		}); err != nil {
 		return lhs, err
 	}
 	lhs.Tokens = j.ToTokens()
@@ -585,10 +586,12 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 
 	}
 	j.AcceptRunWhitespace()
-	a, err := j.parseArguments(yield, await)
+	g := j.NewGoal()
+	a, err := g.parseArguments(yield, await)
 	if err != nil {
-		return ce, err
+		return ce, j.Error(err)
 	}
+	j.Score(g)
 	ce.Arguments = &a
 Loop:
 	for {
