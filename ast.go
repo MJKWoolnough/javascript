@@ -5,21 +5,33 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-type Script []StatementListItem
+type Script struct {
+	StatementList []StatementListItem
+	Tokens        Tokens
+}
 
 func ParseScript(t parser.Tokeniser) (Script, error) {
 	j, err := newJSParser(t)
 	if err != nil {
-		return nil, err
+		return Script{}, err
 	}
+	return j.parseScript()
+}
+
+func (j *jsParser) parseScript() (Script, error) {
 	var s Script
+	j.AcceptRunWhitespace()
 	for j.Peek().Type != parser.TokenDone {
-		si, err := j.parseStatementListItem(false, false, false)
+		g := j.NewGoal()
+		si, err := g.parseStatementListItem(false, false, false)
 		if err != nil {
-			return nil, err
+			return s, err
 		}
-		s = append(s, si)
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		s.StatementList = append(s.StatementList, si)
 	}
+	s.Tokens = j.ToTokens()
 	return s, nil
 }
 
