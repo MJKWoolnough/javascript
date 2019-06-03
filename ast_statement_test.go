@@ -1370,12 +1370,12 @@ func TestStatement(t *testing.T) {
 		{`return;`, func(t *test, tk Tokens) { // 39
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrInvalidStatement,
-					Parsing: "Statement",
+					Err:     ErrInvalidDeclaration,
+					Parsing: "Declaration",
 					Token:   tk[0],
 				},
 				Parsing: "StatementListItem",
-				Token:   tk[0],
+				Token:   tk[1],
 			}
 		}},
 		{`return;`, func(t *test, tk Tokens) { // 40
@@ -1853,6 +1853,51 @@ func TestStatement(t *testing.T) {
 					Tokens: tk[:8],
 				},
 				Tokens: tk[:8],
+			}
+		}},
+		{`async function fn(){}`, func(t *test, tk Tokens) { // 56
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					FunctionDeclaration: &FunctionDeclaration{
+						Type:              FunctionAsync,
+						BindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+						FormalParameters: FormalParameters{
+							Tokens: tk[6:6],
+						},
+						FunctionBody: Block{
+							Tokens: tk[7:9],
+						},
+						Tokens: tk[:9],
+					},
+					Tokens: tk[:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`async () => {};`, func(t *test, tk Tokens) { // 57
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ArrowFunction: &ArrowFunction{
+									Async: true,
+									FormalParameters: &FormalParameters{
+										Tokens: tk[3:3],
+									},
+									FunctionBody: &Block{
+										Tokens: tk[7:9],
+									},
+									Tokens: tk[:9],
+								},
+								Tokens: tk[:9],
+							},
+						},
+						Tokens: tk[:9],
+					},
+					Tokens: tk[:10],
+				},
+				Tokens: tk[:10],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
