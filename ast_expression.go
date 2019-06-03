@@ -319,13 +319,10 @@ Loop:
 			case ".":
 				h.Except()
 				h.AcceptRunWhitespace()
-				i := h.NewGoal()
-				in, err := i.parseIdentifier(yield, await)
-				if err != nil {
-					return me, g.Error(err)
+				if !h.Accept(TokenIdentifier, TokenKeyword) {
+					return me, h.Error(ErrMissingIdentifier)
 				}
-				h.Score(i)
-				nme.IdentifierName = in.Identifier
+				nme.IdentifierName = h.GetLastToken()
 			case "[":
 				h.Except()
 				h.AcceptRunWhitespace()
@@ -563,14 +560,14 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 }
 
 type CallExpression struct {
-	CoverCallExpressionAndAsyncArrowHead *MemberExpression
-	SuperCall                            bool
-	CallExpression                       *CallExpression
-	Arguments                            *Arguments
-	Expression                           *Expression
-	IdentifierName                       *Token
-	TemplateLiteral                      *TemplateLiteral
-	Tokens                               Tokens
+	MemberExpression *MemberExpression
+	SuperCall        bool
+	CallExpression   *CallExpression
+	Arguments        *Arguments
+	Expression       *Expression
+	IdentifierName   *Token
+	TemplateLiteral  *TemplateLiteral
+	Tokens           Tokens
 }
 
 func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error) {
@@ -583,7 +580,9 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 		if err != nil {
 			return ce, j.Error(err)
 		}
-		ce.CoverCallExpressionAndAsyncArrowHead = &me
+		j.Score(g)
+		ce.MemberExpression = &me
+
 	}
 	j.AcceptRunWhitespace()
 	a, err := j.parseArguments(yield, await)
@@ -591,55 +590,60 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 		return ce, err
 	}
 	ce.Arguments = &a
+Loop:
 	for {
-		oce := ce
-		nce := CallExpression{
-			CallExpression: &oce,
-		}
+		var nce CallExpression
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
-		if tk := g.Peek(); tk == (parser.Token{TokenPunctuator, "("}) {
-			h := g.NewGoal()
-			a, err := h.parseArguments(yield, await)
-			if err != nil {
-				return ce, j.Error(err)
-			}
-			g.Score(h)
-			nce.Arguments = &a
-		} else if tk == (parser.Token{TokenPunctuator, "["}) {
-			g.Except()
-			g.AcceptRunWhitespace()
-			h := g.NewGoal()
-			e, err := h.parseExpression(true, yield, await)
-			if err != nil {
-				return ce, j.Error(err)
-			}
-			g.Score(h)
-			if !g.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-				return ce, j.Error(ErrMissingClosingBracket)
-			}
-			nce.Expression = &e
-		} else if tk == (parser.Token{TokenPunctuator, "."}) {
-			g.Except()
-			g.AcceptRunWhitespace()
-			if !g.Accept(TokenIdentifier, TokenKeyword) {
-				return ce, j.Error(ErrNoIdentifier)
-			}
-			nce.IdentifierName = g.GetLastToken()
-		} else if tk.Type == TokenTemplateHead || tk.Type == TokenNoSubstitutionTemplate {
-			h := g.NewGoal()
+		h := g.NewGoal()
+		switch tk := h.Peek(); tk.Type {
+		case TokenNoSubstitutionTemplate, TokenTemplateHead:
 			tl, err := h.parseTemplateLiteral(yield, await)
 			if err != nil {
-				return ce, j.Error(err)
+				return ce, g.Error(err)
 			}
-			g.Score(h)
 			nce.TemplateLiteral = &tl
-		} else {
-			break
+		case TokenPunctuator:
+			switch tk.Data {
+			case "(":
+				a, err := h.parseArguments(yield, await)
+				if err != nil {
+					return ce, j.Error(err)
+				}
+				nce.Arguments = &a
+			case ".":
+				h.Except()
+				h.AcceptRunWhitespace()
+				if !h.Accept(TokenIdentifier, TokenKeyword) {
+					return ce, h.Error(ErrMissingIdentifier)
+				}
+				nce.IdentifierName = h.GetLastToken()
+			case "[":
+				h.Except()
+				h.AcceptRunWhitespace()
+				i := h.NewGoal()
+				e, err := i.parseExpression(true, yield, await)
+				if err != nil {
+					return ce, h.Error(err)
+				}
+				h.Score(i)
+				h.AcceptRunWhitespace()
+				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+					return ce, h.Error(ErrMissingClosingBracket)
+				}
+				ce.Expression = &e
+			default:
+				break Loop
+			}
+		default:
+			break Loop
 		}
-		j.Score(g)
-		nce.Tokens = j.ToTokens()
+		g.Score(h)
+		oce := ce
+		oce.Tokens = j.ToTokens()
+		nce.CallExpression = &oce
 		ce = nce
+		j.Score(g)
 	}
 	ce.Tokens = j.ToTokens()
 	return ce, nil
