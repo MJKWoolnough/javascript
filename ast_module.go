@@ -6,10 +6,8 @@ import (
 )
 
 type Module struct {
-	Imports    []ImportDeclaration
-	Statements []StatementListItem
-	Exports    []ExportDeclaration
-	Tokens     Tokens
+	ModuleListItems []ModuleListItem
+	Tokens          Tokens
 }
 
 func ParseModule(t parser.Tokeniser) (Module, error) {
@@ -22,32 +20,51 @@ func ParseModule(t parser.Tokeniser) (Module, error) {
 
 func (j *jsParser) parseModule() (Module, error) {
 	var m Module
-	for {
-		if j.AcceptRunWhitespace() == parser.TokenDone {
-			m.Tokens = j.ToTokens()
-			return m, nil
-		} else {
-			var err error
-			g := j.NewGoal()
-			if g.AcceptToken(parser.Token{TokenKeyword, "import"}) {
-				var i ImportDeclaration
-				i, err = g.parseImportDeclaration()
-				m.Imports = append(m.Imports, i)
-			} else if g.AcceptToken(parser.Token{TokenKeyword, "export"}) {
-				var e ExportDeclaration
-				e, err = g.parseExportDeclaration()
-				m.Exports = append(m.Exports, e)
-			} else {
-				var s StatementListItem
-				s, err = g.parseStatementListItem(false, false, false)
-				m.Statements = append(m.Statements, s)
-			}
-			if err != nil {
-				return m, j.Error(err)
-			}
-			j.Score(g)
+	for j.AcceptRunWhitespace() != parser.TokenDone {
+		g := j.NewGoal()
+		ml, err := g.parseModuleStatement()
+		if err != nil {
+			return m, j.Error(err)
 		}
+		m.ModuleListItems = append(m.ModuleListItems, ml)
 	}
+	m.Tokens = j.ToTokens()
+	return m, nil
+}
+
+type ModuleListItem struct {
+	ImportDeclaration *ImportDeclaration
+	StatementListItem *StatementListItem
+	ExportDeclaration *ExportDeclaration
+	Tokens            Tokens
+}
+
+func (j *jsParser) parseModuleStatement() (ModuleListItem, error) {
+	var ml ModuleListItem
+	g := j.NewGoal()
+	switch g.Peek() {
+	case parser.Token{TokenKeyword, "import"}:
+		i, err := g.parseImportDeclaration()
+		if err != nil {
+			return ml, j.Error(err)
+		}
+		ml.ImportDeclaration = &i
+	case parser.Token{TokenKeyword, "export"}:
+		e, err := g.parseExportDeclaration()
+		if err != nil {
+			return ml, j.Error(err)
+		}
+		ml.ExportDeclaration = &e
+	default:
+		s, err := g.parseStatementListItem(false, false, false)
+		if err != nil {
+			return ml, j.Error(err)
+		}
+		ml.StatementListItem = &s
+	}
+	j.Score(g)
+	ml.Tokens = j.ToTokens()
+	return ml, nil
 }
 
 type ImportDeclaration struct {
