@@ -20,15 +20,13 @@ func ParseScript(t parser.Tokeniser) (Script, error) {
 
 func (j *jsParser) parseScript() (Script, error) {
 	var s Script
-	j.AcceptRunWhitespace()
-	for j.Peek().Type != parser.TokenDone {
+	for j.AcceptRunWhitespace() != parser.TokenDone {
 		g := j.NewGoal()
 		si, err := g.parseStatementListItem(false, false, false)
 		if err != nil {
 			return s, err
 		}
 		j.Score(g)
-		j.AcceptRunWhitespace()
 		s.StatementList = append(s.StatementList, si)
 	}
 	s.Tokens = j.ToTokens()
