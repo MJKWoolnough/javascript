@@ -432,6 +432,13 @@ func (u UpdateOperator) String() string {
 	}
 }
 
+func (l LetOrConst) String() string {
+	if l {
+		return "Const"
+	}
+	return "Let"
+}
+
 func (f ClassDeclaration) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f ClassBody) Format(s fmt.State, v rune)                { format(s, v, f) }
 func (f MethodDefinition) Format(s fmt.State, v rune)         { format(s, v, f) }
@@ -468,7 +475,6 @@ func (f BindingIdentifier) Format(s fmt.State, v rune)        { format(s, v, f) 
 func (f LabelIdentifier) Format(s fmt.State, v rune)          { format(s, v, f) }
 func (f Identifier) Format(s fmt.State, v rune)               { format(s, v, f) }
 func (f Declaration) Format(s fmt.State, v rune)              { format(s, v, f) }
-func (f LetOrConst) Format(s fmt.State, v rune)               { format(s, v, f) }
 func (f LexicalDeclaration) Format(s fmt.State, v rune)       { format(s, v, f) }
 func (f LexicalBinding) Format(s fmt.State, v rune)           { format(s, v, f) }
 func (f ArrayBindingPattern) Format(s fmt.State, v rune)      { format(s, v, f) }
@@ -481,6 +487,7 @@ func (f PropertyDefinition) Format(s fmt.State, v rune)       { format(s, v, f) 
 func (f TemplateLiteral) Format(s fmt.State, v rune)          { format(s, v, f) }
 func (f ArrowFunction) Format(s fmt.State, v rune)            { format(s, v, f) }
 func (f Module) Format(s fmt.State, v rune)                   { format(s, v, f) }
+func (f ModuleListItem) Format(s fmt.State, v rune)           { format(s, v, f) }
 func (f ImportDeclaration) Format(s fmt.State, v rune)        { format(s, v, f) }
 func (f ImportClause) Format(s fmt.State, v rune)             { format(s, v, f) }
 func (f ImportedBinding) Format(s fmt.State, v rune)          { format(s, v, f) }
