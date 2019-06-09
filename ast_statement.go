@@ -378,9 +378,9 @@ func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationS
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 		return is, j.Error(ErrMissingClosingParenthesis)
 	}
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-		return is, j.Error(ErrMissingSemiColon)
+	g = j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		j.Score(g)
 	}
 	is.Tokens = j.ToTokens()
 	return is, nil
