@@ -1900,6 +1900,130 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
+		{`for await(a of b) {}`, func(t *test, tk Tokens) { // 58
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					IterationStatementFor: &IterationStatementFor{
+						Type: ForAwaitOfLeftHandSide,
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+										Tokens:              tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Of: &AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+						Statement: Statement{
+							BlockStatement: &Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[11:13],
+						},
+						Tokens: tk[:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`for await(var a of b) {}`, func(t *test, tk Tokens) { // 59
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					IterationStatementFor: &IterationStatementFor{
+						Type:                 ForAwaitOfVar,
+						ForBindingIdentifier: &BindingIdentifier{Identifier: &tk[6]},
+						Of: &AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+						Statement: Statement{
+							BlockStatement: &Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[13:15],
+						},
+						Tokens: tk[:15],
+					},
+					Tokens: tk[:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{`for await(let {a} of b) {}`, func(t *test, tk Tokens) { // 60
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					IterationStatementFor: &IterationStatementFor{
+						Type: ForAwaitOfLet,
+						ForBindingPatternObject: &ObjectBindingPattern{
+							BindingPropertyList: []BindingProperty{
+								{
+									SingleNameBinding: &BindingIdentifier{Identifier: &tk[7]},
+									Tokens:            tk[7:8],
+								},
+							},
+							Tokens: tk[6:9],
+						},
+						Of: &AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[12:13],
+						},
+						Statement: Statement{
+							BlockStatement: &Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[15:17],
+						},
+						Tokens: tk[:17],
+					},
+					Tokens: tk[:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{`for await(const [a] of b) {}`, func(t *test, tk Tokens) { // 61
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					IterationStatementFor: &IterationStatementFor{
+						Type: ForAwaitOfConst,
+						ForBindingPatternArray: &ArrayBindingPattern{
+							BindingElementList: []BindingElement{
+								{
+									SingleNameBinding: &BindingIdentifier{Identifier: &tk[7]},
+									Tokens:            tk[7:8],
+								},
+							},
+							Tokens: tk[6:9],
+						},
+						Of: &AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[12:13],
+						},
+						Statement: Statement{
+							BlockStatement: &Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[15:17],
+						},
+						Tokens: tk[:17],
+					},
+					Tokens: tk[:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseStatementListItem(t.Yield, t.Await, t.Ret)
 	})
