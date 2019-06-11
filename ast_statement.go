@@ -845,37 +845,36 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 	j.AcceptRunWhitespace()
 	if j.AcceptToken(parser.Token{TokenKeyword, "catch"}) {
 		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-			return ts, j.Error(ErrMissingOpeningParenthesis)
-		}
-		j.AcceptRunWhitespace()
-		g = j.NewGoal()
-		switch g.Peek() {
-		case parser.Token{TokenPunctuator, "{"}:
-			ob, err := g.parseObjectBindingPattern(yield, await)
-			if err != nil {
-				return ts, j.Error(err)
+		if j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+			j.AcceptRunWhitespace()
+			g = j.NewGoal()
+			switch g.Peek() {
+			case parser.Token{TokenPunctuator, "{"}:
+				ob, err := g.parseObjectBindingPattern(yield, await)
+				if err != nil {
+					return ts, j.Error(err)
+				}
+				ts.CatchParameterObjectBindingPattern = &ob
+			case parser.Token{TokenPunctuator, "["}:
+				ob, err := g.parseArrayBindingPattern(yield, await)
+				if err != nil {
+					return ts, j.Error(err)
+				}
+				ts.CatchParameterArrayBindingPattern = &ob
+			default:
+				bi, err := g.parseBindingIdentifier(yield, await)
+				if err != nil {
+					return ts, j.Error(err)
+				}
+				ts.CatchParameterBindingIdentifier = &bi
 			}
-			ts.CatchParameterObjectBindingPattern = &ob
-		case parser.Token{TokenPunctuator, "["}:
-			ob, err := g.parseArrayBindingPattern(yield, await)
-			if err != nil {
-				return ts, j.Error(err)
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				return ts, j.Error(ErrMissingClosingParenthesis)
 			}
-			ts.CatchParameterArrayBindingPattern = &ob
-		default:
-			bi, err := g.parseBindingIdentifier(yield, await)
-			if err != nil {
-				return ts, j.Error(err)
-			}
-			ts.CatchParameterBindingIdentifier = &bi
+			j.AcceptRunWhitespace()
 		}
-		j.Score(g)
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			return ts, j.Error(ErrMissingClosingParenthesis)
-		}
-		j.AcceptRunWhitespace()
 		g = j.NewGoal()
 		cb, err := g.parseBlock(yield, await, ret)
 		if err != nil {
