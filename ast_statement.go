@@ -457,8 +457,6 @@ type IterationStatementFor struct {
 	In                      *Expression
 	Of                      *AssignmentExpression
 
-	Expression *Expression
-
 	Statement Statement
 	Tokens    Tokens
 }
