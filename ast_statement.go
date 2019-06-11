@@ -439,6 +439,10 @@ const (
 	ForOfVar
 	ForOfLet
 	ForOfConst
+	ForAwaitOfLeftHandSide
+	ForAwaitOfVar
+	ForAwaitOfLet
+	ForAwaitOfConst
 )
 
 type IterationStatementFor struct {
@@ -468,13 +472,17 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 	)
 	j.AcceptToken(parser.Token{TokenKeyword, "for"})
 	j.AcceptRunWhitespace()
+	forAwait := j.AcceptToken(parser.Token{TokenKeyword, "await"})
+	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return is, j.Error(ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
-
 	if err = j.FindGoal(
 		func(j *jsParser) error {
+			if forAwait {
+				return errNotApplicable
+			}
 			if err = j.FindGoal(
 				func(j *jsParser) error {
 					if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
@@ -610,17 +618,30 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			in := true
 			if j.AcceptToken(parser.Token{TokenIdentifier, "of"}) {
 				in = false
-				switch is.Type {
-				case ForInVar:
-					is.Type = ForOfVar
-				case ForInConst:
-					is.Type = ForOfConst
-				case ForInLet:
-					is.Type = ForOfLet
-				case ForInLeftHandSide:
-					is.Type = ForOfLeftHandSide
+				if forAwait {
+					switch is.Type {
+					case ForInVar:
+						is.Type = ForAwaitOfVar
+					case ForInConst:
+						is.Type = ForAwaitOfConst
+					case ForInLet:
+						is.Type = ForAwaitOfLet
+					case ForInLeftHandSide:
+						is.Type = ForAwaitOfLeftHandSide
+					}
+				} else {
+					switch is.Type {
+					case ForInVar:
+						is.Type = ForOfVar
+					case ForInConst:
+						is.Type = ForOfConst
+					case ForInLet:
+						is.Type = ForOfLet
+					case ForInLeftHandSide:
+						is.Type = ForOfLeftHandSide
+					}
 				}
-			} else if !j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
+			} else if forAwait || !j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
 				return ErrInvalidForLoop
 			}
 			j.AcceptRunWhitespace()

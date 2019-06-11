@@ -304,6 +304,14 @@ func (ft ForType) String() string {
 		return "ForOfLet"
 	case ForOfConst:
 		return "ForOfConst"
+	case ForAwaitOfLeftHandSide:
+		return "ForAwaitOfLeftHandSide"
+	case ForAwaitOfVar:
+		return "ForAwaitOfVar"
+	case ForAwaitOfLet:
+		return "ForAwaitOfLet"
+	case ForAwaitOfConst:
+		return "ForAwaitOfConst"
 	default:
 		return "unknown"
 	}
