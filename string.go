@@ -520,3 +520,8 @@ func (f VariableStatement) Format(s fmt.State, v rune)        { format(s, v, f) 
 func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v rune) {
 	format(s, v, f)
 }
+
+func (i IdentifierReference) String() string { return i.Identifier.Data }
+func (i BindingIdentifier) String() string   { return i.Identifier.Data }
+func (i LabelIdentifier) String() string     { return i.Identifier.Data }
+func (i Identifier) String() string          { return i.Identifier.Data }
