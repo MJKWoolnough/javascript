@@ -179,3 +179,28 @@ func (vs VariableStatement) printSource(w io.Writer, v bool) {
 	}
 	w.Write(semiColon)
 }
+
+func (e Expression) printSource(w io.Writer, v bool) {
+	if len(e.Expressions) == 0 {
+		return
+	}
+	var lastLine uint64
+	if v && len(e.Tokens) > 0 {
+		lastLine = e.Tokens[0].Line
+	}
+	for n, ae := range e.Expressions {
+		if n > 0 {
+			if v && len(ae.Tokens) > 0 {
+				if ll := ae.Tokens[0].Line; ll > lastLine {
+					lastLine = ll
+					w.Write(commaSepNL)
+				} else {
+					w.Write(commaSep)
+				}
+			} else {
+				w.Write(commaSep)
+			}
+		}
+		ae.printSource(w, v)
+	}
+}
