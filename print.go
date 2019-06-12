@@ -152,3 +152,30 @@ func (b Block) printSource(w io.Writer, v bool) {
 	}
 	w.Write(blockClose)
 }
+
+func (vs VariableStatement) printSource(w io.Writer, v bool) {
+	if len(vs.VariableDeclarationList) == 0 {
+		return
+	}
+	io.WriteString(w, "var ")
+	var lastLine uint64
+	if v && len(vs.Tokens) > 0 {
+		lastLine = vs.Tokens[0].Line
+	}
+	for n, vd := range vs.VariableDeclarationList {
+		if n > 0 {
+			if v && len(vd.Tokens) > 0 {
+				if ll := vd.Tokens[0].Line; ll > lastLine {
+					lastLine = ll
+					w.Write(commaSepNL)
+				} else {
+					w.Write(commaSep)
+				}
+			} else {
+				w.Write(commaSep)
+			}
+		}
+		vd.printSource(w, v)
+	}
+	w.Write(semiColon)
+}
