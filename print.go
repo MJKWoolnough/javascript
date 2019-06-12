@@ -204,3 +204,25 @@ func (e Expression) printSource(w io.Writer, v bool) {
 		ae.printSource(w, v)
 	}
 }
+
+func (i IfStatement) printSource(w io.Writer, v bool) {
+	w.Write(ifOpen)
+	if v {
+		pp := indentPrinter{w}
+		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
+			pp.Write(newLine)
+		}
+		i.Expression.printSource(&pp, true)
+		if len(i.Expression.Tokens) > 0 && i.Expression.Tokens[len(i.Expression.Tokens)-1].Line > i.Expression.Tokens[0].Line {
+			w.Write(newLine)
+		}
+	} else {
+		i.Expression.printSource(w, false)
+	}
+	w.Write(parenClose)
+	i.Statement.printSource(w, v)
+	if i.ElseStatement != nil {
+		w.Write(elseOpen)
+		i.Expression.printSource(w, v)
+	}
+}
