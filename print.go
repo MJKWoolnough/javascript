@@ -226,3 +226,40 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 		i.Expression.printSource(w, v)
 	}
 }
+
+func (i IterationStatementDo) printSource(w io.Writer, v bool) {
+	w.Write(doOpen)
+	i.Statement.printSource(w, v)
+	w.Write(doWhileOpen)
+	if v {
+		pp := indentPrinter{w}
+		if len(i.Statement.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Statement.Tokens[len(i.Statement.Tokens)-1].Line {
+			pp.Write(newLine)
+		}
+		i.Expression.printSource(&pp, true)
+		if len(i.Expression.Tokens) > 0 && i.Expression.Tokens[len(i.Expression.Tokens)-1].Line > i.Expression.Tokens[0].Line {
+			w.Write(newLine)
+		}
+	} else {
+		i.Expression.printSource(w, false)
+	}
+	w.Write(doWhileClose)
+}
+
+func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
+	w.Write(whileOpen)
+	if v {
+		pp := indentPrinter{w}
+		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
+			pp.Write(newLine)
+		}
+		i.Expression.printSource(&pp, true)
+		if len(i.Expression.Tokens) > 0 && i.Expression.Tokens[len(i.Expression.Tokens)-1].Line > i.Expression.Tokens[0].Line {
+			w.Write(newLine)
+		}
+	} else {
+		i.Expression.printSource(w, false)
+	}
+	w.Write(parenClose)
+	i.Statement.printSource(w, v)
+}
