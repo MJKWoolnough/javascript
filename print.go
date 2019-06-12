@@ -435,3 +435,47 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	w.Write(parenClose)
 	i.Statement.printSource(w, v)
 }
+
+func (s SwitchStatement) printSource(w io.Writer, v bool) {
+
+}
+
+func (ws WithStatement) printSource(w io.Writer, v bool) {
+
+}
+
+func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (t TryStatement) printSource(w io.Writer, v bool) {
+
+}
+
+func (c ClassDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (a AssignmentExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
+
+}
+
+func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
+
+}
