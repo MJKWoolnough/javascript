@@ -263,3 +263,175 @@ func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
 	w.Write(parenClose)
 	i.Statement.printSource(w, v)
 }
+
+func (i IterationStatementFor) printSource(w io.Writer, v bool) {
+	switch i.Type {
+	case ForNormal:
+		if i.InitVar != nil || i.InitLexical != nil || i.InitExpression != nil {
+			return
+		}
+	case ForNormalVar:
+		if i.InitVar == nil {
+			return
+		}
+	case ForNormalLexicalDeclaration:
+		if i.InitLexical == nil {
+			return
+		}
+	case ForNormalExpression:
+		if i.InitExpression == nil {
+			return
+		}
+	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
+		if i.LeftHandSideExpression == nil {
+			return
+		}
+	case ForInVar, ForOfVar, ForAwaitOfVar, ForInLet, ForOfLet, ForAwaitOfLet, ForInConst, ForOfConst, ForAwaitOfConst:
+		if i.ForBindingIdentifier == nil && i.ForBindingPatternObject == nil && i.ForBindingPatternArray == nil {
+			return
+		}
+	default:
+		return
+	}
+	switch i.Type {
+	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
+		if i.In == nil {
+			return
+		}
+	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
+		if i.Of == nil {
+			return
+		}
+	}
+	switch i.Type {
+	case ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
+		w.Write(forAwaitOpen)
+	default:
+		w.Write(forOpen)
+	}
+	pp := indentPrinter{w}
+	var lastLine uint64
+	if v && len(i.Tokens) > 0 {
+		lastLine = i.Tokens[0].Line
+	}
+	switch i.Type {
+	case ForNormal:
+		w.Write(semiColon)
+	case ForNormalVar:
+		if v {
+			if len(i.InitVar.Tokens) > 0 {
+				if i.InitVar.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
+				}
+				lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
+			}
+			i.InitVar.printSource(&pp, true)
+		} else {
+			i.InitVar.printSource(w, false)
+		}
+	case ForNormalLexicalDeclaration:
+		i.InitLexical.printSource(w, v)
+		if v {
+			if len(i.InitLexical.Tokens) > 0 {
+				if i.InitLexical.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
+				}
+				lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
+			}
+			i.InitLexical.printSource(&pp, true)
+		} else {
+			i.InitLexical.printSource(w, false)
+		}
+	case ForNormalExpression:
+		if v {
+			if len(i.InitLexical.Tokens) > 0 {
+				if i.InitExpression.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
+				}
+				lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
+			}
+			i.InitExpression.printSource(&pp, true)
+		} else {
+			i.InitExpression.printSource(w, false)
+		}
+		w.Write(semiColon)
+	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
+		if v {
+			if len(i.LeftHandSideExpression.Tokens) > 0 {
+				if i.LeftHandSideExpression.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
+				}
+				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
+			}
+			i.LeftHandSideExpression.printSource(&pp, true)
+		} else {
+			i.LeftHandSideExpression.printSource(w, false)
+		}
+		w.Write(semiColon)
+	default:
+		switch i.Type {
+		case ForInVar, ForOfVar, ForAwaitOfVar:
+			w.Write(varOpen)
+		case ForInLet, ForOfLet, ForAwaitOfLet:
+			w.Write(letOpen)
+		case ForInConst, ForOfConst, ForAwaitOfConst:
+			w.Write(constOpen)
+		}
+		if i.ForBindingIdentifier != nil {
+			io.WriteString(w, i.ForBindingIdentifier.Identifier.Data)
+		} else if i.ForBindingPatternObject != nil {
+			i.ForBindingPatternObject.printSource(w, v)
+		} else {
+			i.ForBindingPatternArray.printSource(w, v)
+		}
+	}
+	switch i.Type {
+	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
+		if i.Conditional != nil {
+			w.Write(space)
+			if v {
+				if len(i.Conditional.Tokens) > 0 {
+					if i.Conditional.Tokens[0].Line > lastLine {
+						pp.Write(newLine)
+					} else {
+						w.Write(space)
+					}
+					lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
+				} else {
+					w.Write(space)
+				}
+				i.Conditional.printSource(&pp, true)
+			} else {
+				w.Write(space)
+				i.Conditional.printSource(w, false)
+			}
+		}
+		w.Write(semiColon)
+		if i.Afterthought != nil {
+			if v {
+				if len(i.Afterthought.Tokens) > 0 {
+					if i.Afterthought.Tokens[0].Line > lastLine {
+						pp.Write(newLine)
+					} else {
+						w.Write(space)
+					}
+					lastLine = i.Afterthought.Tokens[len(i.Conditional.Tokens)-1].Line
+				} else {
+					w.Write(space)
+				}
+				i.Afterthought.printSource(&pp, true)
+			} else {
+				w.Write(space)
+				i.Afterthought.printSource(w, false)
+			}
+		}
+	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
+		w.Write(forIn)
+		i.In.printSource(w, v)
+	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
+		w.Write(forOf)
+		i.Of.printSource(w, v)
+	}
+	w.Write(parenClose)
+	i.Statement.printSource(w, v)
+}
