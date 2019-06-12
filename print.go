@@ -124,3 +124,31 @@ func (d Declaration) printSource(w io.Writer, v bool) {
 		d.LexicalDeclaration.printSource(w, v)
 	}
 }
+
+func (b Block) printSource(w io.Writer, v bool) {
+	w.Write(blockOpen)
+	var lastLine uint64
+	if v && len(b.Tokens) > 0 {
+		lastLine = b.Tokens[0].Line
+	}
+	ip := indentPrinter{w}
+	for n, stmt := range b.StatementListItems {
+		if n > 0 {
+			if v {
+				if len(stmt.Tokens) > 0 {
+					if ll := stmt.Tokens[0].Line; ll > lastLine {
+						w.Write(newLine)
+					} else {
+						w.Write(space)
+					}
+				} else {
+					w.Write(newLine)
+				}
+			} else {
+				w.Write(space)
+			}
+		}
+		stmt.printSource(&ip, v)
+	}
+	w.Write(blockClose)
+}
