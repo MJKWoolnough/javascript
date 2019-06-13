@@ -446,7 +446,21 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 }
 
 func (ws WithStatement) printSource(w io.Writer, v bool) {
-
+	w.Write(withOpen)
+	if v {
+		pp := indentPrinter{w}
+		if len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line {
+			pp.Write(newLine)
+		}
+		ws.Expression.printSource(&pp, true)
+		if len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[len(ws.Expression.Tokens)-1].Line > ws.Expression.Tokens[0].Line {
+			w.Write(newLine)
+		}
+	} else {
+		ws.Expression.printSource(w, false)
+	}
+	w.Write(parenClose)
+	ws.Statement.printSource(w, v)
 }
 
 func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
