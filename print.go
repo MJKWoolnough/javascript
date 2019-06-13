@@ -318,42 +318,30 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForNormal:
 		w.Write(semiColon)
 	case ForNormalVar:
-		if v {
-			if len(i.InitVar.Tokens) > 0 {
-				if i.InitVar.Tokens[0].Line > lastLine {
-					pp.Write(newLine)
-				}
-				lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
+		if v && len(i.InitVar.Tokens) > 0 {
+			if i.InitVar.Tokens[0].Line > lastLine {
+				pp.Write(newLine)
 			}
-			i.InitVar.printSource(&pp, true)
-		} else {
-			i.InitVar.printSource(w, false)
+			lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
 		}
+		i.InitVar.printSource(&pp, v)
 	case ForNormalLexicalDeclaration:
 		i.InitLexical.printSource(w, v)
-		if v {
-			if len(i.InitLexical.Tokens) > 0 {
-				if i.InitLexical.Tokens[0].Line > lastLine {
-					pp.Write(newLine)
-				}
-				lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
+		if v && len(i.InitLexical.Tokens) > 0 {
+			if i.InitLexical.Tokens[0].Line > lastLine {
+				pp.Write(newLine)
 			}
-			i.InitLexical.printSource(&pp, true)
-		} else {
-			i.InitLexical.printSource(w, false)
+			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
 		}
+		i.InitLexical.printSource(&pp, v)
 	case ForNormalExpression:
-		if v {
-			if len(i.InitLexical.Tokens) > 0 {
-				if i.InitExpression.Tokens[0].Line > lastLine {
-					pp.Write(newLine)
-				}
-				lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
+		if v && len(i.InitLexical.Tokens) > 0 {
+			if i.InitExpression.Tokens[0].Line > lastLine {
+				pp.Write(newLine)
 			}
-			i.InitExpression.printSource(&pp, true)
-		} else {
-			i.InitExpression.printSource(w, false)
+			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
 		}
+		i.InitExpression.printSource(&pp, v)
 		w.Write(semiColon)
 	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
 		if v {
@@ -363,10 +351,8 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				}
 				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
 			}
-			i.LeftHandSideExpression.printSource(&pp, true)
-		} else {
-			i.LeftHandSideExpression.printSource(w, false)
 		}
+		i.LeftHandSideExpression.printSource(&pp, v)
 		w.Write(semiColon)
 	default:
 		switch i.Type {
@@ -389,48 +375,38 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
 		if i.Conditional != nil {
 			w.Write(space)
-			if v {
-				if len(i.Conditional.Tokens) > 0 {
-					if i.Conditional.Tokens[0].Line > lastLine {
-						pp.Write(newLine)
-					} else {
-						w.Write(space)
-					}
-					lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
+			if v && len(i.Conditional.Tokens) > 0 {
+				if i.Conditional.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
 				} else {
 					w.Write(space)
 				}
-				i.Conditional.printSource(&pp, true)
+				lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
 			} else {
 				w.Write(space)
-				i.Conditional.printSource(w, false)
 			}
+			i.Conditional.printSource(&pp, v)
 		}
 		w.Write(semiColon)
 		if i.Afterthought != nil {
-			if v {
-				if len(i.Afterthought.Tokens) > 0 {
-					if i.Afterthought.Tokens[0].Line > lastLine {
-						pp.Write(newLine)
-					} else {
-						w.Write(space)
-					}
-					lastLine = i.Afterthought.Tokens[len(i.Conditional.Tokens)-1].Line
+			if v && len(i.Afterthought.Tokens) > 0 {
+				if i.Afterthought.Tokens[0].Line > lastLine {
+					pp.Write(newLine)
 				} else {
 					w.Write(space)
 				}
-				i.Afterthought.printSource(&pp, true)
+				lastLine = i.Afterthought.Tokens[len(i.Conditional.Tokens)-1].Line
 			} else {
 				w.Write(space)
-				i.Afterthought.printSource(w, false)
 			}
+			i.Afterthought.printSource(&pp, v)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
 		w.Write(forIn)
-		i.In.printSource(w, v)
+		i.In.printSource(&pp, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
 		w.Write(forOf)
-		i.Of.printSource(w, v)
+		i.Of.printSource(&pp, v)
 	}
 	w.Write(parenClose)
 	i.Statement.printSource(w, v)
