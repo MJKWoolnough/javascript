@@ -23,6 +23,7 @@ var (
 	switchClose  = []byte{')', ' ', '{'}
 	caseOpen     = []byte{'c', 'a', 's', 'e', ' '}
 	caseClose    = labelPost[:1]
+	defaultCase  = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
 	withOpen     = []byte{'w', 'i', 't', 'h', ' ', '('}
 	forIn        = []byte{' ', 'i', 'n', ' '}
 	forOf        = []byte{' ', 'o', 'f', ' '}
@@ -413,7 +414,35 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 }
 
 func (s SwitchStatement) printSource(w io.Writer, v bool) {
-
+	w.Write(switchOpen)
+	if v {
+		pp := indentPrinter{w}
+		if len(s.Tokens) > 0 && len(s.Expression.Tokens) > 0 && s.Expression.Tokens[0].Line > s.Tokens[0].Line {
+			pp.Write(newLine)
+		}
+		s.Expression.printSource(&pp, true)
+		if len(s.Expression.Tokens) > 0 && s.Expression.Tokens[len(s.Expression.Tokens)-1].Line > s.Expression.Tokens[0].Line {
+			w.Write(newLine)
+		}
+	} else {
+		s.Expression.printSource(w, false)
+	}
+	w.Write(switchClose)
+	for _, c := range s.CaseClauses {
+		c.printSource(w, v)
+	}
+	if s.DefaultClause != nil {
+		w.Write(defaultCase)
+		pp := indentPrinter{w}
+		for _, stmt := range s.DefaultClause {
+			stmt.printSource(&pp, v)
+			w.Write(newLine)
+		}
+	}
+	for _, c := range s.PostDefaultCaseClauses {
+		c.printSource(w, v)
+	}
+	w.Write(blockClose)
 }
 
 func (ws WithStatement) printSource(w io.Writer, v bool) {
@@ -453,5 +482,9 @@ func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
+
+}
+
+func (c CaseClause) printSource(w io.Writer, v bool) {
 
 }
