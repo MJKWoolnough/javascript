@@ -3,33 +3,36 @@ package javascript
 import "io"
 
 var (
-	blockOpen    = []byte{'{'}
-	blockClose   = []byte{'}'}
-	commaSep     = []byte{',', ' '}
-	commaSepNL   = []byte{',', ' ', '\n'}
-	newLine      = []byte{'\n'}
-	labelPost    = []byte{':', ' '}
-	semiColon    = []byte{';'}
-	ifOpen       = []byte{'i', 'f', ' ', '('}
-	parenClose   = []byte{')', ' '}
-	elseOpen     = []byte{' ', 'e', 'l', 's', 'e', ' '}
-	doOpen       = []byte{'d', 'o', ' '}
-	doWhileOpen  = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
-	doWhileClose = []byte{')', ';'}
-	whileOpen    = doWhileOpen[1:]
-	forOpen      = []byte{'f', 'o', 'r', ' ', '('}
-	forAwaitOpen = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
-	switchOpen   = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
-	switchClose  = []byte{')', ' ', '{'}
-	caseOpen     = []byte{'c', 'a', 's', 'e', ' '}
-	caseClose    = labelPost[:1]
-	defaultCase  = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
-	withOpen     = []byte{'w', 'i', 't', 'h', ' ', '('}
-	forIn        = []byte{' ', 'i', 'n', ' '}
-	forOf        = []byte{' ', 'o', 'f', ' '}
-	varOpen      = []byte{'v', 'a', 'r', ' '}
-	letOpen      = []byte{'l', 'e', 't', ' '}
-	constOpen    = []byte{'c', 'o', 'n', 's', 't', ' '}
+	blockOpen     = []byte{'{'}
+	blockClose    = []byte{'}'}
+	commaSep      = []byte{',', ' '}
+	commaSepNL    = []byte{',', ' ', '\n'}
+	newLine       = []byte{'\n'}
+	labelPost     = []byte{':', ' '}
+	semiColon     = []byte{';'}
+	ifOpen        = []byte{'i', 'f', ' ', '('}
+	parenClose    = []byte{')', ' '}
+	elseOpen      = []byte{' ', 'e', 'l', 's', 'e', ' '}
+	doOpen        = []byte{'d', 'o', ' '}
+	doWhileOpen   = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
+	doWhileClose  = []byte{')', ';'}
+	whileOpen     = doWhileOpen[1:]
+	forOpen       = []byte{'f', 'o', 'r', ' ', '('}
+	forAwaitOpen  = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
+	switchOpen    = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
+	switchClose   = []byte{')', ' ', '{'}
+	caseOpen      = []byte{'c', 'a', 's', 'e', ' '}
+	caseClose     = labelPost[:1]
+	defaultCase   = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
+	withOpen      = []byte{'w', 'i', 't', 'h', ' ', '('}
+	forIn         = []byte{' ', 'i', 'n', ' '}
+	forOf         = []byte{' ', 'o', 'f', ' '}
+	varOpen       = []byte{'v', 'a', 'r', ' '}
+	letOpen       = []byte{'l', 'e', 't', ' '}
+	constOpen     = []byte{'c', 'o', 'n', 's', 't', ' '}
+	funcOpen      = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' ', '('}
+	asyncFuncOpen = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' ', '('}
+	genFuncOpen   = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' ', '('}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -464,7 +467,19 @@ func (ws WithStatement) printSource(w io.Writer, v bool) {
 }
 
 func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
-
+	switch f.Type {
+	case FunctionNormal:
+		w.Write(funcOpen)
+	case FunctionGenerator:
+		w.Write(genFuncOpen)
+	case FunctionAsync:
+		w.Write(asyncFuncOpen)
+	default:
+		return
+	}
+	f.FormalParameters.printSource(&indentPrinter{w}, v)
+	w.Write(parenClose)
+	f.FunctionBody.printSource(w, v)
 }
 
 func (t TryStatement) printSource(w io.Writer, v bool) {
@@ -500,5 +515,9 @@ func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
 }
 
 func (c CaseClause) printSource(w io.Writer, v bool) {
+
+}
+
+func (f FormalParameters) printSource(w io.Writer, v bool) {
 
 }
