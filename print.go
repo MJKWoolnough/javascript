@@ -30,9 +30,10 @@ var (
 	varOpen       = []byte{'v', 'a', 'r', ' '}
 	letOpen       = []byte{'l', 'e', 't', ' '}
 	constOpen     = []byte{'c', 'o', 'n', 's', 't', ' '}
-	funcOpen      = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' ', '('}
-	asyncFuncOpen = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' ', '('}
-	genFuncOpen   = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' ', '('}
+	funcOpen      = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	asyncFuncOpen = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	genFuncOpen   = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
+	parenOpen     = []byte{'('}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -477,6 +478,10 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 	default:
 		return
 	}
+	if f.BindingIdentifier != nil {
+		io.WriteString(w, f.BindingIdentifier.Identifier.Data)
+	}
+	w.Write(parenOpen)
 	f.FormalParameters.printSource(&indentPrinter{w}, v)
 	w.Write(parenClose)
 	f.FunctionBody.printSource(w, v)
