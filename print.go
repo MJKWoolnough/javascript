@@ -142,24 +142,22 @@ func (b Block) printSource(w io.Writer, v bool) {
 	if v && len(b.Tokens) > 0 {
 		lastLine = b.Tokens[0].Line
 	}
-	ip := indentPrinter{w}
+	pp := indentPrinter{w}
 	for n, stmt := range b.StatementListItems {
-		if n > 0 {
-			if v {
-				if len(stmt.Tokens) > 0 {
-					if ll := stmt.Tokens[0].Line; ll > lastLine {
-						w.Write(newLine)
-					} else {
-						w.Write(space)
-					}
+		if v {
+			if len(stmt.Tokens) > 0 {
+				if ll := stmt.Tokens[0].Line; ll > lastLine {
+					pp.Write(newLine)
 				} else {
-					w.Write(newLine)
+					pp.Write(space)
 				}
 			} else {
-				w.Write(space)
+				pp.Write(newLine)
 			}
+		} else {
+			pp.Write(newLine)
 		}
-		stmt.printSource(&ip, v)
+		stmt.printSource(&pp, v)
 	}
 	w.Write(blockClose)
 }
