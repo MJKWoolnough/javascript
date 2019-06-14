@@ -38,6 +38,8 @@ var (
 	catchParenOpen = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
 	catchOpen      = catchParenOpen[:7]
 	finallyOpen    = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
+	classOpen      = []byte{'c', 'l', 'a', 's', 's', ' '}
+	extends        = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -519,7 +521,26 @@ func (t TryStatement) printSource(w io.Writer, v bool) {
 }
 
 func (c ClassDeclaration) printSource(w io.Writer, v bool) {
-
+	w.Write(classOpen)
+	if c.BindingIdentifier != nil {
+		io.WriteString(w, c.BindingIdentifier.Identifier.Data)
+		w.Write(space)
+	}
+	if c.ClassHeritage != nil {
+		w.Write(extends)
+		c.ClassHeritage.printSource(w, v)
+		w.Write(space)
+	}
+	w.Write(blockOpen)
+	if len(c.ClassBody) > 0 {
+		pp := indentPrinter{w}
+		pp.Write(newLine)
+		for _, md := range c.ClassBody {
+			md.printSource(w, v)
+			pp.Write(newLine)
+		}
+	}
+	w.Write(blockClose)
 }
 
 func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
@@ -551,5 +572,9 @@ func (c CaseClause) printSource(w io.Writer, v bool) {
 }
 
 func (f FormalParameters) printSource(w io.Writer, v bool) {
+
+}
+
+func (m MethodDefinition) printSource(w io.Writer, v bool) {
 
 }
