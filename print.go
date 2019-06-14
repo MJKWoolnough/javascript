@@ -6,7 +6,7 @@ var (
 	blockOpen      = []byte{'{'}
 	blockClose     = []byte{'}'}
 	commaSep       = []byte{',', ' '}
-	commaSepNL     = []byte{',', ' ', '\n'}
+	commaSepNL     = []byte{',', '\n'}
 	newLine        = []byte{'\n'}
 	labelPost      = []byte{':', ' '}
 	semiColon      = []byte{';'}
@@ -544,7 +544,24 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 }
 
 func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
-
+	if len(l.BindingList) == 0 {
+		return
+	}
+	if l.LetOrConst == Let {
+		w.Write(letOpen)
+	} else if l.LetOrConst == Const {
+		w.Write(constOpen)
+	}
+	l.BindingList[0].printSource(w, v)
+	for _, lb := range l.BindingList[1:] {
+		if v {
+			w.Write(commaSepNL)
+		} else {
+			w.Write(commaSep)
+		}
+		lb.printSource(w, v)
+	}
+	w.Write(semiColon)
 }
 
 func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
@@ -576,5 +593,9 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
+
+}
+
+func (l LexicalBinding) printSource(w io.Writer, v bool) {
 
 }
