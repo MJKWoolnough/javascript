@@ -143,7 +143,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 		lastLine = b.Tokens[0].Line
 	}
 	pp := indentPrinter{w}
-	for n, stmt := range b.StatementListItems {
+	for _, stmt := range b.StatementListItems {
 		if v {
 			if len(stmt.Tokens) > 0 {
 				if ll := stmt.Tokens[0].Line; ll > lastLine {
@@ -184,7 +184,7 @@ func (vs VariableStatement) printSource(w io.Writer, v bool) {
 				w.Write(commaSep)
 			}
 		}
-		vd.printSource(w, v)
+		LexicalBinding(vd).printSource(w, v)
 	}
 	w.Write(semiColon)
 }
@@ -333,7 +333,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			}
 			lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
 		}
-		i.InitVar.printSource(&pp, v)
+		(*LexicalBinding)(i.InitVar).printSource(&pp, v)
 	case ForNormalLexicalDeclaration:
 		i.InitLexical.printSource(w, v)
 		if v && len(i.InitLexical.Tokens) > 0 {
@@ -560,10 +560,6 @@ func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
 		lb.printSource(w, v)
 	}
 	w.Write(semiColon)
-}
-
-func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
-
 }
 
 func (a AssignmentExpression) printSource(w io.Writer, v bool) {
