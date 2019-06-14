@@ -40,6 +40,7 @@ var (
 	finallyOpen    = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
 	classOpen      = []byte{'c', 'l', 'a', 's', 's', ' '}
 	extends        = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
+	assignment     = []byte{' ', '=', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -562,6 +563,22 @@ func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(semiColon)
 }
 
+func (l LexicalBinding) printSource(w io.Writer, v bool) {
+	if l.BindingIdentifier != nil {
+		io.WriteString(w, l.BindingIdentifier.Identifier.Data)
+	} else if l.ArrayBindingPattern != nil {
+		l.ArrayBindingPattern.printSource(w, v)
+	} else if l.ObjectBindingPattern != nil {
+		l.ObjectBindingPattern.printSource(w, v)
+	} else {
+		return
+	}
+	if l.Initializer != nil {
+		w.Write(assignment)
+		l.Initializer.printSource(w, v)
+	}
+}
+
 func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 
 }
@@ -587,9 +604,5 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
-
-}
-
-func (l LexicalBinding) printSource(w io.Writer, v bool) {
 
 }
