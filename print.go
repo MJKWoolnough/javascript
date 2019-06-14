@@ -536,7 +536,7 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 		pp := indentPrinter{w}
 		pp.Write(newLine)
 		for _, md := range c.ClassBody {
-			md.printSource(w, v)
+			md.printSource(&pp, v)
 			pp.Write(newLine)
 		}
 	}
