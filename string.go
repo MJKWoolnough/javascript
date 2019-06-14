@@ -51,6 +51,10 @@ func (i *indentPrinter) Printf(format string, args ...interface{}) {
 	fmt.Fprintf(i, format, args...)
 }
 
+func (i *indentPrinter) WriteString(s string) (int, error) {
+	return i.Write([]byte(s))
+}
+
 func (t Token) Format(s fmt.State, v rune) {
 	var typ string
 	switch t.Type {
@@ -121,7 +125,8 @@ var (
 
 func format(s fmt.State, v rune, f interface{}) {
 	verbose := s.Flag('+')
-	if v == 'v' {
+	switch v {
+	case 'v':
 		v := reflect.ValueOf(f)
 		t := v.Type()
 		name := t.Name()
@@ -177,6 +182,10 @@ func format(s fmt.State, v rune, f interface{}) {
 				}
 			}
 			s.Write(objectClose)
+		}
+	case 's':
+		if ps, ok := f.(interface{ printSource(io.Writer, bool) }); ok {
+			ps.printSource(s, verbose)
 		}
 	}
 }
