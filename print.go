@@ -3,44 +3,58 @@ package javascript
 import "io"
 
 var (
-	blockOpen      = []byte{'{'}
-	blockClose     = []byte{'}'}
-	commaSep       = []byte{',', ' '}
-	commaSepNL     = []byte{',', '\n'}
-	newLine        = []byte{'\n'}
-	labelPost      = []byte{':', ' '}
-	semiColon      = []byte{';'}
-	ifOpen         = []byte{'i', 'f', ' ', '('}
-	parenClose     = []byte{')', ' '}
-	elseOpen       = []byte{' ', 'e', 'l', 's', 'e', ' '}
-	doOpen         = []byte{'d', 'o', ' '}
-	doWhileOpen    = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
-	doWhileClose   = []byte{')', ';'}
-	whileOpen      = doWhileOpen[1:]
-	forOpen        = []byte{'f', 'o', 'r', ' ', '('}
-	forAwaitOpen   = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
-	switchOpen     = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
-	switchClose    = []byte{')', ' ', '{'}
-	caseOpen       = []byte{'c', 'a', 's', 'e', ' '}
-	caseClose      = labelPost[:1]
-	defaultCase    = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
-	withOpen       = []byte{'w', 'i', 't', 'h', ' ', '('}
-	forIn          = []byte{' ', 'i', 'n', ' '}
-	forOf          = []byte{' ', 'o', 'f', ' '}
-	varOpen        = []byte{'v', 'a', 'r', ' '}
-	letOpen        = []byte{'l', 'e', 't', ' '}
-	constOpen      = []byte{'c', 'o', 'n', 's', 't', ' '}
-	funcOpen       = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	asyncFuncOpen  = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	genFuncOpen    = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
-	parenOpen      = []byte{'('}
-	tryOpen        = []byte{'t', 'r', 'y', ' '}
-	catchParenOpen = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
-	catchOpen      = catchParenOpen[:7]
-	finallyOpen    = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
-	classOpen      = []byte{'c', 'l', 'a', 's', 's', ' '}
-	extends        = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
-	assignment     = []byte{' ', '=', ' '}
+	blockOpen                = []byte{'{'}
+	blockClose               = []byte{'}'}
+	commaSep                 = []byte{',', ' '}
+	commaSepNL               = []byte{',', '\n'}
+	newLine                  = []byte{'\n'}
+	labelPost                = []byte{':', ' '}
+	semiColon                = []byte{';'}
+	ifOpen                   = []byte{'i', 'f', ' ', '('}
+	parenClose               = []byte{')', ' '}
+	elseOpen                 = []byte{' ', 'e', 'l', 's', 'e', ' '}
+	doOpen                   = []byte{'d', 'o', ' '}
+	doWhileOpen              = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
+	doWhileClose             = []byte{')', ';'}
+	whileOpen                = doWhileOpen[1:]
+	forOpen                  = []byte{'f', 'o', 'r', ' ', '('}
+	forAwaitOpen             = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
+	switchOpen               = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
+	switchClose              = []byte{')', ' ', '{'}
+	caseOpen                 = []byte{'c', 'a', 's', 'e', ' '}
+	caseClose                = labelPost[:1]
+	defaultCase              = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
+	withOpen                 = []byte{'w', 'i', 't', 'h', ' ', '('}
+	forIn                    = []byte{' ', 'i', 'n', ' '}
+	forOf                    = []byte{' ', 'o', 'f', ' '}
+	varOpen                  = []byte{'v', 'a', 'r', ' '}
+	letOpen                  = []byte{'l', 'e', 't', ' '}
+	constOpen                = []byte{'c', 'o', 'n', 's', 't', ' '}
+	funcOpen                 = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	asyncFuncOpen            = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	genFuncOpen              = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
+	parenOpen                = []byte{'('}
+	tryOpen                  = []byte{'t', 'r', 'y', ' '}
+	catchParenOpen           = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
+	catchOpen                = catchParenOpen[:7]
+	finallyOpen              = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
+	classOpen                = []byte{'c', 'l', 'a', 's', 's', ' '}
+	extends                  = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
+	assignment               = []byte{' ', '=', ' '}
+	assignmentMultiply       = []byte{' ', '*', '=', ' '}
+	assignmentDivide         = []byte{' ', '/', '=', ' '}
+	assignmentRemainder      = []byte{' ', '%', '=', ' '}
+	assignmentAdd            = []byte{' ', '+', '=', ' '}
+	assignmentSubtract       = []byte{' ', '-', '=', ' '}
+	assignmentLeftShift      = []byte{' ', '<', '<', '=', ' '}
+	assignmentSignRightShift = []byte{' ', '>', '>', '=', ' '}
+	assignmentZeroRightShift = []byte{' ', '>', '>', '>', '=', ' '}
+	assignmentAND            = []byte{' ', '&', '=', ' '}
+	assignmentXOR            = []byte{' ', '^', '=', ' '}
+	assignmentOR             = []byte{' ', '|', '=', ' '}
+	assignmentExponentiation = []byte{' ', '*', '*', '=', ' '}
+	yield                    = []byte{'y', 'i', 'e', 'l', 'd', ' '}
+	delegate                 = []byte{'*', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -580,7 +594,52 @@ func (l LexicalBinding) printSource(w io.Writer, v bool) {
 }
 
 func (a AssignmentExpression) printSource(w io.Writer, v bool) {
-
+	if a.Yield && a.AssignmentExpression != nil {
+		w.Write(yield)
+		if a.Delegate {
+			w.Write(delegate)
+		}
+		a.AssignmentExpression.printSource(w, v)
+	} else if a.ArrowFunction != nil {
+		a.ArrowFunction.printSource(w, v)
+	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
+		ao := assignment
+		switch a.AssignmentOperator {
+		case AssignmentMultiply:
+			ao = assignmentMultiply
+		case AssignmentDivide:
+			ao = assignmentDivide
+		case AssignmentRemainder:
+			ao = assignmentRemainder
+		case AssignmentAdd:
+			ao = assignmentAdd
+		case AssignmentSubtract:
+			ao = assignmentSubtract
+		case AssignmentLeftShift:
+			ao = assignmentLeftShift
+		case AssignmentSignPropagatinRightShift:
+			ao = assignmentSignRightShift
+		case AssignmentZeroFillRightShift:
+			ao = assignmentZeroRightShift
+		case AssignmentBitwiseAND:
+			ao = assignmentAND
+		case AssignmentBitwiseXOR:
+			ao = assignmentXOR
+		case AssignmentBitwiseOR:
+			ao = assignmentOR
+		case AssignmentExponentiation:
+			ao = assignmentExponentiation
+		default:
+			return
+		}
+		a.LeftHandSideExpression.printSource(w, v)
+		w.Write(ao)
+		a.AssignmentExpression.printSource(w, v)
+	} else if a.ConditionalExpression != nil {
+		a.ConditionalExpression.printSource(w, v)
+	} else {
+		return
+	}
 }
 
 func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
@@ -604,5 +663,13 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
+
+}
+
+func (c ConditionalExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (a ArrowFunction) printSource(w io.Writer, v bool) {
 
 }
