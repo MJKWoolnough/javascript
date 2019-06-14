@@ -7,8 +7,8 @@ import (
 
 type ClassDeclaration struct {
 	BindingIdentifier *BindingIdentifier
-	Extends           *LeftHandSideExpression
-	ClassBody         ClassBody
+	ClassHeritage     *LeftHandSideExpression
+	ClassBody         []MethodDefinition
 	Tokens            Tokens
 }
 
@@ -35,54 +35,29 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 			return cd, j.Error(err)
 		}
 		j.Score(g)
-		cd.Extends = &lhs
+		cd.ClassHeritage = &lhs
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 		return cd, j.Error(ErrMissingOpeningBrace)
 	}
-	g = j.NewGoal()
-	cd.ClassBody, err = g.parseClassBody(yield, await)
-	if err != nil {
-		return cd, j.Error(err)
-	}
-	j.Score(g)
-	j.Accept(TokenRightBracePunctuator)
-	cd.Tokens = j.ToTokens()
-	return cd, nil
-}
-
-type ClassBody struct {
-	Methods       []MethodDefinition
-	StaticMethods []MethodDefinition
-	Tokens        Tokens
-}
-
-func (j *jsParser) parseClassBody(yield, await bool) (ClassBody, error) {
-	var cb ClassBody
 	for {
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			continue
-		} else if j.Peek().Type == TokenRightBracePunctuator {
+		} else if j.Accept(TokenRightBracePunctuator) {
 			break
 		}
 		g := j.NewGoal()
-		static := g.AcceptToken(parser.Token{TokenIdentifier, "static"})
-		g.AcceptRunWhitespace()
 		md, err := g.parseMethodDefinition(yield, await)
 		if err != nil {
-			return cb, j.Error(err)
+			return cd, j.Error(err)
 		}
 		j.Score(g)
-		if static {
-			cb.StaticMethods = append(cb.StaticMethods, md)
-		} else {
-			cb.Methods = append(cb.Methods, md)
-		}
+		cd.ClassBody = append(cd.ClassBody, md)
 	}
-	cb.Tokens = j.ToTokens()
-	return cb, nil
+	cd.Tokens = j.ToTokens()
+	return cd, nil
 }
 
 type MethodType uint8
@@ -93,31 +68,55 @@ const (
 	MethodAsync
 	MethodGetter
 	MethodSetter
+	MethodStatic
+	MethodStaticGenerator
+	MethodStaticAsync
+	MethodStaticGetter
+	MethodStaticSetter
 )
 
 type MethodDefinition struct {
+	Type         MethodType
 	PropertyName PropertyName
 	Params       FormalParameters
 	FunctionBody Block
-	Type         MethodType
 	Tokens       Tokens
 }
 
 func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, error) {
 	var md MethodDefinition
+	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
 	j.AcceptRunWhitespace()
 	if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
-		md.Type = MethodGenerator
+		if static {
+			md.Type = MethodStaticGenerator
+		} else {
+			md.Type = MethodGenerator
+		}
 		j.AcceptRunWhitespace()
 	} else if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
-		md.Type = MethodAsync
+		if static {
+			md.Type = MethodStaticAsync
+		} else {
+			md.Type = MethodAsync
+		}
 		j.AcceptRunWhitespaceNoNewLine()
 	} else if j.AcceptToken(parser.Token{TokenIdentifier, "get"}) {
-		md.Type = MethodGetter
+		if static {
+			md.Type = MethodStaticGetter
+		} else {
+			md.Type = MethodGetter
+		}
 		j.AcceptRunWhitespace()
 	} else if j.AcceptToken(parser.Token{TokenIdentifier, "set"}) {
-		md.Type = MethodSetter
+		if static {
+			md.Type = MethodStaticSetter
+		} else {
+			md.Type = MethodSetter
+		}
 		j.AcceptRunWhitespace()
+	} else if static {
+		md.Type = MethodStatic
 	}
 	g := j.NewGoal()
 	var err error

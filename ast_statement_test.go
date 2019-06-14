@@ -1787,10 +1787,7 @@ func TestStatement(t *testing.T) {
 				Declaration: &Declaration{
 					ClassDeclaration: &ClassDeclaration{
 						BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
-						ClassBody: ClassBody{
-							Tokens: tk[4:4],
-						},
-						Tokens: tk[:5],
+						Tokens:            tk[:5],
 					},
 					Tokens: tk[:5],
 				},

@@ -249,6 +249,16 @@ func (mt MethodType) String() string {
 		return "MethodGetter"
 	case MethodSetter:
 		return "MethodSetter"
+	case MethodStatic:
+		return "MethodStatic"
+	case MethodStaticGenerator:
+		return "MethodStaticGenerator"
+	case MethodStaticAsync:
+		return "MethodStaticAsync"
+	case MethodStaticGetter:
+		return "MethodStaticGetter"
+	case MethodStaticSetter:
+		return "MethodStaticSetter"
 	default:
 		return "Unknown"
 	}
@@ -457,7 +467,6 @@ func (l LetOrConst) String() string {
 }
 
 func (f ClassDeclaration) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f ClassBody) Format(s fmt.State, v rune)                { format(s, v, f) }
 func (f MethodDefinition) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f PropertyName) Format(s fmt.State, v rune)             { format(s, v, f) }
 func (f ConditionalExpression) Format(s fmt.State, v rune)    { format(s, v, f) }
