@@ -637,13 +637,15 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ConditionalExpression != nil {
 		a.ConditionalExpression.printSource(w, v)
-	} else {
-		return
 	}
 }
 
 func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
-
+	if l.NewExpression != nil {
+		l.NewExpression.printSource(w, v)
+	} else if l.CallExpression != nil {
+		l.CallExpression.printSource(w, v)
+	}
 }
 
 func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
@@ -671,5 +673,13 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrowFunction) printSource(w io.Writer, v bool) {
+
+}
+
+func (n NewExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (c CallExpression) printSource(w io.Writer, v bool) {
 
 }
