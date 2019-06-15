@@ -239,29 +239,43 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
+	BindingRestProperty *BindingIdentifier
 	Tokens              Tokens
 }
 
 func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPattern, error) {
 	var ob ObjectBindingPattern
 	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
-	for {
-		j.AcceptRunWhitespace()
-		if j.Accept(TokenRightBracePunctuator) {
-			break
-		}
-		g := j.NewGoal()
-		bp, err := g.parseBindingProperty(yield, await)
-		if err != nil {
-			return ob, j.Error(err)
-		}
-		j.Score(g)
-		ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
-		j.AcceptRunWhitespace()
-		if j.Accept(TokenRightBracePunctuator) {
-			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return ob, j.Error(ErrMissingComma)
+	j.AcceptRunWhitespace()
+	if !j.Accept(TokenRightBracePunctuator) {
+		for {
+			g := j.NewGoal()
+			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				bi, err := g.parseBindingIdentifier(yield, await)
+				if err != nil {
+					return ob, j.Error(err)
+				}
+				j.Score(g)
+				ob.BindingRestProperty = &bi
+				j.AcceptRunWhitespace()
+				if !j.Accept(TokenRightBracePunctuator) {
+					return ob, j.Error(ErrMissingClosingBrace)
+				}
+				break
+			}
+			bp, err := g.parseBindingProperty(yield, await)
+			if err != nil {
+				return ob, j.Error(err)
+			}
+			j.Score(g)
+			ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
+			j.AcceptRunWhitespace()
+			if j.Accept(TokenRightBracePunctuator) {
+				break
+			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+				return ob, j.Error(ErrMissingComma)
+			}
+			j.AcceptRunWhitespace()
 		}
 	}
 	ob.Tokens = j.ToTokens()
