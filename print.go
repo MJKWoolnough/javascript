@@ -56,6 +56,8 @@ var (
 	yield                    = []byte{'y', 'i', 'e', 'l', 'd', ' '}
 	delegate                 = []byte{'*', ' '}
 	ellipsis                 = []byte{'.', '.', '.'}
+	bracketOpen              = []byte{'['}
+	bracketClose             = []byte{']'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -658,11 +660,11 @@ func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
 		bp.printSource(w, v)
 	}
 	if o.BindingRestProperty != nil {
-		if len(o.BindingRestProperty) > 0 {
+		if len(o.BindingPropertyList) > 0 {
 			w.Write(commaSep)
 		}
 		w.Write(ellipsis)
-		io.WriteString(o.BindingRestProperty.Identifier.Data)
+		io.WriteString(w, o.BindingRestProperty.Identifier.Data)
 	}
 	w.Write(blockClose)
 }
@@ -696,5 +698,9 @@ func (n NewExpression) printSource(w io.Writer, v bool) {
 }
 
 func (c CallExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (b BindingProperty) printSource(w io.Writer, v bool) {
 
 }
