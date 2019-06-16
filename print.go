@@ -670,7 +670,21 @@ func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
-
+	w.Write(bracketOpen)
+	for n, be := range a.BindingElementList {
+		if n > 0 {
+			w.Write(commaSep)
+		}
+		be.printSource(w, v)
+	}
+	if a.BindingRestElement != nil {
+		if len(a.BindingElementList) > 0 {
+			w.Write(commaSep)
+		}
+		w.Write(ellipsis)
+		a.BindingRestElement.printSource(w, v)
+	}
+	w.Write(bracketClose)
 }
 
 func (c CaseClause) printSource(w io.Writer, v bool) {
@@ -702,5 +716,9 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingProperty) printSource(w io.Writer, v bool) {
+
+}
+
+func (b BindingElement) printSource(w io.Writer, v bool) {
 
 }
