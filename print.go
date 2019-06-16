@@ -55,6 +55,7 @@ var (
 	assignmentExponentiation = []byte{' ', '*', '*', '=', ' '}
 	yield                    = []byte{'y', 'i', 'e', 'l', 'd', ' '}
 	delegate                 = []byte{'*', ' '}
+	ellipsis                 = []byte{'.', '.', '.'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -649,7 +650,21 @@ func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
 }
 
 func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
-
+	w.Write(blockOpen)
+	for n, bp := range o.BindingPropertyList {
+		if n > 0 {
+			w.Write(commaSep)
+		}
+		bp.printSource(w, v)
+	}
+	if o.BindingRestProperty != nil {
+		if len(o.BindingRestProperty) > 0 {
+			w.Write(commaSep)
+		}
+		w.Write(ellipsis)
+		io.WriteString(o.BindingRestProperty.Identifier.Data)
+	}
+	w.Write(blockClose)
 }
 
 func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
