@@ -688,7 +688,14 @@ func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
 }
 
 func (c CaseClause) printSource(w io.Writer, v bool) {
-
+	w.Write(caseOpen)
+	c.Expression.printSource(w, v)
+	w.Write(caseClose)
+	pp := indentPrinter{w}
+	for _, stmt := range c.StatementList {
+		pp.Write(newLine)
+		stmt.printSource(&pp, v)
+	}
 }
 
 func (f FormalParameters) printSource(w io.Writer, v bool) {
