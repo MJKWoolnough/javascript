@@ -66,11 +66,13 @@ const (
 	MethodNormal MethodType = iota
 	MethodGenerator
 	MethodAsync
+	MethodAsyncGenerator
 	MethodGetter
 	MethodSetter
 	MethodStatic
 	MethodStaticGenerator
 	MethodStaticAsync
+	MethodStaticAsyncGenerator
 	MethodStaticGetter
 	MethodStaticSetter
 )
@@ -87,20 +89,29 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 	var md MethodDefinition
 	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
 	j.AcceptRunWhitespace()
-	if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
-		if static {
-			md.Type = MethodStaticGenerator
-		} else {
-			md.Type = MethodGenerator
-		}
-		j.AcceptRunWhitespace()
-	} else if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
+	async := j.AcceptToken(parser.Token{TokenIdentifier, "async"})
+	if async {
 		if static {
 			md.Type = MethodStaticAsync
 		} else {
 			md.Type = MethodAsync
 		}
 		j.AcceptRunWhitespaceNoNewLine()
+	} else if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+		if static {
+			if async {
+				md.Type = MethodStaticAsyncGenerator
+			} else {
+				md.Type = MethodStaticGenerator
+			}
+		} else {
+			if async {
+				md.Type = MethodAsyncGenerator
+			} else {
+				md.Type = MethodGenerator
+			}
+		}
+		j.AcceptRunWhitespace()
 	} else if j.AcceptToken(parser.Token{TokenIdentifier, "get"}) {
 		if static {
 			md.Type = MethodStaticGetter

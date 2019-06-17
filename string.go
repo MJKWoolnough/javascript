@@ -243,6 +243,8 @@ func (mt MethodType) String() string {
 		return "MethodNormal"
 	case MethodGenerator:
 		return "MethodGenerator"
+	case MethodAsyncGenerator:
+		return "MethodAsyncGenerator"
 	case MethodAsync:
 		return "MethodAsync"
 	case MethodGetter:
@@ -255,6 +257,8 @@ func (mt MethodType) String() string {
 		return "MethodStaticGenerator"
 	case MethodStaticAsync:
 		return "MethodStaticAsync"
+	case MethodStaticAsyncGenerator:
+		return "MethodStaticAsyncGenerator"
 	case MethodStaticGetter:
 		return "MethodStaticGetter"
 	case MethodStaticSetter:
