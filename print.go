@@ -3,61 +3,72 @@ package javascript
 import "io"
 
 var (
-	blockOpen                = []byte{'{'}
-	blockClose               = []byte{'}'}
-	commaSep                 = []byte{',', ' '}
-	commaSepNL               = []byte{',', '\n'}
-	newLine                  = []byte{'\n'}
-	labelPost                = []byte{':', ' '}
-	semiColon                = []byte{';'}
-	ifOpen                   = []byte{'i', 'f', ' ', '('}
-	parenClose               = []byte{')', ' '}
-	elseOpen                 = []byte{' ', 'e', 'l', 's', 'e', ' '}
-	doOpen                   = []byte{'d', 'o', ' '}
-	doWhileOpen              = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
-	doWhileClose             = []byte{')', ';'}
-	whileOpen                = doWhileOpen[1:]
-	forOpen                  = []byte{'f', 'o', 'r', ' ', '('}
-	forAwaitOpen             = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
-	switchOpen               = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
-	switchClose              = []byte{')', ' ', '{'}
-	caseOpen                 = []byte{'c', 'a', 's', 'e', ' '}
-	caseClose                = labelPost[:1]
-	defaultCase              = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
-	withOpen                 = []byte{'w', 'i', 't', 'h', ' ', '('}
-	forIn                    = []byte{' ', 'i', 'n', ' '}
-	forOf                    = []byte{' ', 'o', 'f', ' '}
-	varOpen                  = []byte{'v', 'a', 'r', ' '}
-	letOpen                  = []byte{'l', 'e', 't', ' '}
-	constOpen                = []byte{'c', 'o', 'n', 's', 't', ' '}
-	funcOpen                 = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	asyncFuncOpen            = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	genFuncOpen              = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
-	parenOpen                = []byte{'('}
-	tryOpen                  = []byte{'t', 'r', 'y', ' '}
-	catchParenOpen           = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
-	catchOpen                = catchParenOpen[:7]
-	finallyOpen              = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
-	classOpen                = []byte{'c', 'l', 'a', 's', 's', ' '}
-	extends                  = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
-	assignment               = []byte{' ', '=', ' '}
-	assignmentMultiply       = []byte{' ', '*', '=', ' '}
-	assignmentDivide         = []byte{' ', '/', '=', ' '}
-	assignmentRemainder      = []byte{' ', '%', '=', ' '}
-	assignmentAdd            = []byte{' ', '+', '=', ' '}
-	assignmentSubtract       = []byte{' ', '-', '=', ' '}
-	assignmentLeftShift      = []byte{' ', '<', '<', '=', ' '}
-	assignmentSignRightShift = []byte{' ', '>', '>', '=', ' '}
-	assignmentZeroRightShift = []byte{' ', '>', '>', '>', '=', ' '}
-	assignmentAND            = []byte{' ', '&', '=', ' '}
-	assignmentXOR            = []byte{' ', '^', '=', ' '}
-	assignmentOR             = []byte{' ', '|', '=', ' '}
-	assignmentExponentiation = []byte{' ', '*', '*', '=', ' '}
-	yield                    = []byte{'y', 'i', 'e', 'l', 'd', ' '}
-	delegate                 = []byte{'*', ' '}
-	ellipsis                 = []byte{'.', '.', '.'}
-	bracketOpen              = []byte{'['}
-	bracketClose             = []byte{']'}
+	blockOpen                  = []byte{'{'}
+	blockClose                 = []byte{'}'}
+	commaSep                   = []byte{',', ' '}
+	commaSepNL                 = []byte{',', '\n'}
+	newLine                    = []byte{'\n'}
+	labelPost                  = []byte{':', ' '}
+	semiColon                  = []byte{';'}
+	ifOpen                     = []byte{'i', 'f', ' ', '('}
+	parenClose                 = []byte{')', ' '}
+	elseOpen                   = []byte{' ', 'e', 'l', 's', 'e', ' '}
+	doOpen                     = []byte{'d', 'o', ' '}
+	doWhileOpen                = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
+	doWhileClose               = []byte{')', ';'}
+	whileOpen                  = doWhileOpen[1:]
+	forOpen                    = []byte{'f', 'o', 'r', ' ', '('}
+	forAwaitOpen               = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
+	switchOpen                 = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
+	switchClose                = []byte{')', ' ', '{'}
+	caseOpen                   = []byte{'c', 'a', 's', 'e', ' '}
+	caseClose                  = labelPost[:1]
+	defaultCase                = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
+	withOpen                   = []byte{'w', 'i', 't', 'h', ' ', '('}
+	forIn                      = []byte{' ', 'i', 'n', ' '}
+	forOf                      = []byte{' ', 'o', 'f', ' '}
+	varOpen                    = []byte{'v', 'a', 'r', ' '}
+	letOpen                    = []byte{'l', 'e', 't', ' '}
+	constOpen                  = []byte{'c', 'o', 'n', 's', 't', ' '}
+	funcOpen                   = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	asyncFuncOpen              = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
+	genFuncOpen                = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
+	parenOpen                  = []byte{'('}
+	tryOpen                    = []byte{'t', 'r', 'y', ' '}
+	catchParenOpen             = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
+	catchOpen                  = catchParenOpen[:7]
+	finallyOpen                = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
+	classOpen                  = []byte{'c', 'l', 'a', 's', 's', ' '}
+	extends                    = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
+	assignment                 = []byte{' ', '=', ' '}
+	assignmentMultiply         = []byte{' ', '*', '=', ' '}
+	assignmentDivide           = []byte{' ', '/', '=', ' '}
+	assignmentRemainder        = []byte{' ', '%', '=', ' '}
+	assignmentAdd              = []byte{' ', '+', '=', ' '}
+	assignmentSubtract         = []byte{' ', '-', '=', ' '}
+	assignmentLeftShift        = []byte{' ', '<', '<', '=', ' '}
+	assignmentSignRightShift   = []byte{' ', '>', '>', '=', ' '}
+	assignmentZeroRightShift   = []byte{' ', '>', '>', '>', '=', ' '}
+	assignmentAND              = []byte{' ', '&', '=', ' '}
+	assignmentXOR              = []byte{' ', '^', '=', ' '}
+	assignmentOR               = []byte{' ', '|', '=', ' '}
+	assignmentExponentiation   = []byte{' ', '*', '*', '=', ' '}
+	yield                      = []byte{'y', 'i', 'e', 'l', 'd', ' '}
+	delegate                   = []byte{'*', ' '}
+	ellipsis                   = []byte{'.', '.', '.'}
+	bracketOpen                = []byte{'['}
+	bracketClose               = []byte{']'}
+	methodStaticAsyncGenerator = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 'a', 's', 'y', 'n', 'c', ' ', '*', ' '}
+	methodAsyncGenerator       = methodStaticAsyncGenerator[7:]
+	methodStatic               = methodStaticAsyncGenerator[:7]
+	methodAsync                = methodStaticAsyncGenerator[7:13]
+	methodStaticAsync          = methodStaticAsyncGenerator[:13]
+	methodGenerator            = methodStaticAsyncGenerator[13:15]
+	methodStaticGenerator      = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', '*', ' '}
+	methodStaticGet            = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 'g', 'e', 't', ' '}
+	methodStaticSet            = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 's', 'e', 't', ' '}
+	methodGet                  = methodStaticGet[8:]
+	methodSet                  = methodStaticSet[8:]
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -708,7 +719,38 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
-
+	switch m.Type {
+	case MethodNormal:
+	case MethodGenerator:
+		w.Write(methodGenerator)
+	case MethodAsync:
+		w.Write(methodAsync)
+	case MethodAsyncGenerator:
+		w.Write(methodAsyncGenerator)
+	case MethodGetter:
+		w.Write(methodGet)
+	case MethodSetter:
+		w.Write(methodSet)
+	case MethodStatic:
+		w.Write(methodStatic)
+	case MethodStaticGenerator:
+		w.Write(methodStaticGenerator)
+	case MethodStaticAsync:
+		w.Write(methodStaticAsync)
+	case MethodStaticAsyncGenerator:
+		w.Write(methodStaticAsyncGenerator)
+	case MethodStaticGetter:
+		w.Write(methodStaticGet)
+	case MethodStaticSetter:
+		w.Write(methodStaticSet)
+	default:
+		return
+	}
+	m.PropertyName.printSource(w, v)
+	w.Write(parenOpen)
+	m.Params.printSource(w, v)
+	w.Write(parenClose)
+	m.FunctionBody.printSource(w, v)
 }
 
 func (c ConditionalExpression) printSource(w io.Writer, v bool) {
@@ -732,5 +774,9 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
+
+}
+
+func (p PropertyName) printSource(w io.Writer, v bool) {
 
 }
