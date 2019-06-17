@@ -791,7 +791,10 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 }
 
 func (n NewExpression) printSource(w io.Writer, v bool) {
-
+	for i := 0; i < n.News; i++ {
+		w.Write(news)
+	}
+	n.MemberExpression.printSource(w, v)
 }
 
 func (c CallExpression) printSource(w io.Writer, v bool) {
@@ -815,5 +818,9 @@ func (l LogicalORExpression) printSource(w io.Writer, v bool) {
 }
 
 func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writer, v bool) {
+
+}
+
+func (m MemberExpression) printSource(w io.Writer, v bool) {
 
 }
