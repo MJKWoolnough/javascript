@@ -8,7 +8,9 @@ var (
 	commaSep                   = []byte{',', ' '}
 	commaSepNL                 = []byte{',', '\n'}
 	newLine                    = []byte{'\n'}
-	labelPost                  = []byte{':', ' '}
+	conditionalStart           = []byte{' ', '?', ' '}
+	conditionalSep             = []byte{' ', ':', ' '}
+	labelPost                  = conditionalSep[1:]
 	semiColon                  = []byte{';'}
 	ifOpen                     = []byte{'i', 'f', ' ', '('}
 	parenClose                 = []byte{')', ' '}
@@ -754,7 +756,13 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 }
 
 func (c ConditionalExpression) printSource(w io.Writer, v bool) {
-
+	c.LogicalORExpression.printSource(w, v)
+	if c.True != nil && c.False != nil {
+		w.Write(conditionalStart)
+		c.True.printSource(w, v)
+		w.Write(conditionalSep)
+		c.False.printSource(w, v)
+	}
 }
 
 func (a ArrowFunction) printSource(w io.Writer, v bool) {
@@ -778,5 +786,9 @@ func (b BindingElement) printSource(w io.Writer, v bool) {
 }
 
 func (p PropertyName) printSource(w io.Writer, v bool) {
+
+}
+
+func (l LogicalORExpression) printSource(w io.Writer, v bool) {
 
 }
