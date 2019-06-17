@@ -699,7 +699,12 @@ func (c CaseClause) printSource(w io.Writer, v bool) {
 }
 
 func (f FormalParameters) printSource(w io.Writer, v bool) {
-
+	for n, be := range f.FormalParameterList {
+		if n > 0 {
+			w.Write(commaSep)
+		}
+		be.printSource(w, v)
+	}
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
