@@ -73,6 +73,7 @@ var (
 	methodSet                  = methodStaticSet[8:]
 	arrow                      = []byte{'=', '>', ' '}
 	news                       = []byte{'n', 'e', 'w', ' '}
+	super                      = []byte{'s', 'u', 'p', 'e', 'r'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -791,14 +792,36 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 }
 
 func (n NewExpression) printSource(w io.Writer, v bool) {
-	for i := 0; i < n.News; i++ {
+	for i := uint(0); i < n.News; i++ {
 		w.Write(news)
 	}
 	n.MemberExpression.printSource(w, v)
 }
 
 func (c CallExpression) printSource(w io.Writer, v bool) {
-
+	if c.SuperCall && c.Arguments != nil {
+		w.Write(super)
+		c.Arguments.printSource(w, v)
+	} else if c.MemberExpression != nil && c.Arguments != nil {
+		c.MemberExpression.printSource(w, v)
+		c.Arguments.printSource(w, v)
+	} else if c.CallExpression != nil {
+		if c.Arguments != nil {
+			c.CallExpression.printSource(w, v)
+			c.Arguments.printSource(w, v)
+		} else if c.Expression != nil {
+			c.CallExpression.printSource(w, v)
+			w.Write(bracketOpen)
+			c.Expression.printSource(w, v)
+			w.Write(bracketClose)
+		} else if c.IdentifierName != nil {
+			c.CallExpression.printSource(w, v)
+			io.WriteString(w, c.IdentifierName.Data)
+		} else if c.TemplateLiteral != nil {
+			c.CallExpression.printSource(w, v)
+			c.TemplateLiteral.printSource(w, v)
+		}
+	}
 }
 
 func (b BindingProperty) printSource(w io.Writer, v bool) {
@@ -822,5 +845,13 @@ func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writ
 }
 
 func (m MemberExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (a Arguments) printSource(w io.Writer, v bool) {
+
+}
+
+func (t TemplateLiteral) printSource(w io.Writer, v bool) {
 
 }
