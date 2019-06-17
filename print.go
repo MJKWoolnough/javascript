@@ -71,6 +71,8 @@ var (
 	methodStaticSet            = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 's', 'e', 't', ' '}
 	methodGet                  = methodStaticGet[8:]
 	methodSet                  = methodStaticSet[8:]
+	arrow                      = []byte{'=', '>', ' '}
+	news                       = []byte{'n', 'e', 'w', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -766,7 +768,26 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrowFunction) printSource(w io.Writer, v bool) {
+	if a.FunctionBody == nil && a.AssignmentExpression == nil {
+		return
+	}
+	if a.Async {
+		w.Write(methodAsync)
+	}
+	if a.BindingIdentifier != nil {
 
+	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
+	} else {
+		w.Write(parenOpen)
+		w.Write(parenClose)
+	}
+	w.Write(arrow)
+	if a.FunctionBody != nil {
+		a.FunctionBody.printSource(w, v)
+	} else {
+		a.AssignmentExpression.printSource(w, v)
+	}
 }
 
 func (n NewExpression) printSource(w io.Writer, v bool) {
@@ -790,5 +811,9 @@ func (p PropertyName) printSource(w io.Writer, v bool) {
 }
 
 func (l LogicalORExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writer, v bool) {
 
 }
