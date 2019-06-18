@@ -850,7 +850,11 @@ func (b BindingElement) printSource(w io.Writer, v bool) {
 }
 
 func (p PropertyName) printSource(w io.Writer, v bool) {
-
+	if p.LiteralPropertyName != nil {
+		io.WriteString(w, p.LiteralPropertyName.Data)
+	} else if p.ComputedPropertyName != nil {
+		p.ComputedPropertyName.printSource(w, v)
+	}
 }
 
 func (l LogicalORExpression) printSource(w io.Writer, v bool) {
