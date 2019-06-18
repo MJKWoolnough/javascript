@@ -74,6 +74,7 @@ var (
 	arrow                      = []byte{'=', '>', ' '}
 	news                       = []byte{'n', 'e', 'w', ' '}
 	super                      = []byte{'s', 'u', 'p', 'e', 'r'}
+	colonSep                   = []byte{':', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -825,7 +826,13 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingProperty) printSource(w io.Writer, v bool) {
-
+	if b.SingleNameBinding != nil {
+		io.WriteString(w, b.SingleNameBinding.Identifier.Data)
+	} else if b.PropertyName != nil && b.BindingElement != nil {
+		b.PropertyName.printSource(w, v)
+		w.Write(colonSep)
+		b.BindingElement.printSource(w, v)
+	}
 }
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
