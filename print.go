@@ -867,7 +867,26 @@ func (l LogicalORExpression) printSource(w io.Writer, v bool) {
 }
 
 func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writer, v bool) {
-
+	w.Write(parenOpen)
+	if len(c.Expressions) > 0 {
+		c.Expressions[0].printSource(w, v)
+		for _, e := range c.Expressions[1:] {
+			w.Write(commaSep)
+			e.printSource(w, v)
+		}
+		if c.ArrayBindingPattern != nil || c.ObjectBindingPattern != nil || c.BindingIdentifier != nil {
+			w.Write(commaSep)
+			w.Write(ellipsis)
+		}
+	}
+	if c.ArrayBindingPattern != nil {
+		c.ArrayBindingPattern.printSource(w, v)
+	} else if c.ObjectBindingPattern != nil {
+		c.ObjectBindingPattern.printSource(w, v)
+	} else if c.BindingIdentifier != nil {
+		io.WriteString(w, c.BindingIdentifier.Identifier.Data)
+	}
+	w.Write(parenClose)
 }
 
 func (m MemberExpression) printSource(w io.Writer, v bool) {
