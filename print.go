@@ -836,7 +836,17 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
-
+	if b.SingleNameBinding != nil {
+		io.WriteString(w, b.SingleNameBinding.Identifier.Data)
+	} else if b.Initializer != nil {
+		if b.ArrayBindingPattern != nil {
+			w.Write(assignment)
+			b.ArrayBindingPattern.printSource(w, v)
+		} else if b.ObjectBindingPattern != nil {
+			w.Write(assignment)
+			b.ObjectBindingPattern.printSource(w, v)
+		}
+	}
 }
 
 func (p PropertyName) printSource(w io.Writer, v bool) {
