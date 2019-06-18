@@ -79,6 +79,7 @@ var (
 	newTarget                  = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
 	dot                        = newTarget[3:4]
 	logicalAND                 = []byte{' ', '&', '&', ' '}
+	this                       = []byte{'t', 'h', 'i', 's'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -974,9 +975,35 @@ func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
 }
 
 func (p PrimaryExpression) printSource(w io.Writer, v bool) {
-
+	if p.This {
+		w.Write(this)
+	} else if p.IdentifierReference != nil {
+		io.WriteString(w, p.IdentifierReference.Identifier.Data)
+	} else if p.Literal != nil {
+		io.WriteString(w, p.Literal.Data)
+	} else if p.ArrayLiteral != nil {
+		p.ArrayLiteral.printSource(w, v)
+	} else if p.ObjectLiteral != nil {
+		p.ObjectLiteral.printSource(w, v)
+	} else if p.FunctionExpression != nil {
+		p.FunctionExpression.printSource(w, v)
+	} else if p.ClassExpression != nil {
+		p.ClassExpression.printSource(w, v)
+	} else if p.TemplateLiteral != nil {
+		p.TemplateLiteral.printSource(w, v)
+	} else if p.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		p.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
+	}
 }
 
 func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (a ArrayLiteral) printSource(w io.Writer, v bool) {
+
+}
+
+func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 
 }
