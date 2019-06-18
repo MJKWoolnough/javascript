@@ -76,6 +76,8 @@ var (
 	super                      = []byte{'s', 'u', 'p', 'e', 'r'}
 	colonSep                   = []byte{':', ' '}
 	logicalOR                  = []byte{' ', '|', '|', ' '}
+	newTarget                  = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
+	dot                        = newTarget[3:4]
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -890,7 +892,41 @@ func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writ
 }
 
 func (m MemberExpression) printSource(w io.Writer, v bool) {
+	if m.MemberExpression != nil {
+		if m.Arguments != nil {
+			w.Write(news)
+			m.MemberExpression.printSource(w, v)
+			m.Arguments.printSource(w, v)
+		} else if m.Expression != nil {
+			m.MemberExpression.printSource(w, v)
+			w.Write(bracketOpen)
+			m.Expression.printSource(w, v)
+			w.Write(bracketClose)
+		} else if m.IdentifierName != nil {
+			m.MemberExpression.printSource(w, v)
+			w.Write(dot)
+			io.WriteString(w, m.IdentifierName.Data)
+		} else if m.TemplateLiteral != nil {
+			m.MemberExpression.printSource(w, v)
+			m.TemplateLiteral.printSource(w, v)
+		}
 
+	} else if m.PrimaryExpression != nil {
+		if m.Expression != nil {
+			m.PrimaryExpression.printSource(w, v)
+			w.Write(bracketOpen)
+			m.Expression.printSource(w, v)
+			w.Write(bracketClose)
+		} else if m.IdentifierName != nil {
+			m.PrimaryExpression.printSource(w, v)
+			w.Write(dot)
+			io.WriteString(w, m.IdentifierName.Data)
+		}
+	} else if m.SuperProperty {
+		w.Write(super)
+	} else if m.MetaProperty {
+		w.Write(newTarget)
+	}
 }
 
 func (a Arguments) printSource(w io.Writer, v bool) {
@@ -902,5 +938,9 @@ func (t TemplateLiteral) printSource(w io.Writer, v bool) {
 }
 
 func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 
 }
