@@ -78,6 +78,7 @@ var (
 	logicalOR                  = []byte{' ', '|', '|', ' '}
 	newTarget                  = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
 	dot                        = newTarget[3:4]
+	logicalAND                 = []byte{' ', '&', '&', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -965,9 +966,17 @@ func (t TemplateLiteral) printSource(w io.Writer, v bool) {
 }
 
 func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
-
+	if l.LogicalANDExpression != nil {
+		l.LogicalANDExpression.printSource(w, v)
+		w.Write(logicalAND)
+	}
+	l.BitwiseORExpression.printSource(w, v)
 }
 
 func (p PrimaryExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
 
 }
