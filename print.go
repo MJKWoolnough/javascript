@@ -75,6 +75,7 @@ var (
 	news                       = []byte{'n', 'e', 'w', ' '}
 	super                      = []byte{'s', 'u', 'p', 'e', 'r'}
 	colonSep                   = []byte{':', ' '}
+	logicalOR                  = []byte{' ', '|', '|', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -858,7 +859,11 @@ func (p PropertyName) printSource(w io.Writer, v bool) {
 }
 
 func (l LogicalORExpression) printSource(w io.Writer, v bool) {
-
+	if l.LogicalORExpression != nil {
+		l.LogicalORExpression.printSource(w, v)
+		w.Write(logicalOR)
+	}
+	l.LogicalANDExpression.printSource(w, v)
 }
 
 func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writer, v bool) {
@@ -874,5 +879,9 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 }
 
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {
+
+}
+
+func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
 
 }
