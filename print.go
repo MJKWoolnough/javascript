@@ -878,14 +878,16 @@ func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writ
 		}
 		if c.ArrayBindingPattern != nil || c.ObjectBindingPattern != nil || c.BindingIdentifier != nil {
 			w.Write(commaSep)
-			w.Write(ellipsis)
 		}
 	}
 	if c.ArrayBindingPattern != nil {
+		w.Write(ellipsis)
 		c.ArrayBindingPattern.printSource(w, v)
 	} else if c.ObjectBindingPattern != nil {
+		w.Write(ellipsis)
 		c.ObjectBindingPattern.printSource(w, v)
 	} else if c.BindingIdentifier != nil {
+		w.Write(ellipsis)
 		io.WriteString(w, c.BindingIdentifier.Identifier.Data)
 	}
 	w.Write(parenClose)
@@ -930,7 +932,22 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a Arguments) printSource(w io.Writer, v bool) {
-
+	w.Write(parenOpen)
+	if len(a.ArgumentList) > 0 {
+		a.ArgumentList[0].printSource(w, v)
+		for _, ae := range a.ArgumentList {
+			w.Write(commaSep)
+			ae.printSource(w, v)
+		}
+		if a.SpreadArgument != nil {
+			w.Write(commaSep)
+		}
+	}
+	if a.SpreadArgument != nil {
+		w.Write(ellipsis)
+		a.SpreadArgument.printSource(w, v)
+	}
+	w.Write(parenClose)
 }
 
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {
