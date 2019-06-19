@@ -1025,9 +1025,46 @@ func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 }
 
 func (o ObjectLiteral) printSource(w io.Writer, v bool) {
-
+	w.Write(blockOpen)
+	if len(o.PropertyDefinitionList) > 0 {
+		var lastLine uint64
+		if v && len(o.Tokens) > 0 {
+			lastLine = o.Tokens[0].Line
+		}
+		pp := indentPrinter{w}
+		for n, pd := range o.PropertyDefinitionList {
+			if n > 0 {
+				if v && len(pd.Tokens) > 0 {
+					if ll := pd.Tokens[0].Line; ll > lastLine {
+						lastLine = ll
+						w.Write(commaSepNL)
+					} else {
+						pp.Write(commaSep)
+					}
+				} else {
+					w.Write(commaSep)
+				}
+			} else if v && len(pd.Tokens) > 0 {
+				if ll := pd.Tokens[0].Line; ll > lastLine {
+					lastLine = ll
+					pp.Write(newLine)
+				}
+			}
+			pd.printSource(w, v)
+		}
+		if pd := o.PropertyDefinitionList[len(o.PropertyDefinitionList)-1]; len(pd.Tokens) > 0 {
+			if ll := pd.Tokens[len(pd.Tokens)-1].Line; ll > lastLine {
+				w.Write(newLine)
+			}
+		}
+	}
+	w.Write(blockClose)
 }
 
 func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
+
+}
+
+func (p PropertyDefinition) printSource(w io.Writer, v bool) {
 
 }
