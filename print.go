@@ -1006,7 +1006,22 @@ func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrayLiteral) printSource(w io.Writer, v bool) {
-
+	w.Write(bracketOpen)
+	if len(a.ElementList) > 0 {
+		a.ElementList[0].printSource(w, v)
+		for _, ae := range a.ElementList {
+			w.Write(commaSep)
+			ae.printSource(w, v)
+		}
+		if a.SpreadElement != nil {
+			w.Write(commaSep)
+		}
+	}
+	if a.SpreadElement != nil {
+		w.Write(ellipsis)
+		a.SpreadElement.printSource(w, v)
+	}
+	w.Write(bracketClose)
 }
 
 func (o ObjectLiteral) printSource(w io.Writer, v bool) {
