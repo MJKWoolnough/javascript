@@ -432,6 +432,7 @@ func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) 
 type PropertyDefinition struct {
 	IdentifierReference  *IdentifierReference
 	PropertyName         *PropertyName
+	Spread               bool
 	AssignmentExpression *AssignmentExpression
 	MethodDefinition     *MethodDefinition
 	Tokens               Tokens
@@ -484,6 +485,18 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 				return err
 			}
 			pd.MethodDefinition = &md
+			return nil
+		},
+		func(j *jsParser) error {
+			if !j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				return errNotApplicable
+			}
+			ae, err := j.parseAssignmentExpression(true, yield, await)
+			if err != nil {
+				return err
+			}
+			pd.Spread = true
+			pd.AssignmentExpression = &ae
 			return nil
 		},
 	); err != nil {
