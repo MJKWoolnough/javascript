@@ -83,6 +83,10 @@ var (
 	bitwiseOR                  = []byte{' ', '|', ' '}
 	bitwiseXOR                 = []byte{' ', '^', ' '}
 	bitwiseAND                 = []byte{' ', '&', ' '}
+	equalityEqual              = []byte{' ', '=', '=', ' '}
+	equalityNotEqual           = []byte{' ', '!', '=', ' '}
+	equalityStrictEqual        = []byte{' ', '=', '=', '=', ' '}
+	equalityStrictNotEqual     = []byte{' ', '!', '=', '=', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1101,5 +1105,26 @@ func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
 }
 
 func (e EqualityExpression) printSource(w io.Writer, v bool) {
+	if e.EqualityExpression != nil {
+		var eo []byte
+		switch e.EqualityOperator {
+		case EqualityEqual:
+			eo = equalityEqual
+		case EqualityNotEqual:
+			eo = equalityNotEqual
+		case EqualityStrictEqual:
+			eo = equalityStrictEqual
+		case EqualityStrictNotEqual:
+			eo = equalityStrictNotEqual
+		default:
+			return
+		}
+		e.EqualityExpression.printSource(w, v)
+		w.Write(eo)
+	}
+	e.RelationalExpression.printSource(w, v)
+}
+
+func (r RelationalExpression) printSource(w io.Writer, v bool) {
 
 }
