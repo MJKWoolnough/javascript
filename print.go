@@ -96,6 +96,8 @@ var (
 	shiftLeft                    = []byte{' ', '<', '<', ' '}
 	shiftRight                   = []byte{' ', '>', '>', ' '}
 	shiftUnsignedRight           = []byte{' ', '>', '>', '>', ' '}
+	additiveAdd                  = []byte{' ', '+', ' '}
+	additiveMinus                = []byte{' ', '-', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1179,5 +1181,22 @@ func (s ShiftExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a AdditiveExpression) printSource(w io.Writer, v bool) {
+	if a.AdditiveExpression != nil {
+		var ao []byte
+		switch a.AdditiveOperator {
+		case AdditiveAdd:
+			ao = additiveAdd
+		case AdditiveMinus:
+			ao = additiveMinus
+		default:
+			return
+		}
+		a.AdditiveExpression.printSource(w, v)
+		w.Write(ao)
+	}
+	a.MultiplicativeExpression.printSource(w, v)
+}
+
+func (m MultiplicativeExpression) printSource(w io.Writer, v bool) {
 
 }
