@@ -102,6 +102,14 @@ var (
 	multiplicativeDivide         = []byte{' ', '/', ' '}
 	multiplicativeRemainder      = []byte{' ', '%', ' '}
 	exponentionation             = []byte{'*', '*'}
+	unaryDelete                  = []byte{'d', 'e', 'l', 'e', 't', 'e', ' '}
+	unaryVoid                    = []byte{'v', 'o', 'i', 'd', ' '}
+	unaryTypeOf                  = []byte{'t', 'y', 'p', 'e', 'o', 'f', ' '}
+	unaryAdd                     = []byte{'+'}
+	unaryMinus                   = []byte{'-'}
+	unaryBitwiseNot              = []byte{'~'}
+	unaryLogicalNot              = []byte{'!'}
+	unaryAwait                   = []byte{'a', 'w', 'a', 'i', 't', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1229,5 +1237,29 @@ func (e ExponentiationExpression) printSource(w io.Writer, v bool) {
 }
 
 func (u UnaryExpression) printSource(w io.Writer, v bool) {
+	for _, uo := range u.UnaryOperators {
+		switch uo {
+		case UnaryDelete:
+			w.Write(unaryDelete)
+		case UnaryVoid:
+			w.Write(unaryVoid)
+		case UnaryTypeOf:
+			w.Write(unaryTypeOf)
+		case UnaryAdd:
+			w.Write(unaryAdd)
+		case UnaryMinus:
+			w.Write(unaryMinus)
+		case UnaryBitwiseNot:
+			w.Write(unaryBitwiseNot)
+		case UnaryLogicalNot:
+			w.Write(unaryLogicalNot)
+		case UnaryAwait:
+			w.Write(unaryAwait)
+		}
+	}
+	u.UpdateExpression.printSource(w, v)
+}
+
+func (u UpdateExpression) printSource(w io.Writer, v bool) {
 
 }
