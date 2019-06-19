@@ -81,6 +81,7 @@ var (
 	logicalAND                 = []byte{' ', '&', '&', ' '}
 	this                       = []byte{'t', 'h', 'i', 's'}
 	bitwiseOR                  = []byte{' ', '|', ' '}
+	bitwiseXOR                 = []byte{' ', '^', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1062,9 +1063,17 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 }
 
 func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
-
+	if b.BitwiseXORExpression != nil {
+		b.BitwiseXORExpression.printSource(w, v)
+		w.Write(bitwiseXOR)
+	}
+	b.BitwiseANDExpression.printSource(w, v)
 }
 
 func (p PropertyDefinition) printSource(w io.Writer, v bool) {
+
+}
+
+func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
 
 }
