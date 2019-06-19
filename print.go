@@ -110,6 +110,8 @@ var (
 	unaryBitwiseNot              = []byte{'~'}
 	unaryLogicalNot              = []byte{'!'}
 	unaryAwait                   = []byte{'a', 'w', 'a', 'i', 't', ' '}
+	updateIncrement              = []byte{'+', '+'}
+	updateDecrement              = []byte{'-', '-'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1261,5 +1263,30 @@ func (u UnaryExpression) printSource(w io.Writer, v bool) {
 }
 
 func (u UpdateExpression) printSource(w io.Writer, v bool) {
-
+	if u.LeftHandSideExpression != nil {
+		var uo []byte
+		switch u.UpdateOperator {
+		case UpdatePostIncrement:
+			uo = updateIncrement
+		case UpdatePostDecrement:
+			uo = updateDecrement
+		case UpdatePreIncrement, UpdatePreDecrement:
+			return
+		default:
+		}
+		u.LeftHandSideExpression.printSource(w, v)
+		if len(uo) > 0 {
+			w.Write(uo)
+		}
+	} else if u.UnaryExpression != nil {
+		switch u.UpdateOperator {
+		case UpdatePreIncrement:
+			w.Write(updateIncrement)
+		case UpdatePreDecrement:
+			w.Write(updateDecrement)
+		default:
+			return
+		}
+		u.UnaryExpression.printSource(w, v)
+	}
 }
