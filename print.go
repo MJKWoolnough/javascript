@@ -101,6 +101,7 @@ var (
 	multiplicativeMultiply       = []byte{' ', '*', ' '}
 	multiplicativeDivide         = []byte{' ', '/', ' '}
 	multiplicativeRemainder      = []byte{' ', '%', ' '}
+	exponentionation             = []byte{'*', '*'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1220,5 +1221,13 @@ func (m MultiplicativeExpression) printSource(w io.Writer, v bool) {
 }
 
 func (e ExponentiationExpression) printSource(w io.Writer, v bool) {
+	if e.ExponentiationExpression != nil {
+		e.ExponentiationExpression.printSource(w, v)
+		w.Write(exponentionation)
+	}
+	e.UnaryExpression.printSource(w, v)
+}
+
+func (u UnaryExpression) printSource(w io.Writer, v bool) {
 
 }
