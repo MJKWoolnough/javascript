@@ -1292,12 +1292,26 @@ func (u UpdateExpression) printSource(w io.Writer, v bool) {
 }
 
 func (m Module) printSource(w io.Writer, v bool) {
-	for _, mi := range m.Format {
+	for _, mi := range m.ModuleListItems {
 		mi.printSource(w, v)
 		w.Write(newLine)
 	}
 }
 
-type (m ModuleListItem) printSource(w io.Writer, v bool) {
+func (m ModuleListItem) printSource(w io.Writer, v bool) {
+	if m.ImportDeclaration != nil {
+		m.ImportDeclaration.printSource(w, v)
+	} else if m.ExportDeclaration != nil {
+		m.ExportDeclaration.printSource(w, v)
+	} else if m.StatementListItem != nil {
+		m.StatementListItem.printSource(w, v)
+	}
+}
+
+func (i ImportDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 
 }
