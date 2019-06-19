@@ -80,6 +80,7 @@ var (
 	dot                        = newTarget[3:4]
 	logicalAND                 = []byte{' ', '&', '&', ' '}
 	this                       = []byte{'t', 'h', 'i', 's'}
+	bitwiseOR                  = []byte{' ', '|', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -997,7 +998,11 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 }
 
 func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
-
+	if b.BitwiseORExpression != nil {
+		b.BitwiseORExpression.printSource(w, v)
+		w.Write(bitwiseOR)
+	}
+	b.BitwiseXORExpression.printSource(w, v)
 }
 
 func (a ArrayLiteral) printSource(w io.Writer, v bool) {
@@ -1005,5 +1010,9 @@ func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 }
 
 func (o ObjectLiteral) printSource(w io.Writer, v bool) {
+
+}
+
+func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
 
 }
