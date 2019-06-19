@@ -93,6 +93,9 @@ var (
 	relationshipGreaterThanEqual = []byte{' ', '>', '=', ' '}
 	relationshipInstanceOf       = []byte{' ', 'i', 'n', 's', 't', 'a', 'n', 'c', 'e', 'o', 'f', ' '}
 	relationshipIn               = forIn
+	shiftLeft                    = []byte{' ', '<', '<', ' '}
+	shiftRight                   = []byte{' ', '>', '>', ' '}
+	shiftUnsignedRight           = []byte{' ', '>', '>', '>', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1157,5 +1160,24 @@ func (r RelationalExpression) printSource(w io.Writer, v bool) {
 }
 
 func (s ShiftExpression) printSource(w io.Writer, v bool) {
+	if s.ShiftExpression != nil {
+		var so []byte
+		switch s.ShiftOperator {
+		case ShiftLeft:
+			so = shiftLeft
+		case ShiftRight:
+			so = shiftRight
+		case ShiftUnsignedRight:
+			so = shiftUnsignedRight
+		default:
+			return
+		}
+		s.ShiftExpression.printSource(w, v)
+		w.Write(so)
+	}
+	s.AdditiveExpression.printSource(w, v)
+}
+
+func (a AdditiveExpression) printSource(w io.Writer, v bool) {
 
 }
