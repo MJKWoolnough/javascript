@@ -1290,3 +1290,14 @@ func (u UpdateExpression) printSource(w io.Writer, v bool) {
 		u.UnaryExpression.printSource(w, v)
 	}
 }
+
+func (m Module) printSource(w io.Writer, v bool) {
+	for _, mi := range m.Format {
+		mi.printSource(w, v)
+		w.Write(newLine)
+	}
+}
+
+type (m ModuleListItem) printSource(w io.Writer, v bool) {
+
+}
