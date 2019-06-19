@@ -98,6 +98,9 @@ var (
 	shiftUnsignedRight           = []byte{' ', '>', '>', '>', ' '}
 	additiveAdd                  = []byte{' ', '+', ' '}
 	additiveMinus                = []byte{' ', '-', ' '}
+	multiplicativeMultiply       = []byte{' ', '*', ' '}
+	multiplicativeDivide         = []byte{' ', '/', ' '}
+	multiplicativeRemainder      = []byte{' ', '%', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1198,5 +1201,24 @@ func (a AdditiveExpression) printSource(w io.Writer, v bool) {
 }
 
 func (m MultiplicativeExpression) printSource(w io.Writer, v bool) {
+	if m.MultiplicativeExpression != nil {
+		var mo []byte
+		switch m.MultiplicativeOperator {
+		case MultiplicativeMultiply:
+			mo = multiplicativeMultiply
+		case MultiplicativeDivide:
+			mo = multiplicativeDivide
+		case MultiplicativeRemainder:
+			mo = multiplicativeRemainder
+		default:
+			return
+		}
+		m.MultiplicativeExpression.printSource(w, v)
+		w.Write(mo)
+	}
+	m.ExponentiationExpression.printSource(w, v)
+}
+
+func (e ExponentiationExpression) printSource(w io.Writer, v bool) {
 
 }
