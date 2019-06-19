@@ -1038,9 +1038,9 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 				if v && len(pd.Tokens) > 0 {
 					if ll := pd.Tokens[0].Line; ll > lastLine {
 						lastLine = ll
-						w.Write(commaSepNL)
+						pp.Write(commaSepNL)
 					} else {
-						pp.Write(commaSep)
+						w.Write(commaSep)
 					}
 				} else {
 					w.Write(commaSep)
@@ -1071,7 +1071,24 @@ func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
 }
 
 func (p PropertyDefinition) printSource(w io.Writer, v bool) {
-
+	if p.IdentifierReference != nil {
+		io.WriteString(w, p.IdentifierReference.Identifier.Data)
+		if p.AssignmentExpression != nil {
+			w.Write(assignment)
+			p.AssignmentExpression.printSource(w, v)
+		}
+	} else if p.AssignmentExpression != nil {
+		if p.PropertyName != nil {
+			p.PropertyName.printSource(w, v)
+			w.Write(colonSep)
+			p.AssignmentExpression.printSource(w, v)
+		} else if p.Spread {
+			w.Write(ellipsis)
+			p.AssignmentExpression.printSource(w, v)
+		}
+	} else if p.MethodDefinition != nil {
+		p.MethodDefinition.printSource(w, v)
+	}
 }
 
 func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
