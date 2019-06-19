@@ -82,6 +82,7 @@ var (
 	this                       = []byte{'t', 'h', 'i', 's'}
 	bitwiseOR                  = []byte{' ', '|', ' '}
 	bitwiseXOR                 = []byte{' ', '^', ' '}
+	bitwiseAND                 = []byte{' ', '&', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1092,5 +1093,13 @@ func (p PropertyDefinition) printSource(w io.Writer, v bool) {
 }
 
 func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
+	if b.BitwiseANDExpression != nil {
+		b.BitwiseANDExpression.printSource(w, v)
+		w.Write(bitwiseAND)
+	}
+	b.EqualityExpression.printSource(w, v)
+}
+
+func (e EqualityExpression) printSource(w io.Writer, v bool) {
 
 }
