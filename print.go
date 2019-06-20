@@ -112,6 +112,7 @@ var (
 	unaryAwait                   = []byte{'a', 'w', 'a', 'i', 't', ' '}
 	updateIncrement              = []byte{'+', '+'}
 	updateDecrement              = []byte{'-', '-'}
+	importc                      = []byte{'i', 'm', 'p', 'o', 'r', 't', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1309,9 +1310,21 @@ func (m ModuleListItem) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportDeclaration) printSource(w io.Writer, v bool) {
-
+	w.Write(importc)
+	if i.ImportClause != nil {
+		i.ImportClause.printSource(w, v)
+	}
+	i.FromClause.printSource(w, v)
 }
 
 func (e ExportDeclaration) printSource(w io.Writer, v bool) {
+
+}
+
+func (i ImportClause) printSource(w io.Writer, v bool) {
+
+}
+
+func (f FromClause) printSource(w io.Writer, v bool) {
 
 }
