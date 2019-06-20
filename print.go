@@ -113,6 +113,9 @@ var (
 	updateIncrement              = []byte{'+', '+'}
 	updateDecrement              = []byte{'-', '-'}
 	importc                      = []byte{'i', 'm', 'p', 'o', 'r', 't', ' '}
+	exportAll                    = exponentionation[:1]
+	exportd                      = []byte{'e', 'x', 'p', 'o', 'r', 't', ' ', 'd', 'e', 'f', 'a', 'u', 'l', 't', ' '}
+	exportc                      = exportd[:7]
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1318,7 +1321,36 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 }
 
 func (e ExportDeclaration) printSource(w io.Writer, v bool) {
-
+	if e.FromClause != nil {
+		w.Write(exportc)
+		if e.ExportClause != nil {
+			e.ExportClause.printSource(w, v)
+		} else {
+			w.Write(exportAll)
+		}
+		e.FromClause.printSource(w, v)
+		w.Write(semiColon)
+	} else if e.ExportClause != nil {
+		w.Write(exportc)
+		e.ExportClause.printSource(w, v)
+		w.Write(semiColon)
+	} else if e.VariableStatement != nil {
+		w.Write(exportc)
+		e.VariableStatement.printSource(w, v)
+	} else if e.Declaration != nil {
+		w.Write(exportc)
+		e.Declaration.printSource(w, v)
+	} else if e.DefaultFunction != nil {
+		w.Write(exportd)
+		e.DefaultFunction.printSource(w, v)
+	} else if e.DefaultClass != nil {
+		w.Write(exportd)
+		e.DefaultClass.printSource(w, v)
+	} else if e.DefaultAssignmentExpression != nil {
+		w.Write(exportd)
+		e.DefaultAssignmentExpression.printSource(w, v)
+		w.Write(semiColon)
+	}
 }
 
 func (i ImportClause) printSource(w io.Writer, v bool) {
@@ -1326,5 +1358,9 @@ func (i ImportClause) printSource(w io.Writer, v bool) {
 }
 
 func (f FromClause) printSource(w io.Writer, v bool) {
+
+}
+
+func (e ExportClause) printSource(w io.Writer, v bool) {
 
 }
