@@ -26,6 +26,7 @@ func (j *jsParser) parseModule() (Module, error) {
 		if err != nil {
 			return m, j.Error(err)
 		}
+		j.Score(g)
 		m.ModuleListItems = append(m.ModuleListItems, ml)
 	}
 	m.Tokens = j.ToTokens()
@@ -88,6 +89,7 @@ func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 		}
 		id.ImportClause = &ic
 		j.Score(g)
+		j.AcceptRunWhitespace()
 		g = j.NewGoal()
 		id.FromClause, err = g.parseFromClause()
 		if err != nil {
@@ -105,7 +107,7 @@ func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 
 type ImportClause struct {
 	ImportedDefaultBinding *Token
-	NamespaceImport        *ImportedBinding
+	NameSpaceImport        *ImportedBinding
 	NamedImports           *NamedImports
 	Tokens                 Tokens
 }
@@ -116,12 +118,13 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 	if g.Accept(TokenIdentifier) {
 		ic.ImportedDefaultBinding = j.GetLastToken()
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			ic.Tokens = j.ToTokens()
 			return ic, nil
 		}
-		j.AcceptRunWhitespace()
-		g = j.NewGoal()
+		g.AcceptRunWhitespace()
 	}
 	if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 		g.AcceptRunWhitespace()
@@ -129,13 +132,11 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 			return ic, j.Error(ErrInvalidNameSpaceImport)
 		}
 		g.AcceptRunWhitespace()
-		if !g.Accept(TokenIdentifier) {
-			ib, err := g.parseImportedBinding()
-			if err != nil {
-				return ic, j.Error(err)
-			}
-			ic.NamespaceImport = &ib
+		ib, err := g.parseImportedBinding()
+		if err != nil {
+			return ic, j.Error(err)
 		}
+		ic.NameSpaceImport = &ib
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 		ni, err := g.parseNamedImports()
 		if err != nil {
@@ -164,7 +165,6 @@ type FromClause struct {
 
 func (j *jsParser) parseFromClause() (FromClause, error) {
 	var fc FromClause
-	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenIdentifier, "from"}) {
 		return fc, j.Error(ErrMissingFrom)
 	}
@@ -215,22 +215,32 @@ type ImportSpecifier struct {
 
 func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 	var is ImportSpecifier
-	g := j.NewGoal()
-	if !g.Accept(TokenIdentifier) {
-		return is, j.Error(ErrInvalidImportSpecifier)
-	}
-	g.AcceptRunWhitespace()
-	var err error
-	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) { // No IdentifierName
-		g.AcceptRunWhitespace()
-		if is.ImportedBinding, err = g.parseImportedBinding(); err != nil {
-			return is, j.Error(err)
+	if err := j.FindGoal(func(j *jsParser) error {
+		if !j.Accept(TokenIdentifier) {
+			return errNotApplicable
 		}
-		j.Score(g)
-	} else {
-		if is.ImportedBinding, err = j.parseImportedBinding(); err != nil {
-			return is, j.Error(err)
+		in := j.GetLastToken()
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+			return ErrInvalidImportSpecifier
 		}
+		j.AcceptRunWhitespace()
+		ib, err := j.parseImportedBinding()
+		if err != nil {
+			return err
+		}
+		is.IdentifierName = in
+		is.ImportedBinding = ib
+		return nil
+	}, func(j *jsParser) error {
+		ib, err := j.parseImportedBinding()
+		if err != nil {
+			return err
+		}
+		is.ImportedBinding = ib
+		return nil
+	}); err != nil {
+		return is, err
 	}
 	is.Tokens = j.ToTokens()
 	return is, nil
