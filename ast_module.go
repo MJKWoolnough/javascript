@@ -125,6 +125,8 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 			return ic, nil
 		}
 		g.AcceptRunWhitespace()
+		j.Score(g)
+		g = j.NewGoal()
 	}
 	if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 		g.AcceptRunWhitespace()
