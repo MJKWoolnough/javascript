@@ -116,7 +116,7 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 	var ic ImportClause
 	g := j.NewGoal()
 	if g.Accept(TokenIdentifier) {
-		ic.ImportedDefaultBinding = j.GetLastToken()
+		ic.ImportedDefaultBinding = g.GetLastToken()
 		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
