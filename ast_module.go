@@ -106,7 +106,7 @@ func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 }
 
 type ImportClause struct {
-	ImportedDefaultBinding *Token
+	ImportedDefaultBinding *ImportedBinding
 	NameSpaceImport        *ImportedBinding
 	NamedImports           *NamedImports
 	Tokens                 Tokens
@@ -114,10 +114,14 @@ type ImportClause struct {
 
 func (j *jsParser) parseImportClause() (ImportClause, error) {
 	var ic ImportClause
-	g := j.NewGoal()
-	if g.Accept(TokenIdentifier) {
-		ic.ImportedDefaultBinding = g.GetLastToken()
+	if t := j.Peek().Type; t == TokenIdentifier || t == TokenKeyword {
+		g := j.NewGoal()
+		ib, err := g.parseImportedBinding()
+		if err != nil {
+			return ic, j.Error(err)
+		}
 		j.Score(g)
+		ic.ImportedDefaultBinding = &ib
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
@@ -128,27 +132,33 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 		j.Score(g)
 		g = j.NewGoal()
 	}
-	if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+	if j.Peek() == (parser.Token{TokenPunctuator, "*"}) {
+		g := j.NewGoal()
+		g.Except()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 			return ic, j.Error(ErrInvalidNameSpaceImport)
 		}
 		g.AcceptRunWhitespace()
-		ib, err := g.parseImportedBinding()
+		h := g.NewGoal()
+		ib, err := h.parseImportedBinding()
 		if err != nil {
-			return ic, j.Error(err)
+			return ic, g.Error(err)
 		}
+		g.Score(h)
+		j.Score(g)
 		ic.NameSpaceImport = &ib
-	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
+		g := j.NewGoal()
 		ni, err := g.parseNamedImports()
 		if err != nil {
 			return ic, j.Error(err)
 		}
+		j.Score(g)
 		ic.NamedImports = &ni
 	} else {
 		return ic, j.Error(ErrInvalidImport)
 	}
-	j.Score(g)
 	ic.Tokens = j.ToTokens()
 	return ic, nil
 }
@@ -186,6 +196,7 @@ type NamedImports struct {
 
 func (j *jsParser) parseNamedImports() (NamedImports, error) {
 	var ni NamedImports
+	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
 	for {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {

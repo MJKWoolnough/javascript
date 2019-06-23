@@ -27,8 +27,10 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &tk[2],
-								Tokens:                 tk[2:3],
+								ImportedDefaultBinding: &ImportedBinding{
+									Identifier: &tk[2],
+								},
+								Tokens: tk[2:3],
 							},
 							FromClause: FromClause{
 								ModuleSpecifier: &tk[6],
@@ -172,7 +174,9 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &tk[2],
+								ImportedDefaultBinding: &ImportedBinding{
+									Identifier: &tk[2],
+								},
 								NameSpaceImport: &ImportedBinding{
 									Identifier: &tk[9],
 								},
@@ -196,7 +200,9 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &tk[2],
+								ImportedDefaultBinding: &ImportedBinding{
+									Identifier: &tk[2],
+								},
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
