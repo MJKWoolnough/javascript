@@ -346,10 +346,11 @@ func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 			}
 		}
 	} else {
-		d, err := j.parseDeclaration(false, false)
+		d, err := g.parseDeclaration(false, false)
 		if err != nil {
 			return ed, j.Error(err)
 		}
+		j.Score(g)
 		ed.Declaration = &d
 	}
 	ed.Tokens = j.ToTokens()
