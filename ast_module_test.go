@@ -455,6 +455,119 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:27],
 			}
 		}},
+		{`export var a = 1;`, func(t *test, tk Tokens) { // 18
+			litA := makeConditionLiteral(tk, 8)
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							VariableStatement: &VariableStatement{
+								VariableDeclarationList: []VariableDeclaration{
+									{
+										BindingIdentifier: &BindingIdentifier{
+											Identifier: &tk[4],
+										},
+										Initializer: &AssignmentExpression{
+											ConditionalExpression: &litA,
+											Tokens:                tk[8:9],
+										},
+										Tokens: tk[4:9],
+									},
+								},
+								Tokens: tk[2:10],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`export function a(){}`, func(t *test, tk Tokens) { // 19
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &BindingIdentifier{
+										Identifier: &tk[4],
+									},
+									FormalParameters: FormalParameters{
+										Tokens: tk[6:6],
+									},
+									FunctionBody: Block{
+										Tokens: tk[7:9],
+									},
+									Tokens: tk[2:9],
+								},
+								Tokens: tk[2:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`export default function(){}`, func(t *test, tk Tokens) { // 19
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultFunction: &FunctionDeclaration{
+								FormalParameters: FormalParameters{
+									Tokens: tk[5:5],
+								},
+								FunctionBody: Block{
+									Tokens: tk[7:9],
+								},
+								Tokens: tk[4:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`export default class{}`, func(t *test, tk Tokens) { // 20
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultClass: &ClassDeclaration{
+								Tokens: tk[4:7],
+							},
+							Tokens: tk[:7],
+						},
+						Tokens: tk[:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`export default 1;`, func(t *test, tk Tokens) { // 21
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultAssignmentExpression: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[4:5],
+							},
+							Tokens: tk[:6],
+						},
+						Tokens: tk[:6],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseModule()
 	})
