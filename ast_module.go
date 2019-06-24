@@ -317,11 +317,12 @@ func (j *jsParser) parseExportDeclaration() (ExportDeclaration, error) {
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			return ed, j.Error(ErrMissingSemiColon)
 		}
-	} else if g := j.NewGoal(); g.AcceptToken(parser.Token{TokenKeyword, "var"}) {
-		v, err := j.parseVariableStatement(false, false)
+	} else if g := j.NewGoal(); g.Peek() == (parser.Token{TokenKeyword, "var"}) {
+		v, err := g.parseVariableStatement(false, false)
 		if err != nil {
 			return ed, j.Error(err)
 		}
+		j.Score(g)
 		ed.VariableStatement = &v
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 		ec, err := g.parseExportClause()
