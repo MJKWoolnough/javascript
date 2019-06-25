@@ -568,6 +568,32 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`1;`, func(t *test, tk Tokens) { // 22
+			litA := makeConditionLiteral(tk, 0)
+			t.Output = Module{
+				ModuleListItems: []ModuleListItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: &litA,
+											Tokens:                tk[:1],
+										},
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:2],
+							},
+							Tokens: tk[:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseModule()
 	})
