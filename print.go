@@ -113,9 +113,11 @@ var (
 	updateIncrement              = []byte{'+', '+'}
 	updateDecrement              = []byte{'-', '-'}
 	importc                      = []byte{'i', 'm', 'p', 'o', 'r', 't', ' '}
+	from                         = []byte{' ', 'f', 'r', 'o', 'm', ' '}
 	exportAll                    = exponentionation[:1]
 	exportd                      = []byte{'e', 'x', 'p', 'o', 'r', 't', ' ', 'd', 'e', 'f', 'a', 'u', 'l', 't', ' '}
 	exportc                      = exportd[:7]
+	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1316,6 +1318,7 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(importc)
 	if i.ImportClause != nil {
 		i.ImportClause.printSource(w, v)
+		w.Write(from)
 	}
 	i.FromClause.printSource(w, v)
 }
@@ -1354,7 +1357,18 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportClause) printSource(w io.Writer, v bool) {
-
+	if i.ImportedDefaultBinding != nil {
+		io.WriteString(w, i.ImportedDefaultBinding.Identifier.Data)
+		if i.NameSpaceImport != nil || i.NamedImports != nil {
+			w.Write(commaSep)
+		}
+	}
+	if i.NameSpaceImport != nil {
+		w.Write(namespaceImport)
+		io.WriteString(w, i.NameSpaceImport.Identifier.Data)
+	} else if i.NamedImports != nil {
+		i.NamedImports.printSource(w, v)
+	}
 }
 
 func (f FromClause) printSource(w io.Writer, v bool) {
@@ -1362,5 +1376,9 @@ func (f FromClause) printSource(w io.Writer, v bool) {
 }
 
 func (e ExportClause) printSource(w io.Writer, v bool) {
+
+}
+
+func (n NamedImports) printSource(w io.Writer, v bool) {
 
 }
