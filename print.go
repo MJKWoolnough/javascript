@@ -955,13 +955,12 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 		}
 
 	} else if m.PrimaryExpression != nil {
+		m.PrimaryExpression.printSource(w, v)
 		if m.Expression != nil {
-			m.PrimaryExpression.printSource(w, v)
 			w.Write(bracketOpen)
 			m.Expression.printSource(w, v)
 			w.Write(bracketClose)
 		} else if m.IdentifierName != nil {
-			m.PrimaryExpression.printSource(w, v)
 			w.Write(dot)
 			io.WriteString(w, m.IdentifierName.Data)
 		}
