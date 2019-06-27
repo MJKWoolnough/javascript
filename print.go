@@ -118,6 +118,7 @@ var (
 	exportd                      = []byte{'e', 'x', 'p', 'o', 'r', 't', ' ', 'd', 'e', 'f', 'a', 'u', 'l', 't', ' '}
 	exportc                      = exportd[:7]
 	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
+	as                           = namespaceImport[1:]
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -1402,7 +1403,14 @@ func (n NamedImports) printSource(w io.Writer, v bool) {
 }
 
 func (e ExportSpecifier) printSource(w io.Writer, v bool) {
-
+	if e.IdentifierName == nil {
+		return
+	}
+	io.WriteString(w, e.IdentifierName.Data)
+	if e.EIdentifierName != nil {
+		w.Write(as)
+		io.WriteString(w, e.EIdentifierName.Data)
+	}
 }
 
 func (i ImportSpecifier) printSource(w io.Writer, v bool) {
