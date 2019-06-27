@@ -1414,5 +1414,9 @@ func (e ExportSpecifier) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportSpecifier) printSource(w io.Writer, v bool) {
-
+	if i.IdentifierName != nil {
+		io.WriteString(w, i.IdentifierName.Data)
+		w.Write(as)
+	}
+	io.WriteString(w, i.ImportedBinding.Identifier.Data)
 }
