@@ -122,9 +122,12 @@ var (
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
-	for _, stmt := range s.StatementList {
-		stmt.printSource(w, v)
-		w.Write(newLine)
+	if len(s.StatementList) > 0 {
+		s.StatementList[0].printSource(w, v)
+		for _, stmt := range s.StatementList[1:] {
+			w.Write(newLine)
+			stmt.printSource(w, v)
+		}
 	}
 }
 
@@ -134,7 +137,6 @@ func (s StatementListItem) printSource(w io.Writer, v bool) {
 	} else if s.Declaration != nil {
 		s.Declaration.printSource(w, v)
 	}
-	w.Write(newLine)
 }
 
 func (s Statement) printSource(w io.Writer, v bool) {
