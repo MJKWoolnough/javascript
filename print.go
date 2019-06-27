@@ -1318,9 +1318,10 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(importc)
 	if i.ImportClause != nil {
 		i.ImportClause.printSource(w, v)
-		w.Write(from)
+		i.FromClause.printSource(w, v)
+	} else {
+		io.WriteString(i.FromClause.ModuleSpecifier.Data)
 	}
-	i.FromClause.printSource(w, v)
 }
 
 func (e ExportDeclaration) printSource(w io.Writer, v bool) {
@@ -1372,7 +1373,8 @@ func (i ImportClause) printSource(w io.Writer, v bool) {
 }
 
 func (f FromClause) printSource(w io.Writer, v bool) {
-
+	w.Write(from)
+	io.WriteString(f.ModuleSpecifier.Data)
 }
 
 func (e ExportClause) printSource(w io.Writer, v bool) {
