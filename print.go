@@ -1320,7 +1320,7 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 		i.ImportClause.printSource(w, v)
 		i.FromClause.printSource(w, v)
 	} else {
-		io.WriteString(i.FromClause.ModuleSpecifier.Data)
+		io.WriteString(w, i.FromClause.ModuleSpecifier.Data)
 	}
 }
 
@@ -1374,13 +1374,25 @@ func (i ImportClause) printSource(w io.Writer, v bool) {
 
 func (f FromClause) printSource(w io.Writer, v bool) {
 	w.Write(from)
-	io.WriteString(f.ModuleSpecifier.Data)
+	io.WriteString(w, f.ModuleSpecifier.Data)
 }
 
 func (e ExportClause) printSource(w io.Writer, v bool) {
-
+	w.Write(blockOpen)
+	if len(e.ExportList) > 0 {
+		e.ExportList[0].printSource(w, v)
+		for _, es := range e.ExportList {
+			w.Write(commaSep)
+			es.printSource(w, v)
+		}
+	}
+	w.Write(blockClose)
 }
 
 func (n NamedImports) printSource(w io.Writer, v bool) {
+
+}
+
+func (e ExportSpecifier) printSource(w io.Writer, v bool) {
 
 }
