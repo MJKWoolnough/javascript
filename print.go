@@ -1381,7 +1381,7 @@ func (e ExportClause) printSource(w io.Writer, v bool) {
 	w.Write(blockOpen)
 	if len(e.ExportList) > 0 {
 		e.ExportList[0].printSource(w, v)
-		for _, es := range e.ExportList {
+		for _, es := range e.ExportList[1:] {
 			w.Write(commaSep)
 			es.printSource(w, v)
 		}
@@ -1390,9 +1390,21 @@ func (e ExportClause) printSource(w io.Writer, v bool) {
 }
 
 func (n NamedImports) printSource(w io.Writer, v bool) {
-
+	w.Write(blockOpen)
+	if len(n.ImportList) > 0 {
+		n.ImportList[0].printSource(w, v)
+		for _, is := range n.ImportList[1:] {
+			w.Write(commaSep)
+			is.printSource(w, v)
+		}
+	}
+	w.Write(blockClose)
 }
 
 func (e ExportSpecifier) printSource(w io.Writer, v bool) {
+
+}
+
+func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 
 }
