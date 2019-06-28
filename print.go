@@ -7,7 +7,8 @@ var (
 	blockClose                   = []byte{'}'}
 	commaSep                     = []byte{',', ' '}
 	commaSepNL                   = []byte{',', '\n'}
-	newLine                      = []byte{'\n'}
+	doubleNewLine                = []byte{'\n', '\n'}
+	newLine                      = doubleNewLine[:1]
 	conditionalStart             = []byte{' ', '?', ' '}
 	conditionalSep               = []byte{' ', ':', ' '}
 	labelPost                    = conditionalSep[1:]
@@ -125,7 +126,7 @@ func (s Script) printSource(w io.Writer, v bool) {
 	if len(s.StatementList) > 0 {
 		s.StatementList[0].printSource(w, v)
 		for _, stmt := range s.StatementList[1:] {
-			w.Write(newLine)
+			w.Write(doubleNewLine)
 			stmt.printSource(w, v)
 		}
 	}
