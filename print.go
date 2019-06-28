@@ -1301,9 +1301,12 @@ func (u UpdateExpression) printSource(w io.Writer, v bool) {
 }
 
 func (m Module) printSource(w io.Writer, v bool) {
-	for _, mi := range m.ModuleListItems {
-		mi.printSource(w, v)
-		w.Write(newLine)
+	if len(m.ModuleListItems) > 0 {
+		m.ModuleListItems[0].printSource(w, v)
+		for _, mi := range m.ModuleListItems[1:] {
+			w.Write(doubleNewLine)
+			mi.printSource(w, v)
+		}
 	}
 }
 
