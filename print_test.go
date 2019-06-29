@@ -38,6 +38,10 @@ func TestPrintingScript(t *testing.T) {
 			Input:  "const a = function(){\n};",
 			Output: "const a = function () {};",
 		},
+		{ // 4
+			Input:  "function a(){}function b(){}",
+			Output: "function a() {}\n\nfunction b() {}",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
