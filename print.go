@@ -824,7 +824,7 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 		w.Write(methodAsync)
 	}
 	if a.BindingIdentifier != nil {
-
+		io.WriteString(w, a.BindingIdentifier.Identifier.Data)
 	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
 	} else {
