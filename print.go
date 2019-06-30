@@ -163,7 +163,7 @@ func (s Statement) printSource(w io.Writer, v bool) {
 		} else if s.WithStatement != nil {
 			s.WithStatement.printSource(w, v)
 		} else if s.LabelIdentifier != nil {
-			io.WriteString(w, s.LabelIdentifier.Identifier.Data)
+			io.WriteString(w, s.LabelIdentifier.Data)
 			w.Write(labelPost)
 			if s.LabelledItemFunction != nil {
 				s.LabelledItemFunction.printSource(w, v)
@@ -180,7 +180,7 @@ func (s Statement) printSource(w io.Writer, v bool) {
 			io.WriteString(w, "continue;")
 		} else {
 			io.WriteString(w, "continue ")
-			io.WriteString(w, s.LabelIdentifier.Identifier.Data)
+			io.WriteString(w, s.LabelIdentifier.Data)
 			w.Write(semiColon)
 		}
 	case StatementBreak:
@@ -188,7 +188,7 @@ func (s Statement) printSource(w io.Writer, v bool) {
 			io.WriteString(w, "break;")
 		} else {
 			io.WriteString(w, "break ")
-			io.WriteString(w, s.LabelIdentifier.Identifier.Data)
+			io.WriteString(w, s.LabelIdentifier.Data)
 			w.Write(semiColon)
 		}
 	case StatementReturn:
@@ -455,7 +455,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			w.Write(constOpen)
 		}
 		if i.ForBindingIdentifier != nil {
-			io.WriteString(w, i.ForBindingIdentifier.Identifier.Data)
+			io.WriteString(w, i.ForBindingIdentifier.Data)
 		} else if i.ForBindingPatternObject != nil {
 			i.ForBindingPatternObject.printSource(w, v)
 		} else {
@@ -565,7 +565,7 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 		return
 	}
 	if f.BindingIdentifier != nil {
-		io.WriteString(w, f.BindingIdentifier.Identifier.Data)
+		io.WriteString(w, f.BindingIdentifier.Data)
 	}
 	w.Write(parenOpen)
 	f.FormalParameters.printSource(&indentPrinter{w}, v)
@@ -579,7 +579,7 @@ func (t TryStatement) printSource(w io.Writer, v bool) {
 	if t.CatchBlock != nil {
 		if t.CatchParameterBindingIdentifier != nil {
 			w.Write(catchParenOpen)
-			io.WriteString(w, t.CatchParameterBindingIdentifier.Identifier.Data)
+			io.WriteString(w, t.CatchParameterBindingIdentifier.Data)
 			w.Write(parenClose)
 		} else if t.CatchParameterArrayBindingPattern != nil {
 			w.Write(catchParenOpen)
@@ -603,7 +603,7 @@ func (t TryStatement) printSource(w io.Writer, v bool) {
 func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(classOpen)
 	if c.BindingIdentifier != nil {
-		io.WriteString(w, c.BindingIdentifier.Identifier.Data)
+		io.WriteString(w, c.BindingIdentifier.Data)
 		w.Write(space)
 	}
 	if c.ClassHeritage != nil {
@@ -646,7 +646,7 @@ func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
 
 func (l LexicalBinding) printSource(w io.Writer, v bool) {
 	if l.BindingIdentifier != nil {
-		io.WriteString(w, l.BindingIdentifier.Identifier.Data)
+		io.WriteString(w, l.BindingIdentifier.Data)
 	} else if l.ArrayBindingPattern != nil {
 		l.ArrayBindingPattern.printSource(w, v)
 	} else if l.ObjectBindingPattern != nil {
@@ -728,7 +728,7 @@ func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
 			w.Write(commaSep)
 		}
 		w.Write(ellipsis)
-		io.WriteString(w, o.BindingRestProperty.Identifier.Data)
+		io.WriteString(w, o.BindingRestProperty.Data)
 	}
 	w.Write(blockClose)
 }
@@ -824,7 +824,7 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 		w.Write(methodAsync)
 	}
 	if a.BindingIdentifier != nil {
-		io.WriteString(w, a.BindingIdentifier.Identifier.Data)
+		io.WriteString(w, a.BindingIdentifier.Data)
 	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
 	} else {
@@ -874,7 +874,7 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 
 func (b BindingProperty) printSource(w io.Writer, v bool) {
 	if b.SingleNameBinding != nil {
-		io.WriteString(w, b.SingleNameBinding.Identifier.Data)
+		io.WriteString(w, b.SingleNameBinding.Data)
 	} else if b.PropertyName != nil && b.BindingElement != nil {
 		b.PropertyName.printSource(w, v)
 		w.Write(colonSep)
@@ -884,7 +884,7 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
 	if b.SingleNameBinding != nil {
-		io.WriteString(w, b.SingleNameBinding.Identifier.Data)
+		io.WriteString(w, b.SingleNameBinding.Data)
 	} else if b.Initializer != nil {
 		if b.ArrayBindingPattern != nil {
 			w.Write(assignment)
@@ -932,7 +932,7 @@ func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writ
 		c.ObjectBindingPattern.printSource(w, v)
 	} else if c.BindingIdentifier != nil {
 		w.Write(ellipsis)
-		io.WriteString(w, c.BindingIdentifier.Identifier.Data)
+		io.WriteString(w, c.BindingIdentifier.Data)
 	}
 	w.Write(parenClose)
 }
@@ -1019,7 +1019,7 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 	if p.This {
 		w.Write(this)
 	} else if p.IdentifierReference != nil {
-		io.WriteString(w, p.IdentifierReference.Identifier.Data)
+		io.WriteString(w, p.IdentifierReference.Data)
 	} else if p.Literal != nil {
 		io.WriteString(w, p.Literal.Data)
 	} else if p.ArrayLiteral != nil {
@@ -1111,7 +1111,7 @@ func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
 
 func (p PropertyDefinition) printSource(w io.Writer, v bool) {
 	if p.IdentifierReference != nil {
-		io.WriteString(w, p.IdentifierReference.Identifier.Data)
+		io.WriteString(w, p.IdentifierReference.Data)
 		if p.AssignmentExpression != nil {
 			w.Write(assignment)
 			p.AssignmentExpression.printSource(w, v)
@@ -1321,6 +1321,9 @@ func (m ModuleListItem) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportDeclaration) printSource(w io.Writer, v bool) {
+	if i.ImportedDefaultBinding == nil && i.FromClause.ModuleSpecifier == nil {
+		return
+	}
 	w.Write(importc)
 	if i.ImportClause != nil {
 		i.ImportClause.printSource(w, v)
@@ -1365,20 +1368,23 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 
 func (i ImportClause) printSource(w io.Writer, v bool) {
 	if i.ImportedDefaultBinding != nil {
-		io.WriteString(w, i.ImportedDefaultBinding.Identifier.Data)
+		io.WriteString(w, i.ImportedDefaultBinding.Data)
 		if i.NameSpaceImport != nil || i.NamedImports != nil {
 			w.Write(commaSep)
 		}
 	}
 	if i.NameSpaceImport != nil {
 		w.Write(namespaceImport)
-		io.WriteString(w, i.NameSpaceImport.Identifier.Data)
+		io.WriteString(w, i.NameSpaceImport.Data)
 	} else if i.NamedImports != nil {
 		i.NamedImports.printSource(w, v)
 	}
 }
 
 func (f FromClause) printSource(w io.Writer, v bool) {
+	if f.ModuleSpecifier == nil {
+		return
+	}
 	w.Write(from)
 	io.WriteString(w, f.ModuleSpecifier.Data)
 }
@@ -1419,9 +1425,12 @@ func (e ExportSpecifier) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportSpecifier) printSource(w io.Writer, v bool) {
+	if i.ImportedBinding == nil {
+		return
+	}
 	if i.IdentifierName != nil {
 		io.WriteString(w, i.IdentifierName.Data)
 		w.Write(as)
 	}
-	io.WriteString(w, i.ImportedBinding.Identifier.Data)
+	io.WriteString(w, i.ImportedBinding.Data)
 }

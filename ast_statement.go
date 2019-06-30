@@ -84,7 +84,7 @@ type Statement struct {
 	IterationStatementFor   *IterationStatementFor
 	SwitchStatement         *SwitchStatement
 	WithStatement           *WithStatement
-	LabelIdentifier         *LabelIdentifier
+	LabelIdentifier         *Token
 	LabelledItemFunction    *FunctionDeclaration
 	LabelledItemStatement   *Statement
 	TryStatement            *TryStatement
@@ -146,11 +146,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			li, err := h.parseLabelIdentifier(yield, await)
+			li, err := h.parseIdentifier(yield, await)
 			if err != nil {
 				return s, g.Error(err)
 			}
-			s.LabelIdentifier = &li
+			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return s, g.Error(ErrMissingSemiColon)
@@ -162,11 +162,11 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			li, err := h.parseLabelIdentifier(yield, await)
+			li, err := h.parseIdentifier(yield, await)
 			if err != nil {
 				return s, g.Error(err)
 			}
-			s.LabelIdentifier = &li
+			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return s, g.Error(ErrMissingSemiColon)
@@ -228,7 +228,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 	default:
 		if err := g.FindGoal(
 			func(j *jsParser) error {
-				i, err := j.parseLabelIdentifier(yield, await)
+				i, err := j.parseIdentifier(yield, await)
 				if err != nil {
 					return err
 				}
@@ -252,7 +252,7 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 					s.LabelledItemStatement = &ss
 				}
 				j.Score(g)
-				s.LabelIdentifier = &i
+				s.LabelIdentifier = i
 				return nil
 			},
 			func(j *jsParser) error {
@@ -455,7 +455,7 @@ type IterationStatementFor struct {
 	Afterthought   *Expression
 
 	LeftHandSideExpression  *LeftHandSideExpression
-	ForBindingIdentifier    *BindingIdentifier
+	ForBindingIdentifier    *Token
 	ForBindingPatternObject *ObjectBindingPattern
 	ForBindingPatternArray  *ArrayBindingPattern
 	In                      *Expression
@@ -591,11 +591,11 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 						}
 						is.ForBindingPatternObject = &ob
 					} else {
-						bi, err := g.parseBindingIdentifier(yield, await)
+						bi, err := g.parseIdentifier(yield, await)
 						if err != nil {
 							return err
 						}
-						is.ForBindingIdentifier = &bi
+						is.ForBindingIdentifier = bi
 					}
 					j.Score(g)
 					return nil
@@ -842,7 +842,7 @@ func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, er
 
 type TryStatement struct {
 	TryBlock                           Block
-	CatchParameterBindingIdentifier    *BindingIdentifier
+	CatchParameterBindingIdentifier    *Token
 	CatchParameterObjectBindingPattern *ObjectBindingPattern
 	CatchParameterArrayBindingPattern  *ArrayBindingPattern
 	CatchBlock                         *Block
@@ -883,11 +883,11 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 				}
 				ts.CatchParameterArrayBindingPattern = &ob
 			default:
-				bi, err := g.parseBindingIdentifier(yield, await)
+				bi, err := g.parseIdentifier(yield, await)
 				if err != nil {
 					return ts, j.Error(err)
 				}
-				ts.CatchParameterBindingIdentifier = &bi
+				ts.CatchParameterBindingIdentifier = bi
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()

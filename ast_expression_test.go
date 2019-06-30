@@ -24,7 +24,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				NewExpression: &NewExpression{
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+							IdentifierReference: &tk[0],
 							Tokens:              tk[:1],
 						},
 						Tokens: tk[:1],
@@ -40,7 +40,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 					News: 1,
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+							IdentifierReference: &tk[2],
 							Tokens:              tk[2:3],
 						},
 						Tokens: tk[2:3],
@@ -56,7 +56,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 					News: 2,
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+							IdentifierReference: &tk[4],
 							Tokens:              tk[4:5],
 						},
 						Tokens: tk[4:5],
@@ -255,7 +255,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 					MemberExpression: MemberExpression{
 						MemberExpression: &MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+								IdentifierReference: &tk[2],
 								Tokens:              tk[2:3],
 							},
 							Tokens: tk[2:3],
@@ -277,7 +277,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 					MemberExpression: MemberExpression{
 						MemberExpression: &MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+								IdentifierReference: &tk[4],
 								Tokens:              tk[4:5],
 							},
 							Tokens: tk[4:5],
@@ -299,7 +299,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 						MemberExpression: &MemberExpression{
 							MemberExpression: &MemberExpression{
 								PrimaryExpression: &PrimaryExpression{
-									IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+									IdentifierReference: &tk[4],
 									Tokens:              tk[4:5],
 								},
 								Tokens: tk[4:5],
@@ -324,7 +324,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				CallExpression: &CallExpression{
 					MemberExpression: &MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+							IdentifierReference: &tk[0],
 							Tokens:              tk[:1],
 						},
 						Tokens: tk[:1],
@@ -373,7 +373,7 @@ func TestAssignmentExpression(t *testing.T) {
 		{`a => {}`, func(t *test, tk Tokens) {
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					BindingIdentifier: &BindingIdentifier{Identifier: &tk[0]},
+					BindingIdentifier: &tk[0],
 					FunctionBody: &Block{
 						Tokens: tk[4:6],
 					},
@@ -386,7 +386,7 @@ func TestAssignmentExpression(t *testing.T) {
 			litA := makeConditionLiteral(tk, 4)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					BindingIdentifier: &BindingIdentifier{Identifier: &tk[0]},
+					BindingIdentifier: &tk[0],
 					AssignmentExpression: &AssignmentExpression{
 						ConditionalExpression: &litA,
 						Tokens:                tk[4:5],
@@ -401,7 +401,7 @@ func TestAssignmentExpression(t *testing.T) {
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
 					Async:             true,
-					BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+					BindingIdentifier: &tk[2],
 					AssignmentExpression: &AssignmentExpression{
 						ConditionalExpression: &litA,
 						Tokens:                tk[6:7],
@@ -521,7 +521,7 @@ func TestAssignmentExpression(t *testing.T) {
 								Tokens:                tk[1:2],
 							},
 						},
-						BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+						BindingIdentifier: &tk[5],
 						Tokens:            tk[:7],
 					},
 					AssignmentExpression: &AssignmentExpression{
@@ -548,7 +548,7 @@ func TestAssignmentExpression(t *testing.T) {
 						ArrayBindingPattern: &ArrayBindingPattern{
 							BindingElementList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+									SingleNameBinding: &tk[6],
 									Tokens:            tk[6:7],
 								},
 							},
@@ -580,7 +580,7 @@ func TestAssignmentExpression(t *testing.T) {
 						ObjectBindingPattern: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+									SingleNameBinding: &tk[6],
 									Tokens:            tk[6:7],
 								},
 							},
@@ -604,7 +604,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -628,7 +628,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -652,7 +652,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -676,7 +676,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -700,7 +700,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -724,7 +724,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -748,7 +748,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -772,7 +772,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -796,7 +796,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -820,7 +820,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -844,7 +844,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -868,7 +868,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],
@@ -892,7 +892,7 @@ func TestAssignmentExpression(t *testing.T) {
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+								IdentifierReference: &tk[0],
 								Tokens:              tk[:1],
 							},
 							Tokens: tk[:1],

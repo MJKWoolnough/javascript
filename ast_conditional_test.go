@@ -7,7 +7,7 @@ func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
 		Tokens: tk[pos : pos+1],
 	}
 	if tk[pos].Type == TokenIdentifier || tk[pos].Type == TokenKeyword {
-		p.IdentifierReference = &IdentifierReference{Identifier: &tk[pos]}
+		p.IdentifierReference = &tk[pos]
 	} else {
 		p.Literal = &tk[pos]
 	}

@@ -33,36 +33,11 @@ func (j *jsParser) parseScript() (Script, error) {
 	return s, nil
 }
 
-type IdentifierReference Identifier
-
-func (j *jsParser) parseIdentifierReference(yield, await bool) (IdentifierReference, error) {
-	i, err := j.parseIdentifier(yield, await)
-	return IdentifierReference(i), err
-}
-
-type BindingIdentifier Identifier
-
-func (j *jsParser) parseBindingIdentifier(yield, await bool) (BindingIdentifier, error) {
-	i, err := j.parseIdentifier(yield, await)
-	return BindingIdentifier(i), err
-}
-
-type LabelIdentifier Identifier
-
-func (j *jsParser) parseLabelIdentifier(yield, await bool) (LabelIdentifier, error) {
-	i, err := j.parseIdentifier(yield, await)
-	return LabelIdentifier(i), err
-}
-
-type Identifier struct {
-	Identifier *Token
-}
-
-func (j *jsParser) parseIdentifier(yield, await bool) (Identifier, error) {
+func (j *jsParser) parseIdentifier(yield, await bool) (*Token, error) {
 	if j.Accept(TokenIdentifier) || (!yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) || (!await && j.AcceptToken(parser.Token{TokenKeyword, "await"}))) {
-		return Identifier{j.GetLastToken()}, nil
+		return j.GetLastToken(), nil
 	}
-	return Identifier{}, j.Error(ErrNoIdentifier)
+	return nil, j.Error(ErrNoIdentifier)
 }
 
 type Declaration struct {
@@ -146,7 +121,7 @@ func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclar
 }
 
 type LexicalBinding struct {
-	BindingIdentifier    *BindingIdentifier
+	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
@@ -169,11 +144,11 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 		}
 		lb.ObjectBindingPattern = &ob
 	} else {
-		bi, err := g.parseBindingIdentifier(yield, await)
+		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
 			return lb, j.Error(err)
 		}
-		lb.BindingIdentifier = &bi
+		lb.BindingIdentifier = bi
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -239,7 +214,7 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
-	BindingRestProperty *BindingIdentifier
+	BindingRestProperty *Token
 	Tokens              Tokens
 }
 
@@ -251,12 +226,12 @@ func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPa
 		for {
 			g := j.NewGoal()
 			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-				bi, err := g.parseBindingIdentifier(yield, await)
+				bi, err := g.parseIdentifier(yield, await)
 				if err != nil {
 					return ob, j.Error(err)
 				}
 				j.Score(g)
-				ob.BindingRestProperty = &bi
+				ob.BindingRestProperty = bi
 				j.AcceptRunWhitespace()
 				if !j.Accept(TokenRightBracePunctuator) {
 					return ob, j.Error(ErrMissingClosingBrace)
@@ -283,7 +258,7 @@ func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPa
 }
 
 type BindingProperty struct {
-	SingleNameBinding *BindingIdentifier
+	SingleNameBinding *Token
 	Initializer       *AssignmentExpression
 	PropertyName      *PropertyName
 	BindingElement    *BindingElement
@@ -314,7 +289,7 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 			return nil
 		},
 		func(j *jsParser) error {
-			bi, err := j.parseBindingIdentifier(yield, await)
+			bi, err := j.parseIdentifier(yield, await)
 			if err != nil {
 				return err
 			}
@@ -331,7 +306,7 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 				j.Score(g)
 				bp.Initializer = &i
 			}
-			bp.SingleNameBinding = &bi
+			bp.SingleNameBinding = bi
 			return nil
 		},
 	); err != nil {
@@ -430,7 +405,7 @@ func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) 
 }
 
 type PropertyDefinition struct {
-	IdentifierReference  *IdentifierReference
+	IdentifierReference  *Token
 	PropertyName         *PropertyName
 	Spread               bool
 	AssignmentExpression *AssignmentExpression
@@ -442,7 +417,7 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 	var pd PropertyDefinition
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			ir, err := j.parseIdentifierReference(yield, await)
+			ir, err := j.parseIdentifier(yield, await)
 			if err != nil {
 				return err
 			}
@@ -456,7 +431,7 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 				j.Score(g)
 				pd.AssignmentExpression = &ae
 			}
-			pd.IdentifierReference = &ir
+			pd.IdentifierReference = ir
 			return nil
 		},
 		func(j *jsParser) error {
@@ -548,7 +523,7 @@ func (j *jsParser) parseTemplateLiteral(yield, await bool) (TemplateLiteral, err
 
 type ArrowFunction struct {
 	Async                                             bool
-	BindingIdentifier                                 *BindingIdentifier
+	BindingIdentifier                                 *Token
 	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
 	FormalParameters                                  *FormalParameters
 	AssignmentExpression                              *AssignmentExpression
@@ -575,12 +550,12 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 			af.FormalParameters = &fp
 		} else {
 			g := j.NewGoal()
-			bi, err := g.parseBindingIdentifier(yield, true)
+			bi, err := g.parseIdentifier(yield, true)
 			if err != nil {
 				return af, j.Error(err)
 			}
 			j.Score(g)
-			af.BindingIdentifier = &bi
+			af.BindingIdentifier = bi
 		}
 	} else if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
 		g := j.NewGoal()
@@ -592,12 +567,12 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		af.CoverParenthesizedExpressionAndArrowParameterList = &cp
 	} else {
 		g := j.NewGoal()
-		bi, err := g.parseBindingIdentifier(yield, true)
+		bi, err := g.parseIdentifier(yield, true)
 		if err != nil {
 			return af, j.Error(err)
 		}
 		j.Score(g)
-		af.BindingIdentifier = &bi
+		af.BindingIdentifier = bi
 	}
 	j.AcceptRunWhitespaceNoNewLine()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "=>"}) {

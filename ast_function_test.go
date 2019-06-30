@@ -8,7 +8,7 @@ func TestParseFunction(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`function nameHere(){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[2]},
+				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
 					Tokens: t[4:4],
 				},
@@ -21,7 +21,7 @@ func TestParseFunction(t *testing.T) {
 		{`async function nameHere(){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
 				Type:              FunctionAsync,
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[4]},
+				BindingIdentifier: &t[4],
 				FormalParameters: FormalParameters{
 					Tokens: t[6:6],
 				},
@@ -34,7 +34,7 @@ func TestParseFunction(t *testing.T) {
 		{`function *nameHere(){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
 				Type:              FunctionGenerator,
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[3]},
+				BindingIdentifier: &t[3],
 				FormalParameters: FormalParameters{
 					Tokens: t[5:5],
 				},
@@ -117,11 +117,11 @@ func TestParseFunction(t *testing.T) {
 		}},
 		{`function myFunc(a){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[2]},
+				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
 					FormalParameterList: []BindingElement{
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[4]},
+							SingleNameBinding: &t[4],
 							Tokens:            t[4:5],
 						},
 					},
@@ -135,15 +135,15 @@ func TestParseFunction(t *testing.T) {
 		}},
 		{`function myFunc(aye, bee){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[2]},
+				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
 					FormalParameterList: []BindingElement{
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[4]},
+							SingleNameBinding: &t[4],
 							Tokens:            t[4:5],
 						},
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[7]},
+							SingleNameBinding: &t[7],
 							Tokens:            t[7:8],
 						},
 					},
@@ -157,24 +157,24 @@ func TestParseFunction(t *testing.T) {
 		}},
 		{`function myFunc(aye, be, sea, ...dee){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[2]},
+				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
 					FormalParameterList: []BindingElement{
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[4]},
+							SingleNameBinding: &t[4],
 							Tokens:            t[4:5],
 						},
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[7]},
+							SingleNameBinding: &t[7],
 							Tokens:            t[7:8],
 						},
 						{
-							SingleNameBinding: &BindingIdentifier{Identifier: &t[10]},
+							SingleNameBinding: &t[10],
 							Tokens:            t[10:11],
 						},
 					},
 					FunctionRestParameter: &FunctionRestParameter{
-						BindingIdentifier: &BindingIdentifier{Identifier: &t[14]},
+						BindingIdentifier: &t[14],
 						Tokens:            t[14:15],
 					},
 					Tokens: t[4:15],
@@ -187,10 +187,10 @@ func TestParseFunction(t *testing.T) {
 		}},
 		{`function myFunc(...aye){}`, func(ft *test, t Tokens) {
 			ft.Output = FunctionDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &t[2]},
+				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
 					FunctionRestParameter: &FunctionRestParameter{
-						BindingIdentifier: &BindingIdentifier{Identifier: &t[5]},
+						BindingIdentifier: &t[5],
 						Tokens:            t[5:6],
 					},
 					Tokens: t[4:6],

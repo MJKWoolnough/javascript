@@ -15,7 +15,7 @@ const (
 
 type FunctionDeclaration struct {
 	Type              FunctionType
-	BindingIdentifier *BindingIdentifier
+	BindingIdentifier *Token
 	FormalParameters  FormalParameters
 	FunctionBody      Block
 	Tokens            Tokens
@@ -36,14 +36,14 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		j.AcceptRunWhitespace()
 	}
 	g := j.NewGoal()
-	bi, err := g.parseBindingIdentifier(yield, await)
+	bi, err := g.parseIdentifier(yield, await)
 	if err != nil {
 		if !def {
 			return fd, j.Error(err)
 		}
 	} else {
 		j.Score(g)
-		fd.BindingIdentifier = &bi
+		fd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
@@ -115,7 +115,7 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 }
 
 type BindingElement struct {
-	SingleNameBinding    *BindingIdentifier
+	SingleNameBinding    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
@@ -138,11 +138,11 @@ func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error
 		}
 		be.ObjectBindingPattern = &ob
 	} else {
-		bi, err := g.parseBindingIdentifier(yield, await)
+		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
 			return be, j.Error(err)
 		}
-		be.SingleNameBinding = &bi
+		be.SingleNameBinding = bi
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -163,7 +163,7 @@ func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error
 }
 
 type FunctionRestParameter struct {
-	BindingIdentifier    *BindingIdentifier
+	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Tokens               Tokens
@@ -185,11 +185,11 @@ func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestPa
 		}
 		fr.ObjectBindingPattern = &ob
 	} else {
-		bi, err := g.parseBindingIdentifier(yield, await)
+		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
 			return fr, j.Error(err)
 		}
-		fr.BindingIdentifier = &bi
+		fr.BindingIdentifier = bi
 	}
 	j.Score(g)
 	fr.Tokens = j.ToTokens()

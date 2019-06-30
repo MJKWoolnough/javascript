@@ -21,7 +21,7 @@ func TestStatement(t *testing.T) {
 					VariableStatement: &VariableStatement{
 						VariableDeclarationList: []VariableDeclaration{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Tokens:            tk[2:3],
 							},
 						},
@@ -39,7 +39,7 @@ func TestStatement(t *testing.T) {
 					VariableStatement: &VariableStatement{
 						VariableDeclarationList: []VariableDeclaration{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litA,
 									Tokens:                tk[6:7],
@@ -61,7 +61,7 @@ func TestStatement(t *testing.T) {
 					VariableStatement: &VariableStatement{
 						VariableDeclarationList: []VariableDeclaration{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litA,
 									Tokens:                tk[6:7],
@@ -69,7 +69,7 @@ func TestStatement(t *testing.T) {
 								Tokens: tk[2:7],
 							},
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[9]},
+								BindingIdentifier: &tk[9],
 								Tokens:            tk[9:10],
 							},
 						},
@@ -88,7 +88,7 @@ func TestStatement(t *testing.T) {
 					VariableStatement: &VariableStatement{
 						VariableDeclarationList: []VariableDeclaration{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litA,
 									Tokens:                tk[6:7],
@@ -96,7 +96,7 @@ func TestStatement(t *testing.T) {
 								Tokens: tk[2:7],
 							},
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[9]},
+								BindingIdentifier: &tk[9],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litB,
 									Tokens:                tk[13:14],
@@ -118,11 +118,11 @@ func TestStatement(t *testing.T) {
 					VariableStatement: &VariableStatement{
 						VariableDeclarationList: []VariableDeclaration{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Tokens:            tk[2:3],
 							},
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+								BindingIdentifier: &tk[5],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litB,
 									Tokens:                tk[9:10],
@@ -176,11 +176,11 @@ func TestStatement(t *testing.T) {
 								ArrayBindingPattern: &ArrayBindingPattern{
 									BindingElementList: []BindingElement{
 										{
-											SingleNameBinding: &BindingIdentifier{Identifier: &tk[3]},
+											SingleNameBinding: &tk[3],
 											Tokens:            tk[3:4],
 										},
 										{
-											SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+											SingleNameBinding: &tk[6],
 											Tokens:            tk[6:7],
 										},
 									},
@@ -209,11 +209,11 @@ func TestStatement(t *testing.T) {
 								ObjectLiteral: &ObjectLiteral{
 									PropertyDefinitionList: []PropertyDefinition{
 										{
-											IdentifierReference: &IdentifierReference{Identifier: &tk[12]},
+											IdentifierReference: &tk[12],
 											Tokens:              tk[12:13],
 										},
 										{
-											IdentifierReference: &IdentifierReference{Identifier: &tk[15]},
+											IdentifierReference: &tk[15],
 											Tokens:              tk[15:16],
 										},
 									},
@@ -237,11 +237,11 @@ func TestStatement(t *testing.T) {
 								ObjectBindingPattern: &ObjectBindingPattern{
 									BindingPropertyList: []BindingProperty{
 										{
-											SingleNameBinding: &BindingIdentifier{Identifier: &tk[3]},
+											SingleNameBinding: &tk[3],
 											Tokens:            tk[3:4],
 										},
 										{
-											SingleNameBinding: &BindingIdentifier{Identifier: &tk[6]},
+											SingleNameBinding: &tk[6],
 											Tokens:            tk[6:7],
 										},
 									},
@@ -417,7 +417,7 @@ func TestStatement(t *testing.T) {
 										NewExpression: &NewExpression{
 											MemberExpression: MemberExpression{
 												PrimaryExpression: &PrimaryExpression{
-													IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+													IdentifierReference: &tk[2],
 													Tokens:              tk[2:3],
 												},
 												Tokens: tk[2:3],
@@ -492,7 +492,7 @@ func TestStatement(t *testing.T) {
 					IterationStatementFor: &IterationStatementFor{
 						Type: ForNormalVar,
 						InitVar: &VariableDeclaration{
-							BindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+							BindingIdentifier: &tk[4],
 							Initializer: &AssignmentExpression{
 								ConditionalExpression: &litA,
 								Tokens:                tk[8:9],
@@ -558,7 +558,7 @@ func TestStatement(t *testing.T) {
 							LetOrConst: Let,
 							BindingList: []LexicalBinding{
 								{
-									BindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+									BindingIdentifier: &tk[4],
 									Initializer: &AssignmentExpression{
 										ConditionalExpression: &litA,
 										Tokens:                tk[8:9],
@@ -627,7 +627,7 @@ func TestStatement(t *testing.T) {
 							LetOrConst: Const,
 							BindingList: []LexicalBinding{
 								{
-									BindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+									BindingIdentifier: &tk[4],
 									Initializer: &AssignmentExpression{
 										ConditionalExpression: &litA,
 										Tokens:                tk[8:9],
@@ -693,7 +693,7 @@ func TestStatement(t *testing.T) {
 							NewExpression: &NewExpression{
 								MemberExpression: MemberExpression{
 									PrimaryExpression: &PrimaryExpression{
-										IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+										IdentifierReference: &tk[2],
 										Tokens:              tk[2:3],
 									},
 									Tokens: tk[2:3],
@@ -730,7 +730,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					IterationStatementFor: &IterationStatementFor{
 						Type:                 ForInVar,
-						ForBindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+						ForBindingIdentifier: &tk[4],
 						In: &Expression{
 							Expressions: []AssignmentExpression{
 								{
@@ -762,7 +762,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[5]},
+									SingleNameBinding: &tk[5],
 									Tokens:            tk[5:6],
 								},
 							},
@@ -799,7 +799,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternArray: &ArrayBindingPattern{
 							BindingElementList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[5]},
+									SingleNameBinding: &tk[5],
 									Tokens:            tk[5:6],
 								},
 							},
@@ -837,7 +837,7 @@ func TestStatement(t *testing.T) {
 							NewExpression: &NewExpression{
 								MemberExpression: MemberExpression{
 									PrimaryExpression: &PrimaryExpression{
-										IdentifierReference: &IdentifierReference{Identifier: &tk[2]},
+										IdentifierReference: &tk[2],
 										Tokens:              tk[2:3],
 									},
 									Tokens: tk[2:3],
@@ -869,7 +869,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					IterationStatementFor: &IterationStatementFor{
 						Type:                 ForOfVar,
-						ForBindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+						ForBindingIdentifier: &tk[4],
 						Of: &AssignmentExpression{
 							ConditionalExpression: &litB,
 							Tokens:                tk[8:9],
@@ -896,7 +896,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[5]},
+									SingleNameBinding: &tk[5],
 									Tokens:            tk[5:6],
 								},
 							},
@@ -928,7 +928,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternArray: &ArrayBindingPattern{
 							BindingElementList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[5]},
+									SingleNameBinding: &tk[5],
 									Tokens:            tk[5:6],
 								},
 							},
@@ -1328,11 +1328,9 @@ func TestStatement(t *testing.T) {
 		{`continue Name;`, func(t *test, tk Tokens) { // 35
 			t.Output = StatementListItem{
 				Statement: &Statement{
-					Type: StatementContinue,
-					LabelIdentifier: &LabelIdentifier{
-						Identifier: &tk[2],
-					},
-					Tokens: tk[:4],
+					Type:            StatementContinue,
+					LabelIdentifier: &tk[2],
+					Tokens:          tk[:4],
 				},
 				Tokens: tk[:4],
 			}
@@ -1358,11 +1356,9 @@ func TestStatement(t *testing.T) {
 		{`break Name;`, func(t *test, tk Tokens) { // 38
 			t.Output = StatementListItem{
 				Statement: &Statement{
-					Type: StatementBreak,
-					LabelIdentifier: &LabelIdentifier{
-						Identifier: &tk[2],
-					},
-					Tokens: tk[:4],
+					Type:            StatementBreak,
+					LabelIdentifier: &tk[2],
+					Tokens:          tk[:4],
 				},
 				Tokens: tk[:4],
 			}
@@ -1480,7 +1476,7 @@ func TestStatement(t *testing.T) {
 							},
 							Tokens: tk[1:5],
 						},
-						CatchParameterBindingIdentifier: &BindingIdentifier{Identifier: &tk[7]},
+						CatchParameterBindingIdentifier: &tk[7],
 						CatchBlock: &Block{
 							StatementListItems: []StatementListItem{
 								{
@@ -1537,7 +1533,7 @@ func TestStatement(t *testing.T) {
 						CatchParameterObjectBindingPattern: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[8]},
+									SingleNameBinding: &tk[8],
 									Tokens:            tk[8:9],
 								},
 							},
@@ -1653,7 +1649,7 @@ func TestStatement(t *testing.T) {
 						CatchParameterArrayBindingPattern: &ArrayBindingPattern{
 							BindingElementList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[8]},
+									SingleNameBinding: &tk[8],
 									Tokens:            tk[8:9],
 								},
 							},
@@ -1718,7 +1714,7 @@ func TestStatement(t *testing.T) {
 		{`label: debugger;`, func(t *test, tk Tokens) { // 49
 			t.Output = StatementListItem{
 				Statement: &Statement{
-					LabelIdentifier: &LabelIdentifier{Identifier: &tk[0]},
+					LabelIdentifier: &tk[0],
 					LabelledItemStatement: &Statement{
 						DebuggerStatement: &tk[3],
 						Tokens:            tk[3:5],
@@ -1731,9 +1727,9 @@ func TestStatement(t *testing.T) {
 		{`label: function fn(){}`, func(t *test, tk Tokens) { // 50
 			t.Output = StatementListItem{
 				Statement: &Statement{
-					LabelIdentifier: &LabelIdentifier{Identifier: &tk[0]},
+					LabelIdentifier: &tk[0],
 					LabelledItemFunction: &FunctionDeclaration{
-						BindingIdentifier: &BindingIdentifier{Identifier: &tk[5]},
+						BindingIdentifier: &tk[5],
 						FormalParameters: FormalParameters{
 							Tokens: tk[7:7],
 						},
@@ -1758,7 +1754,7 @@ func TestStatement(t *testing.T) {
 									NewExpression: &NewExpression{
 										MemberExpression: MemberExpression{
 											PrimaryExpression: &PrimaryExpression{
-												IdentifierReference: &IdentifierReference{Identifier: &tk[0]},
+												IdentifierReference: &tk[0],
 												Tokens:              tk[:1],
 											},
 											Tokens: tk[:1],
@@ -1786,7 +1782,7 @@ func TestStatement(t *testing.T) {
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					ClassDeclaration: &ClassDeclaration{
-						BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+						BindingIdentifier: &tk[2],
 						Tokens:            tk[:5],
 					},
 					Tokens: tk[:5],
@@ -1798,7 +1794,7 @@ func TestStatement(t *testing.T) {
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					FunctionDeclaration: &FunctionDeclaration{
-						BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+						BindingIdentifier: &tk[2],
 						FormalParameters: FormalParameters{
 							Tokens: tk[4:4],
 						},
@@ -1818,7 +1814,7 @@ func TestStatement(t *testing.T) {
 					LexicalDeclaration: &LexicalDeclaration{
 						BindingList: []LexicalBinding{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Tokens:            tk[2:3],
 							},
 						},
@@ -1837,7 +1833,7 @@ func TestStatement(t *testing.T) {
 						LetOrConst: Const,
 						BindingList: []LexicalBinding{
 							{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+								BindingIdentifier: &tk[2],
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: &litA,
 									Tokens:                tk[6:7],
@@ -1857,7 +1853,7 @@ func TestStatement(t *testing.T) {
 				Declaration: &Declaration{
 					FunctionDeclaration: &FunctionDeclaration{
 						Type:              FunctionAsync,
-						BindingIdentifier: &BindingIdentifier{Identifier: &tk[4]},
+						BindingIdentifier: &tk[4],
 						FormalParameters: FormalParameters{
 							Tokens: tk[6:6],
 						},
@@ -1907,7 +1903,7 @@ func TestStatement(t *testing.T) {
 							NewExpression: &NewExpression{
 								MemberExpression: MemberExpression{
 									PrimaryExpression: &PrimaryExpression{
-										IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+										IdentifierReference: &tk[4],
 										Tokens:              tk[4:5],
 									},
 									Tokens: tk[4:5],
@@ -1939,7 +1935,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					IterationStatementFor: &IterationStatementFor{
 						Type:                 ForAwaitOfVar,
-						ForBindingIdentifier: &BindingIdentifier{Identifier: &tk[6]},
+						ForBindingIdentifier: &tk[6],
 						Of: &AssignmentExpression{
 							ConditionalExpression: &litB,
 							Tokens:                tk[10:11],
@@ -1966,7 +1962,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[7]},
+									SingleNameBinding: &tk[7],
 									Tokens:            tk[7:8],
 								},
 							},
@@ -1998,7 +1994,7 @@ func TestStatement(t *testing.T) {
 						ForBindingPatternArray: &ArrayBindingPattern{
 							BindingElementList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[7]},
+									SingleNameBinding: &tk[7],
 									Tokens:            tk[7:8],
 								},
 							},

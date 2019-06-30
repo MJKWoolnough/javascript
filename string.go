@@ -500,10 +500,6 @@ func (f FormalParameters) Format(s fmt.State, v rune)         { format(s, v, f) 
 func (f BindingElement) Format(s fmt.State, v rune)           { format(s, v, f) }
 func (f FunctionRestParameter) Format(s fmt.State, v rune)    { format(s, v, f) }
 func (f Script) Format(s fmt.State, v rune)                   { format(s, v, f) }
-func (f IdentifierReference) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f BindingIdentifier) Format(s fmt.State, v rune)        { format(s, v, f) }
-func (f LabelIdentifier) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f Identifier) Format(s fmt.State, v rune)               { format(s, v, f) }
 func (f Declaration) Format(s fmt.State, v rune)              { format(s, v, f) }
 func (f LexicalDeclaration) Format(s fmt.State, v rune)       { format(s, v, f) }
 func (f LexicalBinding) Format(s fmt.State, v rune)           { format(s, v, f) }
@@ -520,7 +516,6 @@ func (f Module) Format(s fmt.State, v rune)                   { format(s, v, f) 
 func (f ModuleListItem) Format(s fmt.State, v rune)           { format(s, v, f) }
 func (f ImportDeclaration) Format(s fmt.State, v rune)        { format(s, v, f) }
 func (f ImportClause) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f ImportedBinding) Format(s fmt.State, v rune)          { format(s, v, f) }
 func (f FromClause) Format(s fmt.State, v rune)               { format(s, v, f) }
 func (f NamedImports) Format(s fmt.State, v rune)             { format(s, v, f) }
 func (f ImportSpecifier) Format(s fmt.State, v rune)          { format(s, v, f) }
@@ -543,7 +538,9 @@ func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v
 	format(s, v, f)
 }
 
-func (i IdentifierReference) String() string { return i.Identifier.Data }
-func (i BindingIdentifier) String() string   { return i.Identifier.Data }
-func (i LabelIdentifier) String() string     { return i.Identifier.Data }
-func (i Identifier) String() string          { return i.Identifier.Data }
+func (t *Token) String() string {
+	if t == nil {
+		return ""
+	}
+	return t.Data
+}

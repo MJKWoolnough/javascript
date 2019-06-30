@@ -6,21 +6,19 @@ func TestClassDeclaration(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`class myClass{}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				Tokens:            tk[:5],
 			}
 		}},
 		{`class myClass extends OtherClass{}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassHeritage: &LeftHandSideExpression{
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{
-									Identifier: &tk[6],
-								},
-								Tokens: tk[6:7],
+								IdentifierReference: &tk[6],
+								Tokens:              tk[6:7],
 							},
 							Tokens: tk[6:7],
 						},
@@ -33,7 +31,7 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`class myClass {constructor(){}}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
 					{
 						PropertyName: PropertyName{
@@ -54,7 +52,7 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`class myClass {method(arg1, arg2){}}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
 					{
 						PropertyName: PropertyName{
@@ -64,11 +62,11 @@ func TestClassDeclaration(t *testing.T) {
 						Params: FormalParameters{
 							FormalParameterList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[7]},
+									SingleNameBinding: &tk[7],
 									Tokens:            tk[7:8],
 								},
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[10]},
+									SingleNameBinding: &tk[10],
 									Tokens:            tk[10:11],
 								},
 							},
@@ -85,7 +83,7 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`class myClass {set method(...args){}}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
 					{
 						Type: MethodSetter,
@@ -95,7 +93,7 @@ func TestClassDeclaration(t *testing.T) {
 						},
 						Params: FormalParameters{
 							FunctionRestParameter: &FunctionRestParameter{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[10]},
+								BindingIdentifier: &tk[10],
 								Tokens:            tk[10:11],
 							},
 							Tokens: tk[9:11],
@@ -111,7 +109,7 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`class myClass {get value(){}}`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
 					{
 						Type: MethodGetter,
@@ -135,7 +133,7 @@ func TestClassDeclaration(t *testing.T) {
 	static hello(){}
 }`, func(t *test, tk Tokens) {
 			t.Output = ClassDeclaration{
-				BindingIdentifier: &BindingIdentifier{Identifier: &tk[2]},
+				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
 					{
 						Type: MethodGetter,
@@ -157,7 +155,7 @@ func TestClassDeclaration(t *testing.T) {
 						Params: FormalParameters{
 							FormalParameterList: []BindingElement{
 								{
-									SingleNameBinding: &BindingIdentifier{Identifier: &tk[20]},
+									SingleNameBinding: &tk[20],
 									Tokens:            tk[20:21],
 								},
 							},

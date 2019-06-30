@@ -27,10 +27,8 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &ImportedBinding{
-									Identifier: &tk[2],
-								},
-								Tokens: tk[2:3],
+								ImportedDefaultBinding: &tk[2],
+								Tokens:                 tk[2:3],
 							},
 							FromClause: FromClause{
 								ModuleSpecifier: &tk[6],
@@ -50,10 +48,8 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								NameSpaceImport: &ImportedBinding{
-									Identifier: &tk[6],
-								},
-								Tokens: tk[2:7],
+								NameSpaceImport: &tk[6],
+								Tokens:          tk[2:7],
 							},
 							FromClause: FromClause{
 								ModuleSpecifier: &tk[10],
@@ -76,10 +72,8 @@ func TestModule(t *testing.T) {
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
-											ImportedBinding: ImportedBinding{
-												Identifier: &tk[3],
-											},
-											Tokens: tk[3:4],
+											ImportedBinding: &tk[3],
+											Tokens:          tk[3:4],
 										},
 									},
 									Tokens: tk[2:5],
@@ -107,11 +101,9 @@ func TestModule(t *testing.T) {
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
-											IdentifierName: &tk[3],
-											ImportedBinding: ImportedBinding{
-												Identifier: &tk[7],
-											},
-											Tokens: tk[3:8],
+											IdentifierName:  &tk[3],
+											ImportedBinding: &tk[7],
+											Tokens:          tk[3:8],
 										},
 									},
 									Tokens: tk[2:9],
@@ -139,17 +131,13 @@ func TestModule(t *testing.T) {
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
-											IdentifierName: &tk[3],
-											ImportedBinding: ImportedBinding{
-												Identifier: &tk[7],
-											},
-											Tokens: tk[3:8],
+											IdentifierName:  &tk[3],
+											ImportedBinding: &tk[7],
+											Tokens:          tk[3:8],
 										},
 										{
-											ImportedBinding: ImportedBinding{
-												Identifier: &tk[10],
-											},
-											Tokens: tk[10:11],
+											ImportedBinding: &tk[10],
+											Tokens:          tk[10:11],
 										},
 									},
 									Tokens: tk[2:12],
@@ -174,13 +162,9 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &ImportedBinding{
-									Identifier: &tk[2],
-								},
-								NameSpaceImport: &ImportedBinding{
-									Identifier: &tk[9],
-								},
-								Tokens: tk[2:10],
+								ImportedDefaultBinding: &tk[2],
+								NameSpaceImport:        &tk[9],
+								Tokens:                 tk[2:10],
 							},
 							FromClause: FromClause{
 								ModuleSpecifier: &tk[13],
@@ -200,16 +184,12 @@ func TestModule(t *testing.T) {
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
-								ImportedDefaultBinding: &ImportedBinding{
-									Identifier: &tk[2],
-								},
+								ImportedDefaultBinding: &tk[2],
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
-											ImportedBinding: ImportedBinding{
-												Identifier: &tk[6],
-											},
-											Tokens: tk[6:7],
+											ImportedBinding: &tk[6],
+											Tokens:          tk[6:7],
 										},
 									},
 									Tokens: tk[5:8],
@@ -464,9 +444,7 @@ func TestModule(t *testing.T) {
 							VariableStatement: &VariableStatement{
 								VariableDeclarationList: []VariableDeclaration{
 									{
-										BindingIdentifier: &BindingIdentifier{
-											Identifier: &tk[4],
-										},
+										BindingIdentifier: &tk[4],
 										Initializer: &AssignmentExpression{
 											ConditionalExpression: &litA,
 											Tokens:                tk[8:9],
@@ -491,9 +469,7 @@ func TestModule(t *testing.T) {
 						ExportDeclaration: &ExportDeclaration{
 							Declaration: &Declaration{
 								FunctionDeclaration: &FunctionDeclaration{
-									BindingIdentifier: &BindingIdentifier{
-										Identifier: &tk[4],
-									},
+									BindingIdentifier: &tk[4],
 									FormalParameters: FormalParameters{
 										Tokens: tk[6:6],
 									},

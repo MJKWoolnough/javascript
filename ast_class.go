@@ -6,7 +6,7 @@ import (
 )
 
 type ClassDeclaration struct {
-	BindingIdentifier *BindingIdentifier
+	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
 	ClassBody         []MethodDefinition
 	Tokens            Tokens
@@ -17,14 +17,14 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 	j.AcceptToken(parser.Token{TokenKeyword, "class"})
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	bi, err := g.parseBindingIdentifier(yield, await)
+	bi, err := g.parseIdentifier(yield, await)
 	if err != nil {
 		if !def {
 			return cd, j.Error(err)
 		}
 	} else {
 		j.Score(g)
-		cd.BindingIdentifier = &bi
+		cd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
 	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {

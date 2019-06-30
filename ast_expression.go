@@ -357,7 +357,7 @@ Loop:
 
 type PrimaryExpression struct {
 	This                                              bool
-	IdentifierReference                               *IdentifierReference
+	IdentifierReference                               *Token
 	Literal                                           *Token
 	ArrayLiteral                                      *ArrayLiteral
 	ObjectLiteral                                     *ObjectLiteral
@@ -379,11 +379,11 @@ func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression,
 			return nil
 		},
 		func(j *jsParser) error {
-			i, err := j.parseIdentifierReference(yield, await)
+			i, err := j.parseIdentifier(yield, await)
 			if err != nil {
 				return err
 			}
-			pe.IdentifierReference = &i
+			pe.IdentifierReference = i
 			return nil
 		},
 		func(j *jsParser) error {
@@ -450,7 +450,7 @@ func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression,
 
 type CoverParenthesizedExpressionAndArrowParameterList struct {
 	Expressions          []AssignmentExpression
-	BindingIdentifier    *BindingIdentifier
+	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Tokens               Tokens
@@ -481,11 +481,11 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 					}
 					cp.ObjectBindingPattern = &ob
 				} else {
-					bi, err := g.parseBindingIdentifier(yield, await)
+					bi, err := g.parseIdentifier(yield, await)
 					if err != nil {
 						return cp, j.Error(err)
 					}
-					cp.BindingIdentifier = &bi
+					cp.BindingIdentifier = bi
 				}
 				j.Score(g)
 				j.AcceptRunWhitespace()

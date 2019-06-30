@@ -106,8 +106,8 @@ func (j *jsParser) parseImportDeclaration() (ImportDeclaration, error) {
 }
 
 type ImportClause struct {
-	ImportedDefaultBinding *ImportedBinding
-	NameSpaceImport        *ImportedBinding
+	ImportedDefaultBinding *Token
+	NameSpaceImport        *Token
 	NamedImports           *NamedImports
 	Tokens                 Tokens
 }
@@ -116,12 +116,12 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 	var ic ImportClause
 	if t := j.Peek().Type; t == TokenIdentifier || t == TokenKeyword {
 		g := j.NewGoal()
-		ib, err := g.parseImportedBinding()
+		ib, err := g.parseIdentifier(false, false)
 		if err != nil {
 			return ic, j.Error(err)
 		}
 		j.Score(g)
-		ic.ImportedDefaultBinding = &ib
+		ic.ImportedDefaultBinding = ib
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
@@ -141,13 +141,13 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 		}
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		ib, err := h.parseImportedBinding()
+		ib, err := h.parseIdentifier(false, false)
 		if err != nil {
 			return ic, g.Error(err)
 		}
 		g.Score(h)
 		j.Score(g)
-		ic.NameSpaceImport = &ib
+		ic.NameSpaceImport = ib
 	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
 		ni, err := g.parseNamedImports()
@@ -161,13 +161,6 @@ func (j *jsParser) parseImportClause() (ImportClause, error) {
 	}
 	ic.Tokens = j.ToTokens()
 	return ic, nil
-}
-
-type ImportedBinding BindingIdentifier
-
-func (j *jsParser) parseImportedBinding() (ImportedBinding, error) {
-	b, err := j.parseBindingIdentifier(false, false)
-	return ImportedBinding(b), err
 }
 
 type FromClause struct {
@@ -222,7 +215,7 @@ func (j *jsParser) parseNamedImports() (NamedImports, error) {
 
 type ImportSpecifier struct {
 	IdentifierName  *Token
-	ImportedBinding ImportedBinding
+	ImportedBinding *Token
 	Tokens          Tokens
 }
 
@@ -238,7 +231,7 @@ func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 			return ErrInvalidImportSpecifier
 		}
 		j.AcceptRunWhitespace()
-		ib, err := j.parseImportedBinding()
+		ib, err := j.parseIdentifier(false, false)
 		if err != nil {
 			return err
 		}
@@ -246,7 +239,7 @@ func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 		is.ImportedBinding = ib
 		return nil
 	}, func(j *jsParser) error {
-		ib, err := j.parseImportedBinding()
+		ib, err := j.parseIdentifier(false, false)
 		if err != nil {
 			return err
 		}

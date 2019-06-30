@@ -42,14 +42,14 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (interface{}, error)
 func TestIdentifier(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`hello_world`, func(t *test, tk Tokens) {
-			t.Output = Identifier{&tk[0]}
+			t.Output = &tk[0]
 		}},
 		{`yield`, func(t *test, tk Tokens) {
-			t.Output = Identifier{&tk[0]}
+			t.Output = &tk[0]
 		}},
 		{`yield`, func(t *test, tk Tokens) {
 			t.Await = true
-			t.Output = Identifier{&tk[0]}
+			t.Output = &tk[0]
 		}},
 		{`yield`, func(t *test, tk Tokens) {
 			t.Yield = true
@@ -60,11 +60,11 @@ func TestIdentifier(t *testing.T) {
 			}
 		}},
 		{`await`, func(t *test, tk Tokens) {
-			t.Output = Identifier{&tk[0]}
+			t.Output = &tk[0]
 		}},
 		{`await`, func(t *test, tk Tokens) {
 			t.Yield = true
-			t.Output = Identifier{&tk[0]}
+			t.Output = &tk[0]
 		}},
 		{`await`, func(t *test, tk Tokens) {
 			t.Await = true
@@ -117,7 +117,7 @@ for(
 					CallExpression: &CallExpression{
 						MemberExpression: &MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[42]},
+								IdentifierReference: &tk[42],
 								Tokens:              tk[42:43],
 							},
 							Tokens: tk[42:43],
@@ -151,7 +151,7 @@ for(
 					NewExpression: &NewExpression{
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[72]},
+								IdentifierReference: &tk[72],
 								Tokens:              tk[72:73],
 							},
 							Tokens: tk[72:73],
@@ -169,7 +169,7 @@ for(
 					CallExpression: &CallExpression{
 						MemberExpression: &MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
-								IdentifierReference: &IdentifierReference{Identifier: &tk[81]},
+								IdentifierReference: &tk[81],
 								Tokens:              tk[81:82],
 							},
 							Tokens: tk[81:82],
@@ -217,7 +217,7 @@ for(
 													MemberExpression: &MemberExpression{
 														MemberExpression: &MemberExpression{
 															PrimaryExpression: &PrimaryExpression{
-																IdentifierReference: &IdentifierReference{Identifier: &tk[4]},
+																IdentifierReference: &tk[4],
 																Tokens:              tk[4:5],
 															},
 															Tokens: tk[4:5],
@@ -249,11 +249,11 @@ for(
 					{
 						Declaration: &Declaration{
 							FunctionDeclaration: &FunctionDeclaration{
-								BindingIdentifier: &BindingIdentifier{Identifier: &tk[18]},
+								BindingIdentifier: &tk[18],
 								FormalParameters: FormalParameters{
 									FormalParameterList: []BindingElement{
 										{
-											SingleNameBinding: &BindingIdentifier{Identifier: &tk[21]},
+											SingleNameBinding: &tk[21],
 											Tokens:            tk[21:22],
 										},
 									},
@@ -267,7 +267,7 @@ for(
 													LetOrConst: Let,
 													BindingList: []LexicalBinding{
 														{
-															BindingIdentifier: &BindingIdentifier{Identifier: &tk[30]},
+															BindingIdentifier: &tk[30],
 															Initializer: &AssignmentExpression{
 																ConditionalExpression: &multiply,
 																Tokens:                tk[34:39],
@@ -310,7 +310,7 @@ for(
 							IterationStatementFor: &IterationStatementFor{
 								Type: ForNormalVar,
 								InitVar: &VariableDeclaration{
-									BindingIdentifier: &BindingIdentifier{Identifier: &tk[56]},
+									BindingIdentifier: &tk[56],
 									Initializer: &AssignmentExpression{
 										ConditionalExpression: &one,
 										Tokens:                tk[60:61],
