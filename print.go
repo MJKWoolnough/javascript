@@ -241,6 +241,9 @@ func (b Block) printSource(w io.Writer, v bool) {
 		}
 		stmt.printSource(&pp, v)
 	}
+	if len(b.StatementListItems) > 0 {
+		w.Write(newLine)
+	}
 	w.Write(blockClose)
 }
 
@@ -614,11 +617,11 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(blockOpen)
 	if len(c.ClassBody) > 0 {
 		pp := indentPrinter{w}
-		pp.Write(newLine)
 		for _, md := range c.ClassBody {
-			md.printSource(&pp, v)
 			pp.Write(newLine)
+			md.printSource(&pp, v)
 		}
+		w.Write(newLine)
 	}
 	w.Write(blockClose)
 }
@@ -978,7 +981,7 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 	w.Write(parenOpen)
 	if len(a.ArgumentList) > 0 {
 		a.ArgumentList[0].printSource(w, v)
-		for _, ae := range a.ArgumentList {
+		for _, ae := range a.ArgumentList[1:] {
 			w.Write(commaSep)
 			ae.printSource(w, v)
 		}
@@ -990,7 +993,7 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 		w.Write(ellipsis)
 		a.SpreadArgument.printSource(w, v)
 	}
-	w.Write(parenClose)
+	w.Write(parenClose[:1])
 }
 
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {

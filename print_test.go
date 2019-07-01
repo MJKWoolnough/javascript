@@ -42,6 +42,18 @@ func TestPrintingScript(t *testing.T) {
 			Input:  "function a(){}function b(){}",
 			Output: "function a() {}\n\nfunction b() {}",
 		},
+		{ // 5
+			Input: `class	a	extends	b	{c(d){alert(1);}e(f,
+g){alert(2);}}`,
+			Output: `class a extends b {
+	c(d) {
+		alert(1);
+	}
+	e(f, g) {
+		alert(2);
+	}
+}`,
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
