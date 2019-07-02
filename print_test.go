@@ -54,6 +54,14 @@ g){alert(2);}}`,
 	}
 }`,
 		},
+		{ // 6
+			Input: `a.Method(b=>1);c.Map((d,e)=>{f(e, d);});`,
+			Output: `a.Method(b => 1);
+
+c.Map((d, e) => {
+	f(e, d);
+});`,
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
