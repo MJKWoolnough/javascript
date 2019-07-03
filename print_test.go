@@ -62,6 +62,10 @@ c.Map((d, e) => {
 	f(e, d);
 });`,
 		},
+		{ // 7
+			Input:  "var a = b&c==d||e^f==g&&h?i+j:k**l, m = n();",
+			Output: "var a = b & c == d || e ^ f == g && h ? i + j : k**l, m = n();",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
