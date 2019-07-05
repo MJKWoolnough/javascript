@@ -420,7 +420,6 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		}
 		(*LexicalBinding)(i.InitVar).printSource(&pp, v)
 	case ForNormalLexicalDeclaration:
-		i.InitLexical.printSource(w, v)
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitLexical.Tokens[0].Line > lastLine {
 				pp.Write(newLine)
@@ -468,7 +467,6 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	switch i.Type {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
 		if i.Conditional != nil {
-			w.Write(space)
 			if v && len(i.Conditional.Tokens) > 0 {
 				if i.Conditional.Tokens[0].Line > lastLine {
 					pp.Write(newLine)
@@ -489,7 +487,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				} else {
 					w.Write(space)
 				}
-				lastLine = i.Afterthought.Tokens[len(i.Conditional.Tokens)-1].Line
+				lastLine = i.Afterthought.Tokens[len(i.Afterthought.Tokens)-1].Line
 			} else {
 				w.Write(space)
 			}
