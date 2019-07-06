@@ -408,12 +408,14 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	if v && len(i.Tokens) > 0 {
 		lastLine = i.Tokens[0].Line
 	}
+	var endline bool
 	switch i.Type {
 	case ForNormal:
 		w.Write(semiColon)
 	case ForNormalVar:
 		if v && len(i.InitVar.Tokens) > 0 {
 			if i.InitVar.Tokens[0].Line > lastLine {
+				endline = true
 				pp.Write(newLine)
 			}
 			lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
@@ -422,6 +424,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForNormalLexicalDeclaration:
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitLexical.Tokens[0].Line > lastLine {
+				endline = true
 				pp.Write(newLine)
 			}
 			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
@@ -430,6 +433,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForNormalExpression:
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitExpression.Tokens[0].Line > lastLine {
+				endline = true
 				pp.Write(newLine)
 			}
 			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
@@ -440,6 +444,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		if v {
 			if len(i.LeftHandSideExpression.Tokens) > 0 {
 				if i.LeftHandSideExpression.Tokens[0].Line > lastLine {
+					endline = true
 					pp.Write(newLine)
 				}
 				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
@@ -469,6 +474,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		if i.Conditional != nil {
 			if v && len(i.Conditional.Tokens) > 0 {
 				if i.Conditional.Tokens[0].Line > lastLine {
+					endline = true
 					pp.Write(newLine)
 				} else {
 					w.Write(space)
@@ -483,6 +489,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		if i.Afterthought != nil {
 			if v && len(i.Afterthought.Tokens) > 0 {
 				if i.Afterthought.Tokens[0].Line > lastLine {
+					endline = true
 					pp.Write(newLine)
 				} else {
 					w.Write(space)
@@ -499,6 +506,9 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
 		w.Write(forOf)
 		i.Of.printSource(&pp, v)
+	}
+	if endline {
+		w.Write(newLine)
 	}
 	w.Write(parenClose)
 	i.Statement.printSource(w, v)

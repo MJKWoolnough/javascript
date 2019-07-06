@@ -75,6 +75,39 @@ c.Map((d, e) => {
 			Output:  "var a = b & c == d || e ^ f == g && h ? i + j : k**l,\nm = n();",
 			Verbose: true,
 		},
+		{ // 10
+			Input: `for(
+let a = 0;
+
+a < 10;
+
+a++
+) {
+	console.log(a);
+}`,
+			Output: `for (let a = 0; a < 10; a++) {
+	console.log(a);
+}`,
+		},
+		{ // 11
+			Input: `for(
+let a = 0;
+
+a < 10;
+
+a++
+) {
+	console.log(a);
+}`,
+			Output: `for (
+	let a = 0;
+	a < 10;
+	a++
+) {
+	console.log(a);
+}`,
+			Verbose: true,
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
