@@ -451,7 +451,6 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			}
 		}
 		i.LeftHandSideExpression.printSource(&pp, v)
-		w.Write(semiColon)
 	default:
 		switch i.Type {
 		case ForInVar, ForOfVar, ForAwaitOfVar:
