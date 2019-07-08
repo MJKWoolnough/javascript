@@ -14,7 +14,8 @@ var (
 	labelPost                    = conditionalSep[1:]
 	semiColon                    = []byte{';'}
 	ifOpen                       = []byte{'i', 'f', ' ', '('}
-	parenClose                   = []byte{')', ' '}
+	parenCloseSpace              = []byte{')', ' '}
+	parenClose                   = parenCloseSpace[:1]
 	elseOpen                     = []byte{' ', 'e', 'l', 's', 'e', ' '}
 	doOpen                       = []byte{'d', 'o', ' '}
 	doWhileOpen                  = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
@@ -312,7 +313,7 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 	} else {
 		i.Expression.printSource(w, false)
 	}
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	i.Statement.printSource(w, v)
 	if i.ElseStatement != nil {
 		w.Write(elseOpen)
@@ -353,7 +354,7 @@ func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
 	} else {
 		i.Expression.printSource(w, false)
 	}
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	i.Statement.printSource(w, v)
 }
 
@@ -508,7 +509,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	if endline {
 		w.Write(newLine)
 	}
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	i.Statement.printSource(w, v)
 }
 
@@ -558,7 +559,7 @@ func (ws WithStatement) printSource(w io.Writer, v bool) {
 	} else {
 		ws.Expression.printSource(w, false)
 	}
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	ws.Statement.printSource(w, v)
 }
 
@@ -578,7 +579,7 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 	}
 	w.Write(parenOpen)
 	f.FormalParameters.printSource(&indentPrinter{w}, v)
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	f.FunctionBody.printSource(w, v)
 }
 
@@ -589,15 +590,15 @@ func (t TryStatement) printSource(w io.Writer, v bool) {
 		if t.CatchParameterBindingIdentifier != nil {
 			w.Write(catchParenOpen)
 			io.WriteString(w, t.CatchParameterBindingIdentifier.Data)
-			w.Write(parenClose)
+			w.Write(parenCloseSpace)
 		} else if t.CatchParameterArrayBindingPattern != nil {
 			w.Write(catchParenOpen)
 			t.CatchParameterArrayBindingPattern.printSource(w, v)
-			w.Write(parenClose)
+			w.Write(parenCloseSpace)
 		} else if t.CatchParameterObjectBindingPattern != nil {
 			w.Write(catchParenOpen)
 			t.CatchParameterObjectBindingPattern.printSource(w, v)
-			w.Write(parenClose)
+			w.Write(parenCloseSpace)
 		} else {
 			w.Write(catchOpen)
 		}
@@ -812,7 +813,7 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 	m.PropertyName.printSource(w, v)
 	w.Write(parenOpen)
 	m.Params.printSource(w, v)
-	w.Write(parenClose)
+	w.Write(parenCloseSpace)
 	m.FunctionBody.printSource(w, v)
 }
 
@@ -840,7 +841,7 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
 	} else {
 		w.Write(parenOpen)
-		w.Write(parenClose)
+		w.Write(parenCloseSpace)
 	}
 	w.Write(arrow)
 	if a.FunctionBody != nil {
@@ -1001,7 +1002,7 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 		w.Write(ellipsis)
 		a.SpreadArgument.printSource(w, v)
 	}
-	w.Write(parenClose[:1])
+	w.Write(parenClose)
 }
 
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {
