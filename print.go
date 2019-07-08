@@ -840,6 +840,7 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 		w.Write(space)
 	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
+		w.Write(space)
 	} else {
 		w.Write(parenOpen)
 		w.Write(parenCloseSpace)
