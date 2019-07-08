@@ -4,13 +4,13 @@ import "testing"
 
 func TestClassDeclaration(t *testing.T) {
 	doTests(t, []sourceFn{
-		{`class myClass{}`, func(t *test, tk Tokens) {
+		{`class myClass{}`, func(t *test, tk Tokens) { // 1
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				Tokens:            tk[:5],
 			}
 		}},
-		{`class myClass extends OtherClass{}`, func(t *test, tk Tokens) {
+		{`class myClass extends OtherClass{}`, func(t *test, tk Tokens) { // 2
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassHeritage: &LeftHandSideExpression{
@@ -29,7 +29,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`class myClass {constructor(){}}`, func(t *test, tk Tokens) {
+		{`class myClass {constructor(){}}`, func(t *test, tk Tokens) { // 3
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -50,7 +50,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{`class myClass {method(arg1, arg2){}}`, func(t *test, tk Tokens) {
+		{`class myClass {method(arg1, arg2){}}`, func(t *test, tk Tokens) { // 4
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -81,7 +81,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-		{`class myClass {set method(...args){}}`, func(t *test, tk Tokens) {
+		{`class myClass {set method(...args){}}`, func(t *test, tk Tokens) { // 5
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -107,7 +107,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-		{`class myClass {get value(){}}`, func(t *test, tk Tokens) {
+		{`class myClass {get value(){}}`, func(t *test, tk Tokens) { // 6
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -128,10 +128,10 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`` +
 			`class myClass {
-	get value(){}
-	set value(v){}
-	static hello(){}
-}`, func(t *test, tk Tokens) {
+				get value(){}
+				set value(v){}
+				static hello(){}
+			}`, func(t *test, tk Tokens) { // 7
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -181,10 +181,10 @@ func TestClassDeclaration(t *testing.T) {
 						Tokens: tk[26:33],
 					},
 				},
-				Tokens: tk[:35],
+				Tokens: tk[:36],
 			}
 		}},
-		{`class{}`, func(t *test, tk Tokens) {
+		{`class{}`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -195,13 +195,13 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`class{}`, func(t *test, tk Tokens) {
+		{`class{}`, func(t *test, tk Tokens) { // 9
 			t.Def = true
 			t.Output = ClassDeclaration{
 				Tokens: tk[:3],
 			}
 		}},
-		{`class beep`, func(t *test, tk Tokens) {
+		{`class beep`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingOpeningBrace,
 				Parsing: "ClassDeclaration",
