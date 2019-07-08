@@ -222,7 +222,7 @@ type ImportSpecifier struct {
 func (j *jsParser) parseImportSpecifier() (ImportSpecifier, error) {
 	var is ImportSpecifier
 	if err := j.FindGoal(func(j *jsParser) error {
-		if !j.Accept(TokenIdentifier) {
+		if !j.Accept(TokenIdentifier, TokenKeyword) {
 			return errNotApplicable
 		}
 		in := j.GetLastToken()
@@ -387,7 +387,7 @@ type ExportSpecifier struct {
 
 func (j *jsParser) parseExportSpecifier() (ExportSpecifier, error) {
 	var es ExportSpecifier
-	if !j.Accept(TokenIdentifier) {
+	if !j.Accept(TokenIdentifier, TokenKeyword) {
 		return es, j.Error(ErrMissingIdentifier)
 	}
 	es.IdentifierName = j.GetLastToken()
@@ -395,7 +395,7 @@ func (j *jsParser) parseExportSpecifier() (ExportSpecifier, error) {
 	g.AcceptRunWhitespace()
 	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 		g.AcceptRunWhitespace()
-		if !g.Accept(TokenIdentifier) {
+		if !g.Accept(TokenIdentifier, TokenKeyword) {
 			return es, j.Error(ErrMissingIdentifier)
 		}
 		j.Score(g)

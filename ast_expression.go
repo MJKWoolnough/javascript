@@ -252,7 +252,7 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 				}
 				me.Expression = &e
 			} else if j.AcceptToken(parser.Token{TokenPunctuator, "."}) {
-				if !j.Accept(TokenIdentifier) {
+				if !j.Accept(TokenIdentifier, TokenKeyword) {
 					return ErrNoIdentifier
 				}
 				me.IdentifierName = j.GetLastToken()
