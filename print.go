@@ -282,18 +282,17 @@ func (e Expression) printSource(w io.Writer, v bool) {
 	if v && len(e.Tokens) > 0 {
 		lastLine = e.Tokens[0].Line
 	}
-	for n, ae := range e.Expressions {
-		if n > 0 {
-			if v && len(ae.Tokens) > 0 {
-				if ll := ae.Tokens[0].Line; ll > lastLine {
-					lastLine = ll
-					w.Write(commaSepNL)
-				} else {
-					w.Write(commaSep)
-				}
+	e.Expressions[0].printSource(w, v)
+	for _, ae := range e.Expressions[1:] {
+		if v && len(ae.Tokens) > 0 {
+			if ll := ae.Tokens[0].Line; ll > lastLine {
+				lastLine = ll
+				w.Write(commaSepNL)
 			} else {
 				w.Write(commaSep)
 			}
+		} else {
+			w.Write(commaSep)
 		}
 		ae.printSource(w, v)
 	}
@@ -682,6 +681,7 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
 		ao := assignment
 		switch a.AssignmentOperator {
+		case AssignmentAssign:
 		case AssignmentMultiply:
 			ao = assignmentMultiply
 		case AssignmentDivide:
