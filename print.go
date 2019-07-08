@@ -121,6 +121,7 @@ var (
 	exportc                      = exportd[:7]
 	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
 	as                           = namespaceImport[1:]
+	importCall                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '('}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -862,6 +863,10 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 	if c.SuperCall && c.Arguments != nil {
 		w.Write(super)
 		c.Arguments.printSource(w, v)
+	} else if c.ImportCall != nil {
+		w.Write(importCall)
+		c.ImportCall.printSource(w, v)
+		w.Write(parenClose)
 	} else if c.MemberExpression != nil && c.Arguments != nil {
 		c.MemberExpression.printSource(w, v)
 		c.Arguments.printSource(w, v)
