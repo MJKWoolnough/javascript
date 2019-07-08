@@ -1371,7 +1371,7 @@ func TestStatement(t *testing.T) {
 					Token:   tk[0],
 				},
 				Parsing: "StatementListItem",
-				Token:   tk[1],
+				Token:   tk[0],
 			}
 		}},
 		{`return;`, func(t *test, tk Tokens) { // 40
