@@ -144,15 +144,14 @@ func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideE
 		}
 		lhs.CallExpression = &ce
 		return nil
-	},
-		func(j *jsParser) error {
-			ne, err := j.parseNewExpression(yield, await)
-			if err != nil {
-				return err
-			}
-			lhs.NewExpression = &ne
-			return nil
-		}); err != nil {
+	}, func(j *jsParser) error {
+		ne, err := j.parseNewExpression(yield, await)
+		if err != nil {
+			return err
+		}
+		lhs.NewExpression = &ne
+		return nil
+	}); err != nil {
 		return lhs, err
 	}
 	lhs.Tokens = j.ToTokens()
@@ -321,7 +320,7 @@ Loop:
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return me, h.Error(ErrMissingIdentifier)
+					return me, g.Error(ErrMissingIdentifier)
 				}
 				nme.IdentifierName = h.GetLastToken()
 			case "[":
@@ -630,14 +629,14 @@ Loop:
 			case "(":
 				a, err := h.parseArguments(yield, await)
 				if err != nil {
-					return ce, j.Error(err)
+					return ce, g.Error(err)
 				}
 				nce.Arguments = &a
 			case ".":
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return ce, h.Error(ErrMissingIdentifier)
+					return ce, g.Error(ErrMissingIdentifier)
 				}
 				nce.IdentifierName = h.GetLastToken()
 			case "[":
@@ -646,14 +645,14 @@ Loop:
 				i := h.NewGoal()
 				e, err := i.parseExpression(true, yield, await)
 				if err != nil {
-					return ce, h.Error(err)
+					return ce, g.Error(err)
 				}
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					return ce, h.Error(ErrMissingClosingBracket)
+					return ce, g.Error(ErrMissingClosingBracket)
 				}
-				ce.Expression = &e
+				nce.Expression = &e
 			default:
 				break Loop
 			}
