@@ -1060,7 +1060,7 @@ func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 	w.Write(bracketOpen)
 	if len(a.ElementList) > 0 {
 		a.ElementList[0].printSource(w, v)
-		for _, ae := range a.ElementList {
+		for _, ae := range a.ElementList[1:] {
 			w.Write(commaSep)
 			ae.printSource(w, v)
 		}
