@@ -909,6 +909,26 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`import(a)`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 2)
+			call := wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					CallExpression: &CallExpression{
+						ImportCall: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[0:4],
+					},
+					Tokens: tk[0:4],
+				},
+				Tokens: tk[0:4],
+			})
+			t.Output = AssignmentExpression{
+				ConditionalExpression: &call,
+				Tokens:                tk[0:4],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
 	})

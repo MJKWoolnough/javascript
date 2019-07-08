@@ -563,6 +563,7 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 type CallExpression struct {
 	MemberExpression *MemberExpression
 	SuperCall        bool
+	ImportCall       *AssignmentExpression
 	CallExpression   *CallExpression
 	Arguments        *Arguments
 	Expression       *Expression
@@ -575,6 +576,24 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 	var ce CallExpression
 	if j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
 		ce.SuperCall = true
+	} else if j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+			return ce, j.Error(ErrMissingOpeningParenthesis)
+		}
+		g := j.NewGoal()
+		ae, err := g.parseAssignmentExpression(true, yield, await)
+		if err != nil {
+			return ce, j.Error(err)
+		}
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+			return ce, j.Error(ErrMissingClosingParenthesis)
+		}
+		ce.ImportCall = &ae
+		ce.Tokens = j.ToTokens()
+		return ce, nil
 	} else {
 		g := j.NewGoal()
 		me, err := g.parseMemberExpression(yield, await)
