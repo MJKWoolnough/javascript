@@ -108,6 +108,62 @@ a++
 }`,
 			Verbose: true,
 		},
+		{ // 12
+			Input:  `for (a in b) {}`,
+			Output: `for (a in b) {}`,
+		},
+		{ // 13
+			Input:  `for (a of b) {}`,
+			Output: `for (a of b) {}`,
+		},
+		{ // 14
+			Input:  `a = {b:c,d:e};`,
+			Output: `a = {b: c, d: e};`,
+		},
+		{ // 15
+			Input:  `var a = {b:c,d:e};`,
+			Output: `var a = {b: c, d: e};`,
+		},
+		{ // 16
+			Input:  `let a = {b:c,d:e};`,
+			Output: `let a = {b: c, d: e};`,
+		},
+		{ // 17
+			Input:  `const a = {b:c,d:e};`,
+			Output: `const a = {b: c, d: e};`,
+		},
+		{ // 18
+			Input:  `a = [b,c];`,
+			Output: `a = [b, c];`,
+		},
+		{ // 19
+			Input:  `var a = [b,c];`,
+			Output: `var a = [b, c];`,
+		},
+		{ // 20
+			Input:  `let a = [b,c];`,
+			Output: `let a = [b, c];`,
+		},
+		{ // 21
+			Input:  `const a = [b,c];`,
+			Output: `const a = [b, c];`,
+		},
+		{ // 22
+			Input:  `[a,b,...c]=[d,e,f,g];`,
+			Output: `[a, b, ...c] = [d, e, f, g];`,
+		},
+		{ // 23
+			Input:  `var [a,b,...c]=[d,e,f,g];`,
+			Output: `var [a, b, ...c] = [d, e, f, g];`,
+		},
+		{ // 24
+			Input:  `let [a,b,...c]=[d,e,f,g];`,
+			Output: `let [a, b, ...c] = [d, e, f, g];`,
+		},
+		{ // 25
+			Input:  `const [a,b,...c]=[d,e,f,g];`,
+			Output: `const [a, b, ...c] = [d, e, f, g];`,
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
