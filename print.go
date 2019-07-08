@@ -79,7 +79,7 @@ var (
 	colonSep                     = []byte{':', ' '}
 	logicalOR                    = []byte{' ', '|', '|', ' '}
 	newTarget                    = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
-	dot                          = newTarget[3:4]
+	dot                          = ellipsis[:1]
 	logicalAND                   = []byte{' ', '&', '&', ' '}
 	this                         = []byte{'t', 'h', 'i', 's'}
 	bitwiseOR                    = []byte{' ', '|', ' '}
@@ -882,6 +882,7 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 			w.Write(bracketClose)
 		} else if c.IdentifierName != nil {
 			c.CallExpression.printSource(w, v)
+			w.Write(dot)
 			io.WriteString(w, c.IdentifierName.Data)
 		} else if c.TemplateLiteral != nil {
 			c.CallExpression.printSource(w, v)
