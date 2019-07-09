@@ -318,7 +318,7 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 	i.Statement.printSource(w, v)
 	if i.ElseStatement != nil {
 		w.Write(elseOpen)
-		i.Expression.printSource(w, v)
+		i.ElseStatement.printSource(w, v)
 	}
 }
 
