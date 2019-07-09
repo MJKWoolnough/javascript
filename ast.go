@@ -37,7 +37,7 @@ func (j *jsParser) parseIdentifier(yield, await bool) (*Token, error) {
 	if j.Accept(TokenIdentifier) || (!yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) || (!await && j.AcceptToken(parser.Token{TokenKeyword, "await"}))) {
 		return j.GetLastToken(), nil
 	}
-	return nil, j.Error(ErrNoIdentifier)
+	return nil, j.Error("Identifier", ErrNoIdentifier)
 }
 
 type Declaration struct {
@@ -53,23 +53,23 @@ func (j *jsParser) parseDeclaration(yield, await bool) (Declaration, error) {
 	if g.AcceptToken(parser.Token{TokenKeyword, "class"}) {
 		cd, err := g.parseClassDeclaration(yield, await, false)
 		if err != nil {
-			return d, j.Error(err)
+			return d, j.Error("Declaration", err)
 		}
 		d.ClassDeclaration = &cd
 	} else if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "const"}) || tk == (parser.Token{TokenIdentifier, "let"}) {
 		ld, err := g.parseLexicalDeclaration(true, yield, await)
 		if err != nil {
-			return d, j.Error(err)
+			return d, j.Error("Declaration", err)
 		}
 		d.LexicalDeclaration = &ld
 	} else if tk == (parser.Token{TokenIdentifier, "async"}) || tk == (parser.Token{TokenKeyword, "function"}) {
 		fd, err := g.parseFunctionDeclaration(yield, await, false)
 		if err != nil {
-			return d, j.Error(err)
+			return d, j.Error("Declaration", err)
 		}
 		d.FunctionDeclaration = &fd
 	} else {
-		return d, j.Error(ErrInvalidDeclaration)
+		return d, j.Error("Declaration", ErrInvalidDeclaration)
 	}
 	j.Score(g)
 	d.Tokens = j.ToTokens()
@@ -93,7 +93,7 @@ func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclar
 	var ld LexicalDeclaration
 	if !j.AcceptToken(parser.Token{TokenIdentifier, "let"}) {
 		if !j.AcceptToken(parser.Token{TokenKeyword, "const"}) {
-			return ld, j.Error(ErrInvalidLexicalDeclaration)
+			return ld, j.Error("LexicalDeclaration", ErrInvalidLexicalDeclaration)
 		}
 		ld.LetOrConst = Const
 	}
@@ -105,7 +105,7 @@ func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclar
 		g := j.NewGoal()
 		lb, err := g.parseLexicalBinding(in, yield, await)
 		if err != nil {
-			return ld, j.Error(err)
+			return ld, j.Error("LexicalDeclaration", err)
 		}
 		j.Score(g)
 		ld.BindingList = append(ld.BindingList, lb)
@@ -113,7 +113,7 @@ func (j *jsParser) parseLexicalDeclaration(in, yield, await bool) (LexicalDeclar
 		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return ld, j.Error(ErrInvalidLexicalDeclaration)
+			return ld, j.Error("LexicalDeclaration", ErrInvalidLexicalDeclaration)
 		}
 	}
 	ld.Tokens = j.ToTokens()
@@ -134,19 +134,19 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
 		ab, err := g.parseArrayBindingPattern(yield, await)
 		if err != nil {
-			return lb, j.Error(err)
+			return lb, j.Error("LexicalBinding", err)
 		}
 		lb.ArrayBindingPattern = &ab
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 		ob, err := g.parseObjectBindingPattern(yield, await)
 		if err != nil {
-			return lb, j.Error(err)
+			return lb, j.Error("LexicalBinding", err)
 		}
 		lb.ObjectBindingPattern = &ob
 	} else {
 		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
-			return lb, j.Error(err)
+			return lb, j.Error("LexicalBinding", err)
 		}
 		lb.BindingIdentifier = bi
 	}
@@ -159,7 +159,7 @@ func (j *jsParser) parseLexicalBinding(in, yield, await bool) (LexicalBinding, e
 		g = j.NewGoal()
 		ae, err := g.parseAssignmentExpression(in, yield, await)
 		if err != nil {
-			return lb, j.Error(err)
+			return lb, j.Error("LexicalBinding", err)
 		}
 		j.Score(g)
 		lb.Initializer = &ae
@@ -190,14 +190,14 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 		g.AcceptRunWhitespace()
 		be, err := g.parseBindingElement(yield, await)
 		if err != nil {
-			return ab, j.Error(err)
+			return ab, j.Error("ArrayBindingPattern", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if rest {
 			ab.BindingRestElement = &be
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-				return ab, j.Error(ErrMissingClosingBracket)
+				return ab, j.Error("ArrayBindingPattern", ErrMissingClosingBracket)
 			}
 			break
 		}
@@ -205,7 +205,7 @@ func (j *jsParser) parseArrayBindingPattern(yield, await bool) (ArrayBindingPatt
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return ab, j.Error(ErrMissingComma)
+			return ab, j.Error("ArrayBindingPattern", ErrMissingComma)
 		}
 	}
 	ab.Tokens = j.ToTokens()
@@ -228,19 +228,19 @@ func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPa
 			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 				bi, err := g.parseIdentifier(yield, await)
 				if err != nil {
-					return ob, j.Error(err)
+					return ob, j.Error("ObjectBindingPattern", err)
 				}
 				j.Score(g)
 				ob.BindingRestProperty = bi
 				j.AcceptRunWhitespace()
 				if !j.Accept(TokenRightBracePunctuator) {
-					return ob, j.Error(ErrMissingClosingBrace)
+					return ob, j.Error("ObjectBindingPattern", ErrMissingClosingBrace)
 				}
 				break
 			}
 			bp, err := g.parseBindingProperty(yield, await)
 			if err != nil {
-				return ob, j.Error(err)
+				return ob, j.Error("ObjectBindingPattern", err)
 			}
 			j.Score(g)
 			ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
@@ -248,7 +248,7 @@ func (j *jsParser) parseObjectBindingPattern(yield, await bool) (ObjectBindingPa
 			if j.Accept(TokenRightBracePunctuator) {
 				break
 			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-				return ob, j.Error(ErrMissingComma)
+				return ob, j.Error("ObjectBindingPattern", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
 		}
@@ -269,19 +269,21 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 	var bp BindingProperty
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			pn, err := j.parsePropertyName(yield, await)
+			g := j.NewGoal()
+			pn, err := g.parsePropertyName(yield, await)
 			if err != nil {
-				return err
+				return j.Error("BindingProperty.PropertyName", err)
 			}
+			j.Score(g)
 			j.AcceptRunWhitespace()
 			if j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-				return ErrMissingColon
+				return j.Error("BindingProperty.PropertyName", ErrMissingColon)
 			}
 			j.AcceptRunWhitespace()
-			g := j.NewGoal()
+			g = j.NewGoal()
 			be, err := g.parseBindingElement(yield, await)
 			if err != nil {
-				return j.Error(err)
+				return j.Error("BindingProperty.PropertyName", err)
 			}
 			j.Score(g)
 			bp.PropertyName = &pn
@@ -289,18 +291,20 @@ func (j *jsParser) parseBindingProperty(yield, await bool) (BindingProperty, err
 			return nil
 		},
 		func(j *jsParser) error {
-			bi, err := j.parseIdentifier(yield, await)
-			if err != nil {
-				return err
-			}
 			g := j.NewGoal()
+			bi, err := g.parseIdentifier(yield, await)
+			if err != nil {
+				return j.Error("BindingProperty.SingleNameBinding", err)
+			}
+			j.Score(g)
+			g = j.NewGoal()
 			g.AcceptRunWhitespace()
 			if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
 				g.AcceptRunWhitespace()
 				h := g.NewGoal()
 				i, err := h.parseAssignmentExpression(true, yield, await)
 				if err != nil {
-					return g.Error(err)
+					return g.Error("BindingProperty.SingleNameBinding", err)
 				}
 				g.Score(h)
 				j.Score(g)
@@ -332,7 +336,7 @@ type ArrayLiteral struct {
 func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 	var al ArrayLiteral
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-		return al, j.Error(ErrMissingOpeningBracket)
+		return al, j.Error("ArrayLiteral", ErrMissingOpeningBracket)
 	}
 	for {
 		var spread bool
@@ -348,14 +352,14 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
-			return al, j.Error(err)
+			return al, j.Error("ArrayLiteral", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if spread {
 			al.SpreadElement = &ae
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-				return al, j.Error(ErrMissingClosingBracket)
+				return al, j.Error("ArrayLiteral", ErrMissingClosingBracket)
 			}
 			break
 		} else {
@@ -364,7 +368,7 @@ func (j *jsParser) parseArrayLiteral(yield, await bool) (ArrayLiteral, error) {
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return al, j.Error(ErrMissingComma)
+			return al, j.Error("ArrayLiteral", ErrMissingComma)
 		}
 	}
 	al.Tokens = j.ToTokens()
@@ -379,7 +383,7 @@ type ObjectLiteral struct {
 func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) {
 	var ol ObjectLiteral
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return ol, j.Error(ErrMissingOpeningBrace)
+		return ol, j.Error("ObjectLiteral", ErrMissingOpeningBrace)
 	}
 	for {
 		j.AcceptRunWhitespace()
@@ -389,7 +393,7 @@ func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) 
 		g := j.NewGoal()
 		pd, err := g.parsePropertyDefinition(yield, await)
 		if err != nil {
-			return ol, j.Error(err)
+			return ol, j.Error("ObjectLiteral", err)
 		}
 		j.Score(g)
 		ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, pd)
@@ -397,7 +401,7 @@ func (j *jsParser) parseObjectLiteral(yield, await bool) (ObjectLiteral, error) 
 		if j.Accept(TokenRightBracePunctuator) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return ol, j.Error(ErrMissingComma)
+			return ol, j.Error("ObjectLiteral", ErrMissingComma)
 		}
 	}
 	ol.Tokens = j.ToTokens()
@@ -417,19 +421,21 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 	var pd PropertyDefinition
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			pn, err := j.parsePropertyName(yield, await)
+			g := j.NewGoal()
+			pn, err := g.parsePropertyName(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PropertyDefinition.PropertyName", err)
 			}
+			j.Score(g)
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-				return ErrMissingColon
+				return j.Error("PropertyDefinition.PropertyName", ErrMissingColon)
 			}
 			j.AcceptRunWhitespace()
-			g := j.NewGoal()
-			ae, err := j.parseAssignmentExpression(true, yield, await)
+			g = j.NewGoal()
+			ae, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
-				return err
+				return j.Error("PropertyDefinition.PropertyName", err)
 			}
 			j.Score(g)
 			pd.PropertyName = &pn
@@ -437,16 +443,18 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 			return nil
 		},
 		func(j *jsParser) error {
-			ir, err := j.parseIdentifier(yield, await)
+			g := j.NewGoal()
+			ir, err := g.parseIdentifier(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PropertyDefinition.IdentifierReference", err)
 			}
+			j.Score(g)
 			j.AcceptRunWhitespace()
 			if j.AcceptToken(parser.Token{TokenPunctuator, "="}) {
 				g := j.NewGoal()
 				ae, err := g.parseAssignmentExpression(true, yield, await)
 				if err != nil {
-					return err
+					return j.Error("PropertyDefinition.IdentifierReference", err)
 				}
 				j.Score(g)
 				pd.AssignmentExpression = &ae
@@ -455,10 +463,12 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 			return nil
 		},
 		func(j *jsParser) error {
-			md, err := j.parseMethodDefinition(yield, await)
+			g := j.NewGoal()
+			md, err := g.parseMethodDefinition(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PropertyDefinition.MethodDefinition", err)
 			}
+			j.Score(g)
 			pd.MethodDefinition = &md
 			return nil
 		},
@@ -466,10 +476,12 @@ func (j *jsParser) parsePropertyDefinition(yield, await bool) (PropertyDefinitio
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 				return errNotApplicable
 			}
-			ae, err := j.parseAssignmentExpression(true, yield, await)
+			g := j.NewGoal()
+			ae, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
-				return err
+				return j.Error("PropertyDefinition.Spread", err)
 			}
+			j.Score(g)
 			pd.Spread = true
 			pd.AssignmentExpression = &ae
 			return nil
@@ -495,7 +507,7 @@ func (j *jsParser) parseTemplateLiteral(yield, await bool) (TemplateLiteral, err
 	if j.Accept(TokenNoSubstitutionTemplate) {
 		tl.NoSubstitutionTemplate = j.GetLastToken()
 	} else if !j.Accept(TokenTemplateHead) {
-		return tl, j.Error(ErrInvalidTemplate)
+		return tl, j.Error("TemplateLiteral", ErrInvalidTemplate)
 	} else {
 		tl.TemplateHead = j.GetLastToken()
 		for {
@@ -503,7 +515,7 @@ func (j *jsParser) parseTemplateLiteral(yield, await bool) (TemplateLiteral, err
 			g := j.NewGoal()
 			e, err := j.parseExpression(true, yield, await)
 			if err != nil {
-				return tl, j.Error(err)
+				return tl, j.Error("TemplateLiteral", err)
 			}
 			j.Score(g)
 			tl.Expressions = append(tl.Expressions, e)
@@ -512,7 +524,7 @@ func (j *jsParser) parseTemplateLiteral(yield, await bool) (TemplateLiteral, err
 				tl.TemplateTail = j.GetLastToken()
 				break
 			} else if !j.Accept(TokenTemplateMiddle) {
-				return tl, j.Error(ErrInvalidTemplate)
+				return tl, j.Error("TemplateLiteral", ErrInvalidTemplate)
 			}
 			tl.TemplateMiddleList = append(tl.TemplateMiddleList, j.GetLastToken())
 		}
@@ -540,19 +552,19 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 			g := j.NewGoal()
 			fp, err := g.parseFormalParameters(false, true)
 			if err != nil {
-				return af, j.Error(err)
+				return af, j.Error("ArrowFunction", err)
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-				return af, j.Error(ErrMissingClosingParenthesis)
+				return af, j.Error("ArrowFunction", ErrMissingClosingParenthesis)
 			}
 			af.FormalParameters = &fp
 		} else {
 			g := j.NewGoal()
 			bi, err := g.parseIdentifier(yield, true)
 			if err != nil {
-				return af, j.Error(err)
+				return af, j.Error("ArrowFunction", err)
 			}
 			j.Score(g)
 			af.BindingIdentifier = bi
@@ -561,7 +573,7 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		g := j.NewGoal()
 		cp, err := g.parseCoverParenthesizedExpressionAndArrowParameterList(yield, await)
 		if err != nil {
-			return af, j.Error(err)
+			return af, j.Error("ArrowFunction", err)
 		}
 		j.Score(g)
 		af.CoverParenthesizedExpressionAndArrowParameterList = &cp
@@ -569,21 +581,21 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		g := j.NewGoal()
 		bi, err := g.parseIdentifier(yield, true)
 		if err != nil {
-			return af, j.Error(err)
+			return af, j.Error("ArrowFunction", err)
 		}
 		j.Score(g)
 		af.BindingIdentifier = bi
 	}
 	j.AcceptRunWhitespaceNoNewLine()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "=>"}) {
-		return af, j.Error(ErrMissingArrow)
+		return af, j.Error("ArrowFunction", ErrMissingArrow)
 	}
 	j.AcceptRunWhitespace()
 	if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
 		b, err := g.parseBlock(false, af.Async, true)
 		if err != nil {
-			return af, j.Error(err)
+			return af, j.Error("ArrowFunction", err)
 		}
 		j.Score(g)
 		af.FunctionBody = &b
@@ -591,7 +603,7 @@ func (j *jsParser) parseArrowFunction(in, yield, await bool) (ArrowFunction, err
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(in, false, af.Async)
 		if err != nil {
-			return af, j.Error(err)
+			return af, j.Error("ArrowFunction", err)
 		}
 		j.Score(g)
 		af.AssignmentExpression = &ae

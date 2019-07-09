@@ -2,7 +2,6 @@ package javascript
 
 import (
 	"fmt"
-	"runtime"
 	"strings"
 
 	"vimagination.zapto.org/errors"
@@ -36,7 +35,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 		case parser.TokenDone:
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
-			return nil, tokens.Error(t.Err)
+			return nil, tokens.Error("Tokeniser", t.Err)
 		default:
 			switch tk.Type {
 			case TokenLineTerminator:
@@ -202,20 +201,10 @@ func (e Error) getLastPos() uint64 {
 	return e.Token.Pos
 }
 
-func (j *jsParser) Error(err error) error {
-	const prefix = "vimagination.zapto.org/javascript.(*jsParser).parse"
-	ptrs := make([]uintptr, 1000)
-	var parsing string
-	for _, ptr := range ptrs[:runtime.Callers(2, ptrs)] {
-		fn := runtime.FuncForPC(ptr).Name()
-		if strings.HasPrefix(fn, prefix) {
-			parsing = fn[len(prefix):]
-			break
-		}
-	}
+func (j *jsParser) Error(parsingFunc string, err error) error {
 	return Error{
 		Err:     err,
-		Parsing: parsing,
+		Parsing: parsingFunc,
 		Token:   j.next(),
 	}
 }
@@ -230,9 +219,7 @@ func (j *jsParser) FindGoal(fns ...func(*jsParser) error) error {
 		if errr := fn(&g); errr == nil {
 			j.Score(g)
 			return nil
-		} else if err != errNotApplicable {
-			g = j.NewGoal()
-			errr = g.Error(errr)
+		} else if errr != errNotApplicable {
 			if p := errr.(Error).getLastPos(); err == nil || lastPos < p {
 				err = errr
 				lastPos = p

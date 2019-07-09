@@ -1370,7 +1370,7 @@ func TestStatement(t *testing.T) {
 					Parsing: "Declaration",
 					Token:   tk[0],
 				},
-				Parsing: "StatementListItem",
+				Parsing: "StatementListItem.Declaration",
 				Token:   tk[0],
 			}
 		}},

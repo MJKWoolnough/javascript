@@ -20,7 +20,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 	bi, err := g.parseIdentifier(yield, await)
 	if err != nil {
 		if !def {
-			return cd, j.Error(err)
+			return cd, j.Error("ClassDeclaration", err)
 		}
 	} else {
 		j.Score(g)
@@ -32,14 +32,14 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 		g = j.NewGoal()
 		lhs, err := g.parseLeftHandSideExpression(yield, await)
 		if err != nil {
-			return cd, j.Error(err)
+			return cd, j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
 		cd.ClassHeritage = &lhs
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return cd, j.Error(ErrMissingOpeningBrace)
+		return cd, j.Error("ClassDeclaration", ErrMissingOpeningBrace)
 	}
 	for {
 		j.AcceptRunWhitespace()
@@ -51,7 +51,7 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 		g := j.NewGoal()
 		md, err := g.parseMethodDefinition(yield, await)
 		if err != nil {
-			return cd, j.Error(err)
+			return cd, j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
 		cd.ClassBody = append(cd.ClassBody, md)
@@ -132,29 +132,29 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 	g := j.NewGoal()
 	var err error
 	if md.PropertyName, err = g.parsePropertyName(yield, await); err != nil {
-		return md, j.Error(err)
+		return md, j.Error("MethodDefinition", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return md, j.Error(ErrMissingOpeningParenthesis)
+		return md, j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if md.Type != MethodGetter {
 		g = j.NewGoal()
 		if md.Params, err = g.parseFormalParameters(md.Type == MethodGenerator, md.Type == MethodAsync); err != nil {
-			return md, j.Error(err)
+			return md, j.Error("MethodDefinition", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return md, j.Error(ErrMissingClosingParenthesis)
+		return md, j.Error("MethodDefinition", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
 	if md.FunctionBody, err = g.parseBlock(md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
-		return md, j.Error(err)
+		return md, j.Error("MethodDefinition", err)
 	}
 	j.Score(g)
 	md.Tokens = j.ToTokens()
@@ -175,7 +175,7 @@ func (j *jsParser) parsePropertyName(yield, await bool) (PropertyName, error) {
 		g := j.NewGoal()
 		cp, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
-			return pn, j.Error(err)
+			return pn, j.Error("PropertyName", err)
 		}
 		j.Score(g)
 		pn.ComputedPropertyName = &cp

@@ -17,7 +17,7 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 	g := j.NewGoal()
 	ce.LogicalORExpression, err = g.parseLogicalORExpression(in, yield, await)
 	if err != nil {
-		return ce, j.Error(err)
+		return ce, j.Error("ConditionalExpression", err)
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -28,19 +28,19 @@ func (j *jsParser) parseConditionalExpression(in, yield, await bool) (Conditiona
 		g = j.NewGoal()
 		t, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
-			return ce, j.Error(err)
+			return ce, j.Error("ConditionalExpression", err)
 		}
 		j.Score(g)
 		ce.True = &t
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-			return ce, j.Error(ErrMissingColon)
+			return ce, j.Error("ConditionalExpression", ErrMissingColon)
 		}
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()
 		f, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
-			return ce, j.Error(err)
+			return ce, j.Error("ConditionalExpression", err)
 		}
 		j.Score(g)
 		ce.False = &f
@@ -64,7 +64,7 @@ func (j *jsParser) parseLogicalORExpression(in, yield, await bool) (LogicalORExp
 		g := j.NewGoal()
 		lo.LogicalANDExpression, err = g.parseLogicalANDExpression(in, yield, await)
 		if err != nil {
-			return lo, j.Error(err)
+			return lo, j.Error("LogicalORExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -101,7 +101,7 @@ func (j *jsParser) parseLogicalANDExpression(in, yield, await bool) (LogicalANDE
 		g := j.NewGoal()
 		la.BitwiseORExpression, err = g.parseBitwiseORExpression(in, yield, await)
 		if err != nil {
-			return la, j.Error(err)
+			return la, j.Error("LogicalANDExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -138,7 +138,7 @@ func (j *jsParser) parseBitwiseORExpression(in, yield, await bool) (BitwiseORExp
 		g := j.NewGoal()
 		bo.BitwiseXORExpression, err = g.parseBitwiseXORExpression(in, yield, await)
 		if err != nil {
-			return bo, j.Error(err)
+			return bo, j.Error("BitwiseORExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -175,7 +175,7 @@ func (j *jsParser) parseBitwiseXORExpression(in, yield, await bool) (BitwiseXORE
 		g := j.NewGoal()
 		bx.BitwiseANDExpression, err = g.parseBitwiseANDExpression(in, yield, await)
 		if err != nil {
-			return bx, j.Error(err)
+			return bx, j.Error("BitwiseXORExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -212,7 +212,7 @@ func (j *jsParser) parseBitwiseANDExpression(in, yield, await bool) (BitwiseANDE
 		g := j.NewGoal()
 		ba.EqualityExpression, err = g.parseEqualityExpression(in, yield, await)
 		if err != nil {
-			return ba, j.Error(err)
+			return ba, j.Error("BitwiseANDExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -262,7 +262,7 @@ Loop:
 		g := j.NewGoal()
 		ee.RelationalExpression, err = g.parseRelationalExpression(in, yield, await)
 		if err != nil {
-			return ee, j.Error(err)
+			return ee, j.Error("EqualityExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -325,7 +325,7 @@ Loop:
 		g := j.NewGoal()
 		re.ShiftExpression, err = g.parseShiftExpression(yield, await)
 		if err != nil {
-			return re, j.Error(err)
+			return re, j.Error("RelationalExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -393,7 +393,7 @@ Loop:
 		g := j.NewGoal()
 		se.AdditiveExpression, err = g.parseAdditiveExpression(yield, await)
 		if err != nil {
-			return se, j.Error(err)
+			return se, j.Error("ShiftExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -451,7 +451,7 @@ Loop:
 		g := j.NewGoal()
 		ae.MultiplicativeExpression, err = g.parseMultiplicativeExpression(yield, await)
 		if err != nil {
-			return ae, j.Error(err)
+			return ae, j.Error("AdditiveExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -508,7 +508,7 @@ Loop:
 		g := j.NewGoal()
 		me.ExponentiationExpression, err = g.parseExponentiationExpression(yield, await)
 		if err != nil {
-			return me, j.Error(err)
+			return me, j.Error("MultiplicativeExpression", err)
 		}
 		j.Score(g)
 		g = j.NewGoal()
@@ -557,7 +557,7 @@ Loop:
 		g := j.NewGoal()
 		ee.UnaryExpression, err = g.parseUnaryExpression(yield, await)
 		if err != nil {
-			return ee, j.Error(err)
+			return ee, j.Error("ExponentiationExpression", err)
 		}
 		j.Score(g)
 		if len(ee.UnaryExpression.UnaryOperators) > 0 {
@@ -638,7 +638,7 @@ Loop:
 	g := j.NewGoal()
 	ue.UpdateExpression, err = g.parseUpdateExpression(yield, await)
 	if err != nil {
-		return ue, j.Error(err)
+		return ue, j.Error("UnaryExpression", err)
 	}
 	j.Score(g)
 	ue.Tokens = j.ToTokens()
@@ -674,7 +674,7 @@ func (j *jsParser) parseUpdateExpression(yield, await bool) (UpdateExpression, e
 		g := j.NewGoal()
 		une, err := g.parseUnaryExpression(yield, await)
 		if err != nil {
-			return ue, j.Error(err)
+			return ue, j.Error("UpdateExpression", err)
 		}
 		j.Score(g)
 		ue.UnaryExpression = &une
@@ -682,7 +682,7 @@ func (j *jsParser) parseUpdateExpression(yield, await bool) (UpdateExpression, e
 		g := j.NewGoal()
 		lhs, err := g.parseLeftHandSideExpression(yield, await)
 		if err != nil {
-			return ue, j.Error(err)
+			return ue, j.Error("UpdateExpression", err)
 		}
 		j.Score(g)
 		ue.LeftHandSideExpression = &lhs

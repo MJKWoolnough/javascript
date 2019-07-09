@@ -83,43 +83,49 @@ func (j *jsParser) parseAssignmentExpression(in, yield, await bool) (AssignmentE
 		g := j.NewGoal()
 		nae, err := g.parseAssignmentExpression(in, true, await)
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.Yield", err)
 		}
 		j.Score(g)
 		ae.AssignmentExpression = &nae
 		return nil
 	}, func(j *jsParser) error {
-		af, err := j.parseArrowFunction(in, yield, await)
+		g := j.NewGoal()
+		af, err := g.parseArrowFunction(in, yield, await)
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.ArrowFunction", err)
 		}
+		j.Score(g)
 		ae.ArrowFunction = &af
 		return nil
 	}, func(j *jsParser) error {
-		lhs, err := j.parseLeftHandSideExpression(yield, await)
+		g := j.NewGoal()
+		lhs, err := g.parseLeftHandSideExpression(yield, await)
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
 		}
+		j.Score(g)
 		j.AcceptRunWhitespace()
 		ae.AssignmentOperator, err = j.parseAssignmentOperator()
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
 		}
 		j.AcceptRunWhitespace()
-		g := j.NewGoal()
+		g = j.NewGoal()
 		nae, err := g.parseAssignmentExpression(in, yield, await)
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
 		}
 		j.Score(g)
 		ae.LeftHandSideExpression = &lhs
 		ae.AssignmentExpression = &nae
 		return nil
 	}, func(j *jsParser) error {
-		ce, err := j.parseConditionalExpression(in, yield, await)
+		g := j.NewGoal()
+		ce, err := g.parseConditionalExpression(in, yield, await)
 		if err != nil {
-			return err
+			return j.Error("AssignmentExpression.ConditionalExpression", err)
 		}
+		j.Score(g)
 		ae.ConditionalExpression = &ce
 		return nil
 	}); err != nil {
@@ -138,17 +144,21 @@ type LeftHandSideExpression struct {
 func (j *jsParser) parseLeftHandSideExpression(yield, await bool) (LeftHandSideExpression, error) {
 	var lhs LeftHandSideExpression
 	if err := j.FindGoal(func(j *jsParser) error {
-		ce, err := j.parseCallExpression(yield, await)
+		g := j.NewGoal()
+		ce, err := g.parseCallExpression(yield, await)
 		if err != nil {
-			return err
+			return j.Error("LeftHandSideExpression.CallExpression", err)
 		}
+		j.Score(g)
 		lhs.CallExpression = &ce
 		return nil
 	}, func(j *jsParser) error {
-		ne, err := j.parseNewExpression(yield, await)
+		g := j.NewGoal()
+		ne, err := g.parseNewExpression(yield, await)
 		if err != nil {
-			return err
+			return j.Error("LeftHandSideExpression.NewExpression", err)
 		}
+		j.Score(g)
 		lhs.NewExpression = &ne
 		return nil
 	}); err != nil {
@@ -169,7 +179,7 @@ func (j *jsParser) parseExpression(in, yield, await bool) (Expression, error) {
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(in, yield, await)
 		if err != nil {
-			return e, j.Error(err)
+			return e, j.Error("Expression", err)
 		}
 		j.Score(g)
 		e.Expressions = append(e.Expressions, ae)
@@ -202,7 +212,7 @@ func (j *jsParser) parseNewExpression(yield, await bool) (NewExpression, error) 
 			j.Score(g)
 			break
 		} else if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
-			return ne, j.Error(err)
+			return ne, j.Error("NewExpression", err)
 		}
 		ne.News++
 		j.AcceptRunWhitespace()
@@ -227,10 +237,12 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 	var me MemberExpression
 	if err := j.FindGoal(
 		func(j *jsParser) error {
-			pe, err := j.parsePrimaryExpression(yield, await)
+			g := j.NewGoal()
+			pe, err := g.parsePrimaryExpression(yield, await)
 			if err != nil {
-				return err
+				return j.Error("MemberExpression.PrimaryExpression", err)
 			}
+			j.Score(g)
 			me.PrimaryExpression = &pe
 			return nil
 		},
@@ -243,20 +255,20 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 				g := j.NewGoal()
 				e, err := g.parseExpression(true, yield, await)
 				if err != nil {
-					return err
+					return j.Error("MemberExpression.Super", err)
 				}
 				j.Score(g)
 				if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					return ErrInvalidSuperProperty
+					return j.Error("MemberExpression.Super", ErrInvalidSuperProperty)
 				}
 				me.Expression = &e
 			} else if j.AcceptToken(parser.Token{TokenPunctuator, "."}) {
 				if !j.Accept(TokenIdentifier, TokenKeyword) {
-					return ErrNoIdentifier
+					return j.Error("MemberExpression.Super", ErrNoIdentifier)
 				}
 				me.IdentifierName = j.GetLastToken()
 			} else {
-				return ErrInvalidSuperProperty
+				return j.Error("MemberExpression.Super", ErrInvalidSuperProperty)
 			}
 			me.SuperProperty = true
 			return nil
@@ -271,7 +283,7 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 			}
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenIdentifier, "target"}) {
-				return ErrInvalidMetaProperty
+				return j.Error("MemberExpression.MetaProperty", ErrInvalidMetaProperty)
 			}
 			me.MetaProperty = true
 			return nil
@@ -284,14 +296,14 @@ func (j *jsParser) parseMemberExpression(yield, await bool) (MemberExpression, e
 			g := j.NewGoal()
 			nme, err := g.parseMemberExpression(yield, await)
 			if err != nil {
-				return err
+				return j.Error("MemberExpression.New", err)
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			g = j.NewGoal()
 			a, err := g.parseArguments(yield, await)
 			if err != nil {
-				return err
+				return j.Error("MemberExpression.New", err)
 			}
 			j.Score(g)
 			me.MemberExpression = &nme
@@ -311,7 +323,7 @@ Loop:
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
 			tl, err := h.parseTemplateLiteral(yield, await)
 			if err != nil {
-				return me, g.Error(err)
+				return me, g.Error("MemberExpression", err)
 			}
 			nme.TemplateLiteral = &tl
 		case TokenPunctuator:
@@ -320,7 +332,7 @@ Loop:
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return me, g.Error(ErrMissingIdentifier)
+					return me, g.Error("MemberExpression", ErrMissingIdentifier)
 				}
 				nme.IdentifierName = h.GetLastToken()
 			case "[":
@@ -329,12 +341,12 @@ Loop:
 				i := h.NewGoal()
 				e, err := i.parseExpression(true, yield, await)
 				if err != nil {
-					return me, g.Error(err)
+					return me, g.Error("MemberExpression", err)
 				}
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					return me, g.Error(ErrMissingClosingBracket)
+					return me, g.Error("MemberExpression", ErrMissingClosingBracket)
 				}
 				nme.Expression = &e
 			default:
@@ -378,10 +390,12 @@ func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression,
 			return nil
 		},
 		func(j *jsParser) error {
-			i, err := j.parseIdentifier(yield, await)
+			g := j.NewGoal()
+			i, err := g.parseIdentifier(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.IdentifierReference", err)
 			}
+			j.Score(g)
 			pe.IdentifierReference = i
 			return nil
 		},
@@ -393,50 +407,62 @@ func (j *jsParser) parsePrimaryExpression(yield, await bool) (PrimaryExpression,
 			return nil
 		},
 		func(j *jsParser) error {
-			al, err := j.parseArrayLiteral(yield, await)
+			g := j.NewGoal()
+			al, err := g.parseArrayLiteral(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.ArrayLiteral", err)
 			}
+			j.Score(g)
 			pe.ArrayLiteral = &al
 			return nil
 		},
 		func(j *jsParser) error {
-			ol, err := j.parseObjectLiteral(yield, await)
+			g := j.NewGoal()
+			ol, err := g.parseObjectLiteral(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.ObjectLiteral", err)
 			}
+			j.Score(g)
 			pe.ObjectLiteral = &ol
 			return nil
 		},
 		func(j *jsParser) error {
-			fe, err := j.parseFunctionDeclaration(false, false, true)
+			g := j.NewGoal()
+			fe, err := g.parseFunctionDeclaration(false, false, true)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.FunctionDeclaration", err)
 			}
+			j.Score(g)
 			pe.FunctionExpression = &fe
 			return nil
 		},
 		func(j *jsParser) error {
-			ce, err := j.parseClassDeclaration(yield, await, true)
+			g := j.NewGoal()
+			ce, err := g.parseClassDeclaration(yield, await, true)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.ClassExpression", err)
 			}
+			j.Score(g)
 			pe.ClassExpression = &ce
 			return nil
 		},
 		func(j *jsParser) error {
-			tl, err := j.parseTemplateLiteral(yield, await)
+			g := j.NewGoal()
+			tl, err := g.parseTemplateLiteral(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.TemplateLiteral", err)
 			}
+			j.Score(g)
 			pe.TemplateLiteral = &tl
 			return nil
 		},
 		func(j *jsParser) error {
-			cp, err := j.parseCoverParenthesizedExpressionAndArrowParameterList(yield, await)
+			g := j.NewGoal()
+			cp, err := g.parseCoverParenthesizedExpressionAndArrowParameterList(yield, await)
 			if err != nil {
-				return err
+				return j.Error("PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList", err)
 			}
+			j.Score(g)
 			pe.CoverParenthesizedExpressionAndArrowParameterList = &cp
 			return nil
 		},
@@ -458,7 +484,7 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield, await bool) (CoverParenthesizedExpressionAndArrowParameterList, error) {
 	var cp CoverParenthesizedExpressionAndArrowParameterList
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return cp, j.Error(ErrMissingOpeningParenthesis)
+		return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
@@ -469,34 +495,34 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 				if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
 					ab, err := g.parseArrayBindingPattern(yield, await)
 					if err != nil {
-						return cp, j.Error(err)
+						return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
 					cp.ArrayBindingPattern = &ab
 
 				} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
 					ob, err := g.parseObjectBindingPattern(yield, await)
 					if err != nil {
-						return cp, j.Error(err)
+						return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
 					cp.ObjectBindingPattern = &ob
 				} else {
 					bi, err := g.parseIdentifier(yield, await)
 					if err != nil {
-						return cp, j.Error(err)
+						return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
 					cp.BindingIdentifier = bi
 				}
 				j.Score(g)
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-					return cp, j.Error(ErrMissingClosingParenthesis)
+					return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingClosingParenthesis)
 				}
 				break
 			}
 			g := j.NewGoal()
 			e, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
-				return cp, j.Error(err)
+				return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 			}
 			j.Score(g)
 			cp.Expressions = append(cp.Expressions, e)
@@ -504,7 +530,7 @@ func (j *jsParser) parseCoverParenthesizedExpressionAndArrowParameterList(yield,
 			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-				return cp, j.Error(ErrMissingComma)
+				return cp, j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
 		}
@@ -522,7 +548,7 @@ type Arguments struct {
 func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 	var a Arguments
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return a, j.Error(ErrMissingOpeningParenthesis)
+		return a, j.Error("Arguments", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
@@ -535,14 +561,14 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 			g := j.NewGoal()
 			ae, err := g.parseAssignmentExpression(true, yield, await)
 			if err != nil {
-				return a, j.Error(err)
+				return a, j.Error("Arguments", err)
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			if spread {
 				a.SpreadArgument = &ae
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-					return a, j.Error(err)
+					return a, j.Error("Arguments", err)
 				}
 				break
 			}
@@ -550,7 +576,7 @@ func (j *jsParser) parseArguments(yield, await bool) (Arguments, error) {
 			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-				return a, j.Error(ErrMissingComma)
+				return a, j.Error("Arguments", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
 		}
@@ -578,17 +604,17 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 	} else if j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-			return ce, j.Error(ErrMissingOpeningParenthesis)
+			return ce, j.Error("CallExpression", ErrMissingOpeningParenthesis)
 		}
 		g := j.NewGoal()
 		ae, err := g.parseAssignmentExpression(true, yield, await)
 		if err != nil {
-			return ce, j.Error(err)
+			return ce, j.Error("CallExpression", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			return ce, j.Error(ErrMissingClosingParenthesis)
+			return ce, j.Error("CallExpression", ErrMissingClosingParenthesis)
 		}
 		ce.ImportCall = &ae
 		ce.Tokens = j.ToTokens()
@@ -597,7 +623,7 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 		g := j.NewGoal()
 		me, err := g.parseMemberExpression(yield, await)
 		if err != nil {
-			return ce, j.Error(err)
+			return ce, j.Error("CallExpression", err)
 		}
 		j.Score(g)
 		ce.MemberExpression = &me
@@ -607,7 +633,7 @@ func (j *jsParser) parseCallExpression(yield, await bool) (CallExpression, error
 	g := j.NewGoal()
 	a, err := g.parseArguments(yield, await)
 	if err != nil {
-		return ce, j.Error(err)
+		return ce, j.Error("CallExpression", err)
 	}
 	j.Score(g)
 	ce.Arguments = &a
@@ -621,7 +647,7 @@ Loop:
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
 			tl, err := h.parseTemplateLiteral(yield, await)
 			if err != nil {
-				return ce, g.Error(err)
+				return ce, g.Error("CallExpression", err)
 			}
 			nce.TemplateLiteral = &tl
 		case TokenPunctuator:
@@ -629,14 +655,14 @@ Loop:
 			case "(":
 				a, err := h.parseArguments(yield, await)
 				if err != nil {
-					return ce, g.Error(err)
+					return ce, g.Error("CallExpression", err)
 				}
 				nce.Arguments = &a
 			case ".":
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return ce, g.Error(ErrMissingIdentifier)
+					return ce, g.Error("CallExpression", ErrMissingIdentifier)
 				}
 				nce.IdentifierName = h.GetLastToken()
 			case "[":
@@ -645,12 +671,12 @@ Loop:
 				i := h.NewGoal()
 				e, err := i.parseExpression(true, yield, await)
 				if err != nil {
-					return ce, g.Error(err)
+					return ce, g.Error("CallExpression", err)
 				}
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					return ce, g.Error(ErrMissingClosingBracket)
+					return ce, g.Error("CallExpression", ErrMissingClosingBracket)
 				}
 				nce.Expression = &e
 			default:
