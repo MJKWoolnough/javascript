@@ -470,6 +470,41 @@ func (l LetOrConst) String() string {
 	return "Let"
 }
 
+func (a AssignmentOperator) String() string {
+	switch a {
+	case AssignmentNone:
+		return ""
+	case AssignmentAssign:
+		return "="
+	case AssignmentMultiply:
+		return "*="
+	case AssignmentDivide:
+		return "/="
+	case AssignmentRemainder:
+		return "%="
+	case AssignmentAdd:
+		return "+="
+	case AssignmentSubtract:
+		return "-="
+	case AssignmentLeftShift:
+		return "<<="
+	case AssignmentSignPropagatinRightShift:
+		return ">>="
+	case AssignmentZeroFillRightShift:
+		return ">>>="
+	case AssignmentBitwiseAND:
+		return "&="
+	case AssignmentBitwiseXOR:
+		return "^="
+	case AssignmentBitwiseOR:
+		return "|="
+	case AssignmentExponentiation:
+		return "**="
+	default:
+		return "unknown"
+	}
+}
+
 func (f ClassDeclaration) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f MethodDefinition) Format(s fmt.State, v rune)         { format(s, v, f) }
 func (f PropertyName) Format(s fmt.State, v rune)             { format(s, v, f) }
