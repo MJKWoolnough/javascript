@@ -368,6 +368,87 @@ for(
 				Tokens: tk[:92],
 			}
 		}},
+		{`if (typeof a === "b" && typeof c.d == "e") {}`, func(t *test, tk Tokens) {
+			litA := makeConditionLiteral(tk, 5)
+			litB := makeConditionLiteral(tk, 9)
+			litE := makeConditionLiteral(tk, 21)
+			typeOfA := wrapConditional(UnaryExpression{
+				UnaryOperators:   []UnaryOperator{UnaryTypeOf},
+				UpdateExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+				Tokens:           tk[3:6],
+			})
+			CD := wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							MemberExpression: &MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[15],
+									Tokens:              tk[15:16],
+								},
+								Tokens: tk[15:16],
+							},
+							IdentifierName: &tk[17],
+							Tokens:         tk[15:18],
+						},
+						Tokens: tk[15:18],
+					},
+					Tokens: tk[15:18],
+				},
+				Tokens: tk[15:18],
+			})
+			typeOfCD := wrapConditional(UnaryExpression{
+				UnaryOperators:   []UnaryOperator{UnaryTypeOf},
+				UpdateExpression: CD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+				Tokens:           tk[13:18],
+			})
+			AEquals := wrapConditional(EqualityExpression{
+				EqualityExpression:   &typeOfA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityStrictEqual,
+				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[3:10],
+			})
+			CDEquals := wrapConditional(EqualityExpression{
+				EqualityExpression:   &typeOfCD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression,
+				EqualityOperator:     EqualityEqual,
+				RelationalExpression: litE.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				Tokens:               tk[13:22],
+			})
+			And := wrapConditional(LogicalANDExpression{
+				LogicalANDExpression: &AEquals.LogicalORExpression.LogicalANDExpression,
+				BitwiseORExpression:  CDEquals.LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+				Tokens:               tk[3:22],
+			})
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							IfStatement: &IfStatement{
+								Expression: Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: &And,
+											Tokens:                tk[3:22],
+										},
+									},
+									Tokens: tk[3:22],
+								},
+								Statement: Statement{
+									BlockStatement: &Block{
+										Tokens: tk[24:26],
+									},
+									Tokens: tk[24:26],
+								},
+								Tokens: tk[:26],
+							},
+							Tokens: tk[:26],
+						},
+						Tokens: tk[:26],
+					},
+				},
+				Tokens: tk[:26],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseScript()
 	})
