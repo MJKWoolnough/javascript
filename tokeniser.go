@@ -126,20 +126,20 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			}, j.inputElement
 		}
 		if t.Accept("*") {
-			t.ExceptRun("*")
-			t.Accept("*")
-			if t.Accept("/") {
-				j.divisionAllowed = allowDivision
-				return parser.Token{
-					Type: TokenMultiLineComment,
-					Data: t.Get(),
-				}, j.inputElement
-			}
-			if t.Peek() == -1 {
-				t.Err = io.ErrUnexpectedEOF
-			} else {
-				t.Except("")
-				t.Err = errors.WithContext("error parsing comment: ", errors.Error(t.Get()))
+			for {
+				t.ExceptRun("*")
+				t.Accept("*")
+				if t.Accept("/") {
+					j.divisionAllowed = allowDivision
+					return parser.Token{
+						Type: TokenMultiLineComment,
+						Data: t.Get(),
+					}, j.inputElement
+				}
+				if t.Peek() == -1 {
+					t.Err = io.ErrUnexpectedEOF
+					break
+				}
 			}
 			return t.Error()
 		}
