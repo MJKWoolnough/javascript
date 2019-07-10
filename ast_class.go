@@ -12,15 +12,14 @@ type ClassDeclaration struct {
 	Tokens            Tokens
 }
 
-func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclaration, error) {
-	var cd ClassDeclaration
+func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "class"})
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
 	bi, err := g.parseIdentifier(yield, await)
 	if err != nil {
 		if !def {
-			return cd, j.Error("ClassDeclaration", err)
+			return j.Error("ClassDeclaration", err)
 		}
 	} else {
 		j.Score(g)
@@ -30,16 +29,15 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()
-		lhs, err := g.parseLeftHandSideExpression(yield, await)
-		if err != nil {
-			return cd, j.Error("ClassDeclaration", err)
+		cd.ClassHeritage = newLeftHandSideExpression()
+		if err := cd.ClassHeritage.parse(&g, yield, await); err != nil {
+			return j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
-		cd.ClassHeritage = &lhs
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return cd, j.Error("ClassDeclaration", ErrMissingOpeningBrace)
+		return j.Error("ClassDeclaration", ErrMissingOpeningBrace)
 	}
 	for {
 		j.AcceptRunWhitespace()
@@ -49,15 +47,16 @@ func (j *jsParser) parseClassDeclaration(yield, await, def bool) (ClassDeclarati
 			break
 		}
 		g := j.NewGoal()
-		md, err := g.parseMethodDefinition(yield, await)
-		if err != nil {
-			return cd, j.Error("ClassDeclaration", err)
+		var md MethodDefinition
+		if err := md.parse(&g, yield, await); err != nil {
+			md.clear()
+			return j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
 		cd.ClassBody = append(cd.ClassBody, md)
 	}
 	cd.Tokens = j.ToTokens()
-	return cd, nil
+	return nil
 }
 
 type MethodType uint8
@@ -85,8 +84,7 @@ type MethodDefinition struct {
 	Tokens       Tokens
 }
 
-func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, error) {
-	var md MethodDefinition
+func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
 	j.AcceptRunWhitespace()
 	async := j.AcceptToken(parser.Token{TokenIdentifier, "async"})
@@ -130,35 +128,34 @@ func (j *jsParser) parseMethodDefinition(yield, await bool) (MethodDefinition, e
 		md.Type = MethodStatic
 	}
 	g := j.NewGoal()
-	var err error
-	if md.PropertyName, err = g.parsePropertyName(yield, await); err != nil {
-		return md, j.Error("MethodDefinition", err)
+	if err := md.PropertyName.parse(&g, yield, await); err != nil {
+		return j.Error("MethodDefinition", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return md, j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
+		return j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if md.Type != MethodGetter {
 		g = j.NewGoal()
-		if md.Params, err = g.parseFormalParameters(md.Type == MethodGenerator, md.Type == MethodAsync); err != nil {
-			return md, j.Error("MethodDefinition", err)
+		if err := md.Params.parse(&g, md.Type == MethodGenerator, md.Type == MethodAsync); err != nil {
+			return j.Error("MethodDefinition", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return md, j.Error("MethodDefinition", ErrMissingClosingParenthesis)
+		return j.Error("MethodDefinition", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	if md.FunctionBody, err = g.parseBlock(md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
-		return md, j.Error("MethodDefinition", err)
+	if err := md.FunctionBody.parse(&g, md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
+		return j.Error("MethodDefinition", err)
 	}
 	j.Score(g)
 	md.Tokens = j.ToTokens()
-	return md, nil
+	return nil
 }
 
 type PropertyName struct {
@@ -167,23 +164,21 @@ type PropertyName struct {
 	Tokens               Tokens
 }
 
-func (j *jsParser) parsePropertyName(yield, await bool) (PropertyName, error) {
-	var pn PropertyName
+func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 	if j.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
 		pn.LiteralPropertyName = j.GetLastToken()
 	} else {
 		g := j.NewGoal()
-		cp, err := g.parseAssignmentExpression(true, yield, await)
-		if err != nil {
-			return pn, j.Error("PropertyName", err)
+		pn.ComputedPropertyName = newAssignmentExpression()
+		if err := pn.ComputedPropertyName.parse(&g, true, yield, await); err != nil {
+			return j.Error("PropertyName", err)
 		}
 		j.Score(g)
-		pn.ComputedPropertyName = &cp
 	}
 	pn.Tokens = j.ToTokens()
-	return pn, nil
+	return nil
 }
 
-const (
-	ErrInvalidMethodName errors.Error = "invalid method name"
+var (
+	ErrInvalidMethodName = errors.New("invalid method name")
 )

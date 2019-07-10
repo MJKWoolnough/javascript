@@ -21,14 +21,13 @@ type FunctionDeclaration struct {
 	Tokens            Tokens
 }
 
-func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDeclaration, error) {
-	var fd FunctionDeclaration
+func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
 		fd.Type = FunctionAsync
 		j.AcceptRunWhitespaceNoNewLine()
 	}
 	if !j.AcceptToken(parser.Token{TokenKeyword, "function"}) {
-		return fd, j.Error("FunctionDeclaration", ErrInvalidFunction)
+		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
 	j.AcceptRunWhitespace()
 	if fd.Type == 0 && j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
@@ -39,7 +38,7 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 	bi, err := g.parseIdentifier(yield, await)
 	if err != nil {
 		if !def {
-			return fd, j.Error("FunctionDeclaration", err)
+			return j.Error("FunctionDeclaration", err)
 		}
 	} else {
 		j.Score(g)
@@ -47,27 +46,25 @@ func (j *jsParser) parseFunctionDeclaration(yield, await, def bool) (FunctionDec
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return fd, j.Error("FunctionDeclaration", ErrMissingOpeningParenthesis)
+		return j.Error("FunctionDeclaration", ErrMissingOpeningParenthesis)
 	}
 	g = j.NewGoal()
-	fd.FormalParameters, err = g.parseFormalParameters(fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await)
-	if err != nil {
-		return fd, j.Error("FunctionDeclaration", err)
+	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
+		return j.Error("FunctionDeclaration", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return fd, j.Error("FunctionDeclaration", ErrMissingClosingParenthesis)
+		return j.Error("FunctionDeclaration", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	fd.FunctionBody, err = g.parseBlock(fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true)
-	if err != nil {
-		return fd, j.Error("FunctionDeclaration", err)
+	if err := fd.FunctionBody.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true); err != nil {
+		return j.Error("FunctionDeclaration", err)
 	}
 	j.Score(g)
 	fd.Tokens = j.ToTokens()
-	return fd, nil
+	return nil
 }
 
 type FormalParameters struct {
@@ -76,8 +73,7 @@ type FormalParameters struct {
 	Tokens                Tokens
 }
 
-func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, error) {
-	var fp FormalParameters
+func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	for {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
@@ -86,19 +82,18 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 		}
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			h := g.NewGoal()
-			fr, err := h.parseFunctionRestParameter(yield, await)
-			if err != nil {
-				return fp, j.Error("FormalParameters", err)
+			fp.FunctionRestParameter = newFunctionRestParameter()
+			if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
+				return j.Error("FormalParameters", err)
 			}
 			g.Score(h)
 			j.Score(g)
-			fp.FunctionRestParameter = &fr
 			break
 		}
 		h := g.NewGoal()
-		be, err := h.parseBindingElement(yield, await)
-		if err != nil {
-			return fp, g.Error("FormalParameters", err)
+		var be BindingElement
+		if err := be.parse(&h, yield, await); err != nil {
+			return g.Error("FormalParameters", err)
 		}
 		g.Score(h)
 		j.Score(g)
@@ -107,11 +102,11 @@ func (j *jsParser) parseFormalParameters(yield, await bool) (FormalParameters, e
 		if j.Peek() == (parser.Token{TokenPunctuator, ")"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return fp, j.Error("FormalParameters", ErrInvalidFormalParameterList)
+			return j.Error("FormalParameters", ErrInvalidFormalParameterList)
 		}
 	}
 	fp.Tokens = j.ToTokens()
-	return fp, nil
+	return nil
 }
 
 type BindingElement struct {
@@ -122,25 +117,22 @@ type BindingElement struct {
 	Tokens               Tokens
 }
 
-func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error) {
-	var be BindingElement
+func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-		ab, err := g.parseArrayBindingPattern(yield, await)
-		if err != nil {
-			return be, j.Error("BindingElement", err)
+		be.ArrayBindingPattern = newArrayBindingPattern()
+		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
+			return j.Error("BindingElement", err)
 		}
-		be.ArrayBindingPattern = &ab
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		ob, err := g.parseObjectBindingPattern(yield, await)
-		if err != nil {
-			return be, j.Error("BindingElement", err)
+		be.ObjectBindingPattern = newObjectBindingPattern()
+		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
+			return j.Error("BindingElement", err)
 		}
-		be.ObjectBindingPattern = &ob
 	} else {
 		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
-			return be, j.Error("BindingElement", err)
+			return j.Error("BindingElement", err)
 		}
 		be.SingleNameBinding = bi
 	}
@@ -151,15 +143,14 @@ func (j *jsParser) parseBindingElement(yield, await bool) (BindingElement, error
 		g.AcceptRunWhitespace()
 		j.Score(g)
 		g = j.NewGoal()
-		ae, err := g.parseAssignmentExpression(true, yield, await)
-		if err != nil {
-			return be, j.Error("BindingElement", err)
+		be.Initializer = newAssignmentExpression()
+		if err := be.Initializer.parse(&g, true, yield, await); err != nil {
+			return j.Error("BindingElement", err)
 		}
 		j.Score(g)
-		be.Initializer = &ae
 	}
 	be.Tokens = j.ToTokens()
-	return be, nil
+	return nil
 }
 
 type FunctionRestParameter struct {
@@ -169,33 +160,30 @@ type FunctionRestParameter struct {
 	Tokens               Tokens
 }
 
-func (j *jsParser) parseFunctionRestParameter(yield, await bool) (FunctionRestParameter, error) {
-	var fr FunctionRestParameter
+func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-		ab, err := g.parseArrayBindingPattern(yield, await)
-		if err != nil {
-			return fr, j.Error("FunctionRestParameter", err)
+		fr.ArrayBindingPattern = newArrayBindingPattern()
+		if err := fr.ArrayBindingPattern.parse(&g, yield, await); err != nil {
+			return j.Error("FunctionRestParameter", err)
 		}
-		fr.ArrayBindingPattern = &ab
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		ob, err := g.parseObjectBindingPattern(yield, await)
-		if err != nil {
-			return fr, j.Error("FunctionRestParameter", err)
+		fr.ObjectBindingPattern = newObjectBindingPattern()
+		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
+			return j.Error("FunctionRestParameter", err)
 		}
-		fr.ObjectBindingPattern = &ob
 	} else {
 		bi, err := g.parseIdentifier(yield, await)
 		if err != nil {
-			return fr, j.Error("FunctionRestParameter", err)
+			return j.Error("FunctionRestParameter", err)
 		}
 		fr.BindingIdentifier = bi
 	}
 	j.Score(g)
 	fr.Tokens = j.ToTokens()
-	return fr, nil
+	return nil
 }
 
-const (
-	ErrInvalidFunction errors.Error = "invalid function"
+var (
+	ErrInvalidFunction = errors.New("invalid function")
 )

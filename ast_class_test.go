@@ -209,6 +209,8 @@ func TestClassDeclaration(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseClassDeclaration(t.Yield, t.Await, t.Def)
+		var cd ClassDeclaration
+		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
+		return cd, err
 	})
 }

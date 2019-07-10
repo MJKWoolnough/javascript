@@ -10,8 +10,7 @@ type Block struct {
 	Tokens             Tokens
 }
 
-func (j *jsParser) parseBlock(yield, await, ret bool) (Block, error) {
-	var b Block
+func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
 	j.AcceptRunWhitespace()
 	for {
@@ -19,16 +18,17 @@ func (j *jsParser) parseBlock(yield, await, ret bool) (Block, error) {
 			break
 		}
 		g := j.NewGoal()
-		si, err := g.parseStatementListItem(yield, await, ret)
-		if err != nil {
-			return b, j.Error("Block", err)
+		var si StatementListItem
+		if err := si.parse(&g, yield, await, ret); err != nil {
+			si.clear()
+			return j.Error("Block", err)
 		}
 		j.Score(g)
 		b.StatementListItems = append(b.StatementListItems, si)
 		j.AcceptRunWhitespace()
 	}
 	b.Tokens = j.ToTokens()
-	return b, nil
+	return nil
 }
 
 type StatementListItem struct {
@@ -37,34 +37,37 @@ type StatementListItem struct {
 	Tokens      Tokens
 }
 
-func (j *jsParser) parseStatementListItem(yield, await, ret bool) (StatementListItem, error) {
-	var si StatementListItem
+func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	if err := j.FindGoal(
 		func(j *jsParser) error {
 			g := j.NewGoal()
-			d, err := g.parseDeclaration(yield, ret)
-			if err != nil {
+			d := newDeclaration()
+			if err := d.parse(&g, yield, ret); err != nil {
+				d.clear()
+				poolDeclaration.Put(d)
 				return j.Error("StatementListItem.Declaration", err)
 			}
 			j.Score(g)
-			si.Declaration = &d
+			si.Declaration = d
 			return nil
 		},
 		func(j *jsParser) error {
 			g := j.NewGoal()
-			s, err := g.parseStatement(yield, await, ret)
-			if err != nil {
+			s := newStatement()
+			if err := s.parse(&g, yield, await, ret); err != nil {
+				s.clear()
+				poolStatement.Put(s)
 				return j.Error("StatementListItem.Statement", err)
 			}
 			j.Score(g)
-			si.Statement = &s
+			si.Statement = s
 			return nil
 		},
 	); err != nil {
-		return si, err
+		return err
 	}
 	si.Tokens = j.ToTokens()
-	return si, nil
+	return nil
 }
 
 type StatementType uint8
@@ -96,54 +99,46 @@ type Statement struct {
 	Tokens                  Tokens
 }
 
-func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
-	var s Statement
+func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{TokenPunctuator, "{"}:
-		b, err := g.parseBlock(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.BlockStatement = newBlock()
+		if err := s.BlockStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.BlockStatement = &b
 	case parser.Token{TokenKeyword, "var"}:
-		vs, err := g.parseVariableStatement(yield, await)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.VariableStatement = newVariableStatement()
+		if err := s.VariableStatement.parse(&g, yield, await); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.VariableStatement = &vs
 	case parser.Token{TokenPunctuator, ";"}:
 		g.Except()
 	case parser.Token{TokenKeyword, "if"}:
-		is, err := g.parseIfStatement(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.IfStatement = newIfStatement()
+		if err := s.IfStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.IfStatement = &is
 	case parser.Token{TokenKeyword, "do"}:
-		ds, err := g.parseIterationStatementDo(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.IterationStatementDo = newIterationStatementDo()
+		if err := s.IterationStatementDo.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.IterationStatementDo = &ds
 	case parser.Token{TokenKeyword, "while"}:
-		ws, err := g.parseIterationStatementWhile(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.IterationStatementWhile = newIterationStatementWhile()
+		if err := s.IterationStatementWhile.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.IterationStatementWhile = &ws
 	case parser.Token{TokenKeyword, "for"}:
-		fs, err := g.parseIterationStatementFor(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.IterationStatementFor = newIterationStatementFor()
+		if err := s.IterationStatementFor.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.IterationStatementFor = &fs
 	case parser.Token{TokenKeyword, "switch"}:
-		ss, err := g.parseSwitchStatement(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.SwitchStatement = newSwitchStatement()
+		if err := s.SwitchStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.SwitchStatement = &ss
 	case parser.Token{TokenKeyword, "continue"}:
 		g.Except()
 		s.Type = StatementContinue
@@ -152,12 +147,12 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			h := g.NewGoal()
 			li, err := h.parseIdentifier(yield, await)
 			if err != nil {
-				return s, g.Error("Statement", err)
+				return g.Error("Statement", err)
 			}
 			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-				return s, g.Error("Statement", ErrMissingSemiColon)
+				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
 	case parser.Token{TokenKeyword, "break"}:
@@ -168,59 +163,55 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 			h := g.NewGoal()
 			li, err := h.parseIdentifier(yield, await)
 			if err != nil {
-				return s, g.Error("Statement", err)
+				return g.Error("Statement", err)
 			}
 			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-				return s, g.Error("Statement", ErrMissingSemiColon)
+				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
 	case parser.Token{TokenKeyword, "return"}:
 		if !ret {
-			return s, g.Error("Statement", ErrInvalidStatement)
+			return g.Error("Statement", ErrInvalidStatement)
 		}
 		g.Except()
 		s.Type = StatementReturn
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			e, err := h.parseExpression(true, yield, await)
-			if err != nil {
-				return s, g.Error("Statement", err)
+			s.ExpressionStatement = newExpression()
+			if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
+				return g.Error("Statement", err)
 			}
-			s.ExpressionStatement = &e
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-				return s, g.Error("Statement", ErrMissingSemiColon)
+				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
 	case parser.Token{TokenKeyword, "with"}:
-		ws, err := g.parseWithStatement(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.WithStatement = newWithStatement()
+		if err := s.WithStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.WithStatement = &ws
 	case parser.Token{TokenKeyword, "throw"}:
 		g.Except()
 		s.Type = StatementThrow
 		g.AcceptRunWhitespaceNoNewLine()
 		h := g.NewGoal()
-		e, err := h.parseExpression(true, yield, await)
-		if err != nil {
-			return s, g.Error("Statement", err)
+		s.ExpressionStatement = newExpression()
+		if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
+			return g.Error("Statement", err)
 		}
-		s.ExpressionStatement = &e
 		g.Score(h)
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			return s, g.Error("Statement", ErrMissingSemiColon)
+			return g.Error("Statement", ErrMissingSemiColon)
 		}
 	case parser.Token{TokenKeyword, "try"}:
-		ts, err := g.parseTryStatement(yield, await, ret)
-		if err != nil {
-			return s, j.Error("Statement", err)
+		s.TryStatement = newTryStatement()
+		if err := s.TryStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("Statement", err)
 		}
-		s.TryStatement = &ts
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
@@ -243,17 +234,21 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 				j.AcceptRunWhitespace()
 				g := j.NewGoal()
 				if g.Peek() == (parser.Token{TokenKeyword, "function"}) {
-					fd, err := g.parseFunctionDeclaration(yield, await, false)
-					if err != nil {
+					fd := newFunctionDeclaration()
+					if err := fd.parse(&g, yield, await, false); err != nil {
+						fd.clear()
+						poolFunctionDeclaration.Put(fd)
 						return j.Error("Statement.LabelIdentifier", err)
 					}
-					s.LabelledItemFunction = &fd
+					s.LabelledItemFunction = fd
 				} else {
-					ss, err := g.parseStatement(yield, await, ret)
-					if err != nil {
+					ss := newStatement()
+					if err := ss.parse(&g, yield, await, ret); err != nil {
+						ss.clear()
+						poolStatement.Put(ss)
 						return j.Error("Statement.LabelIdentifier", err)
 					}
-					s.LabelledItemStatement = &ss
+					s.LabelledItemStatement = ss
 				}
 				j.Score(g)
 				s.LabelIdentifier = i
@@ -271,24 +266,28 @@ func (j *jsParser) parseStatement(yield, await, ret bool) (Statement, error) {
 						return j.Error("Statement.Expression", errNotApplicable)
 					}
 				}
-				e, err := j.parseExpression(true, yield, await)
-				if err != nil {
+				e := newExpression()
+				if err := e.parse(j, true, yield, await); err != nil {
+					e.clear()
+					poolExpression.Put(e)
 					return j.Error("Statement.Expression", err)
 				}
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+					e.clear()
+					poolExpression.Put(e)
 					return j.Error("Statement.Expression", ErrMissingSemiColon)
 				}
-				s.ExpressionStatement = &e
+				s.ExpressionStatement = e
 				return nil
 			},
 		); err != nil {
-			return s, err
+			return err
 		}
 	}
 	j.Score(g)
 	s.Tokens = j.ToTokens()
-	return s, nil
+	return nil
 }
 
 type IfStatement struct {
@@ -298,32 +297,26 @@ type IfStatement struct {
 	Tokens        Tokens
 }
 
-func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error) {
-	var (
-		is  IfStatement
-		err error
-	)
+func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "if"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error("IfStatement", ErrMissingOpeningParenthesis)
+		return j.Error("IfStatement", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	is.Expression, err = g.parseExpression(true, yield, await)
-	if err != nil {
-		return is, j.Error("IfStatement", err)
+	if err := is.Expression.parse(&g, true, yield, await); err != nil {
+		return j.Error("IfStatement", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error("IfStatement", ErrMissingClosingParenthesis)
+		return j.Error("IfStatement", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	is.Statement, err = g.parseStatement(yield, await, ret)
-	if err != nil {
-		return is, j.Error("IfStatement", err)
+	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
+		return j.Error("IfStatement", err)
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -331,16 +324,15 @@ func (j *jsParser) parseIfStatement(yield, await, ret bool) (IfStatement, error)
 	if g.AcceptToken(parser.Token{TokenKeyword, "else"}) {
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		s, err := h.parseStatement(yield, await, ret)
-		if err != nil {
-			return is, g.Error("IfStatement", err)
+		is.ElseStatement = newStatement()
+		if err := is.ElseStatement.parse(&h, yield, await, ret); err != nil {
+			return g.Error("IfStatement", err)
 		}
 		g.Score(h)
 		j.Score(g)
-		is.ElseStatement = &s
 	}
 	is.Tokens = j.ToTokens()
-	return is, nil
+	return nil
 }
 
 type IterationStatementDo struct {
@@ -349,45 +341,39 @@ type IterationStatementDo struct {
 	Tokens     Tokens
 }
 
-func (j *jsParser) parseIterationStatementDo(yield, await, ret bool) (IterationStatementDo, error) {
-	var (
-		is  IterationStatementDo
-		err error
-	)
+func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "do"})
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	is.Statement, err = g.parseStatement(yield, await, ret)
-	if err != nil {
-		return is, j.Error("IterationStatementDo", err)
+	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
+		return j.Error("IterationStatementDo", err)
 	}
 	j.Score(g)
 	g = j.NewGoal()
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenKeyword, "while"}) {
-		return is, j.Error("IterationStatementDo", ErrInvalidIterationStatementDo)
+		return j.Error("IterationStatementDo", ErrInvalidIterationStatementDo)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error("IterationStatementDo", ErrMissingOpeningParenthesis)
+		return j.Error("IterationStatementDo", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	is.Expression, err = g.parseExpression(true, yield, await)
-	if err != nil {
-		return is, j.Error("IterationStatementDo", err)
+	if err := is.Expression.parse(&g, true, yield, await); err != nil {
+		return j.Error("IterationStatementDo", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error("IterationStatementDo", ErrMissingClosingParenthesis)
+		return j.Error("IterationStatementDo", ErrMissingClosingParenthesis)
 	}
 	g = j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 		j.Score(g)
 	}
 	is.Tokens = j.ToTokens()
-	return is, nil
+	return nil
 }
 
 type IterationStatementWhile struct {
@@ -396,36 +382,30 @@ type IterationStatementWhile struct {
 	Tokens     Tokens
 }
 
-func (j *jsParser) parseIterationStatementWhile(yield, await, ret bool) (IterationStatementWhile, error) {
-	var (
-		is  IterationStatementWhile
-		err error
-	)
+func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "while"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error("IterationStatementWhile", ErrMissingOpeningParenthesis)
+		return j.Error("IterationStatementWhile", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	is.Expression, err = g.parseExpression(true, await, ret)
-	if err != nil {
-		return is, j.Error("IterationStatementWhile", err)
+	if err := is.Expression.parse(&g, true, await, ret); err != nil {
+		return j.Error("IterationStatementWhile", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error("IterationStatementWhile", ErrMissingClosingParenthesis)
+		return j.Error("IterationStatementWhile", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	is.Statement, err = g.parseStatement(yield, await, ret)
-	if err != nil {
-		return is, j.Error("IterationStatementWhile", err)
+	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
+		return j.Error("IterationStatementWhile", err)
 	}
 	j.Score(g)
 	is.Tokens = j.ToTokens()
-	return is, nil
+	return nil
 }
 
 type ForType uint8
@@ -469,25 +449,21 @@ type IterationStatementFor struct {
 	Tokens    Tokens
 }
 
-func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (IterationStatementFor, error) {
-	var (
-		is  IterationStatementFor
-		err error
-	)
+func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "for"})
 	j.AcceptRunWhitespace()
 	forAwait := j.AcceptToken(parser.Token{TokenKeyword, "await"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return is, j.Error("IterationStatementFor", ErrMissingOpeningParenthesis)
+		return j.Error("IterationStatementFor", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
-	if err = j.FindGoal(
+	if err := j.FindGoal(
 		func(j *jsParser) error {
 			if forAwait {
 				return errNotApplicable
 			}
-			if err = j.FindGoal(
+			if err := j.FindGoal(
 				func(j *jsParser) error {
 					if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 						return errNotApplicable
@@ -501,34 +477,40 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 					}
 					j.AcceptRunWhitespace()
 					g := j.NewGoal()
-					vd, err := g.parseVariableDeclaration(false, yield, await)
-					if err != nil {
+					vd := newVariableDeclaration()
+					if err := vd.parse(&g, false, yield, await); err != nil {
+						vd.clear()
+						poolVariableDeclaration.Put(vd)
 						return j.Error("IterationStatementFor.NormalVar", err)
 					}
 					j.Score(g)
-					is.InitVar = &vd
+					is.InitVar = vd
 					is.Type = ForNormalVar
 					return nil
 				},
 				func(j *jsParser) error {
 					g := j.NewGoal()
-					ld, err := g.parseLexicalDeclaration(false, yield, await)
-					if err != nil {
+					ld := newLexicalDeclaration()
+					if err := ld.parse(&g, false, yield, await); err != nil {
+						ld.clear()
+						poolLexicalDeclaration.Put(ld)
 						return j.Error("IterationStatementFor.NormalLexicalDeclaration", err)
 					}
 					j.Score(g)
-					is.InitLexical = &ld
+					is.InitLexical = ld
 					is.Type = ForNormalLexicalDeclaration
 					return nil
 				},
 				func(j *jsParser) error {
 					g := j.NewGoal()
-					e, err := g.parseExpression(false, yield, await)
-					if err != nil {
+					e := newExpression()
+					if err := e.parse(&g, false, yield, await); err != nil {
+						e.clear()
+						poolExpression.Put(e)
 						return j.Error("IterationStatementFor.NormalExpression", err)
 					}
 					j.Score(g)
-					is.InitExpression = &e
+					is.InitExpression = e
 					is.Type = ForNormalExpression
 					return nil
 				},
@@ -538,21 +520,19 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			if j.GetLastToken().Token != (parser.Token{TokenPunctuator, ";"}) {
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-					is.InitVar = nil
-					is.InitLexical = nil
-					is.InitExpression = nil
+					is.clear()
 					return j.Error("IterationStatementFor.Normal", ErrMissingSemiColon)
 				}
 			}
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				g := j.NewGoal()
-				e, err := g.parseExpression(true, yield, await)
-				if err != nil {
+				is.Conditional = newExpression()
+				if err := is.Conditional.parse(&g, true, yield, await); err != nil {
+					is.clear()
 					return j.Error("IterationStatementFor.Normal", err)
 				}
 				j.Score(g)
-				is.Conditional = &e
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 					return j.Error("IterationStatementFor.Normal", ErrMissingSemiColon)
@@ -562,12 +542,12 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 			g.AcceptRunWhitespace()
 			if g.Peek() != (parser.Token{TokenPunctuator, ")"}) {
 				h := g.NewGoal()
-				e, err := h.parseExpression(true, yield, await)
-				if err != nil {
+				is.Afterthought = newExpression()
+				if err := is.Afterthought.parse(&h, true, yield, await); err != nil {
+					is.clear()
 					return j.Error("IterationStatementFor.Normal", err)
 				}
 				g.Score(h)
-				is.Afterthought = &e
 			}
 			j.Score(g)
 			return nil
@@ -587,20 +567,21 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 					j.AcceptRunWhitespace()
 					g := j.NewGoal()
 					if tk := g.Peek(); tk == (parser.Token{TokenPunctuator, "["}) {
-						ab, err := g.parseArrayBindingPattern(yield, await)
-						if err != nil {
+						is.ForBindingPatternArray = newArrayBindingPattern()
+						if err := is.ForBindingPatternArray.parse(&g, yield, await); err != nil {
+							is.clear()
 							return j.Error("IterationStatementFor.Other", err)
 						}
-						is.ForBindingPatternArray = &ab
 					} else if tk == (parser.Token{TokenPunctuator, "{"}) {
-						ob, err := g.parseObjectBindingPattern(yield, await)
-						if err != nil {
+						is.ForBindingPatternObject = newObjectBindingPattern()
+						if err := is.ForBindingPatternObject.parse(&g, yield, await); err != nil {
+							is.clear()
 							return j.Error("IterationStatementFor.Other", err)
 						}
-						is.ForBindingPatternObject = &ob
 					} else {
 						bi, err := g.parseIdentifier(yield, await)
 						if err != nil {
+							is.clear()
 							return j.Error("IterationStatementFor.Other", err)
 						}
 						is.ForBindingIdentifier = bi
@@ -610,12 +591,12 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 				},
 				func(j *jsParser) error {
 					g := j.NewGoal()
-					lhs, err := g.parseLeftHandSideExpression(yield, await)
-					if err != nil {
+					is.LeftHandSideExpression = newLeftHandSideExpression()
+					if err := is.LeftHandSideExpression.parse(&g, yield, await); err != nil {
+						is.clear()
 						return j.Error("IterationStatementFor.LeftHandSideExpression", err)
 					}
 					j.Score(g)
-					is.LeftHandSideExpression = &lhs
 					is.Type = ForInLeftHandSide
 					return nil
 				},
@@ -650,43 +631,44 @@ func (j *jsParser) parseIterationStatementFor(yield, await, ret bool) (Iteration
 					}
 				}
 			} else if forAwait || !j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
+				is.clear()
 				return j.Error("IterationStatementFor.Other", ErrInvalidForLoop)
 			}
 			j.AcceptRunWhitespace()
 			g := j.NewGoal()
 			if in {
-				e, err := g.parseExpression(true, yield, await)
-				if err != nil {
+				is.In = newExpression()
+				if err := is.In.parse(&g, true, yield, await); err != nil {
+					is.clear()
 					return j.Error("IterationStatementFor.Other", err)
 				}
-				is.In = &e
 			} else {
-				ae, err := g.parseAssignmentExpression(true, yield, await)
-				if err != nil {
+				is.Of = newAssignmentExpression()
+				if err := is.Of.parse(&g, true, yield, await); err != nil {
+					is.clear()
 					return j.Error("IterationStatementFor.Other", err)
 				}
-				is.Of = &ae
 			}
 			j.Score(g)
 			return nil
 		},
 	); err != nil {
-		return is, err
+		return err
 	}
 
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return is, j.Error("IterationStatementFor", ErrMissingClosingParenthesis)
+		return j.Error("IterationStatementFor", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	is.Statement, err = g.parseStatement(yield, await, ret)
-	if err != nil {
-		return is, j.Error("IterationStatementFor", err)
+
+	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
+		return j.Error("IterationStatementFor", err)
 	}
 	j.Score(g)
 	is.Tokens = j.ToTokens()
-	return is, nil
+	return nil
 }
 
 type SwitchStatement struct {
@@ -697,30 +679,25 @@ type SwitchStatement struct {
 	Tokens                 Tokens
 }
 
-func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement, error) {
-	var (
-		ss  SwitchStatement
-		err error
-	)
+func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "switch"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return ss, j.Error("SwitchStatement", ErrMissingOpeningParenthesis)
+		return j.Error("SwitchStatement", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	ss.Expression, err = g.parseExpression(true, yield, await)
-	if err != nil {
-		return ss, j.Error("SwitchStatement", err)
+	if err := ss.Expression.parse(&g, true, yield, await); err != nil {
+		return j.Error("SwitchStatement", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return ss, j.Error("SwitchStatement", ErrMissingClosingParenthesis)
+		return j.Error("SwitchStatement", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		return ss, j.Error("SwitchStatement", ErrMissingOpeningBrace)
+		return j.Error("SwitchStatement", ErrMissingOpeningBrace)
 	}
 	for {
 		j.AcceptRunWhitespace()
@@ -728,11 +705,11 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 			break
 		} else if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
 			if ss.DefaultClause != nil {
-				return ss, j.Error("SwitchStatement", ErrDuplicateDefaultClause)
+				return j.Error("SwitchStatement", ErrDuplicateDefaultClause)
 			}
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-				return ss, j.Error("SwitchStatement", ErrMissingColon)
+				return j.Error("SwitchStatement", ErrMissingColon)
 			}
 			ss.DefaultClause = []StatementListItem{}
 			for {
@@ -741,18 +718,20 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 					break
 				}
 				g = j.NewGoal()
-				sl, err := g.parseStatementListItem(yield, await, ret)
-				if err != nil {
-					return ss, j.Error("SwitchStatement", err)
+				var sl StatementListItem
+				if err := sl.parse(&g, yield, await, ret); err != nil {
+					sl.clear()
+					return j.Error("SwitchStatement", err)
 				}
 				j.Score(g)
 				ss.DefaultClause = append(ss.DefaultClause, sl)
 			}
 		} else {
 			g := j.NewGoal()
-			cc, err := g.parseCaseClause(yield, await, ret)
-			if err != nil {
-				return ss, j.Error("SwitchStatement", err)
+			var cc CaseClause
+			if err := cc.parse(&g, yield, await, ret); err != nil {
+				cc.clear()
+				return j.Error("SwitchStatement", err)
 			}
 			j.Score(g)
 			if ss.DefaultClause == nil {
@@ -763,7 +742,7 @@ func (j *jsParser) parseSwitchStatement(yield, await, ret bool) (SwitchStatement
 		}
 	}
 	ss.Tokens = j.ToTokens()
-	return ss, nil
+	return nil
 }
 
 type CaseClause struct {
@@ -772,24 +751,19 @@ type CaseClause struct {
 	Tokens        Tokens
 }
 
-func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
-	var (
-		cc  CaseClause
-		err error
-	)
+func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 	if !j.AcceptToken(parser.Token{TokenKeyword, "case"}) {
-		return cc, j.Error("CaseClause", ErrMissingCaseClause)
+		return j.Error("CaseClause", ErrMissingCaseClause)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	cc.Expression, err = g.parseExpression(true, yield, await)
-	if err != nil {
-		return cc, j.Error("CaseClause", err)
+	if err := cc.Expression.parse(&g, true, yield, await); err != nil {
+		return j.Error("CaseClause", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-		return cc, j.Error("CaseClause", ErrMissingColon)
+		return j.Error("CaseClause", ErrMissingColon)
 	}
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
@@ -798,16 +772,17 @@ func (j *jsParser) parseCaseClause(yield, await, ret bool) (CaseClause, error) {
 			break
 		}
 		h := g.NewGoal()
-		sl, err := h.parseStatementListItem(yield, await, ret)
-		if err != nil {
-			return cc, g.Error("CaseClause", err)
+		var sl StatementListItem
+		if err := sl.parse(&h, yield, await, ret); err != nil {
+			sl.clear()
+			return g.Error("CaseClause", err)
 		}
 		g.Score(h)
 		cc.StatementList = append(cc.StatementList, sl)
 	}
 	j.Score(g)
 	cc.Tokens = j.ToTokens()
-	return cc, nil
+	return nil
 }
 
 type WithStatement struct {
@@ -816,36 +791,30 @@ type WithStatement struct {
 	Tokens     Tokens
 }
 
-func (j *jsParser) parseWithStatement(yield, await, ret bool) (WithStatement, error) {
-	var (
-		ws  WithStatement
-		err error
-	)
+func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "with"})
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return ws, j.Error("WithStatement", ErrMissingOpeningParenthesis)
+		return j.Error("WithStatement", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	ws.Expression, err = g.parseExpression(true, yield, await)
-	if err != nil {
-		return ws, j.Error("WithStatement", err)
+	if err := ws.Expression.parse(&g, true, yield, await); err != nil {
+		return j.Error("WithStatement", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return ws, j.Error("WithStatement", ErrMissingClosingParenthesis)
+		return j.Error("WithStatement", ErrMissingClosingParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
-	ws.Statement, err = g.parseStatement(yield, await, ret)
-	if err != nil {
-		return ws, j.Error("WithStatement", err)
+	if err := ws.Statement.parse(&g, yield, await, ret); err != nil {
+		return j.Error("WithStatement", err)
 	}
 	j.Score(g)
 	ws.Tokens = j.ToTokens()
-	return ws, nil
+	return nil
 }
 
 type TryStatement struct {
@@ -858,17 +827,12 @@ type TryStatement struct {
 	Tokens                             Tokens
 }
 
-func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, error) {
-	var (
-		ts  TryStatement
-		err error
-	)
+func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "try"})
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	ts.TryBlock, err = g.parseBlock(yield, await, ret)
-	if err != nil {
-		return ts, j.Error("TryStatement", err)
+	if err := ts.TryBlock.parse(&g, yield, await, ret); err != nil {
+		return j.Error("TryStatement", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
@@ -879,57 +843,53 @@ func (j *jsParser) parseTryStatement(yield, await, ret bool) (TryStatement, erro
 			g = j.NewGoal()
 			switch g.Peek() {
 			case parser.Token{TokenPunctuator, "{"}:
-				ob, err := g.parseObjectBindingPattern(yield, await)
-				if err != nil {
-					return ts, j.Error("TryStatement", err)
+				ts.CatchParameterObjectBindingPattern = newObjectBindingPattern()
+				if err := ts.CatchParameterObjectBindingPattern.parse(&g, yield, await); err != nil {
+					return j.Error("TryStatement", err)
 				}
-				ts.CatchParameterObjectBindingPattern = &ob
 			case parser.Token{TokenPunctuator, "["}:
-				ob, err := g.parseArrayBindingPattern(yield, await)
-				if err != nil {
-					return ts, j.Error("TryStatement", err)
+				ts.CatchParameterArrayBindingPattern = newArrayBindingPattern()
+				if err := ts.CatchParameterArrayBindingPattern.parse(&g, yield, await); err != nil {
+					return j.Error("TryStatement", err)
 				}
-				ts.CatchParameterArrayBindingPattern = &ob
 			default:
 				bi, err := g.parseIdentifier(yield, await)
 				if err != nil {
-					return ts, j.Error("TryStatement", err)
+					return j.Error("TryStatement", err)
 				}
 				ts.CatchParameterBindingIdentifier = bi
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-				return ts, j.Error("TryStatement", ErrMissingClosingParenthesis)
+				return j.Error("TryStatement", ErrMissingClosingParenthesis)
 			}
 			j.AcceptRunWhitespace()
 		}
 		g = j.NewGoal()
-		cb, err := g.parseBlock(yield, await, ret)
-		if err != nil {
-			return ts, j.Error("TryStatement", err)
+		ts.CatchBlock = newBlock()
+		if err := ts.CatchBlock.parse(&g, yield, await, ret); err != nil {
+			return j.Error("TryStatement", err)
 		}
 		j.Score(g)
-		ts.CatchBlock = &cb
 	}
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
 	if g.AcceptToken(parser.Token{TokenKeyword, "finally"}) {
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		fb, err := h.parseBlock(yield, await, ret)
-		if err != nil {
-			return ts, g.Error("TryStatement", err)
+		ts.FinallyBlock = newBlock()
+		if err := ts.FinallyBlock.parse(&h, yield, await, ret); err != nil {
+			return g.Error("TryStatement", err)
 		}
 		g.Score(h)
-		ts.FinallyBlock = &fb
 		j.Score(g)
 	}
 	if ts.CatchBlock == nil && ts.FinallyBlock == nil {
-		return ts, j.Error("TryStatement", ErrMissingCatchFinally)
+		return j.Error("TryStatement", ErrMissingCatchFinally)
 	}
 	ts.Tokens = j.ToTokens()
-	return ts, nil
+	return nil
 }
 
 type VariableStatement struct {
@@ -937,8 +897,7 @@ type VariableStatement struct {
 	Tokens                  Tokens
 }
 
-func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement, error) {
-	var vs VariableStatement
+func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "var"})
 	for {
 		j.AcceptRunWhitespace()
@@ -946,9 +905,10 @@ func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement,
 			break
 		}
 		g := j.NewGoal()
-		vd, err := g.parseVariableDeclaration(true, yield, await)
-		if err != nil {
-			return vs, j.Error("VariableStatement", err)
+		var vd VariableDeclaration
+		if err := vd.parse(&g, true, yield, await); err != nil {
+			vd.clear()
+			return j.Error("VariableStatement", err)
 		}
 		j.Score(g)
 		vs.VariableDeclarationList = append(vs.VariableDeclarationList, vd)
@@ -956,13 +916,13 @@ func (j *jsParser) parseVariableStatement(yield, await bool) (VariableStatement,
 		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return vs, j.Error("VariableStatement", ErrMissingComma)
+			return j.Error("VariableStatement", ErrMissingComma)
 		}
 	}
 	vs.Tokens = j.ToTokens()
-	return vs, nil
+	return nil
 }
 
-const (
-	ErrDuplicateDefaultClause errors.Error = "duplicate default clause"
+var (
+	ErrDuplicateDefaultClause = errors.New("duplicate default clause")
 )

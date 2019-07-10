@@ -201,7 +201,9 @@ func TestParseFunction(t *testing.T) {
 				Tokens: t[:9],
 			}
 		}},
-	}, func(test *test) (interface{}, error) {
-		return test.Tokens.parseFunctionDeclaration(test.Yield, test.Await, test.Def)
+	}, func(t *test) (interface{}, error) {
+		var fd FunctionDeclaration
+		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
+		return fd, err
 	})
 }

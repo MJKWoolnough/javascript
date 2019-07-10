@@ -2145,6 +2145,8 @@ func TestStatement(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseStatementListItem(t.Yield, t.Await, t.Ret)
+		var sl StatementListItem
+		err := sl.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return sl, err
 	})
 }

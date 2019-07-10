@@ -571,6 +571,8 @@ func TestModule(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseModule()
+		var m Module
+		err := m.parse(&t.Tokens)
+		return m, err
 	})
 }

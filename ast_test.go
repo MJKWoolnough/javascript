@@ -450,6 +450,8 @@ for(
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseScript()
+		var s Script
+		err := s.parse(&t.Tokens)
+		return s, err
 	})
 }

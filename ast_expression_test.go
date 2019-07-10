@@ -338,7 +338,9 @@ func TestLeftHandSideExpression(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseLeftHandSideExpression(t.Yield, t.Await)
+		var lhs LeftHandSideExpression
+		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
+		return lhs, err
 	})
 }
 
@@ -930,6 +932,8 @@ func TestAssignmentExpression(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseAssignmentExpression(t.In, t.Yield, t.Await)
+		var ae AssignmentExpression
+		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
+		return ae, err
 	})
 }

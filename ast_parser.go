@@ -229,6 +229,6 @@ func (j *jsParser) FindGoal(fns ...func(*jsParser) error) error {
 	return err
 }
 
-const (
-	errNotApplicable errors.Error = ""
+var (
+	errNotApplicable = errors.New("")
 )
