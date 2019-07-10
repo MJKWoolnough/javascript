@@ -192,6 +192,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		g := j.NewGoal()
 		var is ImportSpecifier
 		if err := is.parse(&g); err != nil {
+			is.clear()
 			return j.Error("NamedImports", err)
 		}
 		ni.ImportList = append(ni.ImportList, is)
@@ -214,32 +215,22 @@ type ImportSpecifier struct {
 }
 
 func (is *ImportSpecifier) parse(j *jsParser) error {
-	if err := j.FindGoal(func(j *jsParser) error {
-		if !j.Accept(TokenIdentifier, TokenKeyword) {
-			return errNotApplicable
+	if !j.Accept(TokenIdentifier, TokenKeyword) {
+		return j.Error("ImportSpecifier", ErrInvalidImportSpecifier)
+	}
+	is.ImportedBinding = j.GetLastToken()
+	if is.ImportedBinding.Type == TokenIdentifier || is.ImportedBinding.Data == "yield" || is.ImportedBinding.Data == "await" {
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+			is.IdentifierName = is.ImportedBinding
+			g.AcceptRunWhitespace()
+			var err error
+			if is.ImportedBinding, err = g.parseIdentifier(false, false); err != nil {
+				return j.Error("ImportSpecifier", err)
+			}
+			j.Score(g)
 		}
-		in := j.GetLastToken()
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
-			return j.Error("ImportSpecifier.IdentifierName", ErrInvalidImportSpecifier)
-		}
-		j.AcceptRunWhitespace()
-		ib, err := j.parseIdentifier(false, false)
-		if err != nil {
-			return j.Error("ImportSpecifier.IdentifierName", err)
-		}
-		is.IdentifierName = in
-		is.ImportedBinding = ib
-		return nil
-	}, func(j *jsParser) error {
-		ib, err := j.parseIdentifier(false, false)
-		if err != nil {
-			return j.Error("ImportSpecifier.ImportBinding", err)
-		}
-		is.ImportedBinding = ib
-		return nil
-	}); err != nil {
-		return err
 	}
 	is.Tokens = j.ToTokens()
 	return nil
