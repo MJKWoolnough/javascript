@@ -68,10 +68,7 @@ type AssignmentExpression struct {
 }
 
 func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error {
-	if err := j.FindGoal(func(j *jsParser) error {
-		if !yield || !j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
-			return errNotApplicable
-		}
+	if yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
 		ae.Yield = true
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
@@ -79,70 +76,53 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			j.AcceptRunWhitespace()
 		}
 		g := j.NewGoal()
-		nae := newAssignmentExpression()
-		if err := nae.parse(&g, in, true, await); err != nil {
-			nae.clear()
-			poolAssignmentExpression.Put(nae)
-			return j.Error("AssignmentExpression.Yield", err)
+		ae.AssignmentExpression = newAssignmentExpression()
+		if err := ae.AssignmentExpression.parse(&g, in, true, await); err != nil {
+			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
-		ae.AssignmentExpression = nae
-		return nil
-	}, func(j *jsParser) error {
+	} else if j.Peek() == (parser.Token{TokenIdentifier, "async"}) { // TODO: Combine with next branch
 		g := j.NewGoal()
-		af := newArrowFunction()
-		if err := af.parse(&g, in, yield, await); err != nil {
-			af.clear()
-			poolArrowFunction.Put(af)
-			return j.Error("AssignmentExpression.ArrowFunction", err)
+		ae.ArrowFunction = newArrowFunction()
+		if err := ae.ArrowFunction.parse(&g, nil, in, yield, await); err != nil {
+			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
-		ae.ArrowFunction = af
-		return nil
-	}, func(j *jsParser) error {
+	} else {
 		g := j.NewGoal()
-		lhs := newLeftHandSideExpression()
-		if err := lhs.parse(&g, yield, await); err != nil {
-			lhs.clear()
-			poolLeftHandSideExpression.Put(lhs)
-			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
+		ae.ConditionalExpression = newConditionalExpression()
+		if err := ae.ConditionalExpression.parse(&g, in, yield, await); err != nil {
+			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if err := ae.AssignmentOperator.parse(j); err != nil {
-			lhs.clear()
-			poolLeftHandSideExpression.Put(lhs)
-			ae.AssignmentOperator = 0
-			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
+		if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
+			g := j.NewGoal()
+			if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+				g.AcceptRunWhitespaceNoNewLine()
+				if g.Peek() == (parser.Token{TokenPunctuator, "=>"}) {
+					ae.ConditionalExpression = nil
+					ae.ArrowFunction = newArrowFunction()
+					if err := ae.ArrowFunction.parse(j, lhs.NewExpression.MemberExpression.PrimaryExpression, in, yield, await); err != nil {
+						return g.Error("AssignmentExpression", err)
+					}
+				}
+			}
+			if ae.ConditionalExpression != nil {
+				g.AcceptRunWhitespace()
+				if err := ae.AssignmentOperator.parse(&g); err == nil {
+					j.Score(g)
+					j.AcceptRunWhitespace()
+					ae.ConditionalExpression = nil
+					ae.LeftHandSideExpression = lhs
+					g = j.NewGoal()
+					ae.AssignmentExpression = newAssignmentExpression()
+					if err := ae.AssignmentExpression.parse(&g, in, yield, await); err != nil {
+						return j.Error("AssignmentExpression", err)
+					}
+					j.Score(g)
+				}
+			}
 		}
-		j.AcceptRunWhitespace()
-		g = j.NewGoal()
-		nae := newAssignmentExpression()
-		if err := nae.parse(&g, in, yield, await); err != nil {
-			lhs.clear()
-			poolLeftHandSideExpression.Put(lhs)
-			ae.AssignmentOperator = 0
-			nae.clear()
-			poolAssignmentExpression.Put(nae)
-			return j.Error("AssignmentExpression.LeftHandSideExpression", err)
-		}
-		j.Score(g)
-		ae.LeftHandSideExpression = lhs
-		ae.AssignmentExpression = nae
-		return nil
-	}, func(j *jsParser) error {
-		g := j.NewGoal()
-		ce := newConditionalExpression()
-		if err := ce.parse(&g, in, yield, await); err != nil {
-			ce.clear()
-			poolConditionalExpression.Put(ce)
-			return j.Error("AssignmentExpression.ConditionalExpression", err)
-		}
-		j.Score(g)
-		ae.ConditionalExpression = ce
-		return nil
-	}); err != nil {
-		return err
 	}
 	ae.Tokens = j.ToTokens()
 	return nil
@@ -155,30 +135,36 @@ type LeftHandSideExpression struct {
 }
 
 func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
-	if err := j.FindGoal(func(j *jsParser) error {
-		g := j.NewGoal()
-		ce := newCallExpression()
-		if err := ce.parse(&g, yield, await); err != nil {
-			ce.clear()
-			poolCallExpression.Put(ce)
-			return j.Error("LeftHandSideExpression.CallExpression", err)
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenKeyword, "super"}) || g.AcceptToken(parser.Token{TokenKeyword, "import"}) {
+		g.AcceptRunWhitespace()
+		if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+			g = j.NewGoal()
+			lhs.CallExpression = newCallExpression()
+			if err := lhs.CallExpression.parse(&g, nil, yield, await); err != nil {
+				return j.Error("LeftHandSideExpression", err)
+			}
+			j.Score(g)
+		}
+	}
+	if lhs.CallExpression == nil {
+		g = j.NewGoal()
+		lhs.NewExpression = newNewExpression()
+		if err := lhs.NewExpression.parse(&g, yield, await); err != nil {
+			return j.Error("LeftHandSideExpression", err)
 		}
 		j.Score(g)
-		lhs.CallExpression = ce
-		return nil
-	}, func(j *jsParser) error {
-		g := j.NewGoal()
-		ne := newNewExpression()
-		if err := ne.parse(&g, yield, await); err != nil {
-			ne.clear()
-			poolNewExpression.Put(ne)
-			return j.Error("LeftHandSideExpression.NewExpression", err)
+		if lhs.NewExpression.News == 0 {
+			g = j.NewGoal()
+			g.AcceptRunWhitespace()
+			if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+				lhs.CallExpression = newCallExpression()
+				if err := lhs.CallExpression.parse(j, &lhs.NewExpression.MemberExpression, yield, await); err != nil {
+					return j.Error("LeftHandSideExpression", err)
+				}
+				lhs.NewExpression = nil
+			}
 		}
-		j.Score(g)
-		lhs.NewExpression = ne
-		return nil
-	}); err != nil {
-		return err
 	}
 	lhs.Tokens = j.ToTokens()
 	return nil
@@ -246,96 +232,60 @@ type MemberExpression struct {
 }
 
 func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
-	if err := j.FindGoal(
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			pe := newPrimaryExpression()
-			if err := pe.parse(&g, yield, await); err != nil {
-				pe.clear()
-				poolPrimaryExpression.Put(pe)
-				return j.Error("MemberExpression.PrimaryExpression", err)
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenKeyword, "super"}) {
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+			g.AcceptRunWhitespace()
+			h := g.NewGoal()
+			me.Expression = newExpression()
+			if err := me.Expression.parse(&h, true, yield, await); err != nil {
+				return g.Error("MemberExpression", err)
 			}
-			j.Score(g)
-			me.PrimaryExpression = pe
-			return nil
-		},
-		func(j *jsParser) error {
-			if !j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
-				return errNotApplicable
+			g.Score(h)
+			if !g.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+				return g.Error("MemberExpression", ErrInvalidSuperProperty)
 			}
-			j.AcceptRunWhitespace()
-			if j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-				g := j.NewGoal()
-				e := newExpression()
-				if err := e.parse(&g, true, yield, await); err != nil {
-					e.clear()
-					poolExpression.Put(e)
-					return j.Error("MemberExpression.Super", err)
-				}
-				j.Score(g)
-				if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					e.clear()
-					poolExpression.Put(e)
-					return j.Error("MemberExpression.Super", ErrInvalidSuperProperty)
-				}
-				me.Expression = e
-			} else if j.AcceptToken(parser.Token{TokenPunctuator, "."}) {
-				if !j.Accept(TokenIdentifier, TokenKeyword) {
-					return j.Error("MemberExpression.Super", ErrNoIdentifier)
-				}
-				me.IdentifierName = j.GetLastToken()
-			} else {
-				return j.Error("MemberExpression.Super", ErrInvalidSuperProperty)
+		} else if g.AcceptToken(parser.Token{TokenPunctuator, "."}) {
+			g.AcceptRunWhitespace()
+			if !g.Accept(TokenIdentifier, TokenKeyword) {
+				return g.Error("MemberExpression", ErrNoIdentifier)
 			}
-			me.SuperProperty = true
-			return nil
-		},
-		func(j *jsParser) error {
-			if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
-				return errNotApplicable
-			}
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenPunctuator, "."}) {
-				return errNotApplicable
-			}
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenIdentifier, "target"}) {
-				return j.Error("MemberExpression.MetaProperty", ErrInvalidMetaProperty)
+			me.IdentifierName = g.GetLastToken()
+		} else {
+			return g.Error("MemberExpression", ErrInvalidSuperProperty)
+		}
+		me.SuperProperty = true
+	} else if g.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{TokenPunctuator, "."}) {
+			g.AcceptRunWhitespace()
+			if !g.AcceptToken(parser.Token{TokenIdentifier, "target"}) {
+				return j.Error("MemberExpression", ErrInvalidMetaProperty)
 			}
 			me.MetaProperty = true
-			return nil
-		},
-		func(j *jsParser) error {
-			if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
-				return errNotApplicable
+		} else {
+			h := g.NewGoal()
+			me.MemberExpression = newMemberExpression()
+			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
+				return g.Error("MemberExpression", err)
 			}
-			j.AcceptRunWhitespace()
-			g := j.NewGoal()
-			nme := newMemberExpression()
-			if err := nme.parse(&g, yield, await); err != nil {
-				nme.clear()
-				poolMemberExpression.Put(nme)
-				return j.Error("MemberExpression.New", err)
+			g.Score(h)
+			g.AcceptRunWhitespace()
+			h = g.NewGoal()
+			me.Arguments = newArguments()
+			if err := me.Arguments.parse(&h, yield, await); err != nil {
+				return g.Error("MemberExpression", err)
 			}
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			g = j.NewGoal()
-			a := newArguments()
-			if err := a.parse(&g, yield, await); err != nil {
-				nme.clear()
-				poolMemberExpression.Put(nme)
-				a.clear()
-				poolArguments.Put(a)
-				return j.Error("MemberExpression.New", err)
-			}
-			j.Score(g)
-			me.MemberExpression = nme
-			me.Arguments = a
-			return nil
-		},
-	); err != nil {
-		return err
+			g.Score(h)
+		}
+	} else {
+		me.PrimaryExpression = newPrimaryExpression()
+		if err := me.PrimaryExpression.parse(&g, yield, await); err != nil {
+			return j.Error("MemberExpression", err)
+		}
 	}
+	j.Score(g)
 	for {
 		me.Tokens = j.ToTokens()
 		g := j.NewGoal()
@@ -413,105 +363,60 @@ type PrimaryExpression struct {
 }
 
 func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
-	if err := j.FindGoal(
-		func(j *jsParser) error {
-			if !j.AcceptToken(parser.Token{TokenKeyword, "this"}) {
-				return errNotApplicable
-			}
-			pe.This = true
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			i, err := g.parseIdentifier(yield, await)
-			if err != nil {
-				return j.Error("PrimaryExpression.IdentifierReference", err)
-			}
-			j.Score(g)
-			pe.IdentifierReference = i
-			return nil
-		},
-		func(j *jsParser) error {
-			if !j.Accept(TokenNullLiteral, TokenBooleanLiteral, TokenNumericLiteral, TokenStringLiteral, TokenRegularExpressionLiteral) {
-				return errNotApplicable
-			}
-			pe.Literal = j.GetLastToken()
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			al := newArrayLiteral()
-			if err := al.parse(&g, yield, await); err != nil {
-				al.clear()
-				poolArrayLiteral.Put(al)
-				return j.Error("PrimaryExpression.ArrayLiteral", err)
-			}
-			j.Score(g)
-			pe.ArrayLiteral = al
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			ol := newObjectLiteral()
-			if err := ol.parse(&g, yield, await); err != nil {
-				ol.clear()
-				poolObjectLiteral.Put(ol)
-				return j.Error("PrimaryExpression.ObjectLiteral", err)
-			}
-			j.Score(g)
-			pe.ObjectLiteral = ol
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			fe := newFunctionDeclaration()
-			if err := fe.parse(&g, false, false, true); err != nil {
-				fe.clear()
-				poolFunctionDeclaration.Put(fe)
-				return j.Error("PrimaryExpression.FunctionDeclaration", err)
-			}
-			j.Score(g)
-			pe.FunctionExpression = fe
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			ce := newClassDeclaration()
-			if err := ce.parse(&g, yield, await, true); err != nil {
-				ce.clear()
-				poolClassDeclaration.Put(ce)
-				return j.Error("PrimaryExpression.ClassExpression", err)
-			}
-			j.Score(g)
-			pe.ClassExpression = ce
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			tl := newTemplateLiteral()
-			if err := tl.parse(&g, yield, await); err != nil {
-				tl.clear()
-				poolTemplateLiteral.Put(tl)
-				return j.Error("PrimaryExpression.TemplateLiteral", err)
-			}
-			j.Score(g)
-			pe.TemplateLiteral = tl
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			cp := newCoverParenthesizedExpressionAndArrowParameterList()
-			if err := cp.parse(&g, yield, await); err != nil {
-				cp.clear()
-				poolCoverParenthesizedExpressionAndArrowParameterList.Put(cp)
-				return j.Error("PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList", err)
-			}
-			j.Score(g)
-			pe.CoverParenthesizedExpressionAndArrowParameterList = cp
-			return nil
-		},
-	); err != nil {
-		return err
+	if j.AcceptToken(parser.Token{TokenKeyword, "this"}) {
+		pe.This = true
+	} else if j.Accept(TokenNullLiteral, TokenBooleanLiteral, TokenNumericLiteral, TokenStringLiteral, TokenRegularExpressionLiteral) {
+		pe.Literal = j.GetLastToken()
+	} else if t := j.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
+		g := j.NewGoal()
+		pe.ArrayLiteral = newArrayLiteral()
+		if err := pe.ArrayLiteral.parse(&g, yield, await); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else if t == (parser.Token{TokenPunctuator, "{"}) {
+		g := j.NewGoal()
+		pe.ObjectLiteral = newObjectLiteral()
+		if err := pe.ObjectLiteral.parse(&g, yield, await); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else if t == (parser.Token{TokenIdentifier, "async"}) || t == (parser.Token{TokenKeyword, "function"}) {
+		g := j.NewGoal()
+		pe.FunctionExpression = newFunctionDeclaration()
+		if err := pe.FunctionExpression.parse(&g, false, false, true); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else if t == (parser.Token{TokenKeyword, "class"}) {
+		g := j.NewGoal()
+		pe.ClassExpression = newClassDeclaration()
+		if err := pe.ClassExpression.parse(&g, yield, await, true); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else if t.Type == TokenNoSubstitutionTemplate || t.Type == TokenTemplateHead {
+		g := j.NewGoal()
+		pe.TemplateLiteral = newTemplateLiteral()
+		if err := pe.TemplateLiteral.parse(&g, yield, await); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else if t == (parser.Token{TokenPunctuator, "("}) {
+		g := j.NewGoal()
+		pe.CoverParenthesizedExpressionAndArrowParameterList = newCoverParenthesizedExpressionAndArrowParameterList()
+		if err := pe.CoverParenthesizedExpressionAndArrowParameterList.parse(&g, yield, await); err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+	} else {
+		g := j.NewGoal()
+		i, err := g.parseIdentifier(yield, await)
+		if err != nil {
+			return j.Error("PrimaryExpression", err)
+		}
+		j.Score(g)
+		pe.IdentifierReference = i
 	}
 	pe.Tokens = j.ToTokens()
 	return nil
@@ -638,33 +543,30 @@ type CallExpression struct {
 	Tokens           Tokens
 }
 
-func (ce *CallExpression) parse(j *jsParser, yield, await bool) error {
-	if j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
-		ce.SuperCall = true
-	} else if j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-			return j.Error("CallExpression", ErrMissingOpeningParenthesis)
+func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await bool) error {
+	if me == nil {
+		if j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
+			ce.SuperCall = true
+		} else if j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+				return j.Error("CallExpression", ErrMissingOpeningParenthesis)
+			}
+			g := j.NewGoal()
+			ce.ImportCall = newAssignmentExpression()
+			if err := ce.ImportCall.parse(&g, true, yield, await); err != nil {
+				return j.Error("CallExpression", err)
+			}
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				return j.Error("CallExpression", ErrMissingClosingParenthesis)
+			}
+			ce.Tokens = j.ToTokens()
+			return nil
 		}
-		g := j.NewGoal()
-		ce.ImportCall = newAssignmentExpression()
-		if err := ce.ImportCall.parse(&g, true, yield, await); err != nil {
-			return j.Error("CallExpression", err)
-		}
-		j.Score(g)
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			return j.Error("CallExpression", ErrMissingClosingParenthesis)
-		}
-		ce.Tokens = j.ToTokens()
-		return nil
 	} else {
-		g := j.NewGoal()
-		ce.MemberExpression = newMemberExpression()
-		if err := ce.MemberExpression.parse(&g, yield, await); err != nil {
-			return j.Error("CallExpression", err)
-		}
-		j.Score(g)
+		ce.MemberExpression = me
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()

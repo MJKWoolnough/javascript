@@ -560,8 +560,11 @@ type ArrowFunction struct {
 	Tokens                                            Tokens
 }
 
-func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
-	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
+func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, await bool) error {
+	if pe == nil {
+		if !j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
+			j.Error("ArrowFunction", ErrInvalidAsyncArrowFunction)
+		}
 		af.Async = true
 		j.AcceptRunWhitespaceNoNewLine()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
@@ -584,21 +587,10 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 			j.Score(g)
 			af.BindingIdentifier = bi
 		}
-	} else if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
-		g := j.NewGoal()
-		af.CoverParenthesizedExpressionAndArrowParameterList = newCoverParenthesizedExpressionAndArrowParameterList()
-		if err := af.CoverParenthesizedExpressionAndArrowParameterList.parse(&g, yield, await); err != nil {
-			return j.Error("ArrowFunction", err)
-		}
-		j.Score(g)
+	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		af.CoverParenthesizedExpressionAndArrowParameterList = pe.CoverParenthesizedExpressionAndArrowParameterList
 	} else {
-		g := j.NewGoal()
-		bi, err := g.parseIdentifier(yield, true)
-		if err != nil {
-			return j.Error("ArrowFunction", err)
-		}
-		j.Score(g)
-		af.BindingIdentifier = bi
+		af.BindingIdentifier = pe.IdentifierReference
 	}
 	j.AcceptRunWhitespaceNoNewLine()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "=>"}) {
@@ -652,4 +644,5 @@ var (
 	ErrInvalidTemplate             = errors.New("invalid template")
 	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")
 	ErrInvalidForLoop              = errors.New("invalid for loop")
+	ErrInvalidAsyncArrowFunction   = errors.New("invalid async arrow function")
 )
