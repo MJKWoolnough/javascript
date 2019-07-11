@@ -159,6 +159,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 			return j.Error("LexicalBinding", err)
 		}
 		j.Score(g)
+	} else if lb.BindingIdentifier == nil {
+		return j.Error("LexicalBinding", ErrMissingInitializer)
 	}
 	lb.Tokens = j.ToTokens()
 	return nil
@@ -601,6 +603,7 @@ var (
 	ErrMissingCatchFinally         = errors.New("missing catch/finally block")
 	ErrMissingSemiColon            = errors.New("missing semi-colon")
 	ErrMissingColon                = errors.New("missing colon")
+	ErrMissingInitializer          = errors.New("missing initializer")
 	ErrInvalidStatementList        = errors.New("invalid statement list")
 	ErrInvalidStatement            = errors.New("invalid statement")
 	ErrInvalidFormalParameterList  = errors.New("invalid formal parameter list")
