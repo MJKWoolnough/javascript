@@ -265,65 +265,43 @@ type BindingProperty struct {
 }
 
 func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
-	if err := j.FindGoal(
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			pn := newPropertyName()
-			if err := pn.parse(&g, yield, await); err != nil {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				return j.Error("BindingProperty.PropertyName", err)
-			}
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			if j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				return j.Error("BindingProperty.PropertyName", ErrMissingColon)
-			}
-			j.AcceptRunWhitespace()
-			g = j.NewGoal()
-			be := newBindingElement()
-			if err := be.parse(&g, yield, await); err != nil {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				be.clear()
-				poolBindingElement.Put(be)
-				return j.Error("BindingProperty.PropertyName", err)
-			}
-			j.Score(g)
-			bp.PropertyName = pn
-			bp.BindingElement = be
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			bi, err := g.parseIdentifier(yield, await)
-			if err != nil {
-				return j.Error("BindingProperty.SingleNameBinding", err)
-			}
-			j.Score(g)
-			g = j.NewGoal()
+	g := j.NewGoal()
+	if i, err := g.parseIdentifier(yield, await); err == nil {
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+			g.Score(h)
 			g.AcceptRunWhitespace()
-			if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
-				g.AcceptRunWhitespace()
-				h := g.NewGoal()
-				i := newAssignmentExpression()
-				if err := i.parse(&h, true, yield, await); err != nil {
-					i.clear()
-					poolAssignmentExpression.Put(i)
-					return g.Error("BindingProperty.SingleNameBinding", err)
-				}
-				g.Score(h)
-				j.Score(g)
-				bp.Initializer = i
+			h = g.NewGoal()
+			bp.Initializer = newAssignmentExpression()
+			if err := bp.Initializer.parse(&h, true, yield, await); err != nil {
+				return g.Error("BindingProperty", err)
 			}
-			bp.SingleNameBinding = bi
-			return nil
-		},
-	); err != nil {
-		return err
+			g.Score(h)
+			bp.SingleNameBinding = i
+		} else if !h.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+			bp.SingleNameBinding = i
+		}
 	}
+	if bp.SingleNameBinding == nil {
+		g = j.NewGoal()
+		bp.PropertyName = newPropertyName()
+		if err := bp.PropertyName.parse(&g, yield, await); err != nil {
+			return j.Error("BindingProperty", err)
+		}
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+			return j.Error("BindingProperty", ErrMissingColon)
+		}
+		j.AcceptRunWhitespace()
+		g = j.NewGoal()
+		bp.BindingElement = newBindingElement()
+		if err := bp.BindingElement.parse(&g, yield, await); err != nil {
+			return j.Error("BindingProperty", err)
+		}
+	}
+	j.Score(g)
 	bp.Tokens = j.ToTokens()
 	return nil
 }
@@ -425,86 +403,76 @@ type PropertyDefinition struct {
 }
 
 func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
-	if err := j.FindGoal(
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			pn := newPropertyName()
-			if err := pn.parse(&g, yield, await); err != nil {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				return j.Error("PropertyDefinition.PropertyName", err)
-			}
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				return j.Error("PropertyDefinition.PropertyName", ErrMissingColon)
-			}
-			j.AcceptRunWhitespace()
-			g = j.NewGoal()
-			ae := newAssignmentExpression()
-			if err := ae.parse(&g, true, yield, await); err != nil {
-				pn.clear()
-				poolPropertyName.Put(pn)
-				ae.clear()
-				poolAssignmentExpression.Put(ae)
-				return j.Error("PropertyDefinition.PropertyName", err)
-			}
-			j.Score(g)
-			pd.PropertyName = pn
-			pd.AssignmentExpression = ae
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			ir, err := g.parseIdentifier(yield, await)
-			if err != nil {
-				return j.Error("PropertyDefinition.IdentifierReference", err)
-			}
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			if j.AcceptToken(parser.Token{TokenPunctuator, "="}) {
-				g := j.NewGoal()
-				ae := newAssignmentExpression()
-				if err := ae.parse(&g, true, yield, await); err != nil {
-					ae.clear()
-					return j.Error("PropertyDefinition.IdentifierReference", err)
+	if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		pd.AssignmentExpression = newAssignmentExpression()
+		if err := pd.AssignmentExpression.parse(&g, true, yield, await); err != nil {
+			return j.Error("PropertyDefinition", err)
+		}
+		j.Score(g)
+	} else {
+		g := j.NewGoal()
+		if i, err := g.parseIdentifier(yield, await); err == nil {
+			h := g.NewGoal()
+			h.AcceptRunWhitespace()
+			if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+				g.Score(h)
+				g.AcceptRunWhitespace()
+				pd.IdentifierReference = i
+				h = g.NewGoal()
+				pd.AssignmentExpression = newAssignmentExpression()
+				if err := pd.AssignmentExpression.parse(&h, true, yield, await); err != nil {
+					return g.Error("PropertyDefinition", err)
 				}
-				j.Score(g)
-				pd.AssignmentExpression = ae
+				g.Score(h)
+			} else if t := h.Peek(); t.Type == TokenRightBracePunctuator || t == (parser.Token{TokenPunctuator, ","}) {
+				pd.IdentifierReference = i
 			}
-			pd.IdentifierReference = ir
-			return nil
-		},
-		func(j *jsParser) error {
-			g := j.NewGoal()
-			md := newMethodDefinition()
-			if err := md.parse(&g, yield, await); err != nil {
-				md.clear()
-				return j.Error("PropertyDefinition.MethodDefinition", err)
+		}
+		if pd.IdentifierReference == nil {
+			g = j.NewGoal()
+			propertyName := true
+			switch g.Peek() {
+			case parser.Token{TokenPunctuator, "*"}:
+				propertyName = false
+			case parser.Token{TokenIdentifier, "async"}, parser.Token{TokenIdentifier, "get"}, parser.Token{TokenIdentifier, "set"}:
+				g.Except()
+				g.AcceptRunWhitespace()
+				if !g.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+					propertyName = false
+				}
 			}
-			j.Score(g)
-			pd.MethodDefinition = md
-			return nil
-		},
-		func(j *jsParser) error {
-			if !j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-				return errNotApplicable
+			g = j.NewGoal()
+			if propertyName {
+				pd.PropertyName = newPropertyName()
+				if err := pd.PropertyName.parse(&g, yield, await); err != nil {
+					return j.Error("PropertyDefinition", err)
+				}
+				h := g.NewGoal()
+				h.AcceptRunWhitespace()
+				if h.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+					h.AcceptRunWhitespace()
+					i := h.NewGoal()
+					pd.AssignmentExpression = newAssignmentExpression()
+					if err := pd.AssignmentExpression.parse(&i, true, yield, await); err != nil {
+						return h.Error("PropertyDefinition", err)
+					}
+					h.Score(i)
+					g.Score(h)
+				} else {
+					propertyName = false
+				}
 			}
-			g := j.NewGoal()
-			ae := newAssignmentExpression()
-			if err := ae.parse(&g, true, yield, await); err != nil {
-				ae.clear()
-				return j.Error("PropertyDefinition.Spread", err)
+			if !propertyName {
+				pd.MethodDefinition = newMethodDefinition()
+				if err := pd.MethodDefinition.parse(&g, pd.PropertyName, yield, await); err != nil {
+					j.Error("PropertyDefinition", err)
+				}
+				pd.PropertyName = nil
 			}
-			j.Score(g)
-			pd.Spread = true
-			pd.AssignmentExpression = ae
-			return nil
-		},
-	); err != nil {
-		return err
+		}
+		j.Score(g)
 	}
 	pd.Tokens = j.ToTokens()
 	return nil
