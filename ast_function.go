@@ -116,12 +116,12 @@ type BindingElement struct {
 
 func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+	if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
-	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	} else if t == (parser.Token{TokenPunctuator, "{"}) {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
@@ -155,12 +155,12 @@ type FunctionRestParameter struct {
 
 func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+	if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 		fr.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := fr.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)
 		}
-	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	} else if t == (parser.Token{TokenPunctuator, "{"}) {
 		fr.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)

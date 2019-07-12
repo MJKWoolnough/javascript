@@ -125,12 +125,12 @@ type LexicalBinding struct {
 
 func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	g := j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+	if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 		lb.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := lb.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
 		}
-	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	} else if t == (parser.Token{TokenPunctuator, "{"}) {
 		lb.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := lb.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
@@ -164,7 +164,9 @@ type ArrayBindingPattern struct {
 }
 
 func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
-	j.AcceptToken(parser.Token{TokenPunctuator, "["})
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		return j.Error("ArrayBindingPattern", ErrMissingOpeningBracket)
+	}
 	for {
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
@@ -210,7 +212,9 @@ type ObjectBindingPattern struct {
 }
 
 func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
-	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return j.Error("ObjectBindingPattern", ErrMissingOpeningBrace)
+	}
 	j.AcceptRunWhitespace()
 	if !j.Accept(TokenRightBracePunctuator) {
 		for {

@@ -431,12 +431,12 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 			if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 				j.AcceptRunWhitespace()
 				g := j.NewGoal()
-				if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+				if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 					cp.ArrayBindingPattern = new(ArrayBindingPattern)
 					if err := cp.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
-				} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+				} else if t == (parser.Token{TokenPunctuator, "{"}) {
 					cp.ObjectBindingPattern = new(ObjectBindingPattern)
 					if err := cp.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
