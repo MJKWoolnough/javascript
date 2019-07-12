@@ -1736,3 +1736,79 @@ func TestArrayLiteral(t *testing.T) {
 		return al, err
 	})
 }
+
+func TestObjectLiteral(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "ObjectLiteral",
+				Token:   tk[0],
+			}
+		}},
+		{`[]`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "ObjectLiteral",
+				Token:   tk[0],
+			}
+		}},
+		{"{\n}", func(t *test, tk Tokens) { // 3
+			t.Output = ObjectLiteral{
+				Tokens: tk[:3],
+			}
+		}},
+		{"{\n,\n}", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidPropertyName,
+						Parsing: "PropertyName",
+						Token:   tk[2],
+					},
+					Parsing: "PropertyDefinition",
+					Token:   tk[2],
+				},
+				Parsing: "ObjectLiteral",
+				Token:   tk[2],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 5
+			t.Output = ObjectLiteral{
+				PropertyDefinitionList: []PropertyDefinition{
+					{
+						IdentifierReference: &tk[2],
+						Tokens:              tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"{\n...a\nb\n}", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ObjectLiteral",
+				Token:   tk[5],
+			}
+		}},
+		{"{\na\n,\nb\n}", func(t *test, tk Tokens) { // 7
+			t.Output = ObjectLiteral{
+				PropertyDefinitionList: []PropertyDefinition{
+					{
+						IdentifierReference: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					{
+						IdentifierReference: &tk[6],
+						Tokens:              tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ol ObjectLiteral
+		err := ol.parse(&t.Tokens, t.Yield, t.Await)
+		return ol, err
+	})
+}
