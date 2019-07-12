@@ -461,3 +461,128 @@ for(
 		return s, err
 	})
 }
+
+func TestDeclaration(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`class`, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "ClassDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "Declaration",
+				Token:   tk[0],
+			}
+		}},
+		{`class a{}`, func(t *test, tk Tokens) { // 2
+			t.Output = Declaration{
+				ClassDeclaration: &ClassDeclaration{
+					BindingIdentifier: &tk[2],
+					Tokens:            tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`const`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "LexicalBinding",
+						Token:   tk[1],
+					},
+					Parsing: "LexicalDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "Declaration",
+				Token:   tk[0],
+			}
+		}},
+		{`const a = 1;`, func(t *test, tk Tokens) { // 4
+			lit1 := makeConditionLiteral(tk, 6)
+			t.Output = Declaration{
+				LexicalDeclaration: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[2],
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &lit1,
+								Tokens:                tk[6:7],
+							},
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`let`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "LexicalBinding",
+						Token:   tk[1],
+					},
+					Parsing: "LexicalDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "Declaration",
+				Token:   tk[0],
+			}
+		}},
+		{`let a = 1;`, func(t *test, tk Tokens) { // 4
+			lit1 := makeConditionLiteral(tk, 6)
+			t.Output = Declaration{
+				LexicalDeclaration: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[2],
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &lit1,
+								Tokens:                tk[6:7],
+							},
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`function`, func(t *test, tk Tokens) { // 7 {
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "FunctionDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "Declaration",
+				Token:   tk[0],
+			}
+		}},
+		{`function a(){}`, func(t *test, tk Tokens) { // 8
+			t.Output = Declaration{
+				FunctionDeclaration: &FunctionDeclaration{
+					BindingIdentifier: &tk[2],
+					FormalParameters: FormalParameters{
+						Tokens: tk[4:4],
+					},
+					FunctionBody: Block{
+						Tokens: tk[5:7],
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var d Declaration
+		err := d.parse(&t.Tokens, t.Yield, t.Await)
+		return d, err
+	})
+}
