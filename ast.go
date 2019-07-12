@@ -334,6 +334,7 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 				return j.Error("ArrayLiteral", err)
 			}
 			j.Score(g)
+			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 				return j.Error("ArrayLiteral", ErrMissingClosingBracket)
 			}
