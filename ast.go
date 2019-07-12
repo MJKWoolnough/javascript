@@ -25,12 +25,12 @@ func ParseScript(t parser.Tokeniser) (*Script, error) {
 func (s *Script) parse(j *jsParser) error {
 	for j.AcceptRunWhitespace() != parser.TokenDone {
 		g := j.NewGoal()
-		var si StatementListItem
-		if err := si.parse(&g, false, false, false); err != nil {
+		si := len(s.StatementList)
+		s.StatementList = append(s.StatementList, StatementListItem{})
+		if err := s.StatementList[si].parse(&g, false, false, false); err != nil {
 			return err
 		}
 		j.Score(g)
-		s.StatementList = append(s.StatementList, si)
 	}
 	s.Tokens = j.ToTokens()
 	return nil
@@ -101,12 +101,12 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 			break
 		}
 		g := j.NewGoal()
-		var lb LexicalBinding
-		if err := lb.parse(&g, in, yield, await); err != nil {
+		lb := len(ld.BindingList)
+		ld.BindingList = append(ld.BindingList, LexicalBinding{})
+		if err := ld.BindingList[lb].parse(&g, in, yield, await); err != nil {
 			return j.Error("LexicalDeclaration", err)
 		}
 		j.Score(g)
-		ld.BindingList = append(ld.BindingList, lb)
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			break
@@ -189,13 +189,13 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 			}
 			break
 		}
-		var be BindingElement
-		if err := be.parse(&g, yield, await); err != nil {
+		be := len(ab.BindingElementList)
+		ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
+		if err := ab.BindingElementList[be].parse(&g, yield, await); err != nil {
 			return j.Error("ArrayBindingPattern", err)
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		ab.BindingElementList = append(ab.BindingElementList, be)
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
@@ -229,12 +229,12 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 				}
 				break
 			}
-			var bp BindingProperty
-			if err := bp.parse(&g, yield, await); err != nil {
+			bp := len(ob.BindingPropertyList)
+			ob.BindingPropertyList = append(ob.BindingPropertyList, BindingProperty{})
+			if err := ob.BindingPropertyList[bp].parse(&g, yield, await); err != nil {
 				return j.Error("ObjectBindingPattern", err)
 			}
 			j.Score(g)
-			ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
 			j.AcceptRunWhitespace()
 			if j.Accept(TokenRightBracePunctuator) {
 				break
@@ -335,12 +335,12 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 			}
 			break
 		}
-		var ae AssignmentExpression
-		if err := ae.parse(&g, true, yield, await); err != nil {
+		ae := len(al.ElementList)
+		al.ElementList = append(al.ElementList, AssignmentExpression{})
+		if err := al.ElementList[ae].parse(&g, true, yield, await); err != nil {
 			return j.Error("ArrayLiteral", err)
 		}
 		j.Score(g)
-		al.ElementList = append(al.ElementList, ae)
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			break
@@ -367,12 +367,12 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 			break
 		}
 		g := j.NewGoal()
-		var pd PropertyDefinition
-		if err := pd.parse(&g, yield, await); err != nil {
+		pd := len(ol.PropertyDefinitionList)
+		ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, PropertyDefinition{})
+		if err := ol.PropertyDefinitionList[pd].parse(&g, yield, await); err != nil {
 			return j.Error("ObjectLiteral", err)
 		}
 		j.Score(g)
-		ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, pd)
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break
@@ -488,12 +488,12 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 		for {
 			j.AcceptRunWhitespace()
 			g := j.NewGoal()
-			var e Expression
-			if err := e.parse(&g, true, yield, await); err != nil {
+			e := len(tl.Expressions)
+			tl.Expressions = append(tl.Expressions, Expression{})
+			if err := tl.Expressions[e].parse(&g, true, yield, await); err != nil {
 				return j.Error("TemplateLiteral", err)
 			}
 			j.Score(g)
-			tl.Expressions = append(tl.Expressions, e)
 			j.AcceptRunWhitespace()
 			if j.Accept(TokenTemplateTail) {
 				tl.TemplateTail = j.GetLastToken()

@@ -88,13 +88,13 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			break
 		}
 		h := g.NewGoal()
-		var be BindingElement
-		if err := be.parse(&h, yield, await); err != nil {
+		be := len(fp.FormalParameterList)
+		fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
+		if err := fp.FormalParameterList[be].parse(&h, yield, await); err != nil {
 			return g.Error("FormalParameters", err)
 		}
 		g.Score(h)
 		j.Score(g)
-		fp.FormalParameterList = append(fp.FormalParameterList, be)
 		j.AcceptRunWhitespace()
 		if j.Peek() == (parser.Token{TokenPunctuator, ")"}) {
 			break

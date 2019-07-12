@@ -18,12 +18,12 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 			break
 		}
 		g := j.NewGoal()
-		var si StatementListItem
-		if err := si.parse(&g, yield, await, ret); err != nil {
+		si := len(b.StatementListItems)
+		b.StatementListItems = append(b.StatementListItems, StatementListItem{})
+		if err := b.StatementListItems[si].parse(&g, yield, await, ret); err != nil {
 			return j.Error("Block", err)
 		}
 		j.Score(g)
-		b.StatementListItems = append(b.StatementListItems, si)
 		j.AcceptRunWhitespace()
 	}
 	b.Tokens = j.ToTokens()
@@ -517,12 +517,12 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		for {
 			j.AcceptRunWhitespace()
 			g := j.NewGoal()
-			var vd VariableDeclaration
-			if err := vd.parse(&g, false, yield, await); err != nil {
+			vd := len(is.InitVar)
+			is.InitVar = append(is.InitVar, VariableDeclaration{})
+			if err := is.InitVar[vd].parse(&g, false, yield, await); err != nil {
 				return j.Error("IterationStatementFor", err)
 			}
 			j.Score(g)
-			is.InitVar = append(is.InitVar, vd)
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 				break
@@ -718,25 +718,27 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 					break
 				}
 				g = j.NewGoal()
-				var sl StatementListItem
-				if err := sl.parse(&g, yield, await, ret); err != nil {
+				sl := len(ss.DefaultClause)
+				ss.DefaultClause = append(ss.DefaultClause, StatementListItem{})
+				if err := ss.DefaultClause[sl].parse(&g, yield, await, ret); err != nil {
 					return j.Error("SwitchStatement", err)
 				}
 				j.Score(g)
-				ss.DefaultClause = append(ss.DefaultClause, sl)
 			}
 		} else {
 			g := j.NewGoal()
-			var cc CaseClause
+			var cc *CaseClause
+			if ss.DefaultClause == nil {
+				ss.CaseClauses = append(ss.CaseClauses, CaseClause{})
+				cc = &ss.CaseClauses[len(ss.CaseClauses)-1]
+			} else {
+				ss.PostDefaultCaseClauses = append(ss.PostDefaultCaseClauses, CaseClause{})
+				cc = &ss.PostDefaultCaseClauses[len(ss.PostDefaultCaseClauses)-1]
+			}
 			if err := cc.parse(&g, yield, await, ret); err != nil {
 				return j.Error("SwitchStatement", err)
 			}
 			j.Score(g)
-			if ss.DefaultClause == nil {
-				ss.CaseClauses = append(ss.CaseClauses, cc)
-			} else {
-				ss.PostDefaultCaseClauses = append(ss.PostDefaultCaseClauses, cc)
-			}
 		}
 	}
 	ss.Tokens = j.ToTokens()
@@ -770,12 +772,12 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 			break
 		}
 		h := g.NewGoal()
-		var sl StatementListItem
-		if err := sl.parse(&h, yield, await, ret); err != nil {
+		sl := len(cc.StatementList)
+		cc.StatementList = append(cc.StatementList, StatementListItem{})
+		if err := cc.StatementList[sl].parse(&h, yield, await, ret); err != nil {
 			return g.Error("CaseClause", err)
 		}
 		g.Score(h)
-		cc.StatementList = append(cc.StatementList, sl)
 	}
 	j.Score(g)
 	cc.Tokens = j.ToTokens()
@@ -900,12 +902,12 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 			break
 		}
 		g := j.NewGoal()
-		var vd VariableDeclaration
-		if err := vd.parse(&g, true, yield, await); err != nil {
+		vd := len(vs.VariableDeclarationList)
+		vs.VariableDeclarationList = append(vs.VariableDeclarationList, VariableDeclaration{})
+		if err := vs.VariableDeclarationList[vd].parse(&g, true, yield, await); err != nil {
 			return j.Error("VariableStatement", err)
 		}
 		j.Score(g)
-		vs.VariableDeclarationList = append(vs.VariableDeclarationList, vd)
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			break

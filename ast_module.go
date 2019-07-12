@@ -25,12 +25,12 @@ func ParseModule(t parser.Tokeniser) (*Module, error) {
 func (m *Module) parse(j *jsParser) error {
 	for j.AcceptRunWhitespace() != parser.TokenDone {
 		g := j.NewGoal()
-		var ml ModuleListItem
-		if err := ml.parse(&g); err != nil {
+		ml := len(m.ModuleListItems)
+		m.ModuleListItems = append(m.ModuleListItems, ModuleListItem{})
+		if err := m.ModuleListItems[ml].parse(&g); err != nil {
 			return j.Error("Module", err)
 		}
 		j.Score(g)
-		m.ModuleListItems = append(m.ModuleListItems, ml)
 	}
 	m.Tokens = j.ToTokens()
 	return nil
@@ -184,11 +184,11 @@ func (ni *NamedImports) parse(j *jsParser) error {
 			break
 		}
 		g := j.NewGoal()
-		var is ImportSpecifier
-		if err := is.parse(&g); err != nil {
+		is := len(ni.ImportList)
+		ni.ImportList = append(ni.ImportList, ImportSpecifier{})
+		if err := ni.ImportList[is].parse(&g); err != nil {
 			return j.Error("NamedImports", err)
 		}
-		ni.ImportList = append(ni.ImportList, is)
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
@@ -329,12 +329,12 @@ func (ec *ExportClause) parse(j *jsParser) error {
 			break
 		}
 		g := j.NewGoal()
-		var es ExportSpecifier
-		if err := es.parse(&g); err != nil {
+		es := len(ec.ExportList)
+		ec.ExportList = append(ec.ExportList, ExportSpecifier{})
+		if err := ec.ExportList[es].parse(&g); err != nil {
 			return j.Error("ExportClause", err)
 		}
 		j.Score(g)
-		ec.ExportList = append(ec.ExportList, es)
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break

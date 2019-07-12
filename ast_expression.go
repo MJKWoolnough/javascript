@@ -178,12 +178,12 @@ type Expression struct {
 func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 	for {
 		g := j.NewGoal()
-		var ae AssignmentExpression
-		if err := ae.parse(&g, in, yield, await); err != nil {
+		ae := len(e.Expressions)
+		e.Expressions = append(e.Expressions, AssignmentExpression{})
+		if err := e.Expressions[ae].parse(&g, in, yield, await); err != nil {
 			return j.Error("Expression", err)
 		}
 		j.Score(g)
-		e.Expressions = append(e.Expressions, ae)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
@@ -452,12 +452,12 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 				break
 			}
 			g := j.NewGoal()
-			var e AssignmentExpression
-			if err := e.parse(&g, true, yield, await); err != nil {
+			e := len(cp.Expressions)
+			cp.Expressions = append(cp.Expressions, AssignmentExpression{})
+			if err := cp.Expressions[e].parse(&g, true, yield, await); err != nil {
 				return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 			}
 			j.Score(g)
-			cp.Expressions = append(cp.Expressions, e)
 			j.AcceptRunWhitespace()
 			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				break
@@ -499,12 +499,12 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 			}
 			break
 		}
-		var ae AssignmentExpression
-		if err := ae.parse(&g, true, yield, await); err != nil {
+		ae := len(a.ArgumentList)
+		a.ArgumentList = append(a.ArgumentList, AssignmentExpression{})
+		if err := a.ArgumentList[ae].parse(&g, true, yield, await); err != nil {
 			return j.Error("Arguments", err)
 		}
 		j.Score(g)
-		a.ArgumentList = append(a.ArgumentList, ae)
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			break
