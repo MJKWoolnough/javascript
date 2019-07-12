@@ -162,20 +162,28 @@ type PropertyName struct {
 }
 
 func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
-	if j.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
-		pn.LiteralPropertyName = j.GetLastToken()
-	} else {
+	if j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		pn.ComputedPropertyName = new(AssignmentExpression)
 		if err := pn.ComputedPropertyName.parse(&g, true, yield, await); err != nil {
 			return j.Error("PropertyName", err)
 		}
 		j.Score(g)
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			return j.Error("PropertyName", ErrMissingClosingBracket)
+		}
+	} else if j.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+		pn.LiteralPropertyName = j.GetLastToken()
+	} else {
+		return j.Error("PropertyName", ErrInvalidPropertyName)
 	}
 	pn.Tokens = j.ToTokens()
 	return nil
 }
 
 var (
-	ErrInvalidMethodName = errors.New("invalid method name")
+	ErrInvalidMethodName   = errors.New("invalid method name")
+	ErrInvalidPropertyName = errors.New("invalid property name")
 )
