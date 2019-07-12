@@ -326,9 +326,9 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 			al.ElementList = append(al.ElementList, AssignmentExpression{})
 			continue
 		}
-		g := j.NewGoal()
-		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-			g.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+			j.AcceptRunWhitespace()
+			g := j.NewGoal()
 			al.SpreadElement = new(AssignmentExpression)
 			if err := al.SpreadElement.parse(&g, true, yield, await); err != nil {
 				return j.Error("ArrayLiteral", err)
@@ -339,6 +339,7 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 			}
 			break
 		}
+		g := j.NewGoal()
 		ae := len(al.ElementList)
 		al.ElementList = append(al.ElementList, AssignmentExpression{})
 		if err := al.ElementList[ae].parse(&g, true, yield, await); err != nil {
