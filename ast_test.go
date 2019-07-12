@@ -66,6 +66,18 @@ func TestIdentifier(t *testing.T) {
 			t.Await = true
 			t.Output = nil
 		}},
+		{`for`, func(t *test, tk Tokens) {
+			t.Output = nil
+		}},
+		{`"for"`, func(t *test, tk Tokens) {
+			t.Output = nil
+		}},
+		{`1`, func(t *test, tk Tokens) {
+			t.Output = nil
+		}},
+		{`+`, func(t *test, tk Tokens) {
+			t.Output = nil
+		}},
 	}, func(t *test) (interface{}, error) {
 		return t.Tokens.parseIdentifier(t.Yield, t.Await), nil
 	})
