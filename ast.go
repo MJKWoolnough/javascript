@@ -223,6 +223,7 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 		for {
 			g := j.NewGoal()
 			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				g.AcceptRunWhitespace()
 				if ob.BindingRestProperty = g.parseIdentifier(yield, await); ob.BindingRestProperty == nil {
 					return j.Error("ObjectBindingPattern", ErrNoIdentifier)
 				}
