@@ -580,6 +580,13 @@ func TestDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`wrong`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidDeclaration,
+				Parsing: "Declaration",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var d Declaration
 		err := d.parse(&t.Tokens, t.Yield, t.Await)
