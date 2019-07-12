@@ -1265,10 +1265,8 @@ func (t *IterationStatementFor) clear() {
 		poolExpression.Put(t.InitExpression)
 
 	}
-	if t.InitVar != nil {
-		t.InitVar.clear()
-		poolVariableDeclaration.Put(t.InitVar)
-
+	for _, e := range t.InitVar {
+		e.clear()
 	}
 	if t.InitLexical != nil {
 		t.InitLexical.clear()

@@ -309,13 +309,15 @@ for(
 						Statement: &Statement{
 							IterationStatementFor: &IterationStatementFor{
 								Type: ForNormalVar,
-								InitVar: &VariableDeclaration{
-									BindingIdentifier: &tk[56],
-									Initializer: &AssignmentExpression{
-										ConditionalExpression: &one,
-										Tokens:                tk[60:61],
+								InitVar: []VariableDeclaration{
+									{
+										BindingIdentifier: &tk[56],
+										Initializer: &AssignmentExpression{
+											ConditionalExpression: &one,
+											Tokens:                tk[60:61],
+										},
+										Tokens: tk[56:61],
 									},
-									Tokens: tk[56:61],
 								},
 								Conditional: &Expression{
 									Expressions: []AssignmentExpression{

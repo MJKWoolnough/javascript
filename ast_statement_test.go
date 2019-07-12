@@ -1,6 +1,8 @@
 package javascript
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestStatement(t *testing.T) {
 	doTests(t, []sourceFn{
@@ -491,13 +493,15 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					IterationStatementFor: &IterationStatementFor{
 						Type: ForNormalVar,
-						InitVar: &VariableDeclaration{
-							BindingIdentifier: &tk[4],
-							Initializer: &AssignmentExpression{
-								ConditionalExpression: &litA,
-								Tokens:                tk[8:9],
+						InitVar: []VariableDeclaration{
+							{
+								BindingIdentifier: &tk[4],
+								Initializer: &AssignmentExpression{
+									ConditionalExpression: &litA,
+									Tokens:                tk[8:9],
+								},
+								Tokens: tk[4:9],
 							},
-							Tokens: tk[4:9],
 						},
 						Conditional: &Expression{
 							Expressions: []AssignmentExpression{
@@ -1366,11 +1370,11 @@ func TestStatement(t *testing.T) {
 		{`return;`, func(t *test, tk Tokens) { // 39
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrInvalidDeclaration,
-					Parsing: "Declaration",
+					Err:     ErrInvalidStatement,
+					Parsing: "Statement",
 					Token:   tk[0],
 				},
-				Parsing: "StatementListItem.Declaration",
+				Parsing: "StatementListItem",
 				Token:   tk[0],
 			}
 		}},

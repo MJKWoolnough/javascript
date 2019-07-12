@@ -366,7 +366,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			return
 		}
 	case ForNormalVar:
-		if i.InitVar == nil {
+		if len(i.InitVar) == 0 {
 			return
 		}
 	case ForNormalLexicalDeclaration:
@@ -414,14 +414,25 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	case ForNormal:
 		w.Write(semiColon)
 	case ForNormalVar:
-		if v && len(i.InitVar.Tokens) > 0 {
-			if i.InitVar.Tokens[0].Line > lastLine {
-				endline = true
+		if v && len(i.InitVar[0].Tokens) > 0 {
+			if i.InitVar[0].Tokens[0].Line > lastLine {
 				pp.Write(newLine)
 			}
-			lastLine = i.InitVar.Tokens[len(i.InitVar.Tokens)-1].Line
+			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
 		}
-		(*LexicalBinding)(i.InitVar).printSource(&pp, v)
+		LexicalBinding(i.InitVar[0]).printSource(&pp, v)
+		for _, vd := range i.InitVar[1:] {
+			if v && len(vd.Tokens) > 0 {
+				if vd.Tokens[0].Line > lastLine {
+					pp.Write(commaSepNL)
+				} else {
+					pp.Write(commaSep)
+				}
+			} else {
+				pp.Write(commaSep)
+			}
+			LexicalBinding(vd).printSource(&pp, v)
+		}
 	case ForNormalLexicalDeclaration:
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitLexical.Tokens[0].Line > lastLine {

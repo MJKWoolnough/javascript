@@ -194,39 +194,12 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos, e.Token.Line, e.Token.LinePos, e.Err)
 }
 
-func (e Error) getLastPos() uint64 {
-	if e, ok := e.Err.(Error); ok {
-		return e.getLastPos()
-	}
-	return e.Token.Pos
-}
-
 func (j *jsParser) Error(parsingFunc string, err error) error {
 	return Error{
 		Err:     err,
 		Parsing: parsingFunc,
 		Token:   j.next(),
 	}
-}
-
-func (j *jsParser) FindGoal(fns ...func(*jsParser) error) error {
-	var (
-		err     error
-		lastPos uint64
-	)
-	for _, fn := range fns {
-		g := j.NewGoal()
-		if errr := fn(&g); errr == nil {
-			j.Score(g)
-			return nil
-		} else if errr != errNotApplicable {
-			if p := errr.(Error).getLastPos(); err == nil || lastPos < p {
-				err = errr
-				lastPos = p
-			}
-		}
-	}
-	return err
 }
 
 var (
