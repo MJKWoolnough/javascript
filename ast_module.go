@@ -113,12 +113,10 @@ type ImportClause struct {
 func (ic *ImportClause) parse(j *jsParser) error {
 	if t := j.Peek().Type; t == TokenIdentifier || t == TokenKeyword {
 		g := j.NewGoal()
-		ib, err := g.parseIdentifier(false, false)
-		if err != nil {
-			return j.Error("ImportClause", err)
+		if ic.ImportedDefaultBinding = g.parseIdentifier(false, false); ic.ImportedDefaultBinding == nil {
+			return j.Error("ImportClause", ErrNoIdentifier)
 		}
 		j.Score(g)
-		ic.ImportedDefaultBinding = ib
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
@@ -138,13 +136,11 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		}
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		ib, err := h.parseIdentifier(false, false)
-		if err != nil {
-			return g.Error("ImportClause", err)
+		if ic.NameSpaceImport = h.parseIdentifier(false, false); ic.NameSpaceImport == nil {
+			return g.Error("ImportClause", ErrNoIdentifier)
 		}
 		g.Score(h)
 		j.Score(g)
-		ic.NameSpaceImport = ib
 	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
 		ic.NamedImports = newNamedImports()
@@ -225,9 +221,8 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 		if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 			is.IdentifierName = is.ImportedBinding
 			g.AcceptRunWhitespace()
-			var err error
-			if is.ImportedBinding, err = g.parseIdentifier(false, false); err != nil {
-				return j.Error("ImportSpecifier", err)
+			if is.ImportedBinding = g.parseIdentifier(false, false); is.ImportedBinding == nil {
+				return j.Error("ImportSpecifier", ErrNoIdentifier)
 			}
 			j.Score(g)
 		}
@@ -363,7 +358,7 @@ type ExportSpecifier struct {
 
 func (es *ExportSpecifier) parse(j *jsParser) error {
 	if !j.Accept(TokenIdentifier, TokenKeyword) {
-		return j.Error("ExportClause", ErrMissingIdentifier)
+		return j.Error("ExportClause", ErrNoIdentifier)
 	}
 	es.IdentifierName = j.GetLastToken()
 	g := j.NewGoal()
@@ -371,7 +366,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 		g.AcceptRunWhitespace()
 		if !g.Accept(TokenIdentifier, TokenKeyword) {
-			return j.Error("ExportClause", ErrMissingIdentifier)
+			return j.Error("ExportClause", ErrNoIdentifier)
 		}
 		j.Score(g)
 		es.EIdentifierName = j.GetLastToken()
@@ -387,6 +382,5 @@ var (
 	ErrMissingModuleSpecifier = errors.New("missing module specifier")
 	ErrInvalidNamedImport     = errors.New("invalid named import list")
 	ErrInvalidImportSpecifier = errors.New("invalid import specifier")
-	ErrMissingIdentifier      = errors.New("missing identifier")
 	ErrInvalidExportClause    = errors.New("invalid export clause")
 )

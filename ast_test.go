@@ -53,11 +53,7 @@ func TestIdentifier(t *testing.T) {
 		}},
 		{`yield`, func(t *test, tk Tokens) {
 			t.Yield = true
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "Identifier",
-				Token:   tk[0],
-			}
+			t.Output = nil
 		}},
 		{`await`, func(t *test, tk Tokens) {
 			t.Output = &tk[0]
@@ -68,14 +64,10 @@ func TestIdentifier(t *testing.T) {
 		}},
 		{`await`, func(t *test, tk Tokens) {
 			t.Await = true
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "Identifier",
-				Token:   tk[0],
-			}
+			t.Output = nil
 		}},
 	}, func(t *test) (interface{}, error) {
-		return t.Tokens.parseIdentifier(t.Yield, t.Await)
+		return t.Tokens.parseIdentifier(t.Yield, t.Await), nil
 	})
 }
 

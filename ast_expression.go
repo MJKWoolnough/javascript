@@ -310,7 +310,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return g.Error("MemberExpression", ErrMissingIdentifier)
+					return g.Error("MemberExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
 			case "[":
@@ -411,12 +411,10 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	} else {
 		g := j.NewGoal()
-		i, err := g.parseIdentifier(yield, await)
-		if err != nil {
-			return j.Error("PrimaryExpression", err)
+		if pe.IdentifierReference = g.parseIdentifier(yield, await); pe.IdentifierReference == nil {
+			return j.Error("PrimaryExpression", ErrNoIdentifier)
 		}
 		j.Score(g)
-		pe.IdentifierReference = i
 	}
 	pe.Tokens = j.ToTokens()
 	return nil
@@ -450,12 +448,8 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 					if err := cp.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
-				} else {
-					bi, err := g.parseIdentifier(yield, await)
-					if err != nil {
-						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
-					}
-					cp.BindingIdentifier = bi
+				} else if cp.BindingIdentifier = g.parseIdentifier(yield, await); cp.BindingIdentifier == nil {
+					return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrNoIdentifier)
 				}
 				j.Score(g)
 				j.AcceptRunWhitespace()
@@ -605,7 +599,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				h.Except()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return g.Error("CallExpression", ErrMissingIdentifier)
+					return g.Error("CallExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
 			case "[":

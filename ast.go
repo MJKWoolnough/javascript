@@ -37,11 +37,11 @@ func (s *Script) parse(j *jsParser) error {
 	return nil
 }
 
-func (j *jsParser) parseIdentifier(yield, await bool) (*Token, error) {
+func (j *jsParser) parseIdentifier(yield, await bool) *Token {
 	if j.Accept(TokenIdentifier) || (!yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) || (!await && j.AcceptToken(parser.Token{TokenKeyword, "await"}))) {
-		return j.GetLastToken(), nil
+		return j.GetLastToken()
 	}
-	return nil, j.Error("Identifier", ErrNoIdentifier)
+	return nil
 }
 
 type Declaration struct {
@@ -140,12 +140,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 		if err := lb.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
 		}
-	} else {
-		bi, err := g.parseIdentifier(yield, await)
-		if err != nil {
-			return j.Error("LexicalBinding", err)
-		}
-		lb.BindingIdentifier = bi
+	} else if lb.BindingIdentifier = g.parseIdentifier(yield, await); lb.BindingIdentifier == nil {
+		return j.Error("LexicalBinding", ErrNoIdentifier)
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -226,12 +222,10 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 		for {
 			g := j.NewGoal()
 			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-				bi, err := g.parseIdentifier(yield, await)
-				if err != nil {
-					return j.Error("ObjectBindingPattern", err)
+				if ob.BindingRestProperty = g.parseIdentifier(yield, await); ob.BindingRestProperty == nil {
+					return j.Error("ObjectBindingPattern", ErrNoIdentifier)
 				}
 				j.Score(g)
-				ob.BindingRestProperty = bi
 				j.AcceptRunWhitespace()
 				if !j.Accept(TokenRightBracePunctuator) {
 					return j.Error("ObjectBindingPattern", ErrMissingClosingBrace)
@@ -268,7 +262,7 @@ type BindingProperty struct {
 
 func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if i, err := g.parseIdentifier(yield, await); err == nil {
+	if i := g.parseIdentifier(yield, await); i != nil {
 		h := g.NewGoal()
 		h.AcceptRunWhitespace()
 		if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
@@ -415,7 +409,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	} else {
 		g := j.NewGoal()
-		if i, err := g.parseIdentifier(yield, await); err == nil {
+		if i := g.parseIdentifier(yield, await); i != nil {
 			h := g.NewGoal()
 			h.AcceptRunWhitespace()
 			if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
@@ -550,12 +544,10 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			}
 		} else {
 			g := j.NewGoal()
-			bi, err := g.parseIdentifier(yield, true)
-			if err != nil {
-				return j.Error("ArrowFunction", err)
+			if af.BindingIdentifier = g.parseIdentifier(yield, true); af.BindingIdentifier == nil {
+				return j.Error("ArrowFunction", ErrNoIdentifier)
 			}
 			j.Score(g)
-			af.BindingIdentifier = bi
 		}
 	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		af.CoverParenthesizedExpressionAndArrowParameterList = pe.CoverParenthesizedExpressionAndArrowParameterList

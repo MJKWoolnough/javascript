@@ -34,21 +34,18 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		fd.Type = FunctionGenerator
 		j.AcceptRunWhitespace()
 	}
-	g := j.NewGoal()
-	bi, err := g.parseIdentifier(yield, await)
-	if err != nil {
+	if bi := j.parseIdentifier(yield, await); bi == nil {
 		if !def {
-			return j.Error("FunctionDeclaration", err)
+			return j.Error("FunctionDeclaration", ErrNoIdentifier)
 		}
 	} else {
-		j.Score(g)
 		fd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("FunctionDeclaration", ErrMissingOpeningParenthesis)
 	}
-	g = j.NewGoal()
+	g := j.NewGoal()
 	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
 		return j.Error("FunctionDeclaration", err)
 	}
@@ -129,12 +126,8 @@ func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
-	} else {
-		bi, err := g.parseIdentifier(yield, await)
-		if err != nil {
-			return j.Error("BindingElement", err)
-		}
-		be.SingleNameBinding = bi
+	} else if be.SingleNameBinding = g.parseIdentifier(yield, await); be.SingleNameBinding == nil {
+		return j.Error("BindingElement", ErrNoIdentifier)
 	}
 	j.Score(g)
 	g = j.NewGoal()
@@ -172,12 +165,8 @@ func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)
 		}
-	} else {
-		bi, err := g.parseIdentifier(yield, await)
-		if err != nil {
-			return j.Error("FunctionRestParameter", err)
-		}
-		fr.BindingIdentifier = bi
+	} else if fr.BindingIdentifier = g.parseIdentifier(yield, await); fr.BindingIdentifier == nil {
+		return j.Error("FunctionRestParameter", ErrNoIdentifier)
 	}
 	j.Score(g)
 	fr.Tokens = j.ToTokens()

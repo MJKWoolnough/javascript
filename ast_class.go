@@ -15,20 +15,16 @@ type ClassDeclaration struct {
 func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "class"})
 	j.AcceptRunWhitespace()
-	g := j.NewGoal()
-	bi, err := g.parseIdentifier(yield, await)
-	if err != nil {
+	if cd.BindingIdentifier = j.parseIdentifier(yield, await); cd.BindingIdentifier == nil {
 		if !def {
-			return j.Error("ClassDeclaration", err)
+			return j.Error("ClassDeclaration", ErrNoIdentifier)
 		}
 	} else {
-		j.Score(g)
-		cd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
 	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {
 		j.AcceptRunWhitespace()
-		g = j.NewGoal()
+		g := j.NewGoal()
 		cd.ClassHeritage = newLeftHandSideExpression()
 		if err := cd.ClassHeritage.parse(&g, yield, await); err != nil {
 			return j.Error("ClassDeclaration", err)

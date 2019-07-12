@@ -46,7 +46,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	case parser.Token{TokenKeyword, "class"}:
 		g.Except()
 		g.AcceptRunWhitespace()
-		if _, err := g.parseIdentifier(yield, await); err == nil {
+		if g.parseIdentifier(yield, await) != nil {
 			declaration = true
 		}
 	case parser.Token{TokenIdentifier, "async"}:
@@ -62,7 +62,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 		if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 			g.AcceptRunWhitespace()
 		}
-		if _, err := g.parseIdentifier(yield, await); err == nil {
+		if g.parseIdentifier(yield, await) != nil {
 			declaration = true
 		}
 	}
@@ -158,11 +158,9 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			li, err := h.parseIdentifier(yield, await)
-			if err != nil {
-				return g.Error("Statement", err)
+			if s.LabelIdentifier = h.parseIdentifier(yield, await); s.LabelIdentifier == nil {
+				return g.Error("Statement", ErrNoIdentifier)
 			}
-			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return g.Error("Statement", ErrMissingSemiColon)
@@ -174,11 +172,9 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			li, err := h.parseIdentifier(yield, await)
-			if err != nil {
-				return g.Error("Statement", err)
+			if s.LabelIdentifier = h.parseIdentifier(yield, await); s.LabelIdentifier == nil {
+				return g.Error("Statement", ErrNoIdentifier)
 			}
-			s.LabelIdentifier = li
 			g.Score(h)
 			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 				return g.Error("Statement", ErrMissingSemiColon)
@@ -234,7 +230,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			g.Score(h)
 		}
 	default:
-		if i, err := g.parseIdentifier(yield, await); err == nil {
+		if i := g.parseIdentifier(yield, await); i != nil {
 			g.AcceptRunWhitespace()
 			if g.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
 				s.LabelIdentifier = i
@@ -598,9 +594,8 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			}
 			j.Score(g)
 		default:
-			var err error
-			if is.ForBindingIdentifier, err = j.parseIdentifier(yield, await); err != nil {
-				return j.Error("IterationStatementFor", err)
+			if is.ForBindingIdentifier = j.parseIdentifier(yield, await); is.ForBindingIdentifier == nil {
+				return j.Error("IterationStatementFor", ErrNoIdentifier)
 			}
 		}
 		j.AcceptRunWhitespace()
@@ -859,11 +854,9 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 					return j.Error("TryStatement", err)
 				}
 			default:
-				bi, err := g.parseIdentifier(yield, await)
-				if err != nil {
-					return j.Error("TryStatement", err)
+				if ts.CatchParameterBindingIdentifier = g.parseIdentifier(yield, await); ts.CatchParameterBindingIdentifier == nil {
+					return j.Error("TryStatement", ErrNoIdentifier)
 				}
-				ts.CatchParameterBindingIdentifier = bi
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()

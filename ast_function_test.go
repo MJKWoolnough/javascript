@@ -46,33 +46,21 @@ func TestParseFunction(t *testing.T) {
 		}},
 		{`function (){}`, func(ft *test, t Tokens) {
 			ft.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "Identifier",
-					Token:   t[2],
-				},
+				Err:     ErrNoIdentifier,
 				Parsing: "FunctionDeclaration",
 				Token:   t[2],
 			}
 		}},
 		{`async function (){}`, func(ft *test, t Tokens) {
 			ft.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "Identifier",
-					Token:   t[4],
-				},
+				Err:     ErrNoIdentifier,
 				Parsing: "FunctionDeclaration",
 				Token:   t[4],
 			}
 		}},
 		{`function *(){}`, func(ft *test, t Tokens) {
 			ft.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "Identifier",
-					Token:   t[3],
-				},
+				Err:     ErrNoIdentifier,
 				Parsing: "FunctionDeclaration",
 				Token:   t[3],
 			}

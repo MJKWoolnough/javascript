@@ -186,11 +186,7 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{`class{}`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "Identifier",
-					Token:   tk[1],
-				},
+				Err:     ErrNoIdentifier,
 				Parsing: "ClassDeclaration",
 				Token:   tk[1],
 			}
