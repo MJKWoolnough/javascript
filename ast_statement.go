@@ -20,7 +20,6 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 		g := j.NewGoal()
 		var si StatementListItem
 		if err := si.parse(&g, yield, await, ret); err != nil {
-			si.clear()
 			return j.Error("Block", err)
 		}
 		j.Score(g)
@@ -68,12 +67,12 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	}
 	g = j.NewGoal()
 	if declaration {
-		si.Declaration = newDeclaration()
+		si.Declaration = new(Declaration)
 		if err := si.Declaration.parse(&g, yield, await); err != nil {
 			return j.Error("StatementListItem", err)
 		}
 	} else {
-		si.Statement = newStatement()
+		si.Statement = new(Statement)
 		if err := si.Statement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("StatementListItem", err)
 		}
@@ -116,39 +115,39 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{TokenPunctuator, "{"}:
-		s.BlockStatement = newBlock()
+		s.BlockStatement = new(Block)
 		if err := s.BlockStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "var"}:
-		s.VariableStatement = newVariableStatement()
+		s.VariableStatement = new(VariableStatement)
 		if err := s.VariableStatement.parse(&g, yield, await); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenPunctuator, ";"}:
 		g.Except()
 	case parser.Token{TokenKeyword, "if"}:
-		s.IfStatement = newIfStatement()
+		s.IfStatement = new(IfStatement)
 		if err := s.IfStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "do"}:
-		s.IterationStatementDo = newIterationStatementDo()
+		s.IterationStatementDo = new(IterationStatementDo)
 		if err := s.IterationStatementDo.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "while"}:
-		s.IterationStatementWhile = newIterationStatementWhile()
+		s.IterationStatementWhile = new(IterationStatementWhile)
 		if err := s.IterationStatementWhile.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "for"}:
-		s.IterationStatementFor = newIterationStatementFor()
+		s.IterationStatementFor = new(IterationStatementFor)
 		if err := s.IterationStatementFor.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "switch"}:
-		s.SwitchStatement = newSwitchStatement()
+		s.SwitchStatement = new(SwitchStatement)
 		if err := s.SwitchStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
@@ -189,7 +188,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.AcceptRunWhitespaceNoNewLine()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			h := g.NewGoal()
-			s.ExpressionStatement = newExpression()
+			s.ExpressionStatement = new(Expression)
 			if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
 				return g.Error("Statement", err)
 			}
@@ -199,7 +198,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			}
 		}
 	case parser.Token{TokenKeyword, "with"}:
-		s.WithStatement = newWithStatement()
+		s.WithStatement = new(WithStatement)
 		if err := s.WithStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
@@ -208,7 +207,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		s.Type = StatementThrow
 		g.AcceptRunWhitespaceNoNewLine()
 		h := g.NewGoal()
-		s.ExpressionStatement = newExpression()
+		s.ExpressionStatement = new(Expression)
 		if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
 			return g.Error("Statement", err)
 		}
@@ -217,7 +216,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return g.Error("Statement", ErrMissingSemiColon)
 		}
 	case parser.Token{TokenKeyword, "try"}:
-		s.TryStatement = newTryStatement()
+		s.TryStatement = new(TryStatement)
 		if err := s.TryStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
@@ -237,12 +236,12 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 				g.AcceptRunWhitespace()
 				h := g.NewGoal()
 				if h.Peek() == (parser.Token{TokenKeyword, "function"}) {
-					s.LabelledItemFunction = newFunctionDeclaration()
+					s.LabelledItemFunction = new(FunctionDeclaration)
 					if err := s.LabelledItemFunction.parse(&h, yield, await, false); err != nil {
 						return g.Error("Statement", err)
 					}
 				} else {
-					s.LabelledItemStatement = newStatement()
+					s.LabelledItemStatement = new(Statement)
 					if err := s.LabelledItemStatement.parse(&h, yield, await, ret); err != nil {
 						return g.Error("Statement", err)
 					}
@@ -263,7 +262,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 					return j.Error("Statement", ErrInvalidStatement)
 				}
 			}
-			s.ExpressionStatement = newExpression()
+			s.ExpressionStatement = new(Expression)
 			if err := s.ExpressionStatement.parse(&g, true, yield, await); err != nil {
 				return j.Error("Statement", err)
 			}
@@ -312,7 +311,7 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	if g.AcceptToken(parser.Token{TokenKeyword, "else"}) {
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		is.ElseStatement = newStatement()
+		is.ElseStatement = new(Statement)
 		if err := is.ElseStatement.parse(&h, yield, await, ret); err != nil {
 			return g.Error("IfStatement", err)
 		}
@@ -535,7 +534,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.AcceptRunWhitespace()
 	case ForNormalLexicalDeclaration:
 		g := j.NewGoal()
-		is.InitLexical = newLexicalDeclaration()
+		is.InitLexical = new(LexicalDeclaration)
 		if err := is.InitLexical.parse(&g, false, yield, await); err != nil {
 			return j.Error("IterationStatementFor", err)
 		}
@@ -549,7 +548,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.AcceptRunWhitespace()
 	case ForNormalExpression:
 		g := j.NewGoal()
-		is.InitExpression = newExpression()
+		is.InitExpression = new(Expression)
 		if err := is.InitExpression.parse(&g, false, yield, await); err != nil {
 			return j.Error("IterationStatementFor", err)
 		}
@@ -581,14 +580,14 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		switch j.Peek() {
 		case parser.Token{TokenPunctuator, "{"}:
 			g := j.NewGoal()
-			is.ForBindingPatternObject = newObjectBindingPattern()
+			is.ForBindingPatternObject = new(ObjectBindingPattern)
 			if err := is.ForBindingPatternObject.parse(&g, yield, await); err != nil {
 				return j.Error("IterationStatementFor", err)
 			}
 			j.Score(g)
 		case parser.Token{TokenPunctuator, "["}:
 			g := j.NewGoal()
-			is.ForBindingPatternArray = newArrayBindingPattern()
+			is.ForBindingPatternArray = new(ArrayBindingPattern)
 			if err := is.ForBindingPatternArray.parse(&g, yield, await); err != nil {
 				return j.Error("IterationStatementFor", err)
 			}
@@ -601,7 +600,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.AcceptRunWhitespace()
 	case ForOfLeftHandSide:
 		g := j.NewGoal()
-		is.LeftHandSideExpression = newLeftHandSideExpression()
+		is.LeftHandSideExpression = new(LeftHandSideExpression)
 		if err := is.LeftHandSideExpression.parse(&g, yield, await); err != nil {
 			return j.Error("IterationStatementFor", err)
 		}
@@ -612,7 +611,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			g := j.NewGoal()
-			is.Conditional = newExpression()
+			is.Conditional = new(Expression)
 			if err := is.Conditional.parse(&g, true, yield, await); err != nil {
 				return j.Error("IterationStatementFor", err)
 			}
@@ -625,7 +624,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.AcceptRunWhitespace()
 		if j.Peek() != (parser.Token{TokenPunctuator, ")"}) {
 			g := j.NewGoal()
-			is.Afterthought = newExpression()
+			is.Afterthought = new(Expression)
 			if err := is.Afterthought.parse(&g, true, yield, await); err != nil {
 				return j.Error("IterationStatementFor", err)
 			}
@@ -637,7 +636,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
-		is.In = newExpression()
+		is.In = new(Expression)
 		if err := is.In.parse(&g, true, yield, await); err != nil {
 			return j.Error("IterationStatementFor", err)
 		}
@@ -648,7 +647,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
-		is.Of = newAssignmentExpression()
+		is.Of = new(AssignmentExpression)
 		if err := is.Of.parse(&g, true, yield, await); err != nil {
 			return j.Error("IterationStatementFor", err)
 		}
@@ -721,7 +720,6 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 				g = j.NewGoal()
 				var sl StatementListItem
 				if err := sl.parse(&g, yield, await, ret); err != nil {
-					sl.clear()
 					return j.Error("SwitchStatement", err)
 				}
 				j.Score(g)
@@ -731,7 +729,6 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 			g := j.NewGoal()
 			var cc CaseClause
 			if err := cc.parse(&g, yield, await, ret); err != nil {
-				cc.clear()
 				return j.Error("SwitchStatement", err)
 			}
 			j.Score(g)
@@ -775,7 +772,6 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 		h := g.NewGoal()
 		var sl StatementListItem
 		if err := sl.parse(&h, yield, await, ret); err != nil {
-			sl.clear()
 			return g.Error("CaseClause", err)
 		}
 		g.Score(h)
@@ -844,12 +840,12 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 			g = j.NewGoal()
 			switch g.Peek() {
 			case parser.Token{TokenPunctuator, "{"}:
-				ts.CatchParameterObjectBindingPattern = newObjectBindingPattern()
+				ts.CatchParameterObjectBindingPattern = new(ObjectBindingPattern)
 				if err := ts.CatchParameterObjectBindingPattern.parse(&g, yield, await); err != nil {
 					return j.Error("TryStatement", err)
 				}
 			case parser.Token{TokenPunctuator, "["}:
-				ts.CatchParameterArrayBindingPattern = newArrayBindingPattern()
+				ts.CatchParameterArrayBindingPattern = new(ArrayBindingPattern)
 				if err := ts.CatchParameterArrayBindingPattern.parse(&g, yield, await); err != nil {
 					return j.Error("TryStatement", err)
 				}
@@ -866,7 +862,7 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 			j.AcceptRunWhitespace()
 		}
 		g = j.NewGoal()
-		ts.CatchBlock = newBlock()
+		ts.CatchBlock = new(Block)
 		if err := ts.CatchBlock.parse(&g, yield, await, ret); err != nil {
 			return j.Error("TryStatement", err)
 		}
@@ -877,7 +873,7 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	if g.AcceptToken(parser.Token{TokenKeyword, "finally"}) {
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
-		ts.FinallyBlock = newBlock()
+		ts.FinallyBlock = new(Block)
 		if err := ts.FinallyBlock.parse(&h, yield, await, ret); err != nil {
 			return g.Error("TryStatement", err)
 		}
@@ -906,7 +902,6 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		var vd VariableDeclaration
 		if err := vd.parse(&g, true, yield, await); err != nil {
-			vd.clear()
 			return j.Error("VariableStatement", err)
 		}
 		j.Score(g)

@@ -79,7 +79,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 		}
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			h := g.NewGoal()
-			fp.FunctionRestParameter = newFunctionRestParameter()
+			fp.FunctionRestParameter = new(FunctionRestParameter)
 			if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
 				return j.Error("FormalParameters", err)
 			}
@@ -117,12 +117,12 @@ type BindingElement struct {
 func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-		be.ArrayBindingPattern = newArrayBindingPattern()
+		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		be.ObjectBindingPattern = newObjectBindingPattern()
+		be.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
@@ -136,7 +136,7 @@ func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 		g.AcceptRunWhitespace()
 		j.Score(g)
 		g = j.NewGoal()
-		be.Initializer = newAssignmentExpression()
+		be.Initializer = new(AssignmentExpression)
 		if err := be.Initializer.parse(&g, true, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
@@ -156,12 +156,12 @@ type FunctionRestParameter struct {
 func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-		fr.ArrayBindingPattern = newArrayBindingPattern()
+		fr.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := fr.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)
 		}
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		fr.ObjectBindingPattern = newObjectBindingPattern()
+		fr.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)
 		}

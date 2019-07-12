@@ -15,9 +15,8 @@ func ParseModule(t parser.Tokeniser) (*Module, error) {
 	if err != nil {
 		return nil, err
 	}
-	m := newModule()
+	m := new(Module)
 	if err := m.parse(&j); err != nil {
-		m.clear()
 		return nil, err
 	}
 	return m, nil
@@ -28,7 +27,6 @@ func (m *Module) parse(j *jsParser) error {
 		g := j.NewGoal()
 		var ml ModuleListItem
 		if err := ml.parse(&g); err != nil {
-			m.clear()
 			return j.Error("Module", err)
 		}
 		j.Score(g)
@@ -49,17 +47,17 @@ func (ml *ModuleListItem) parse(j *jsParser) error {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{TokenKeyword, "import"}:
-		ml.ImportDeclaration = newImportDeclaration()
+		ml.ImportDeclaration = new(ImportDeclaration)
 		if err := ml.ImportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleStatement", err)
 		}
 	case parser.Token{TokenKeyword, "export"}:
-		ml.ExportDeclaration = newExportDeclaration()
+		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleStatement", err)
 		}
 	default:
-		ml.StatementListItem = newStatementListItem()
+		ml.StatementListItem = new(StatementListItem)
 		if err := ml.StatementListItem.parse(&g, false, false, false); err != nil {
 			return j.Error("ModuleStatement", err)
 		}
@@ -83,7 +81,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		id.FromClause.Tokens = g.ToTokens()
 		id.ModuleSpecifier = &id.FromClause.Tokens[0]
 	} else {
-		id.ImportClause = newImportClause()
+		id.ImportClause = new(ImportClause)
 		if err := id.ImportClause.parse(&g); err != nil {
 			return j.Error("ImportDeclaration", err)
 		}
@@ -143,7 +141,7 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		j.Score(g)
 	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
-		ic.NamedImports = newNamedImports()
+		ic.NamedImports = new(NamedImports)
 		if err := ic.NamedImports.parse(&g); err != nil {
 			return j.Error("ImportClause", err)
 		}
@@ -188,7 +186,6 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		g := j.NewGoal()
 		var is ImportSpecifier
 		if err := is.parse(&g); err != nil {
-			is.clear()
 			return j.Error("NamedImports", err)
 		}
 		ni.ImportList = append(ni.ImportList, is)
@@ -251,19 +248,19 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		g := j.NewGoal()
 		switch tk.Data {
 		case "async", "function":
-			ed.DefaultFunction = newFunctionDeclaration()
+			ed.DefaultFunction = new(FunctionDeclaration)
 			if err := ed.DefaultFunction.parse(&g, false, false, true); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
 			j.Score(g)
 		case "class":
-			ed.DefaultClass = newClassDeclaration()
+			ed.DefaultClass = new(ClassDeclaration)
 			if err := ed.DefaultClass.parse(&g, false, false, true); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
 			j.Score(g)
 		default:
-			ed.DefaultAssignmentExpression = newAssignmentExpression()
+			ed.DefaultAssignmentExpression = new(AssignmentExpression)
 			if err := ed.DefaultAssignmentExpression.parse(&g, true, false, false); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
@@ -276,7 +273,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	} else if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
-		ed.FromClause = newFromClause()
+		ed.FromClause = new(FromClause)
 		if err := ed.FromClause.parse(&g); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
@@ -285,13 +282,13 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			return j.Error("ExportDeclaration", ErrMissingSemiColon)
 		}
 	} else if g := j.NewGoal(); g.Peek() == (parser.Token{TokenKeyword, "var"}) {
-		ed.VariableStatement = newVariableStatement()
+		ed.VariableStatement = new(VariableStatement)
 		if err := ed.VariableStatement.parse(&g, false, false); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
 	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-		ed.ExportClause = newExportClause()
+		ed.ExportClause = new(ExportClause)
 		if err := ed.ExportClause.parse(&g); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
@@ -299,7 +296,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		j.AcceptRunWhitespace()
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
 			g = j.NewGoal()
-			ed.FromClause = newFromClause()
+			ed.FromClause = new(FromClause)
 			if err := ed.FromClause.parse(&g); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
@@ -310,7 +307,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			}
 		}
 	} else {
-		ed.Declaration = newDeclaration()
+		ed.Declaration = new(Declaration)
 		if err := ed.Declaration.parse(&g, false, false); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
@@ -334,8 +331,6 @@ func (ec *ExportClause) parse(j *jsParser) error {
 		g := j.NewGoal()
 		var es ExportSpecifier
 		if err := es.parse(&g); err != nil {
-			ec.clear()
-			poolExportSpecifier.Put(ec)
 			return j.Error("ExportClause", err)
 		}
 		j.Score(g)

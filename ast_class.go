@@ -25,7 +25,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
-		cd.ClassHeritage = newLeftHandSideExpression()
+		cd.ClassHeritage = new(LeftHandSideExpression)
 		if err := cd.ClassHeritage.parse(&g, yield, await); err != nil {
 			return j.Error("ClassDeclaration", err)
 		}
@@ -45,7 +45,6 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		g := j.NewGoal()
 		var md MethodDefinition
 		if err := md.parse(&g, nil, yield, await); err != nil {
-			md.clear()
 			return j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
@@ -167,7 +166,7 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 		pn.LiteralPropertyName = j.GetLastToken()
 	} else {
 		g := j.NewGoal()
-		pn.ComputedPropertyName = newAssignmentExpression()
+		pn.ComputedPropertyName = new(AssignmentExpression)
 		if err := pn.ComputedPropertyName.parse(&g, true, yield, await); err != nil {
 			return j.Error("PropertyName", err)
 		}

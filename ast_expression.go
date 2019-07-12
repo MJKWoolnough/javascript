@@ -76,21 +76,21 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			j.AcceptRunWhitespace()
 		}
 		g := j.NewGoal()
-		ae.AssignmentExpression = newAssignmentExpression()
+		ae.AssignmentExpression = new(AssignmentExpression)
 		if err := ae.AssignmentExpression.parse(&g, in, true, await); err != nil {
 			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
 	} else if j.Peek() == (parser.Token{TokenIdentifier, "async"}) { // TODO: Combine with next branch
 		g := j.NewGoal()
-		ae.ArrowFunction = newArrowFunction()
+		ae.ArrowFunction = new(ArrowFunction)
 		if err := ae.ArrowFunction.parse(&g, nil, in, yield, await); err != nil {
 			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
 	} else {
 		g := j.NewGoal()
-		ae.ConditionalExpression = newConditionalExpression()
+		ae.ConditionalExpression = new(ConditionalExpression)
 		if err := ae.ConditionalExpression.parse(&g, in, yield, await); err != nil {
 			return j.Error("AssignmentExpression", err)
 		}
@@ -101,7 +101,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 				g.AcceptRunWhitespaceNoNewLine()
 				if g.Peek() == (parser.Token{TokenPunctuator, "=>"}) {
 					ae.ConditionalExpression = nil
-					ae.ArrowFunction = newArrowFunction()
+					ae.ArrowFunction = new(ArrowFunction)
 					if err := ae.ArrowFunction.parse(j, lhs.NewExpression.MemberExpression.PrimaryExpression, in, yield, await); err != nil {
 						return g.Error("AssignmentExpression", err)
 					}
@@ -115,7 +115,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 					ae.ConditionalExpression = nil
 					ae.LeftHandSideExpression = lhs
 					g = j.NewGoal()
-					ae.AssignmentExpression = newAssignmentExpression()
+					ae.AssignmentExpression = new(AssignmentExpression)
 					if err := ae.AssignmentExpression.parse(&g, in, yield, await); err != nil {
 						return j.Error("AssignmentExpression", err)
 					}
@@ -140,7 +140,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 		g.AcceptRunWhitespace()
 		if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
 			g = j.NewGoal()
-			lhs.CallExpression = newCallExpression()
+			lhs.CallExpression = new(CallExpression)
 			if err := lhs.CallExpression.parse(&g, nil, yield, await); err != nil {
 				return j.Error("LeftHandSideExpression", err)
 			}
@@ -149,7 +149,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	}
 	if lhs.CallExpression == nil {
 		g = j.NewGoal()
-		lhs.NewExpression = newNewExpression()
+		lhs.NewExpression = new(NewExpression)
 		if err := lhs.NewExpression.parse(&g, yield, await); err != nil {
 			return j.Error("LeftHandSideExpression", err)
 		}
@@ -158,7 +158,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 			g = j.NewGoal()
 			g.AcceptRunWhitespace()
 			if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
-				lhs.CallExpression = newCallExpression()
+				lhs.CallExpression = new(CallExpression)
 				if err := lhs.CallExpression.parse(j, &lhs.NewExpression.MemberExpression, yield, await); err != nil {
 					return j.Error("LeftHandSideExpression", err)
 				}
@@ -180,7 +180,6 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 		g := j.NewGoal()
 		var ae AssignmentExpression
 		if err := ae.parse(&g, in, yield, await); err != nil {
-			ae.clear()
 			return j.Error("Expression", err)
 		}
 		j.Score(g)
@@ -211,7 +210,7 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 		} else if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
 			return j.Error("NewExpression", err)
 		}
-		ne.MemberExpression.clear()
+		ne.MemberExpression = MemberExpression{}
 		ne.News++
 		j.AcceptRunWhitespace()
 	}
@@ -238,7 +237,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
 			g.AcceptRunWhitespace()
 			h := g.NewGoal()
-			me.Expression = newExpression()
+			me.Expression = new(Expression)
 			if err := me.Expression.parse(&h, true, yield, await); err != nil {
 				return g.Error("MemberExpression", err)
 			}
@@ -266,21 +265,21 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			me.MetaProperty = true
 		} else {
 			h := g.NewGoal()
-			me.MemberExpression = newMemberExpression()
+			me.MemberExpression = new(MemberExpression)
 			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
 				return g.Error("MemberExpression", err)
 			}
 			g.Score(h)
 			g.AcceptRunWhitespace()
 			h = g.NewGoal()
-			me.Arguments = newArguments()
+			me.Arguments = new(Arguments)
 			if err := me.Arguments.parse(&h, yield, await); err != nil {
 				return g.Error("MemberExpression", err)
 			}
 			g.Score(h)
 		}
 	} else {
-		me.PrimaryExpression = newPrimaryExpression()
+		me.PrimaryExpression = new(PrimaryExpression)
 		if err := me.PrimaryExpression.parse(&g, yield, await); err != nil {
 			return j.Error("MemberExpression", err)
 		}
@@ -298,10 +297,8 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		)
 		switch tk := h.Peek(); tk.Type {
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
-			tl = newTemplateLiteral()
+			tl = new(TemplateLiteral)
 			if err := tl.parse(&h, yield, await); err != nil {
-				tl.clear()
-				poolTemplateLiteral.Put(tl)
 				return g.Error("MemberExpression", err)
 			}
 		case TokenPunctuator:
@@ -317,17 +314,13 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				h.Except()
 				h.AcceptRunWhitespace()
 				i := h.NewGoal()
-				e = newExpression()
+				e = new(Expression)
 				if err := e.parse(&i, true, yield, await); err != nil {
-					e.clear()
-					poolExpression.Put(e)
 					return g.Error("MemberExpression", err)
 				}
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					e.clear()
-					poolExpression.Put(e)
 					return g.Error("MemberExpression", ErrMissingClosingBracket)
 				}
 			default:
@@ -337,7 +330,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			return nil
 		}
 		g.Score(h)
-		nme := newMemberExpression()
+		nme := new(MemberExpression)
 		*nme = *me
 		*me = MemberExpression{
 			MemberExpression: nme,
@@ -369,42 +362,42 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		pe.Literal = j.GetLastToken()
 	} else if t := j.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 		g := j.NewGoal()
-		pe.ArrayLiteral = newArrayLiteral()
+		pe.ArrayLiteral = new(ArrayLiteral)
 		if err := pe.ArrayLiteral.parse(&g, yield, await); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
 	} else if t == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
-		pe.ObjectLiteral = newObjectLiteral()
+		pe.ObjectLiteral = new(ObjectLiteral)
 		if err := pe.ObjectLiteral.parse(&g, yield, await); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
 	} else if t == (parser.Token{TokenIdentifier, "async"}) || t == (parser.Token{TokenKeyword, "function"}) {
 		g := j.NewGoal()
-		pe.FunctionExpression = newFunctionDeclaration()
+		pe.FunctionExpression = new(FunctionDeclaration)
 		if err := pe.FunctionExpression.parse(&g, false, false, true); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
 	} else if t == (parser.Token{TokenKeyword, "class"}) {
 		g := j.NewGoal()
-		pe.ClassExpression = newClassDeclaration()
+		pe.ClassExpression = new(ClassDeclaration)
 		if err := pe.ClassExpression.parse(&g, yield, await, true); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
 	} else if t.Type == TokenNoSubstitutionTemplate || t.Type == TokenTemplateHead {
 		g := j.NewGoal()
-		pe.TemplateLiteral = newTemplateLiteral()
+		pe.TemplateLiteral = new(TemplateLiteral)
 		if err := pe.TemplateLiteral.parse(&g, yield, await); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
 	} else if t == (parser.Token{TokenPunctuator, "("}) {
 		g := j.NewGoal()
-		pe.CoverParenthesizedExpressionAndArrowParameterList = newCoverParenthesizedExpressionAndArrowParameterList()
+		pe.CoverParenthesizedExpressionAndArrowParameterList = new(CoverParenthesizedExpressionAndArrowParameterList)
 		if err := pe.CoverParenthesizedExpressionAndArrowParameterList.parse(&g, yield, await); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
@@ -439,12 +432,12 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 				j.AcceptRunWhitespace()
 				g := j.NewGoal()
 				if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
-					cp.ArrayBindingPattern = newArrayBindingPattern()
+					cp.ArrayBindingPattern = new(ArrayBindingPattern)
 					if err := cp.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
 				} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
-					cp.ObjectBindingPattern = newObjectBindingPattern()
+					cp.ObjectBindingPattern = new(ObjectBindingPattern)
 					if err := cp.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
@@ -461,7 +454,6 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 			g := j.NewGoal()
 			var e AssignmentExpression
 			if err := e.parse(&g, true, yield, await); err != nil {
-				e.clear()
 				return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 			}
 			j.Score(g)
@@ -497,7 +489,7 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			g.AcceptRunWhitespace()
-			a.SpreadArgument = newAssignmentExpression()
+			a.SpreadArgument = new(AssignmentExpression)
 			if err := a.SpreadArgument.parse(&g, true, yield, await); err != nil {
 				return j.Error("Arguments", err)
 			}
@@ -509,7 +501,6 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		}
 		var ae AssignmentExpression
 		if err := ae.parse(&g, true, yield, await); err != nil {
-			ae.clear()
 			return j.Error("Arguments", err)
 		}
 		j.Score(g)
@@ -547,7 +538,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				return j.Error("CallExpression", ErrMissingOpeningParenthesis)
 			}
 			g := j.NewGoal()
-			ce.ImportCall = newAssignmentExpression()
+			ce.ImportCall = new(AssignmentExpression)
 			if err := ce.ImportCall.parse(&g, true, yield, await); err != nil {
 				return j.Error("CallExpression", err)
 			}
@@ -564,7 +555,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	ce.Arguments = newArguments()
+	ce.Arguments = new(Arguments)
 	if err := ce.Arguments.parse(&g, yield, await); err != nil {
 		return j.Error("CallExpression", err)
 	}
@@ -582,17 +573,15 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		)
 		switch tk := h.Peek(); tk.Type {
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
-			tl = newTemplateLiteral()
+			tl = new(TemplateLiteral)
 			if err := tl.parse(&h, yield, await); err != nil {
 				return g.Error("CallExpression", err)
 			}
 		case TokenPunctuator:
 			switch tk.Data {
 			case "(":
-				a = newArguments()
+				a = new(Arguments)
 				if err := a.parse(&h, yield, await); err != nil {
-					a.clear()
-					poolArguments.Put(a)
 					return g.Error("CallExpression", err)
 				}
 			case ".":
@@ -606,17 +595,13 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				h.Except()
 				h.AcceptRunWhitespace()
 				i := h.NewGoal()
-				e = newExpression()
+				e = new(Expression)
 				if err := e.parse(&i, true, yield, await); err != nil {
-					e.clear()
-					poolExpression.Put(e)
 					return g.Error("CallExpression", err)
 				}
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					e.clear()
-					poolExpression.Put(e)
 					return g.Error("CallExpression", ErrMissingClosingBracket)
 				}
 			default:
@@ -626,7 +611,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			return nil
 		}
 		g.Score(h)
-		nce := newCallExpression()
+		nce := new(CallExpression)
 		*nce = *ce
 		*ce = CallExpression{
 			CallExpression:  nce,

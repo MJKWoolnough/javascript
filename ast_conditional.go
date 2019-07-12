@@ -21,7 +21,7 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()
-		ce.True = newAssignmentExpression()
+		ce.True = new(AssignmentExpression)
 		if err := ce.True.parse(&g, true, yield, await); err != nil {
 			return j.Error("ConditionalExpression", err)
 		}
@@ -32,7 +32,7 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 		}
 		j.AcceptRunWhitespace()
 		g = j.NewGoal()
-		ce.False = newAssignmentExpression()
+		ce.False = new(AssignmentExpression)
 		if err := ce.False.parse(&g, true, yield, await); err != nil {
 			return j.Error("ConditionalExpression", err)
 		}
@@ -62,7 +62,7 @@ func (lo *LogicalORExpression) parse(j *jsParser, in, yield, await bool) error {
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nlo := newLogicalORExpression()
+		nlo := new(LogicalORExpression)
 		*nlo = *lo
 		*lo = LogicalORExpression{
 			LogicalORExpression: nlo,
@@ -91,7 +91,7 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nla := newLogicalANDExpression()
+		nla := new(LogicalANDExpression)
 		*nla = *la
 		*la = LogicalANDExpression{
 			LogicalANDExpression: nla,
@@ -120,7 +120,7 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nbo := newBitwiseORExpression()
+		nbo := new(BitwiseORExpression)
 		*nbo = *bo
 		*bo = BitwiseORExpression{
 			BitwiseORExpression: nbo,
@@ -149,7 +149,7 @@ func (bx *BitwiseXORExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nbx := newBitwiseXORExpression()
+		nbx := new(BitwiseXORExpression)
 		*nbx = *bx
 		*bx = BitwiseXORExpression{
 			BitwiseXORExpression: nbx,
@@ -178,7 +178,7 @@ func (ba *BitwiseANDExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nba := newBitwiseANDExpression()
+		nba := new(BitwiseANDExpression)
 		*nba = *ba
 		*ba = BitwiseANDExpression{
 			BitwiseANDExpression: nba,
@@ -229,7 +229,7 @@ func (ee *EqualityExpression) parse(j *jsParser, in, yield, await bool) error {
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
-		nee := newEqualityExpression()
+		nee := new(EqualityExpression)
 		*nee = *ee
 		*ee = EqualityExpression{
 			EqualityExpression: nee,
@@ -290,7 +290,7 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
-		nre := newRelationalExpression()
+		nre := new(RelationalExpression)
 		*nre = *re
 		*re = RelationalExpression{
 			RelationalExpression: nre,
@@ -339,7 +339,7 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
-		nse := newShiftExpression()
+		nse := new(ShiftExpression)
 		*nse = *se
 		*se = ShiftExpression{
 			ShiftExpression: nse,
@@ -385,7 +385,7 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
-		nae := newAdditiveExpression()
+		nae := new(AdditiveExpression)
 		*nae = *ae
 		*ae = AdditiveExpression{
 			AdditiveExpression: nae,
@@ -434,7 +434,7 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 		}
 		g.Except()
 		g.AcceptRunWhitespace()
-		nmw := newMultiplicativeExpression()
+		nmw := new(MultiplicativeExpression)
 		*nmw = *me
 		*me = MultiplicativeExpression{
 			MultiplicativeExpression: nmw,
@@ -467,7 +467,7 @@ func (ee *ExponentiationExpression) parse(j *jsParser, yield, await bool) error 
 			return nil
 		}
 		g.AcceptRunWhitespace()
-		nee := newExponentiationExpression()
+		nee := new(ExponentiationExpression)
 		*nee = *ee
 		*ee = ExponentiationExpression{
 			ExponentiationExpression: nee,
@@ -560,14 +560,14 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 		}
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
-		ue.UnaryExpression = newUnaryExpression()
+		ue.UnaryExpression = new(UnaryExpression)
 		if err := ue.UnaryExpression.parse(&g, yield, await); err != nil {
 			return j.Error("UpdateExpression", err)
 		}
 		j.Score(g)
 	} else {
 		g := j.NewGoal()
-		ue.LeftHandSideExpression = newLeftHandSideExpression()
+		ue.LeftHandSideExpression = new(LeftHandSideExpression)
 		if err := ue.LeftHandSideExpression.parse(&g, yield, await); err != nil {
 			return j.Error("UpdateExpression", err)
 		}
