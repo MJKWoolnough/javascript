@@ -97,9 +97,6 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 	}
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			break
-		}
 		g := j.NewGoal()
 		lb := len(ld.BindingList)
 		ld.BindingList = append(ld.BindingList, LexicalBinding{})
