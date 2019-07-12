@@ -178,10 +178,12 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			g.AcceptRunWhitespace()
+			h := g.NewGoal()
 			ab.BindingRestElement = new(BindingElement)
-			if err := ab.BindingRestElement.parse(&g, yield, await); err != nil {
-				return j.Error("ArrayBindingPattern", err)
+			if err := ab.BindingRestElement.parse(&h, yield, await); err != nil {
+				return g.Error("ArrayBindingPattern", err)
 			}
+			g.Score(h)
 			j.Score(g)
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 				return j.Error("ArrayBindingPattern", ErrMissingClosingBracket)
