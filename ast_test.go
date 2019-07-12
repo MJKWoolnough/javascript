@@ -996,3 +996,174 @@ func TestLexicalBinding(t *testing.T) {
 		return lb, err
 	})
 }
+
+func TestArrayBindingPattern(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningBracket,
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[0],
+			}
+		}},
+		{`{}`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningBracket,
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[0],
+			}
+		}},
+		{"[\n]", func(t *test, tk Tokens) { // 3
+			t.Output = ArrayBindingPattern{
+				Tokens: tk[:3],
+			}
+		}},
+		{"[\nnull\n]", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[2],
+				},
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[2],
+			}
+		}},
+		{"[\n,\n]", func(t *test, tk Tokens) { // 5
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"[\n,\n]", func(t *test, tk Tokens) { // 6
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"[\n,\n,\n]", func(t *test, tk Tokens) { // 7
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{},
+					{},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"[\n...a\n]", func(t *test, tk Tokens) { // 8
+			t.Output = ArrayBindingPattern{
+				BindingRestElement: &BindingElement{
+					SingleNameBinding: &tk[3],
+					Tokens:            tk[3:4],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"[\n...null\n]", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[3],
+				},
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[3],
+			}
+		}},
+		{"[\n...a\n,]", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[5],
+			}
+		}},
+		{"[\na\n]", func(t *test, tk Tokens) { // 11
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"[\na\n,\n]", func(t *test, tk Tokens) { // 12
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"[\na\n,\n,\n]", func(t *test, tk Tokens) { // 13
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"[\n,\na\n]", func(t *test, tk Tokens) { // 14
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{},
+					{
+						SingleNameBinding: &tk[4],
+						Tokens:            tk[4:5],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"[\n,\nnull\n]", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[4],
+				},
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[4],
+			}
+		}},
+		{"[\na,\n,\n...b\n]", func(t *test, tk Tokens) { // 16
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{},
+				},
+				BindingRestElement: &BindingElement{
+					SingleNameBinding: &tk[8],
+					Tokens:            tk[8:9],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"[\na\nb\n]", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ArrayBindingPattern",
+				Token:   tk[4],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ab ArrayBindingPattern
+		err := ab.parse(&t.Tokens, t.Yield, t.Await)
+		return ab, err
+	})
+}
