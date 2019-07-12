@@ -1054,31 +1054,31 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"[\n...a\n]", func(t *test, tk Tokens) { // 8
+		{"[\n...\na\n]", func(t *test, tk Tokens) { // 8
 			t.Output = ArrayBindingPattern{
 				BindingRestElement: &BindingElement{
-					SingleNameBinding: &tk[3],
-					Tokens:            tk[3:4],
+					SingleNameBinding: &tk[4],
+					Tokens:            tk[4:5],
 				},
-				Tokens: tk[:6],
+				Tokens: tk[:7],
 			}
 		}},
-		{"[\n...null\n]", func(t *test, tk Tokens) { // 9
+		{"[\n...\nnull\n]", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
 					Parsing: "BindingElement",
-					Token:   tk[3],
+					Token:   tk[4],
 				},
 				Parsing: "ArrayBindingPattern",
-				Token:   tk[3],
+				Token:   tk[4],
 			}
 		}},
-		{"[\n...a\n,]", func(t *test, tk Tokens) { // 10
+		{"[\n...\na\n,]", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "ArrayBindingPattern",
-				Token:   tk[5],
+				Token:   tk[6],
 			}
 		}},
 		{"[\na\n]", func(t *test, tk Tokens) { // 11
@@ -1138,7 +1138,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"[\na,\n,\n...b\n]", func(t *test, tk Tokens) { // 16
+		{"[\na,\n,\n...\nb\n]", func(t *test, tk Tokens) { // 16
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1148,10 +1148,10 @@ func TestArrayBindingPattern(t *testing.T) {
 					{},
 				},
 				BindingRestElement: &BindingElement{
-					SingleNameBinding: &tk[8],
-					Tokens:            tk[8:9],
+					SingleNameBinding: &tk[9],
+					Tokens:            tk[9:10],
 				},
-				Tokens: tk[:11],
+				Tokens: tk[:12],
 			}
 		}},
 		{"[\na\nb\n]", func(t *test, tk Tokens) { // 17
@@ -1165,5 +1165,113 @@ func TestArrayBindingPattern(t *testing.T) {
 		var ab ArrayBindingPattern
 		err := ab.parse(&t.Tokens, t.Yield, t.Await)
 		return ab, err
+	})
+}
+
+func TestObjectBindingPattern(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[0],
+			}
+		}},
+		{`[]`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[0],
+			}
+		}},
+		{"{\n}", func(t *test, tk Tokens) { // 3
+			t.Output = ObjectBindingPattern{
+				Tokens: tk[:3],
+			}
+		}},
+		{"{\n...\nnull\n}", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[4],
+			}
+		}},
+		{"{\n...\na\n}", func(t *test, tk Tokens) { // 5
+			t.Output = ObjectBindingPattern{
+				BindingRestProperty: &tk[4],
+				Tokens:              tk[:7],
+			}
+		}},
+		{"{\n...\na\nb\n}", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingClosingBrace,
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[6],
+			}
+		}},
+		{"{\nnull\n}", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidPropertyName,
+						Parsing: "PropertyName",
+						Token:   tk[2],
+					},
+					Parsing: "BindingProperty",
+					Token:   tk[2],
+				},
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[2],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 8
+			t.Output = ObjectBindingPattern{
+				BindingPropertyList: []BindingProperty{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"{\na\nb\n}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ObjectBindingPattern",
+				Token:   tk[4],
+			}
+		}},
+		{"{\na,\nb\n}", func(t *test, tk Tokens) { // 10
+			t.Output = ObjectBindingPattern{
+				BindingPropertyList: []BindingProperty{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{
+						SingleNameBinding: &tk[5],
+						Tokens:            tk[5:6],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"{\na,\n...\nb\n}", func(t *test, tk Tokens) { // 11
+			t.Output = ObjectBindingPattern{
+				BindingPropertyList: []BindingProperty{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				BindingRestProperty: &tk[7],
+				Tokens:              tk[:10],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ob ObjectBindingPattern
+		err := ob.parse(&t.Tokens, t.Yield, t.Await)
+		return ob, err
 	})
 }
