@@ -221,19 +221,18 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	j.AcceptRunWhitespace()
 	if !j.Accept(TokenRightBracePunctuator) {
 		for {
-			g := j.NewGoal()
-			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-				g.AcceptRunWhitespace()
-				if ob.BindingRestProperty = g.parseIdentifier(yield, await); ob.BindingRestProperty == nil {
+			if j.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				j.AcceptRunWhitespace()
+				if ob.BindingRestProperty = j.parseIdentifier(yield, await); ob.BindingRestProperty == nil {
 					return j.Error("ObjectBindingPattern", ErrNoIdentifier)
 				}
-				j.Score(g)
 				j.AcceptRunWhitespace()
 				if !j.Accept(TokenRightBracePunctuator) {
 					return j.Error("ObjectBindingPattern", ErrMissingClosingBrace)
 				}
 				break
 			}
+			g := j.NewGoal()
 			bp := len(ob.BindingPropertyList)
 			ob.BindingPropertyList = append(ob.BindingPropertyList, BindingProperty{})
 			if err := ob.BindingPropertyList[bp].parse(&g, yield, await); err != nil {
