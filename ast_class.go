@@ -48,7 +48,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		}
 		g := j.NewGoal()
 		var md MethodDefinition
-		if err := md.parse(&g, yield, await); err != nil {
+		if err := md.parse(&g, nil, yield, await); err != nil {
 			md.clear()
 			return j.Error("ClassDeclaration", err)
 		}
@@ -84,7 +84,7 @@ type MethodDefinition struct {
 	Tokens       Tokens
 }
 
-func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
+func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bool) error {
 	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
 	j.AcceptRunWhitespace()
 	async := j.AcceptToken(parser.Token{TokenIdentifier, "async"})
@@ -128,7 +128,9 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		md.Type = MethodStatic
 	}
 	g := j.NewGoal()
-	if err := md.PropertyName.parse(&g, yield, await); err != nil {
+	if pn != nil {
+		md.PropertyName = *pn
+	} else if err := md.PropertyName.parse(&g, yield, await); err != nil {
 		return j.Error("MethodDefinition", err)
 	}
 	j.Score(g)
