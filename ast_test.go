@@ -1275,3 +1275,176 @@ func TestObjectBindingPattern(t *testing.T) {
 		return ob, err
 	})
 }
+
+func TestBindingProperty(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidPropertyName,
+					Parsing: "PropertyName",
+					Token:   tk[0],
+				},
+				Parsing: "BindingProperty",
+				Token:   tk[0],
+			}
+		}},
+		{`null`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidPropertyName,
+					Parsing: "PropertyName",
+					Token:   tk[0],
+				},
+				Parsing: "BindingProperty",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 3
+			t.Output = BindingProperty{
+				SingleNameBinding: &tk[0],
+				Tokens:            tk[:1],
+			}
+		}},
+		{"a\n=\n", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err:     ErrNoIdentifier,
+																							Parsing: "PrimaryExpression",
+																							Token:   tk[4],
+																						},
+																						Parsing: "MemberExpression",
+																						Token:   tk[4],
+																					},
+																					Parsing: "NewExpression",
+																					Token:   tk[4],
+																				},
+																				Parsing: "LeftHandSideExpression",
+																				Token:   tk[4],
+																			},
+																			Parsing: "UpdateExpression",
+																			Token:   tk[4],
+																		},
+																		Parsing: "UnaryExpression",
+																		Token:   tk[4],
+																	},
+																	Parsing: "ExponentiationExpression",
+																	Token:   tk[4],
+																},
+																Parsing: "MultiplicativeExpression",
+																Token:   tk[4],
+															},
+															Parsing: "AdditiveExpression",
+															Token:   tk[4],
+														},
+														Parsing: "ShiftExpression",
+														Token:   tk[4],
+													},
+													Parsing: "RelationalExpression",
+													Token:   tk[4],
+												},
+												Parsing: "EqualityExpression",
+												Token:   tk[4],
+											},
+											Parsing: "BitwiseANDExpression",
+											Token:   tk[4],
+										},
+										Parsing: "BitwiseXORExpression",
+										Token:   tk[4],
+									},
+									Parsing: "BitwiseORExpression",
+									Token:   tk[4],
+								},
+								Parsing: "LogicalANDExpression",
+								Token:   tk[4],
+							},
+							Parsing: "LogicalORExpression",
+							Token:   tk[4],
+						},
+						Parsing: "ConditionalExpression",
+						Token:   tk[4],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[4],
+				},
+				Parsing: "BindingProperty",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n=\n1", func(t *test, tk Tokens) { // 5
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = BindingProperty{
+				SingleNameBinding: &tk[0],
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a\n:\n", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[4],
+				},
+				Parsing: "BindingProperty",
+				Token:   tk[4],
+			}
+		}},
+		{"'a'", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "BindingProperty",
+				Token:   tk[1],
+			}
+		}},
+		{"a\n:\n''", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[4],
+				},
+				Parsing: "BindingProperty",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n:\nb", func(t *test, tk Tokens) { // 9
+			t.Output = BindingProperty{
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				BindingElement: &BindingElement{
+					SingleNameBinding: &tk[4],
+					Tokens:            tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var bp BindingProperty
+		err := bp.parse(&t.Tokens, t.Yield, t.Await)
+		return bp, err
+	})
+}
