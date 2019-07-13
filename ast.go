@@ -52,12 +52,12 @@ type Declaration struct {
 
 func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenKeyword, "class"}) {
+	if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "class"}) {
 		d.ClassDeclaration = new(ClassDeclaration)
 		if err := d.ClassDeclaration.parse(&g, yield, await, false); err != nil {
 			return j.Error("Declaration", err)
 		}
-	} else if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "const"}) || tk == (parser.Token{TokenIdentifier, "let"}) {
+	} else if tk == (parser.Token{TokenKeyword, "const"}) || tk == (parser.Token{TokenIdentifier, "let"}) {
 		d.LexicalDeclaration = new(LexicalDeclaration)
 		if err := d.LexicalDeclaration.parse(&g, true, yield, await); err != nil {
 			return j.Error("Declaration", err)

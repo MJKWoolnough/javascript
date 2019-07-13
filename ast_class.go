@@ -13,7 +13,9 @@ type ClassDeclaration struct {
 }
 
 func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "class"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "class"}) {
+		return j.Error("ClassDeclaration", ErrInvalidClassDeclaration)
+	}
 	j.AcceptRunWhitespace()
 	if cd.BindingIdentifier = j.parseIdentifier(yield, await); cd.BindingIdentifier == nil {
 		if !def {
@@ -185,6 +187,7 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 }
 
 var (
-	ErrInvalidMethodName   = errors.New("invalid method name")
-	ErrInvalidPropertyName = errors.New("invalid property name")
+	ErrInvalidMethodName       = errors.New("invalid method name")
+	ErrInvalidPropertyName     = errors.New("invalid property name")
+	ErrInvalidClassDeclaration = errors.New("invalid class declaration")
 )
