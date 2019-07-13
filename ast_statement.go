@@ -436,9 +436,6 @@ type IterationStatementFor struct {
 	Tokens    Tokens
 }
 
-func skipBindingPattern(j *jsParser, opener, closer string) {
-}
-
 func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "for"})
 	j.AcceptRunWhitespace()
