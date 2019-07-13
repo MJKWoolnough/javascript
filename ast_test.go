@@ -1863,3 +1863,243 @@ func TestTemplateLiteral(t *testing.T) {
 		return tl, err
 	})
 }
+
+func TestArrowFunction(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidAsyncArrowFunction,
+				Parsing: "ArrowFunction",
+				Token:   tk[0],
+			}
+		}},
+		{"async (\nnull\n)", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[4],
+					},
+					Parsing: "FormalParameters",
+					Token:   tk[4],
+				},
+				Parsing: "ArrowFunction",
+				Token:   tk[4],
+			}
+		}},
+		{"async (\n...\na\nb)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "ArrowFunction",
+				Token:   tk[8],
+			}
+		}},
+		{"async", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ArrowFunction",
+				Token:   tk[1],
+			}
+		}},
+		{"async\n", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ArrowFunction",
+				Token:   tk[1],
+			}
+		}},
+		{"a\n", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[1],
+			}
+		}},
+		{"a ", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[2],
+			}
+		}},
+		{"(a)\n", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[3],
+			}
+		}},
+		{"(a) ", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[4],
+			}
+		}},
+		{"async a\n", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[3],
+			}
+		}},
+		{"async a ", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[4],
+			}
+		}},
+		{"async (a)\n", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[5],
+			}
+		}},
+		{"async (a) ", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "ArrowFunction",
+				Token:   tk[6],
+			}
+		}},
+		{"a=>{:}", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     assignmentError(tk[3]),
+								Parsing: "Expression",
+								Token:   tk[3],
+							},
+							Parsing: "Statement",
+							Token:   tk[3],
+						},
+						Parsing: "StatementListItem",
+						Token:   tk[3],
+					},
+					Parsing: "Block",
+					Token:   tk[3],
+				},
+				Parsing: "ArrowFunction",
+				Token:   tk[2],
+			}
+		}},
+		{"a =>\n{}", func(t *test, tk Tokens) { // 15
+			t.Output = ArrowFunction{
+				BindingIdentifier: &tk[0],
+				FunctionBody: &Block{
+					Tokens: tk[4:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"() =>\n{}", func(t *test, tk Tokens) { // 16
+			t.Output = ArrowFunction{
+				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					Tokens: tk[:2],
+				},
+				FunctionBody: &Block{
+					Tokens: tk[5:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"async a =>\n{}", func(t *test, tk Tokens) { // 17
+			t.Output = ArrowFunction{
+				Async:             true,
+				BindingIdentifier: &tk[2],
+				FunctionBody: &Block{
+					Tokens: tk[6:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"async () =>\n{}", func(t *test, tk Tokens) { // 18
+			t.Output = ArrowFunction{
+				Async: true,
+				FormalParameters: &FormalParameters{
+					Tokens: tk[3:3],
+				},
+				FunctionBody: &Block{
+					Tokens: tk[7:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"a=>:", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err:     assignmentError(tk[2]),
+				Parsing: "ArrowFunction",
+				Token:   tk[2],
+			}
+		}},
+		{"a =>\nb", func(t *test, tk Tokens) { // 20
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = ArrowFunction{
+				BindingIdentifier: &tk[0],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"() =>\nb", func(t *test, tk Tokens) { // 21
+			litB := makeConditionLiteral(tk, 5)
+			t.Output = ArrowFunction{
+				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					Tokens: tk[:2],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"async a =>\nb", func(t *test, tk Tokens) { // 22
+			litB := makeConditionLiteral(tk, 6)
+			t.Output = ArrowFunction{
+				Async:             true,
+				BindingIdentifier: &tk[2],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"async () =>\nb", func(t *test, tk Tokens) { // 23
+			litB := makeConditionLiteral(tk, 7)
+			t.Output = ArrowFunction{
+				Async: true,
+				FormalParameters: &FormalParameters{
+					Tokens: tk[3:3],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[7:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var (
+			pe  PrimaryExpression
+			af  ArrowFunction
+			err error
+		)
+		g := t.Tokens.NewGoal()
+		if err = pe.parse(&g, t.Yield, t.Await); err == nil {
+			t.Tokens.Score(g)
+			err = af.parse(&t.Tokens, &pe, t.In, t.Yield, t.Await)
+		} else {
+			err = af.parse(&t.Tokens, nil, t.In, t.Yield, t.Await)
+		}
+		return af, err
+	})
+}
