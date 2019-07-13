@@ -461,11 +461,17 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				}
 			}
 			if !propertyName {
-				pd.MethodDefinition = new(MethodDefinition)
-				if err := pd.MethodDefinition.parse(&g, pd.PropertyName, yield, await); err != nil {
-					return j.Error("PropertyDefinition", err)
+				var pn *PropertyName
+				if pd.PropertyName != nil && pd.PropertyName.ComputedPropertyName != nil {
+					pn = pd.PropertyName
+				} else {
+					g = j.NewGoal()
 				}
 				pd.PropertyName = nil
+				pd.MethodDefinition = new(MethodDefinition)
+				if err := pd.MethodDefinition.parse(&g, pn, yield, await); err != nil {
+					return j.Error("PropertyDefinition", err)
+				}
 			}
 		}
 		j.Score(g)
