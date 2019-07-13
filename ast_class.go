@@ -83,6 +83,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
 	j.AcceptRunWhitespace()
 	async := j.AcceptToken(parser.Token{TokenIdentifier, "async"})
+	j.AcceptRunWhitespace()
 	if async {
 		if static {
 			md.Type = MethodStaticAsync
