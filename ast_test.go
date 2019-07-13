@@ -39,6 +39,86 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (interface{}, error)
 	}
 }
 
+func assignmentError(tk Token) Error {
+	return Error{
+		Err: Error{
+			Err: Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err:     ErrNoIdentifier,
+																				Parsing: "PrimaryExpression",
+																				Token:   tk,
+																			},
+																			Parsing: "MemberExpression",
+																			Token:   tk,
+																		},
+																		Parsing: "NewExpression",
+																		Token:   tk,
+																	},
+																	Parsing: "LeftHandSideExpression",
+																	Token:   tk,
+																},
+																Parsing: "UpdateExpression",
+																Token:   tk,
+															},
+															Parsing: "UnaryExpression",
+															Token:   tk,
+														},
+														Parsing: "ExponentiationExpression",
+														Token:   tk,
+													},
+													Parsing: "MultiplicativeExpression",
+													Token:   tk,
+												},
+												Parsing: "AdditiveExpression",
+												Token:   tk,
+											},
+											Parsing: "ShiftExpression",
+											Token:   tk,
+										},
+										Parsing: "RelationalExpression",
+										Token:   tk,
+									},
+									Parsing: "EqualityExpression",
+									Token:   tk,
+								},
+								Parsing: "BitwiseANDExpression",
+								Token:   tk,
+							},
+							Parsing: "BitwiseXORExpression",
+							Token:   tk,
+						},
+						Parsing: "BitwiseORExpression",
+						Token:   tk,
+					},
+					Parsing: "LogicalANDExpression",
+					Token:   tk,
+				},
+				Parsing: "LogicalORExpression",
+				Token:   tk,
+			},
+			Parsing: "ConditionalExpression",
+			Token:   tk,
+		},
+		Parsing: "AssignmentExpression",
+		Token:   tk,
+	}
+}
+
 func TestIdentifier(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`hello_world`, func(t *test, tk Tokens) {
@@ -793,83 +873,7 @@ func TestLexicalBinding(t *testing.T) {
 		}},
 		{"[a]\n=\n", func(t *test, tk Tokens) { // 5
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err:     ErrNoIdentifier,
-																							Parsing: "PrimaryExpression",
-																							Token:   tk[6],
-																						},
-																						Parsing: "MemberExpression",
-																						Token:   tk[6],
-																					},
-																					Parsing: "NewExpression",
-																					Token:   tk[6],
-																				},
-																				Parsing: "LeftHandSideExpression",
-																				Token:   tk[6],
-																			},
-																			Parsing: "UpdateExpression",
-																			Token:   tk[6],
-																		},
-																		Parsing: "UnaryExpression",
-																		Token:   tk[6],
-																	},
-																	Parsing: "ExponentiationExpression",
-																	Token:   tk[6],
-																},
-																Parsing: "MultiplicativeExpression",
-																Token:   tk[6],
-															},
-															Parsing: "AdditiveExpression",
-															Token:   tk[6],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[6],
-													},
-													Parsing: "RelationalExpression",
-													Token:   tk[6],
-												},
-												Parsing: "EqualityExpression",
-												Token:   tk[6],
-											},
-											Parsing: "BitwiseANDExpression",
-											Token:   tk[6],
-										},
-										Parsing: "BitwiseXORExpression",
-										Token:   tk[6],
-									},
-									Parsing: "BitwiseORExpression",
-									Token:   tk[6],
-								},
-								Parsing: "LogicalANDExpression",
-								Token:   tk[6],
-							},
-							Parsing: "LogicalORExpression",
-							Token:   tk[6],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[6],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[6],
-				},
+				Err:     assignmentError(tk[6]),
 				Parsing: "LexicalBinding",
 				Token:   tk[6],
 			}
@@ -896,83 +900,7 @@ func TestLexicalBinding(t *testing.T) {
 		}},
 		{"{a}\n=\n", func(t *test, tk Tokens) { // 5
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err:     ErrNoIdentifier,
-																							Parsing: "PrimaryExpression",
-																							Token:   tk[6],
-																						},
-																						Parsing: "MemberExpression",
-																						Token:   tk[6],
-																					},
-																					Parsing: "NewExpression",
-																					Token:   tk[6],
-																				},
-																				Parsing: "LeftHandSideExpression",
-																				Token:   tk[6],
-																			},
-																			Parsing: "UpdateExpression",
-																			Token:   tk[6],
-																		},
-																		Parsing: "UnaryExpression",
-																		Token:   tk[6],
-																	},
-																	Parsing: "ExponentiationExpression",
-																	Token:   tk[6],
-																},
-																Parsing: "MultiplicativeExpression",
-																Token:   tk[6],
-															},
-															Parsing: "AdditiveExpression",
-															Token:   tk[6],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[6],
-													},
-													Parsing: "RelationalExpression",
-													Token:   tk[6],
-												},
-												Parsing: "EqualityExpression",
-												Token:   tk[6],
-											},
-											Parsing: "BitwiseANDExpression",
-											Token:   tk[6],
-										},
-										Parsing: "BitwiseXORExpression",
-										Token:   tk[6],
-									},
-									Parsing: "BitwiseORExpression",
-									Token:   tk[6],
-								},
-								Parsing: "LogicalANDExpression",
-								Token:   tk[6],
-							},
-							Parsing: "LogicalORExpression",
-							Token:   tk[6],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[6],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[6],
-				},
+				Err:     assignmentError(tk[6]),
 				Parsing: "LexicalBinding",
 				Token:   tk[6],
 			}
@@ -1308,83 +1236,7 @@ func TestBindingProperty(t *testing.T) {
 		}},
 		{"a\n=\n", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err:     ErrNoIdentifier,
-																							Parsing: "PrimaryExpression",
-																							Token:   tk[4],
-																						},
-																						Parsing: "MemberExpression",
-																						Token:   tk[4],
-																					},
-																					Parsing: "NewExpression",
-																					Token:   tk[4],
-																				},
-																				Parsing: "LeftHandSideExpression",
-																				Token:   tk[4],
-																			},
-																			Parsing: "UpdateExpression",
-																			Token:   tk[4],
-																		},
-																		Parsing: "UnaryExpression",
-																		Token:   tk[4],
-																	},
-																	Parsing: "ExponentiationExpression",
-																	Token:   tk[4],
-																},
-																Parsing: "MultiplicativeExpression",
-																Token:   tk[4],
-															},
-															Parsing: "AdditiveExpression",
-															Token:   tk[4],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[4],
-													},
-													Parsing: "RelationalExpression",
-													Token:   tk[4],
-												},
-												Parsing: "EqualityExpression",
-												Token:   tk[4],
-											},
-											Parsing: "BitwiseANDExpression",
-											Token:   tk[4],
-										},
-										Parsing: "BitwiseXORExpression",
-										Token:   tk[4],
-									},
-									Parsing: "BitwiseORExpression",
-									Token:   tk[4],
-								},
-								Parsing: "LogicalANDExpression",
-								Token:   tk[4],
-							},
-							Parsing: "LogicalORExpression",
-							Token:   tk[4],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[4],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[4],
-				},
+				Err:     assignmentError(tk[4]),
 				Parsing: "BindingProperty",
 				Token:   tk[4],
 			}
@@ -1489,83 +1341,7 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 		{"[\n...\n]", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err:     ErrNoIdentifier,
-																							Parsing: "PrimaryExpression",
-																							Token:   tk[4],
-																						},
-																						Parsing: "MemberExpression",
-																						Token:   tk[4],
-																					},
-																					Parsing: "NewExpression",
-																					Token:   tk[4],
-																				},
-																				Parsing: "LeftHandSideExpression",
-																				Token:   tk[4],
-																			},
-																			Parsing: "UpdateExpression",
-																			Token:   tk[4],
-																		},
-																		Parsing: "UnaryExpression",
-																		Token:   tk[4],
-																	},
-																	Parsing: "ExponentiationExpression",
-																	Token:   tk[4],
-																},
-																Parsing: "MultiplicativeExpression",
-																Token:   tk[4],
-															},
-															Parsing: "AdditiveExpression",
-															Token:   tk[4],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[4],
-													},
-													Parsing: "RelationalExpression",
-													Token:   tk[4],
-												},
-												Parsing: "EqualityExpression",
-												Token:   tk[4],
-											},
-											Parsing: "BitwiseANDExpression",
-											Token:   tk[4],
-										},
-										Parsing: "BitwiseXORExpression",
-										Token:   tk[4],
-									},
-									Parsing: "BitwiseORExpression",
-									Token:   tk[4],
-								},
-								Parsing: "LogicalANDExpression",
-								Token:   tk[4],
-							},
-							Parsing: "LogicalORExpression",
-							Token:   tk[4],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[4],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[4],
-				},
+				Err:     assignmentError(tk[4]),
 				Parsing: "ArrayLiteral",
 				Token:   tk[4],
 			}
@@ -1589,83 +1365,7 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 		{"[\n*\n]", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err:     ErrNoIdentifier,
-																							Parsing: "PrimaryExpression",
-																							Token:   tk[2],
-																						},
-																						Parsing: "MemberExpression",
-																						Token:   tk[2],
-																					},
-																					Parsing: "NewExpression",
-																					Token:   tk[2],
-																				},
-																				Parsing: "LeftHandSideExpression",
-																				Token:   tk[2],
-																			},
-																			Parsing: "UpdateExpression",
-																			Token:   tk[2],
-																		},
-																		Parsing: "UnaryExpression",
-																		Token:   tk[2],
-																	},
-																	Parsing: "ExponentiationExpression",
-																	Token:   tk[2],
-																},
-																Parsing: "MultiplicativeExpression",
-																Token:   tk[2],
-															},
-															Parsing: "AdditiveExpression",
-															Token:   tk[2],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[2],
-													},
-													Parsing: "RelationalExpression",
-													Token:   tk[2],
-												},
-												Parsing: "EqualityExpression",
-												Token:   tk[2],
-											},
-											Parsing: "BitwiseANDExpression",
-											Token:   tk[2],
-										},
-										Parsing: "BitwiseXORExpression",
-										Token:   tk[2],
-									},
-									Parsing: "BitwiseORExpression",
-									Token:   tk[2],
-								},
-								Parsing: "LogicalANDExpression",
-								Token:   tk[2],
-							},
-							Parsing: "LogicalORExpression",
-							Token:   tk[2],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[2],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[2],
-				},
+				Err:     assignmentError(tk[2]),
 				Parsing: "ArrayLiteral",
 				Token:   tk[2],
 			}
