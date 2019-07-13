@@ -78,6 +78,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			break
 		}
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+			g.AcceptRunWhitespace()
 			h := g.NewGoal()
 			fp.FunctionRestParameter = new(FunctionRestParameter)
 			if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
