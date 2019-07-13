@@ -1684,7 +1684,7 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"async\na\n(){}", func(t *test, tk Tokens) { // 15
+		{"async a\n(){}", func(t *test, tk Tokens) { // 15
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodAsync,
