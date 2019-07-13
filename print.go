@@ -443,7 +443,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		}
 		i.InitLexical.printSource(&pp, v)
 	case ForNormalExpression:
-		if v && len(i.InitLexical.Tokens) > 0 {
+		if v && len(i.InitExpression.Tokens) > 0 {
 			if i.InitExpression.Tokens[0].Line > lastLine {
 				endline = true
 				pp.Write(newLine)
