@@ -1740,3 +1740,126 @@ func TestPropertyDefinition(t *testing.T) {
 		return pd, err
 	})
 }
+
+func TestTemplateLiteral(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidTemplate,
+				Parsing: "TemplateLiteral",
+				Token:   tk[0],
+			}
+		}},
+		{"``", func(t *test, tk Tokens) { // 2
+			t.Output = TemplateLiteral{
+				NoSubstitutionTemplate: &tk[0],
+				Tokens:                 tk[:1],
+			}
+		}},
+		{"`${\na\n}`", func(t *test, tk Tokens) { // 3
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = TemplateLiteral{
+				TemplateHead: &tk[0],
+				Expressions: []Expression{
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				TemplateTail: &tk[4],
+				Tokens:       tk[:5],
+			}
+		}},
+		{"`${\na\nb\n}`", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrInvalidTemplate,
+				Parsing: "TemplateLiteral",
+				Token:   tk[4],
+			}
+		}},
+		{"`${\na\n}${\nb\n}`", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 6)
+			t.Output = TemplateLiteral{
+				TemplateHead: &tk[0],
+				Expressions: []Expression{
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+				},
+				TemplateMiddleList: []*Token{
+					&tk[4],
+				},
+				TemplateTail: &tk[8],
+				Tokens:       tk[:9],
+			}
+		}},
+		{"`${\na\n}${\nb\n}${\nc\n}`", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 6)
+			litC := makeConditionLiteral(tk, 10)
+			t.Output = TemplateLiteral{
+				TemplateHead: &tk[0],
+				Expressions: []Expression{
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litC,
+								Tokens:                tk[10:11],
+							},
+						},
+						Tokens: tk[10:11],
+					},
+				},
+				TemplateMiddleList: []*Token{
+					&tk[4],
+					&tk[8],
+				},
+				TemplateTail: &tk[12],
+				Tokens:       tk[:13],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var tl TemplateLiteral
+		err := tl.parse(&t.Tokens, t.Yield, t.Await)
+		return tl, err
+	})
+}
