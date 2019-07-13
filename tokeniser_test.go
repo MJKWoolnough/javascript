@@ -137,6 +137,13 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{
+			"0.1",
+			[]parser.Token{
+				{TokenNumericLiteral, "0.1"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
 			"0b0",
 			[]parser.Token{
 				{TokenNumericLiteral, "0b0"},

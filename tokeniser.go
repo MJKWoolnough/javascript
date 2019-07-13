@@ -385,6 +385,12 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				return t.Error()
 			}
 			t.AcceptRun(hexDigit)
+		} else if t.Accept(".") {
+			t.AcceptRun(decimalDigit)
+			if t.Accept("eE") {
+				t.Accept("+-")
+				t.AcceptRun(decimalDigit)
+			}
 		}
 	} else {
 		t.AcceptRun(decimalDigit)
