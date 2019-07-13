@@ -189,6 +189,7 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 			break
 		}
+		g.AcceptRunWhitespace()
 		j.Score(g)
 	}
 	e.Tokens = j.ToTokens()
