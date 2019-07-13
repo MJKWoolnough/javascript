@@ -1642,6 +1642,98 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{"static\na\n(){}", func(t *test, tk Tokens) { // 13
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodStatic,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Params: FormalParameters{
+						Tokens: tk[5:5],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"*\na\n(){}", func(t *test, tk Tokens) { // 14
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodGenerator,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Params: FormalParameters{
+						Tokens: tk[5:5],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"async\na\n(){}", func(t *test, tk Tokens) { // 15
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodAsync,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Params: FormalParameters{
+						Tokens: tk[5:5],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"get\na\n(){}", func(t *test, tk Tokens) { // 16
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodGetter,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"set\na\n(){}", func(t *test, tk Tokens) { // 17
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodSetter,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Params: FormalParameters{
+						Tokens: tk[5:5],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var pd PropertyDefinition
 		err := pd.parse(&t.Tokens, t.Yield, t.Await)
