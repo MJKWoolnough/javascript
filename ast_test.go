@@ -1512,3 +1512,139 @@ func TestObjectLiteral(t *testing.T) {
 		return ol, err
 	})
 }
+
+func TestPropertyDefinition(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidPropertyName,
+					Parsing: "PropertyName",
+					Token:   tk[0],
+				},
+				Parsing: "PropertyDefinition",
+				Token:   tk[0],
+			}
+		}},
+		{`...`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     assignmentError(tk[1]),
+				Parsing: "PropertyDefinition",
+				Token:   tk[1],
+			}
+		}},
+		{"...\na", func(t *test, tk Tokens) { // 3
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = PropertyDefinition{
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"a\n,", func(t *test, tk Tokens) { // 4
+			t.Output = PropertyDefinition{
+				IdentifierReference: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 5
+			t.Output = PropertyDefinition{
+				IdentifierReference: &tk[2],
+				Tokens:              tk[2:3],
+			}
+			t.Tokens = jsParser(tk[2:2])
+		}},
+		{"a\n=\n", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "PropertyDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n=\nb", func(t *test, tk Tokens) { // 7
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = PropertyDefinition{
+				IdentifierReference: &tk[0],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a\n:\n", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "PropertyDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n:\nb", func(t *test, tk Tokens) { // 9
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = PropertyDefinition{
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"[\na\n]\n:\nb", func(t *test, tk Tokens) { // 10
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = PropertyDefinition{
+				PropertyName: &PropertyName{
+					ComputedPropertyName: &AssignmentExpression{
+						ConditionalExpression: &litA,
+						Tokens:                tk[2:3],
+					},
+					Tokens: tk[:5],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"[\na\n]\n", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "MethodDefinition",
+					Token:   tk[6],
+				},
+				Parsing: "PropertyDefinition",
+				Token:   tk[0],
+			}
+		}},
+		{"a\n(){}", func(t *test, tk Tokens) { // 12
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Params: FormalParameters{
+						Tokens: tk[3:3],
+					},
+					FunctionBody: Block{
+						Tokens: tk[4:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var pd PropertyDefinition
+		err := pd.parse(&t.Tokens, t.Yield, t.Await)
+		return pd, err
+	})
+}
