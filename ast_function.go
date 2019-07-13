@@ -42,18 +42,11 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		fd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
-		return j.Error("FunctionDeclaration", ErrMissingOpeningParenthesis)
-	}
 	g := j.NewGoal()
 	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
 		return j.Error("FunctionDeclaration", err)
 	}
 	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-		return j.Error("FunctionDeclaration", ErrMissingClosingParenthesis)
-	}
 	j.AcceptRunWhitespace()
 	g = j.NewGoal()
 	if err := fd.FunctionBody.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true); err != nil {
@@ -71,12 +64,15 @@ type FormalParameters struct {
 }
 
 func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
+	}
 	for {
-		g := j.NewGoal()
-		g.AcceptRunWhitespace()
-		if g.Peek() == (parser.Token{TokenPunctuator, ")"}) {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			break
 		}
+		g := j.NewGoal()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			g.AcceptRunWhitespace()
 			h := g.NewGoal()
@@ -86,6 +82,10 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			}
 			g.Score(h)
 			j.Score(g)
+			j.AcceptRunWhitespace()
+			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				return j.Error("FormalParameters", ErrMissingClosingParenthesis)
+			}
 			break
 		}
 		h := g.NewGoal()
@@ -97,7 +97,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 		g.Score(h)
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		if j.Peek() == (parser.Token{TokenPunctuator, ")"}) {
+		if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			break
 		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
 			return j.Error("FormalParameters", ErrInvalidFormalParameterList)

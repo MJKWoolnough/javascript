@@ -2,7 +2,7 @@ package javascript
 
 import "testing"
 
-func TestClassDeclaration(t *testing.T) {
+func TestClassDeclarationOld(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`class myClass{}`, func(t *test, tk Tokens) { // 1
 			t.Output = ClassDeclaration{
@@ -39,7 +39,7 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens:              tk[5:6],
 						},
 						Params: FormalParameters{
-							Tokens: tk[7:7],
+							Tokens: tk[6:8],
 						},
 						FunctionBody: Block{
 							Tokens: tk[8:10],
@@ -70,7 +70,7 @@ func TestClassDeclaration(t *testing.T) {
 									Tokens:            tk[10:11],
 								},
 							},
-							Tokens: tk[7:11],
+							Tokens: tk[6:12],
 						},
 						FunctionBody: Block{
 							Tokens: tk[12:14],
@@ -96,7 +96,7 @@ func TestClassDeclaration(t *testing.T) {
 								BindingIdentifier: &tk[10],
 								Tokens:            tk[10:11],
 							},
-							Tokens: tk[9:11],
+							Tokens: tk[8:12],
 						},
 						FunctionBody: Block{
 							Tokens: tk[12:14],
@@ -159,7 +159,7 @@ func TestClassDeclaration(t *testing.T) {
 									Tokens:            tk[20:21],
 								},
 							},
-							Tokens: tk[20:21],
+							Tokens: tk[19:22],
 						},
 						FunctionBody: Block{
 							Tokens: tk[22:24],
@@ -173,7 +173,7 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens:              tk[28:29],
 						},
 						Params: FormalParameters{
-							Tokens: tk[30:30],
+							Tokens: tk[29:31],
 						},
 						FunctionBody: Block{
 							Tokens: tk[31:33],

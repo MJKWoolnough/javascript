@@ -1735,7 +1735,7 @@ func TestStatement(t *testing.T) {
 					LabelledItemFunction: &FunctionDeclaration{
 						BindingIdentifier: &tk[5],
 						FormalParameters: FormalParameters{
-							Tokens: tk[7:7],
+							Tokens: tk[6:8],
 						},
 						FunctionBody: Block{
 							Tokens: tk[8:10],
@@ -1800,7 +1800,7 @@ func TestStatement(t *testing.T) {
 					FunctionDeclaration: &FunctionDeclaration{
 						BindingIdentifier: &tk[2],
 						FormalParameters: FormalParameters{
-							Tokens: tk[4:4],
+							Tokens: tk[3:5],
 						},
 						FunctionBody: Block{
 							Tokens: tk[5:7],
@@ -1859,7 +1859,7 @@ func TestStatement(t *testing.T) {
 						Type:              FunctionAsync,
 						BindingIdentifier: &tk[4],
 						FormalParameters: FormalParameters{
-							Tokens: tk[6:6],
+							Tokens: tk[5:7],
 						},
 						FunctionBody: Block{
 							Tokens: tk[7:9],
@@ -1880,7 +1880,7 @@ func TestStatement(t *testing.T) {
 								ArrowFunction: &ArrowFunction{
 									Async: true,
 									FormalParameters: &FormalParameters{
-										Tokens: tk[3:3],
+										Tokens: tk[2:4],
 									},
 									FunctionBody: &Block{
 										Tokens: tk[7:9],

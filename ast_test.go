@@ -341,7 +341,7 @@ for(
 											Tokens:            tk[21:22],
 										},
 									},
-									Tokens: tk[21:22],
+									Tokens: tk[20:23],
 								},
 								FunctionBody: Block{
 									StatementListItems: []StatementListItem{
@@ -650,7 +650,7 @@ func TestDeclaration(t *testing.T) {
 				FunctionDeclaration: &FunctionDeclaration{
 					BindingIdentifier: &tk[2],
 					FormalParameters: FormalParameters{
-						Tokens: tk[4:4],
+						Tokens: tk[3:5],
 					},
 					FunctionBody: Block{
 						Tokens: tk[5:7],
@@ -1616,7 +1616,11 @@ func TestPropertyDefinition(t *testing.T) {
 		{"[\na\n]\n", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrMissingOpeningParenthesis,
+					Err: Error{
+						Err:     ErrMissingOpeningParenthesis,
+						Parsing: "FormalParameters",
+						Token:   tk[6],
+					},
 					Parsing: "MethodDefinition",
 					Token:   tk[6],
 				},
@@ -1632,7 +1636,7 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[:1],
 					},
 					Params: FormalParameters{
-						Tokens: tk[3:3],
+						Tokens: tk[2:4],
 					},
 					FunctionBody: Block{
 						Tokens: tk[4:6],
@@ -1651,7 +1655,7 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[2:3],
 					},
 					Params: FormalParameters{
-						Tokens: tk[5:5],
+						Tokens: tk[4:6],
 					},
 					FunctionBody: Block{
 						Tokens: tk[6:8],
@@ -1670,7 +1674,7 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[2:3],
 					},
 					Params: FormalParameters{
-						Tokens: tk[5:5],
+						Tokens: tk[4:6],
 					},
 					FunctionBody: Block{
 						Tokens: tk[6:8],
@@ -1689,7 +1693,7 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[2:3],
 					},
 					Params: FormalParameters{
-						Tokens: tk[5:5],
+						Tokens: tk[4:6],
 					},
 					FunctionBody: Block{
 						Tokens: tk[6:8],
@@ -1724,7 +1728,7 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[2:3],
 					},
 					Params: FormalParameters{
-						Tokens: tk[5:5],
+						Tokens: tk[4:6],
 					},
 					FunctionBody: Block{
 						Tokens: tk[6:8],
@@ -1885,14 +1889,18 @@ func TestArrowFunction(t *testing.T) {
 					Token:   tk[4],
 				},
 				Parsing: "ArrowFunction",
-				Token:   tk[4],
+				Token:   tk[2],
 			}
 		}},
 		{"async (\n...\na\nb)", func(t *test, tk Tokens) { // 3
 			t.Err = Error{
-				Err:     ErrMissingClosingParenthesis,
+				Err: Error{
+					Err:     ErrMissingClosingParenthesis,
+					Parsing: "FormalParameters",
+					Token:   tk[8],
+				},
 				Parsing: "ArrowFunction",
-				Token:   tk[8],
+				Token:   tk[2],
 			}
 		}},
 		{"async", func(t *test, tk Tokens) { // 4
@@ -2022,7 +2030,7 @@ func TestArrowFunction(t *testing.T) {
 			t.Output = ArrowFunction{
 				Async: true,
 				FormalParameters: &FormalParameters{
-					Tokens: tk[3:3],
+					Tokens: tk[2:4],
 				},
 				FunctionBody: &Block{
 					Tokens: tk[7:9],
@@ -2078,7 +2086,7 @@ func TestArrowFunction(t *testing.T) {
 			t.Output = ArrowFunction{
 				Async: true,
 				FormalParameters: &FormalParameters{
-					Tokens: tk[3:3],
+					Tokens: tk[2:4],
 				},
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: &litB,

@@ -471,7 +471,7 @@ func TestModule(t *testing.T) {
 								FunctionDeclaration: &FunctionDeclaration{
 									BindingIdentifier: &tk[4],
 									FormalParameters: FormalParameters{
-										Tokens: tk[6:6],
+										Tokens: tk[5:7],
 									},
 									FunctionBody: Block{
 										Tokens: tk[7:9],
@@ -488,14 +488,14 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`export default function(){}`, func(t *test, tk Tokens) { // 19
+		{`export default function(){}`, func(t *test, tk Tokens) { // 20
 			t.Output = Module{
 				ModuleListItems: []ModuleListItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							DefaultFunction: &FunctionDeclaration{
 								FormalParameters: FormalParameters{
-									Tokens: tk[5:5],
+									Tokens: tk[5:7],
 								},
 								FunctionBody: Block{
 									Tokens: tk[7:9],
@@ -510,7 +510,7 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`export default class{}`, func(t *test, tk Tokens) { // 20
+		{`export default class{}`, func(t *test, tk Tokens) { // 21
 			t.Output = Module{
 				ModuleListItems: []ModuleListItem{
 					{
@@ -526,7 +526,7 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`export default 1;`, func(t *test, tk Tokens) { // 21
+		{`export default 1;`, func(t *test, tk Tokens) { // 22
 			litA := makeConditionLiteral(tk, 4)
 			t.Output = Module{
 				ModuleListItems: []ModuleListItem{
@@ -544,7 +544,7 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`1;`, func(t *test, tk Tokens) { // 22
+		{`1;`, func(t *test, tk Tokens) { // 23
 			litA := makeConditionLiteral(tk, 0)
 			t.Output = Module{
 				ModuleListItems: []ModuleListItem{
