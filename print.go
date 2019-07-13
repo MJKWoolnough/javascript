@@ -1153,7 +1153,7 @@ func (p PropertyDefinition) printSource(w io.Writer, v bool) {
 			p.PropertyName.printSource(w, v)
 			w.Write(colonSep)
 			p.AssignmentExpression.printSource(w, v)
-		} else if p.Spread {
+		} else {
 			w.Write(ellipsis)
 			p.AssignmentExpression.printSource(w, v)
 		}

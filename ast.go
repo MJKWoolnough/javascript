@@ -393,7 +393,6 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 type PropertyDefinition struct {
 	IdentifierReference  *Token
 	PropertyName         *PropertyName
-	Spread               bool
 	AssignmentExpression *AssignmentExpression
 	MethodDefinition     *MethodDefinition
 	Tokens               Tokens
