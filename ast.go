@@ -532,7 +532,7 @@ type ArrowFunction struct {
 func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, await bool) error {
 	if pe == nil {
 		if !j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
-			j.Error("ArrowFunction", ErrInvalidAsyncArrowFunction)
+			return j.Error("ArrowFunction", ErrInvalidAsyncArrowFunction)
 		}
 		af.Async = true
 		j.AcceptRunWhitespaceNoNewLine()
