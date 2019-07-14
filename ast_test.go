@@ -1711,6 +1711,9 @@ func TestPropertyDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[2],
 						Tokens:              tk[2:3],
 					},
+					Params: FormalParameters{
+						Tokens: tk[4:6],
+					},
 					FunctionBody: Block{
 						Tokens: tk[6:8],
 					},

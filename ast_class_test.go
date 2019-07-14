@@ -119,6 +119,9 @@ func TestClassDeclarationOld(t *testing.T) {
 							LiteralPropertyName: &tk[7],
 							Tokens:              tk[7:8],
 						},
+						Params: FormalParameters{
+							Tokens: tk[8:10],
+						},
 						FunctionBody: Block{
 							Tokens: tk[10:12],
 						},
@@ -142,6 +145,9 @@ func TestClassDeclarationOld(t *testing.T) {
 						PropertyName: PropertyName{
 							LiteralPropertyName: &tk[9],
 							Tokens:              tk[9:10],
+						},
+						Params: FormalParameters{
+							Tokens: tk[10:12],
 						},
 						FunctionBody: Block{
 							Tokens: tk[12:14],

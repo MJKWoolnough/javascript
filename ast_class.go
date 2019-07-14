@@ -135,13 +135,16 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	j.AcceptRunWhitespace()
 	switch md.Type {
 	case MethodGetter, MethodStaticGetter:
-		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		g := j.NewGoal()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 			return j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			return j.Error("MethodDefinition", ErrMissingClosingParenthesis)
 		}
+		md.Params.Tokens = g.ToTokens()
+		j.Score(g)
 	case MethodSetter, MethodStaticSetter:
 		g := j.NewGoal()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
