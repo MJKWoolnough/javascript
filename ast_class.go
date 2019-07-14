@@ -88,22 +88,6 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	if async {
 		md.Type = MethodAsync
 		j.AcceptRunWhitespaceNoNewLine()
-	}
-	if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
-		if static {
-			if async {
-				md.Type = MethodStaticAsyncGenerator
-			} else {
-				md.Type = MethodStaticGenerator
-			}
-		} else {
-			if async {
-				md.Type = MethodAsyncGenerator
-			} else {
-				md.Type = MethodGenerator
-			}
-		}
-		j.AcceptRunWhitespace()
 	} else if j.AcceptToken(parser.Token{TokenIdentifier, "get"}) {
 		if static {
 			md.Type = MethodStaticGetter
@@ -118,11 +102,29 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 			md.Type = MethodSetter
 		}
 		j.AcceptRunWhitespace()
-	} else if static {
-		if async {
-			md.Type = MethodStaticAsync
-		} else {
-			md.Type = MethodStatic
+	}
+	if md.Type == MethodNormal {
+		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+			if static {
+				if async {
+					md.Type = MethodStaticAsyncGenerator
+				} else {
+					md.Type = MethodStaticGenerator
+				}
+			} else {
+				if async {
+					md.Type = MethodAsyncGenerator
+				} else {
+					md.Type = MethodGenerator
+				}
+			}
+			j.AcceptRunWhitespace()
+		} else if static {
+			if async {
+				md.Type = MethodStaticAsync
+			} else {
+				md.Type = MethodStatic
+			}
 		}
 	}
 	g := j.NewGoal()
