@@ -589,9 +589,7 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 	if f.BindingIdentifier != nil {
 		io.WriteString(w, f.BindingIdentifier.Data)
 	}
-	w.Write(parenOpen)
 	f.FormalParameters.printSource(&indentPrinter{w}, v)
-	w.Write(parenCloseSpace)
 	f.FunctionBody.printSource(w, v)
 }
 
@@ -786,12 +784,14 @@ func (c CaseClause) printSource(w io.Writer, v bool) {
 }
 
 func (f FormalParameters) printSource(w io.Writer, v bool) {
+	w.Write(parenOpen)
 	for n, be := range f.FormalParameterList {
 		if n > 0 {
 			w.Write(commaSep)
 		}
 		be.printSource(w, v)
 	}
+	w.Write(parenCloseSpace)
 }
 
 func (m MethodDefinition) printSource(w io.Writer, v bool) {
@@ -823,9 +823,7 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 		return
 	}
 	m.PropertyName.printSource(w, v)
-	w.Write(parenOpen)
 	m.Params.printSource(w, v)
-	w.Write(parenCloseSpace)
 	m.FunctionBody.printSource(w, v)
 }
 
