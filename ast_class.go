@@ -133,7 +133,8 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
-	if md.Type == MethodGetter {
+	switch md.Type {
+	case MethodGetter, MethodStaticGetter:
 		if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 			return j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
@@ -141,7 +142,23 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			return j.Error("MethodDefinition", ErrMissingClosingParenthesis)
 		}
-	} else {
+	case MethodSetter, MethodStaticSetter:
+		g := j.NewGoal()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+			return j.Error("MethodDefinition", ErrMissingOpeningParenthesis)
+		}
+		md.Params.FormalParameterList = make([]BindingElement, 1)
+		h := g.NewGoal()
+		if err := md.Params.FormalParameterList[0].parse(&h, false, false); err != nil {
+			return j.Error("MethodDefinition", err)
+		}
+		g.Score(h)
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+			return j.Error("MethodDefinition", ErrMissingClosingParenthesis)
+		}
+		md.Params.Tokens = g.ToTokens()
+		j.Score(g)
+	default:
 		g = j.NewGoal()
 		if err := md.Params.parse(&g, md.Type == MethodGenerator, md.Type == MethodAsync); err != nil {
 			return j.Error("MethodDefinition", err)

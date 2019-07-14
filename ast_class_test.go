@@ -81,7 +81,7 @@ func TestClassDeclarationOld(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-		{`class myClass {set method(...args){}}`, func(t *test, tk Tokens) { // 5
+		{`class myClass {set method(args){}}`, func(t *test, tk Tokens) { // 5
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []MethodDefinition{
@@ -92,19 +92,21 @@ func TestClassDeclarationOld(t *testing.T) {
 							Tokens:              tk[7:8],
 						},
 						Params: FormalParameters{
-							FunctionRestParameter: &FunctionRestParameter{
-								BindingIdentifier: &tk[10],
-								Tokens:            tk[10:11],
+							FormalParameterList: []BindingElement{
+								{
+									SingleNameBinding: &tk[9],
+									Tokens:            tk[9:10],
+								},
 							},
-							Tokens: tk[8:12],
+							Tokens: tk[8:11],
 						},
 						FunctionBody: Block{
-							Tokens: tk[12:14],
+							Tokens: tk[11:13],
 						},
-						Tokens: tk[5:14],
+						Tokens: tk[5:13],
 					},
 				},
-				Tokens: tk[:15],
+				Tokens: tk[:14],
 			}
 		}},
 		{`class myClass {get value(){}}`, func(t *test, tk Tokens) { // 6

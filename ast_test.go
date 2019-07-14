@@ -1719,7 +1719,7 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"set\na\n(){}", func(t *test, tk Tokens) { // 17
+		{"set\na\n(b){}", func(t *test, tk Tokens) { // 17
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodSetter,
@@ -1728,14 +1728,20 @@ func TestPropertyDefinition(t *testing.T) {
 						Tokens:              tk[2:3],
 					},
 					Params: FormalParameters{
-						Tokens: tk[4:6],
+						FormalParameterList: []BindingElement{
+							{
+								SingleNameBinding: &tk[5],
+								Tokens:            tk[5:6],
+							},
+						},
+						Tokens: tk[4:7],
 					},
 					FunctionBody: Block{
-						Tokens: tk[6:8],
+						Tokens: tk[7:9],
 					},
-					Tokens: tk[:8],
+					Tokens: tk[:9],
 				},
-				Tokens: tk[:8],
+				Tokens: tk[:9],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
