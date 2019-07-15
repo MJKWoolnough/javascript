@@ -82,52 +82,75 @@ type MethodDefinition struct {
 }
 
 func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bool) error {
-	static := j.AcceptToken(parser.Token{TokenIdentifier, "static"})
-	j.AcceptRunWhitespace()
-	async := j.AcceptToken(parser.Token{TokenIdentifier, "async"})
-	if async {
-		md.Type = MethodAsync
-		j.AcceptRunWhitespaceNoNewLine()
-	} else if j.AcceptToken(parser.Token{TokenIdentifier, "get"}) {
-		if static {
-			md.Type = MethodStaticGetter
-		} else {
-			md.Type = MethodGetter
-		}
-		j.AcceptRunWhitespace()
-	} else if j.AcceptToken(parser.Token{TokenIdentifier, "set"}) {
-		if static {
-			md.Type = MethodStaticSetter
-		} else {
-			md.Type = MethodSetter
-		}
-		j.AcceptRunWhitespace()
-	}
-	if md.Type == MethodNormal {
-		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
-			if static {
-				if async {
-					md.Type = MethodStaticAsyncGenerator
-				} else {
-					md.Type = MethodStaticGenerator
-				}
-			} else {
-				if async {
-					md.Type = MethodAsyncGenerator
-				} else {
-					md.Type = MethodGenerator
-				}
-			}
-			j.AcceptRunWhitespace()
-		} else if static {
-			if async {
-				md.Type = MethodStaticAsync
-			} else {
-				md.Type = MethodStatic
-			}
-		}
-	}
+	var prev MethodType
 	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{TokenIdentifier, "static"}) {
+		prev = md.Type
+		md.Type = MethodStatic
+		g.AcceptRunWhitespace()
+	}
+	switch g.Peek() {
+	case parser.Token{TokenIdentifier, "get"}:
+		j.Score(g)
+		g = j.NewGoal()
+		g.Except()
+		g.AcceptRunWhitespace()
+		prev = md.Type
+		switch md.Type {
+		case MethodNormal:
+			md.Type = MethodGetter
+		case MethodStatic:
+			md.Type = MethodStaticGetter
+		}
+	case parser.Token{TokenIdentifier, "set"}:
+		j.Score(g)
+		g = j.NewGoal()
+		g.Except()
+		g.AcceptRunWhitespace()
+		prev = md.Type
+		switch md.Type {
+		case MethodNormal:
+			md.Type = MethodSetter
+		case MethodStatic:
+			md.Type = MethodStaticSetter
+		}
+	case parser.Token{TokenIdentifier, "async"}:
+		j.Score(g)
+		g = j.NewGoal()
+		g.Except()
+		g.AcceptRunWhitespaceNoNewLine()
+		prev = md.Type
+		switch md.Type {
+		case MethodNormal:
+			md.Type = MethodAsync
+		case MethodStatic:
+			md.Type = MethodStaticAsync
+		}
+		fallthrough
+	default:
+		if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			g = j.NewGoal()
+			switch md.Type {
+			case MethodNormal:
+				md.Type = MethodGenerator
+			case MethodStatic:
+				md.Type = MethodStaticGenerator
+			case MethodAsync:
+				md.Type = MethodAsyncGenerator
+			case MethodStaticAsync:
+				md.Type = MethodStaticAsyncGenerator
+			}
+			prev = md.Type
+		}
+	}
+	if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+		md.Type = prev
+	} else {
+		j.Score(g)
+		g = j.NewGoal()
+	}
 	if pn != nil {
 		md.PropertyName = *pn
 	} else if err := md.PropertyName.parse(&g, yield, await); err != nil {
