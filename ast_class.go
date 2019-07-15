@@ -175,12 +175,14 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 			return g.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
+		g.AcceptRunWhitespace()
 		md.Params.FormalParameterList = make([]BindingElement, 1)
 		h := g.NewGoal()
 		if err := md.Params.FormalParameterList[0].parse(&h, false, false); err != nil {
 			return j.Error("MethodDefinition", err)
 		}
 		g.Score(h)
+		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 			return g.Error("MethodDefinition", ErrMissingClosingParenthesis)
 		}
