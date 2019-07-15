@@ -85,7 +85,6 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	var prev MethodType
 	g := j.NewGoal()
 	if g.AcceptToken(parser.Token{TokenIdentifier, "static"}) {
-		prev = md.Type
 		md.Type = MethodStatic
 		g.AcceptRunWhitespace()
 	}
@@ -149,8 +148,8 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		md.Type = prev
 	} else {
 		j.Score(g)
-		g = j.NewGoal()
 	}
+	g = j.NewGoal()
 	if pn != nil {
 		md.PropertyName = *pn
 	} else if err := md.PropertyName.parse(&g, yield, await); err != nil {
