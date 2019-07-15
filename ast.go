@@ -43,6 +43,23 @@ func (j *jsParser) parseIdentifier(yield, await bool) *Token {
 	return nil
 }
 
+func (j *jsParser) parseSemicolon() bool {
+	g := j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		j.Score(g)
+		return true
+	} else if g.Peek().Type == TokenRightBracePunctuator {
+		return true
+	}
+	g = j.NewGoal()
+	g.AcceptRunWhitespaceNoNewLine()
+	if t := g.Peek().Type; t == TokenLineTerminator || t == parser.TokenDone {
+		return true
+	}
+	return false
+}
+
 type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
@@ -104,12 +121,15 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 			return j.Error("LexicalDeclaration", err)
 		}
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			if j.parseSemicolon() {
+				break
+			}
 			return j.Error("LexicalDeclaration", ErrInvalidLexicalDeclaration)
 		}
+		j.Score(g)
 	}
 	ld.Tokens = j.ToTokens()
 	return nil

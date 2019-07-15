@@ -156,28 +156,24 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 	case parser.Token{TokenKeyword, "continue"}:
 		g.Except()
 		s.Type = StatementContinue
-		g.AcceptRunWhitespaceNoNewLine()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			h := g.NewGoal()
-			if s.LabelIdentifier = h.parseIdentifier(yield, await); s.LabelIdentifier == nil {
+		if !g.parseSemicolon() {
+			g.AcceptRunWhitespaceNoNewLine()
+			if s.LabelIdentifier = g.parseIdentifier(yield, await); s.LabelIdentifier == nil {
 				return g.Error("Statement", ErrNoIdentifier)
 			}
-			g.Score(h)
-			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
 	case parser.Token{TokenKeyword, "break"}:
 		g.Except()
 		s.Type = StatementBreak
-		g.AcceptRunWhitespaceNoNewLine()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			h := g.NewGoal()
-			if s.LabelIdentifier = h.parseIdentifier(yield, await); s.LabelIdentifier == nil {
+		if !g.parseSemicolon() {
+			g.AcceptRunWhitespaceNoNewLine()
+			if s.LabelIdentifier = g.parseIdentifier(yield, await); s.LabelIdentifier == nil {
 				return g.Error("Statement", ErrNoIdentifier)
 			}
-			g.Score(h)
-			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
@@ -187,15 +183,15 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		}
 		g.Except()
 		s.Type = StatementReturn
-		g.AcceptRunWhitespaceNoNewLine()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if !g.parseSemicolon() {
+			g.AcceptRunWhitespaceNoNewLine()
 			h := g.NewGoal()
 			s.ExpressionStatement = new(Expression)
 			if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
 				return g.Error("Statement", err)
 			}
 			g.Score(h)
-			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
@@ -214,7 +210,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return g.Error("Statement", err)
 		}
 		g.Score(h)
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if !g.parseSemicolon() {
 			return g.Error("Statement", ErrMissingSemiColon)
 		}
 	case parser.Token{TokenKeyword, "try"}:
@@ -225,10 +221,8 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Except()
 		s.DebuggerStatement = g.GetLastToken()
-		h := g.NewGoal()
-		h.AcceptRunWhitespace()
-		if h.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			g.Score(h)
+		if !g.parseSemicolon() {
+			return g.Error("Statement", ErrMissingSemiColon)
 		}
 	default:
 		if i := g.parseIdentifier(yield, await); i != nil {
@@ -269,7 +263,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 				return j.Error("Statement", err)
 			}
 			g.AcceptRunWhitespace()
-			if !g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
 		}
@@ -357,9 +351,8 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 		return j.Error("IterationStatementDo", ErrMissingClosingParenthesis)
 	}
-	g = j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-		j.Score(g)
+	if !j.parseSemicolon() {
+		return j.Error("IterationStatementDo", ErrMissingSemiColon)
 	}
 	is.Tokens = j.ToTokens()
 	return nil
@@ -897,7 +890,7 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "var"})
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if j.parseSemicolon() {
 			break
 		}
 		g := j.NewGoal()
@@ -907,12 +900,15 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 			return j.Error("VariableStatement", err)
 		}
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
-			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			if j.parseSemicolon() {
+				break
+			}
 			return j.Error("VariableStatement", ErrMissingComma)
 		}
+		j.Score(g)
 	}
 	vs.Tokens = j.ToTokens()
 	return nil

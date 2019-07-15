@@ -694,14 +694,31 @@ func TestLexicalDeclaration(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`const a`, func(t *test, tk Tokens) { // 3
-			t.Err = Error{
-				Err:     ErrInvalidLexicalDeclaration,
-				Parsing: "LexicalDeclaration",
-				Token:   tk[3],
+		{"const\na", func(t *test, tk Tokens) { // 3
+			t.Output = LexicalDeclaration{
+				LetOrConst: Const,
+				BindingList: []LexicalBinding{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
 			}
 		}},
-		{"const\na;", func(t *test, tk Tokens) { // 4
+		{"const\na\n", func(t *test, tk Tokens) { // 4
+			t.Output = LexicalDeclaration{
+				LetOrConst: Const,
+				BindingList: []LexicalBinding{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"const\na;", func(t *test, tk Tokens) { // 5
 			t.Output = LexicalDeclaration{
 				LetOrConst: Const,
 				BindingList: []LexicalBinding{
@@ -713,7 +730,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{"const\na,\nb;", func(t *test, tk Tokens) { // 5
+		{"const\na,\nb;", func(t *test, tk Tokens) { // 6
 			t.Output = LexicalDeclaration{
 				LetOrConst: Const,
 				BindingList: []LexicalBinding{
@@ -729,7 +746,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"const \n a;", func(t *test, tk Tokens) { // 6
+		{"const \n a;", func(t *test, tk Tokens) { // 7
 			t.Output = LexicalDeclaration{
 				LetOrConst: Const,
 				BindingList: []LexicalBinding{
@@ -741,7 +758,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"const \n a, \n b;", func(t *test, tk Tokens) { // 7
+		{"const \n a, \n b;", func(t *test, tk Tokens) { // 8
 			t.Output = LexicalDeclaration{
 				LetOrConst: Const,
 				BindingList: []LexicalBinding{
@@ -757,7 +774,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{`let`, func(t *test, tk Tokens) { // 8
+		{`let`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
@@ -768,14 +785,31 @@ func TestLexicalDeclaration(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`let a`, func(t *test, tk Tokens) { // 9
-			t.Err = Error{
-				Err:     ErrInvalidLexicalDeclaration,
-				Parsing: "LexicalDeclaration",
-				Token:   tk[3],
+		{"let\na", func(t *test, tk Tokens) { // 10
+			t.Output = LexicalDeclaration{
+				LetOrConst: Let,
+				BindingList: []LexicalBinding{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
 			}
 		}},
-		{"let\na;", func(t *test, tk Tokens) { // 10
+		{"let\na\n", func(t *test, tk Tokens) { // 11
+			t.Output = LexicalDeclaration{
+				LetOrConst: Let,
+				BindingList: []LexicalBinding{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"let\na;", func(t *test, tk Tokens) { // 12
 			t.Output = LexicalDeclaration{
 				LetOrConst: Let,
 				BindingList: []LexicalBinding{
@@ -787,7 +821,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{"let\na,\nb;", func(t *test, tk Tokens) { // 11
+		{"let\na,\nb;", func(t *test, tk Tokens) { // 13
 			t.Output = LexicalDeclaration{
 				LetOrConst: Let,
 				BindingList: []LexicalBinding{
@@ -803,7 +837,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"let \n a;", func(t *test, tk Tokens) { // 12
+		{"let \n a;", func(t *test, tk Tokens) { // 14
 			t.Output = LexicalDeclaration{
 				LetOrConst: Let,
 				BindingList: []LexicalBinding{
@@ -815,7 +849,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"let \n a, \n b;", func(t *test, tk Tokens) { // 13
+		{"let \n a, \n b;", func(t *test, tk Tokens) { // 15
 			t.Output = LexicalDeclaration{
 				LetOrConst: Let,
 				BindingList: []LexicalBinding{

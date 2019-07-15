@@ -93,8 +93,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		}
 	}
 	j.Score(g)
-	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+	if !j.parseSemicolon() {
 		return j.Error("ImportDeclaration", ErrMissingSemiColon)
 	}
 	id.Tokens = j.ToTokens()
@@ -265,8 +264,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 				return j.Error("ExportDeclaration", err)
 			}
 			j.Score(g)
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !j.parseSemicolon() {
 				return j.Error("ExportDeclaration", ErrMissingSemiColon)
 			}
 		}
@@ -278,7 +276,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if !j.parseSemicolon() {
 			return j.Error("ExportDeclaration", ErrMissingSemiColon)
 		}
 	} else if g := j.NewGoal(); g.Peek() == (parser.Token{TokenKeyword, "var"}) {
@@ -293,16 +291,15 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if !j.parseSemicolon() {
+			j.AcceptRunWhitespace()
 			g = j.NewGoal()
 			ed.FromClause = new(FromClause)
 			if err := ed.FromClause.parse(&g); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
 			j.Score(g)
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+			if !j.parseSemicolon() {
 				return j.Error("ExportDeclaration", ErrMissingSemiColon)
 			}
 		}
