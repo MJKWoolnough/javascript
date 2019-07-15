@@ -11,7 +11,9 @@ type Block struct {
 }
 
 func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return j.Error("Block", ErrMissingOpeningBrace)
+	}
 	j.AcceptRunWhitespace()
 	for {
 		if j.Accept(TokenRightBracePunctuator) {
