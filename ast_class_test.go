@@ -1000,3 +1000,62 @@ func TestMethodDefinition(t *testing.T) {
 		return md, err
 	})
 }
+
+func TestPropertyName(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidPropertyName,
+				Parsing: "PropertyName",
+				Token:   tk[0],
+			}
+		}},
+		{"[\n]", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     assignmentError(tk[2]),
+				Parsing: "PropertyName",
+				Token:   tk[2],
+			}
+		}},
+		{"[\na\n]", func(t *test, tk Tokens) { // 3
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = PropertyName{
+				ComputedPropertyName: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 4
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`43`, func(t *test, tk Tokens) { // 5
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`"43"`, func(t *test, tk Tokens) { // 6
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`null`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrInvalidPropertyName,
+				Parsing: "PropertyName",
+				Token:   tk[0],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var pn PropertyName
+		err := pn.parse(&t.Tokens, t.Yield, t.Await)
+		return pn, err
+	})
+
+}
