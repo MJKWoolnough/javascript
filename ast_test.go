@@ -817,6 +817,83 @@ for(
 				Tokens: tk[:19],
 			}
 		}},
+		{"a = b + c\n(d + e).print()", func(t *test, tk Tokens) { // 9
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litD := makeConditionLiteral(tk, 11)
+			litE := makeConditionLiteral(tk, 15)
+			de := wrapConditional(AdditiveExpression{
+				AdditiveExpression:       &litD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				AdditiveOperator:         AdditiveAdd,
+				MultiplicativeExpression: litE.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[11:16],
+			})
+			bc := wrapConditional(AdditiveExpression{
+				AdditiveExpression: &litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				AdditiveOperator:   AdditiveAdd,
+				MultiplicativeExpression: wrapConditional(UpdateExpression{
+					LeftHandSideExpression: &LeftHandSideExpression{
+						CallExpression: &CallExpression{
+							CallExpression: &CallExpression{
+								CallExpression: &CallExpression{
+									MemberExpression: &MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: &tk[8],
+											Tokens:              tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Arguments: &Arguments{
+										ArgumentList: []AssignmentExpression{
+											{
+												ConditionalExpression: &de,
+												Tokens:                tk[11:16],
+											},
+										},
+										Tokens: tk[10:17],
+									},
+									Tokens: tk[8:17],
+								},
+								IdentifierName: &tk[18],
+								Tokens:         tk[8:19],
+							},
+							Arguments: &Arguments{
+								Tokens: tk[19:21],
+							},
+							Tokens: tk[8:21],
+						},
+						Tokens: tk[8:21],
+					},
+					Tokens: tk[8:21],
+				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens: tk[4:21],
+			})
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										LeftHandSideExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression,
+										AssignmentOperator:     AssignmentAssign,
+										AssignmentExpression: &AssignmentExpression{
+											ConditionalExpression: &bc,
+											Tokens:                tk[4:21],
+										},
+										Tokens: tk[:21],
+									},
+								},
+								Tokens: tk[:21],
+							},
+							Tokens: tk[:21],
+						},
+						Tokens: tk[:21],
+					},
+				},
+				Tokens: tk[:21],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
