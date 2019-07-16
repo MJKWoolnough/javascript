@@ -729,6 +729,94 @@ for(
 				Tokens: tk[:8],
 			}
 		}},
+		{"if (a > b)\nelse d = e", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     assignmentError(tk[10]),
+								Parsing: "Expression",
+								Token:   tk[10],
+							},
+							Parsing: "Statement",
+							Token:   tk[10],
+						},
+						Parsing: "IfStatement",
+						Token:   tk[10],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"if\n(a\n>\nb)\nc\nelse\nd\n=\ne", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 3)
+			litB := makeConditionLiteral(tk, 7)
+			litC := makeConditionLiteral(tk, 10)
+			litD := makeConditionLiteral(tk, 14)
+			litE := makeConditionLiteral(tk, 18)
+			ab := wrapConditional(RelationalExpression{
+				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+				RelationshipOperator: RelationshipGreaterThan,
+				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+				Tokens:               tk[3:8],
+			})
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							IfStatement: &IfStatement{
+								Expression: Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: &ab,
+											Tokens:                tk[3:8],
+										},
+									},
+									Tokens: tk[3:8],
+								},
+								Statement: Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: &litC,
+												Tokens:                tk[10:11],
+											},
+										},
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[10:11],
+								},
+								ElseStatement: &Statement{
+									ExpressionStatement: &Expression{
+										Expressions: []AssignmentExpression{
+											{
+												LeftHandSideExpression: litD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression,
+												AssignmentOperator:     AssignmentAssign,
+												AssignmentExpression: &AssignmentExpression{
+													ConditionalExpression: &litE,
+													Tokens:                tk[18:19],
+												},
+												Tokens: tk[14:19],
+											},
+										},
+										Tokens: tk[14:19],
+									},
+									Tokens: tk[14:19],
+								},
+								Tokens: tk[:19],
+							},
+							Tokens: tk[:19],
+						},
+						Tokens: tk[:19],
+					},
+				},
+				Tokens: tk[:19],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
