@@ -184,7 +184,7 @@ for(
 ) {
 	runMe ( a );
 }
-`, func(t *test, tk Tokens) {
+`, func(t *test, tk Tokens) { // 1
 			useStrict := makeConditionLiteral(tk, 1)
 			helloWorld := makeConditionLiteral(tk, 13)
 			v := makeConditionLiteral(tk, 34)
@@ -454,7 +454,7 @@ for(
 				Tokens: tk[:92],
 			}
 		}},
-		{`if (typeof a === "b" && typeof c.d == "e") {}`, func(t *test, tk Tokens) {
+		{`if (typeof a === "b" && typeof c.d == "e") {}`, func(t *test, tk Tokens) { // 2
 			litA := makeConditionLiteral(tk, 5)
 			litB := makeConditionLiteral(tk, 9)
 			litE := makeConditionLiteral(tk, 21)
@@ -533,6 +533,95 @@ for(
 					},
 				},
 				Tokens: tk[:26],
+			}
+		}},
+		{"{ 1 2 } 3", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingSemiColon,
+								Parsing: "Statement",
+								Token:   tk[3],
+							},
+							Parsing: "StatementListItem",
+							Token:   tk[2],
+						},
+						Parsing: "Block",
+						Token:   tk[2],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"{ 1\n2 } 3", func(t *test, tk Tokens) { // 4
+			lit1 := makeConditionLiteral(tk, 2)
+			lit2 := makeConditionLiteral(tk, 4)
+			lit3 := makeConditionLiteral(tk, 8)
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							BlockStatement: &Block{
+								StatementListItems: []StatementListItem{
+									{
+										Statement: &Statement{
+											ExpressionStatement: &Expression{
+												Expressions: []AssignmentExpression{
+													{
+														ConditionalExpression: &lit1,
+														Tokens:                tk[2:3],
+													},
+												},
+												Tokens: tk[2:3],
+											},
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									{
+										Statement: &Statement{
+											ExpressionStatement: &Expression{
+												Expressions: []AssignmentExpression{
+													{
+														ConditionalExpression: &lit2,
+														Tokens:                tk[4:5],
+													},
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+								},
+								Tokens: tk[:7],
+							},
+							Tokens: tk[:7],
+						},
+						Tokens: tk[:7],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &lit3,
+										Tokens:                tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Tokens: tk[:9],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
