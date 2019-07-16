@@ -679,6 +679,56 @@ for(
 				Tokens: tk[:17],
 			}
 		}},
+		{"a = b\n++c", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			litC := makeConditionLiteral(tk, 7)
+			pa := wrapConditional(UpdateExpression{
+				UpdateOperator:  UpdatePreIncrement,
+				UnaryExpression: &litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression,
+				Tokens:          tk[6:8],
+			})
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										LeftHandSideExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression,
+										AssignmentOperator:     AssignmentAssign,
+										AssignmentExpression: &AssignmentExpression{
+											ConditionalExpression: &litB,
+											Tokens:                tk[4:5],
+										},
+										Tokens: tk[:5],
+									},
+								},
+								Tokens: tk[:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &pa,
+										Tokens:                tk[6:8],
+									},
+								},
+								Tokens: tk[6:8],
+							},
+							Tokens: tk[6:8],
+						},
+						Tokens: tk[6:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
