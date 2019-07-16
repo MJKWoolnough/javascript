@@ -117,7 +117,10 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		j.Score(g)
 		g = j.NewGoal()
 		g.Except()
-		g.AcceptRunWhitespaceNoNewLine()
+		if t := g.AcceptRunWhitespaceNoNewLine(); t == TokenLineTerminator || t == TokenSingleLineComment || t == TokenMultiLineComment {
+			g = j.NewGoal()
+			break
+		}
 		prev = md.Type
 		switch md.Type {
 		case MethodNormal:

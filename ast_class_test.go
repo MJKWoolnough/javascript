@@ -994,6 +994,21 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens: tk[:14],
 			}
 		}},
+		{"async\n(){}", func(t *test, tk Tokens) { // 38
+			t.Output = MethodDefinition{
+				PropertyName: PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				Params: FormalParameters{
+					Tokens: tk[2:4],
+				},
+				FunctionBody: Block{
+					Tokens: tk[4:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var md MethodDefinition
 		err := md.parse(&t.Tokens, nil, t.Yield, t.Await)
