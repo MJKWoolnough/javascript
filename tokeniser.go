@@ -233,6 +233,17 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					}
 					return t.Error()
 				}
+			} else if t.Accept(decimalDigit) {
+				t.AcceptRun(decimalDigit)
+				if t.Accept("eE") {
+					t.Accept("+-")
+					t.AcceptRun(decimalDigit)
+				}
+				j.divisionAllowed = true
+				return parser.Token{
+					Type: TokenNumericLiteral,
+					Data: t.Get(),
+				}, j.inputElement
 			}
 		case '<', '>', '*':
 			if !t.Accept("=") { //>=, <=, *=
