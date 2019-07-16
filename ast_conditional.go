@@ -573,7 +573,7 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 		}
 		j.Score(g)
 		g = j.NewGoal()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoNewLine()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "++"}) {
 			j.Score(g)
 			ue.UpdateOperator = UpdatePostIncrement
