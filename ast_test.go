@@ -624,6 +624,61 @@ for(
 				Tokens: tk[:9],
 			}
 		}},
+		{"function fn() {\nreturn\na + b\n}", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 10)
+			litB := makeConditionLiteral(tk, 14)
+			add := wrapConditional(AdditiveExpression{
+				AdditiveExpression:       &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+				AdditiveOperator:         AdditiveAdd,
+				MultiplicativeExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+				Tokens:                   tk[10:15],
+			})
+			t.Output = Script{
+				StatementList: []StatementListItem{
+					{
+						Declaration: &Declaration{
+							FunctionDeclaration: &FunctionDeclaration{
+								BindingIdentifier: &tk[2],
+								FormalParameters: FormalParameters{
+									Tokens: tk[3:5],
+								},
+								FunctionBody: Block{
+									StatementListItems: []StatementListItem{
+										{
+											Statement: &Statement{
+												Type:   StatementReturn,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										{
+											Statement: &Statement{
+												ExpressionStatement: &Expression{
+													Expressions: []AssignmentExpression{
+														{
+															ConditionalExpression: &add,
+															Tokens:                tk[10:15],
+														},
+													},
+													Tokens: tk[10:15],
+												},
+												Tokens: tk[10:15],
+											},
+											Tokens: tk[10:15],
+										},
+									},
+									Tokens: tk[6:17],
+								},
+								Tokens: tk[:17],
+							},
+							Tokens: tk[:17],
+						},
+						Tokens: tk[:17],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
