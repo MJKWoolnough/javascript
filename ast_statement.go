@@ -262,7 +262,6 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			if err := s.ExpressionStatement.parse(&g, true, yield, await); err != nil {
 				return j.Error("Statement", err)
 			}
-			g.AcceptRunWhitespace()
 			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
