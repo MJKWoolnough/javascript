@@ -13,12 +13,16 @@ const (
 	FunctionNormal FunctionType = iota
 	FunctionGenerator
 	FunctionAsync
+	FunctionAsyncGenerator
 )
 
 // FunctionDeclaration as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
 //
 // Also parses FunctionExpression
+//
+// Include TC39 proposal for async generator functions
+// https://github.com/tc39/proposal-async-iteration#async-generator-functions
 type FunctionDeclaration struct {
 	Type              FunctionType
 	BindingIdentifier *Token
@@ -36,8 +40,12 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
 	j.AcceptRunWhitespace()
-	if fd.Type == 0 && j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
-		fd.Type = FunctionGenerator
+	if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+		if fd.Type == FunctionAsync {
+			fd.Type = FunctionAsyncGenerator
+		} else {
+			fd.Type = FunctionGenerator
+		}
 		j.AcceptRunWhitespace()
 	}
 	if bi := j.parseIdentifier(yield, await); bi == nil {
