@@ -5,11 +5,15 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Script represents the top-level of a parsed javascript text
 type Script struct {
 	StatementList []StatementListItem
 	Tokens        Tokens
 }
 
+// ParseScript parses a javascript input into an AST.
+//
+// It is recommended to use ParseModule instead of this function.
 func ParseScript(t parser.Tokeniser) (*Script, error) {
 	j, err := newJSParser(t)
 	if err != nil {
@@ -60,6 +64,8 @@ func (j *jsParser) parseSemicolon() bool {
 	return false
 }
 
+// Declaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-Declaration
 type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
@@ -92,13 +98,17 @@ func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// LetOrConst specifies whether a LexicalDeclaration is a let or const declaration
 type LetOrConst bool
 
+// Valid LetOrConst values
 const (
 	Let   LetOrConst = false
 	Const LetOrConst = true
 )
 
+// LexicalDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-LexicalDeclaration
 type LexicalDeclaration struct {
 	LetOrConst
 	BindingList []LexicalBinding
@@ -135,6 +145,8 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+// LexicalBinding as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
 type LexicalBinding struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
@@ -177,6 +189,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+// ArrayBindingPattern as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ArrayBindingPattern
 type ArrayBindingPattern struct {
 	BindingElementList []BindingElement
 	BindingRestElement *BindingElement
@@ -228,6 +242,8 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// ObjectBindingPattern as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ObjectBindingPattern
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
 	BindingRestProperty *Token
@@ -272,6 +288,8 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// BindingProperty as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-BindingProperty
 type BindingProperty struct {
 	SingleNameBinding *Token
 	Initializer       *AssignmentExpression
@@ -322,12 +340,16 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// VariableDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-VariableDeclaration
 type VariableDeclaration LexicalBinding
 
 func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
 	return ((*LexicalBinding)(v)).parse(j, in, yield, await)
 }
 
+// ArrayLiteral as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ArrayLiteral
 type ArrayLiteral struct {
 	ElementList   []AssignmentExpression
 	SpreadElement *AssignmentExpression
@@ -378,6 +400,8 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// ObjectLiteral as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ObjectLiteral
 type ObjectLiteral struct {
 	PropertyDefinitionList []PropertyDefinition
 	Tokens                 Tokens
@@ -410,6 +434,8 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// PropertyDefinition as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
 type PropertyDefinition struct {
 	IdentifierReference  *Token
 	PropertyName         *PropertyName
@@ -500,6 +526,8 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// TemplateLiteral as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
 type TemplateLiteral struct {
 	NoSubstitutionTemplate *Token
 	TemplateHead           *Token
@@ -539,6 +567,10 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// ArrowFunction as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
+//
+// Also includes AsyncArrowFunction
 type ArrowFunction struct {
 	Async                                             bool
 	BindingIdentifier                                 *Token
@@ -599,6 +631,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 	return nil
 }
 
+// Errors
 var (
 	ErrReservedIdentifier         = errors.New("reserved identifier")
 	ErrNoIdentifier               = errors.New("missing identifier")
