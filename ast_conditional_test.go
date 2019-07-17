@@ -923,6 +923,110 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:25],
 			}
 		}},
+		{`true ? :`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "ConditionalExpression",
+				Token:   tk[4],
+			}
+		}},
+		{`true ? a`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "ConditionalExpression",
+				Token:   tk[5],
+			}
+		}},
+		{`true ? a : :`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     assignmentError(tk[8]),
+				Parsing: "ConditionalExpression",
+				Token:   tk[8],
+			}
+		}},
+		{`++?`, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err:     ErrNoIdentifier,
+																							Parsing: "PrimaryExpression",
+																							Token:   tk[1],
+																						},
+																						Parsing: "MemberExpression",
+																						Token:   tk[1],
+																					},
+																					Parsing: "NewExpression",
+																					Token:   tk[1],
+																				},
+																				Parsing: "LeftHandSideExpression",
+																				Token:   tk[1],
+																			},
+																			Parsing: "UpdateExpression",
+																			Token:   tk[1],
+																		},
+																		Parsing: "UnaryExpression",
+																		Token:   tk[1],
+																	},
+																	Parsing: "UpdateExpression",
+																	Token:   tk[1],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[0],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
