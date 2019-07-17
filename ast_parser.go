@@ -8,11 +8,13 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Token represents a single parsed token with source positioning
 type Token struct {
 	parser.Token
 	Pos, Line, LinePos uint64
 }
 
+// Tokens is a collection of Token values
 type Tokens []Token
 
 type jsParser Tokens
@@ -184,6 +186,7 @@ func (j *jsParser) GetLastToken() *Token {
 	return &(*j)[len(*j)-1]
 }
 
+// Error is a parsing error with trace details
 type Error struct {
 	Err     error
 	Parsing string
