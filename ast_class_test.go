@@ -1009,6 +1009,20 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{"set a b", func(t *test, tk Tokens) { // 39
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "MethodDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"set a(b+c)", func(t *test, tk Tokens) { // 40
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "MethodDefinition",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var md MethodDefinition
 		err := md.parse(&t.Tokens, nil, t.Yield, t.Await)
@@ -1065,6 +1079,13 @@ func TestPropertyName(t *testing.T) {
 				Err:     ErrInvalidPropertyName,
 				Parsing: "PropertyName",
 				Token:   tk[0],
+			}
+		}},
+		{`[a, b]`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "PropertyName",
+				Token:   tk[2],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
