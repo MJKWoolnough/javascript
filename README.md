@@ -123,6 +123,9 @@ type AdditiveExpression struct {
 AdditiveExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
 
+If AdditiveOperator is not AdditiveNone then AdditiveExpression must be non-nil,
+and vice-versa.
+
 #### func (AdditiveExpression) Format
 
 ```go
@@ -231,7 +234,13 @@ type ArrowFunction struct {
 ArrowFunction as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
 
-Also includes AsyncArrowFunction
+Also includes AsyncArrowFunction.
+
+It is only valid for one of BindingIdentifier,
+CoverParenthesizedExpressionAndArrowParameterList (!Async), and FormalParameters
+(+Async) to be non-nil.
+
+Only one of AssignmentExpression or FunctionBody must be non-nil.
 
 #### func (ArrowFunction) Format
 
@@ -257,6 +266,19 @@ type AssignmentExpression struct {
 
 AssignmentExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
+
+It is only valid for one of ConditionalExpression, ArrowFunction,
+LeftHandSideExpression to be non-nil.
+
+If LeftHandSideExpression is non-nil, then AssignmentOperator must not be
+AssignmentNone and AssignmentExpression must be non-nil.
+
+If Yield is true, AssignmentExpression must be non-nil.
+
+If AssignmentOperator is AssignmentNone LeftHandSideExpression must be nil.
+
+If LeftHandSideExpression is nil and Yield is false, AssignmentExpression must
+be nil.
 
 #### func (AssignmentExpression) Format
 
@@ -315,6 +337,11 @@ type BindingElement struct {
 BindingElement as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-BindingElement
 
+Only one of SingleNameBinding, ArrayBindingPattern, or ObjectBindingPattern must
+be non-nil.
+
+The Initializer is optional.
+
 #### func (BindingElement) Format
 
 ```go
@@ -336,6 +363,9 @@ type BindingProperty struct {
 
 BindingProperty as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-BindingProperty
+
+It is only valid for either SingleNameBinding, with an optional Initializer, or
+PropertyName and BindingElement (PropertyName: BindingElement) to be non-nil.
 
 #### func (BindingProperty) Format
 
@@ -445,6 +475,14 @@ https://www.ecma-international.org/ecma-262/#prod-CallExpression
 Includes the TC39 proposal for the dynamic import function call
 https://github.com/tc39/proposal-dynamic-import/#import
 
+It is only valid for one of MemberExpression, ImportCall, or CallExpression to
+be non-nil or SuperCall to be true.
+
+If MemberExpression is non-nil, or SuperCall is true, Arguments must be non-nil.
+
+If CallExpression is non-nil, only one of Arguments, Expression, IdentifierName,
+or TemplateLiteral must be non-nil.
+
 #### func (CallExpression) Format
 
 ```go
@@ -486,6 +524,8 @@ type ClassDeclaration struct {
 ClassDeclaration as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
 
+Also covers ClassExpression when BindingIdentifier is nil.
+
 #### func (ClassDeclaration) Format
 
 ```go
@@ -506,6 +546,8 @@ type ConditionalExpression struct {
 
 ConditionalExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
+
+If True is non-nil, False must be non-nil also.
 
 #### func (ConditionalExpression) Format
 
@@ -529,6 +571,9 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
 
+It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
+ObjectBindingPattern to be non-nil
+
 #### func (CoverParenthesizedExpressionAndArrowParameterList) Format
 
 ```go
@@ -550,6 +595,9 @@ type Declaration struct {
 Declaration as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-Declaration
 
+Only one of ClassDeclaration, FunctionDeclaration or LexicalDeclaration must be
+non-nil
+
 #### func (Declaration) Format
 
 ```go
@@ -570,6 +618,9 @@ type EqualityExpression struct {
 
 EqualityExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
+
+If EqualityOperator is not EqualityNone, then EqualityExpression must be
+non-nil, and vice-versa.
 
 #### func (EqualityExpression) Format
 
@@ -679,6 +730,11 @@ type ExportDeclaration struct {
 ExportDeclaration as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
 
+It is only valid for one of ExportClause, VariableStatement, Declaration,
+DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
+
+FromClause can be non-nil exclusively or paired with ExportClause.
+
 #### func (ExportDeclaration) Format
 
 ```go
@@ -698,6 +754,8 @@ type ExportSpecifier struct {
 ExportSpecifier as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
 
+IdentifierName must be non-nil
+
 #### func (ExportSpecifier) Format
 
 ```go
@@ -716,6 +774,8 @@ type Expression struct {
 
 Expression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-Expression
+
+Expressions must have a length of at least one to be valid.
 
 #### func (Expression) Format
 
@@ -800,6 +860,8 @@ type FromClause struct {
 FromClause as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-FromClause
 
+ModuleSpecifier must be non-nil.
+
 #### func (FromClause) Format
 
 ```go
@@ -822,8 +884,7 @@ type FunctionDeclaration struct {
 FunctionDeclaration as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
 
-
-Also parses FunctionExpression
+Also parses FunctionExpression, for when BindingIdentifier is nil.
 
 Include TC39 proposal for async generator functions
 https://github.com/tc39/proposal-async-iteration#async-generator-functions
@@ -848,6 +909,9 @@ type FunctionRestParameter struct {
 
 FunctionRestParameter as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
+
+Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern must
+be non-nil.
 
 #### func (FunctionRestParameter) Format
 
@@ -924,6 +988,11 @@ type ImportClause struct {
 ImportClause as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ImportClause
 
+At least one of ImportedDefaultBinding, NameSpaceImport, and NamedImports must
+be non-nil.
+
+Both NameSpaceImport and NamedImports can not be non-nil.
+
 #### func (ImportClause) Format
 
 ```go
@@ -963,6 +1032,8 @@ type ImportSpecifier struct {
 
 ImportSpecifier as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
+
+ImportedBinding mmust be non-nil.
 
 #### func (ImportSpecifier) Format
 
@@ -1021,6 +1092,13 @@ ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
 Includes TC39 proposal for for-await-of
 https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
 
+The Type determines which fields must be non-nil:
+
+    ForInLeftHandSide: LeftHandSideExpression and In
+    ForInVar, ForInLet, ForInConst: ForBindingIdentifier, ForBindingPatternObject, or ForBindingPatternArray and In
+    ForOfLeftHandSide, ForAwaitOfLeftHandSide: LeftHandSideExpression and Of
+    ForOfVar, ForAwaitOfVar, ForOfLet, ForAwaitOfLet, ForOfConst, ForAwaitOfConst: ForBindingIdentifier, ForBindingPatternObject, or ForBindingPatternArray and Of
+
 #### func (IterationStatementFor) Format
 
 ```go
@@ -1060,6 +1138,8 @@ type LeftHandSideExpression struct {
 
 LeftHandSideExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
+
+It is only valid for one of NewExpression or CallExpression to be non-nil.
 
 #### func (LeftHandSideExpression) Format
 
@@ -1105,6 +1185,9 @@ type LexicalBinding struct {
 
 LexicalBinding as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
+
+Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern must
+be non-nil. The Initializer is optional.
 
 #### func (LexicalBinding) Format
 
@@ -1191,6 +1274,15 @@ type MemberExpression struct {
 
 MemberExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-MemberExpression
+
+If PrimaryExpression is nil, SuperProperty is true, or MetaProperty = is,
+Expression, IdentifierName, TemplateLiteral, and Arguments must be nil.
+
+If Expression, IdentifierName, TemplateLiteral, or Arguments is non-nil, then
+MemberExpression must be non-nil.
+
+It is only valid if one of Expression, IdentifierName, TemplateLiteral, and
+Arguments is non-nil.
 
 #### func (MemberExpression) Format
 
@@ -1302,6 +1394,9 @@ type ModuleItem struct {
 ModuleItem as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ModuleItem
 
+Only one of ImportDeclaration, StatementListItem, or ExportDeclaration must be
+non-nil.
+
 #### func (ModuleItem) Format
 
 ```go
@@ -1322,6 +1417,9 @@ type MultiplicativeExpression struct {
 
 MultiplicativeExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
+
+If MultiplicativeOperator is not MultiplicativeNone then
+MultiplicativeExpression must be non-nil, and vice-versa.
 
 #### func (MultiplicativeExpression) Format
 
@@ -1457,6 +1555,10 @@ type PrimaryExpression struct {
 PrimaryExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
 
+It is only valid is one IdentifierReference, Literal, ArrayLiteral,
+ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
+CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
+
 #### func (PrimaryExpression) Format
 
 ```go
@@ -1479,6 +1581,11 @@ type PropertyDefinition struct {
 PropertyDefinition as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
 
+It is only valid for either IdentifierReference, IdentifierReference and
+AssignmentExpression (CoverInitializedName), PropertyName and
+AssignmentExpression (PropertyName: AssignmentExpression), MethodDefinition, or
+AssignmentExpression (...AssignmentExpression) to be non-nil.
+
 #### func (PropertyDefinition) Format
 
 ```go
@@ -1498,6 +1605,8 @@ type PropertyName struct {
 
 PropertyName as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-PropertyName
+
+Only one of LiteralPropertyName or ComputedPropertyName must be non-nil.
 
 #### func (PropertyName) Format
 
@@ -1519,6 +1628,9 @@ type RelationalExpression struct {
 
 RelationalExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
+
+If RelationshipOperator is not RelationshipNone then RelationalExpression must
+be non-nil, and vice-verse.
 
 #### func (RelationalExpression) Format
 
@@ -1596,6 +1708,9 @@ type ShiftExpression struct {
 ShiftExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
 
+If ShiftOperator is not ShiftNone then ShiftExpression must be non-nil, and
+vice-versa.
+
 #### func (ShiftExpression) Format
 
 ```go
@@ -1654,6 +1769,14 @@ type Statement struct {
 Statement as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-Statement
 
+It is only valid for one of the pointer type to be non-nil.
+
+If LabelIdentifier is non-nil, either one of LabelledItemFunction, or
+LabelledItemStatement must be non-nil, or Type must be StatementContinue or
+StatementBreak.
+
+If Type is StatementThrow, ExpressionStatement must be non-nil.
+
 #### func (Statement) Format
 
 ```go
@@ -1672,7 +1795,8 @@ type StatementListItem struct {
 ```
 
 StatementListItem as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-StatementListItem
+https://www.ecma-international.org/ecma-262/#prod-StatementListItem Only one of
+Statement, or Declaration must be non-nil.
 
 #### func (StatementListItem) Format
 
@@ -1752,6 +1876,13 @@ type TemplateLiteral struct {
 TemplateLiteral as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
 
+If NoSubstitutionTemplate is non-nil it is only valid for TemplateHead,
+Expressions, TemplateMiddleList, and TemplateTail to be nil.
+
+If NoSubstitutionTemplate is nil, the TemplateHead, Expressions, and
+TemplateTail must be non-nil. TemplateMiddleList must have a length of one less
+than the length of Expressions.
+
 #### func (TemplateLiteral) Format
 
 ```go
@@ -1815,6 +1946,13 @@ type TryStatement struct {
 
 TryStatement as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-TryStatement
+
+Only one of CatchParameterBindingIdentifier, CatchParameterObjectBindingPattern,
+and CatchParameterArrayBindingPattern can be non-nil, and must be so if
+CatchBlock is non-nil.
+
+If one of CatchParameterBindingIdentifier, CatchParameterObjectBindingPattern,
+CatchParameterArrayBindingPattern is non-nil, then CatchBlock must be non-nil.
 
 #### func (TryStatement) Format
 
@@ -1887,6 +2025,10 @@ type UpdateExpression struct {
 UpdateExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
 
+If UpdateOperator is UpdatePreIncrement or UpdatePreDecrement UnaryExpression
+must be non-nil, and vice-versa. In all other cases, LeftHandSideExpression must
+be non-nil.
+
 #### func (UpdateExpression) Format
 
 ```go
@@ -1947,6 +2089,8 @@ type VariableStatement struct {
 
 VariableStatement as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-VariableStatement
+
+VariableDeclarationList must have a length or at least one.
 
 #### func (VariableStatement) Format
 
