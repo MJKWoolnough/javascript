@@ -37,7 +37,11 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 		case parser.TokenDone:
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
-			return nil, tokens.Error("Tokeniser", t.Err)
+			return nil, Error{
+				Err:     errors.Error(tk.Data),
+				Parsing: "Tokens",
+				Token:   tokens[len(tokens)-1],
+			}
 		default:
 			switch tk.Type {
 			case TokenLineTerminator:
