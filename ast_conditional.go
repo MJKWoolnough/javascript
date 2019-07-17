@@ -2,6 +2,8 @@ package javascript
 
 import "vimagination.zapto.org/parser"
 
+// ConditionalExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
 type ConditionalExpression struct {
 	LogicalORExpression LogicalORExpression
 	True                *AssignmentExpression
@@ -42,6 +44,8 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	return nil
 }
 
+// LogicalORExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-LogicalORExpression
 type LogicalORExpression struct {
 	LogicalORExpression  *LogicalORExpression
 	LogicalANDExpression LogicalANDExpression
@@ -71,6 +75,8 @@ func (lo *LogicalORExpression) parse(j *jsParser, in, yield, await bool) error {
 	}
 }
 
+// LogicalANDExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-LogicalANDExpression
 type LogicalANDExpression struct {
 	LogicalANDExpression *LogicalANDExpression
 	BitwiseORExpression  BitwiseORExpression
@@ -100,6 +106,8 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+// BitwiseORExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-BitwiseORExpression
 type BitwiseORExpression struct {
 	BitwiseORExpression  *BitwiseORExpression
 	BitwiseXORExpression BitwiseXORExpression
@@ -129,6 +137,8 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 	}
 }
 
+// BitwiseXORExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-BitwiseXORExpression
 type BitwiseXORExpression struct {
 	BitwiseXORExpression *BitwiseXORExpression
 	BitwiseANDExpression BitwiseANDExpression
@@ -158,6 +168,8 @@ func (bx *BitwiseXORExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+// BitwiseANDExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-BitwiseANDExpression
 type BitwiseANDExpression struct {
 	BitwiseANDExpression *BitwiseANDExpression
 	EqualityExpression   EqualityExpression
@@ -187,8 +199,10 @@ func (ba *BitwiseANDExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+// EqualityOperator determines the type of EqualityExpression
 type EqualityOperator int
 
+// Valid EqualityOperator's
 const (
 	EqualityNone EqualityOperator = iota
 	EqualityEqual
@@ -197,6 +211,8 @@ const (
 	EqualityStrictNotEqual
 )
 
+// EqualityExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
 type EqualityExpression struct {
 	EqualityExpression   *EqualityExpression
 	EqualityOperator     EqualityOperator
@@ -239,8 +255,10 @@ func (ee *EqualityExpression) parse(j *jsParser, in, yield, await bool) error {
 	}
 }
 
+// RelationshipOperator determines the relationship type for RelationalExpression
 type RelationshipOperator int
 
+// Valid RelationshipOperator's
 const (
 	RelationshipNone RelationshipOperator = iota
 	RelationshipLessThan
@@ -251,6 +269,8 @@ const (
 	RelationshipIn
 )
 
+// RelationalExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
 type RelationalExpression struct {
 	RelationalExpression *RelationalExpression
 	RelationshipOperator RelationshipOperator
@@ -300,8 +320,10 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+// ShiftOperator determines the shift tyoe for ShiftExpression
 type ShiftOperator int
 
+// Valid ShiftOperator's
 const (
 	ShiftNone ShiftOperator = iota
 	ShiftLeft
@@ -309,6 +331,8 @@ const (
 	ShiftUnsignedRight
 )
 
+// ShiftExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
 type ShiftExpression struct {
 	ShiftExpression    *ShiftExpression
 	ShiftOperator      ShiftOperator
@@ -349,14 +373,18 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
+// AdditiveOperator determines the additive type for AdditiveExpression
 type AdditiveOperator int
 
+// Valid AdditiveOperator's
 const (
 	AdditiveNone AdditiveOperator = iota
 	AdditiveAdd
 	AdditiveMinus
 )
 
+// AdditiveExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
 type AdditiveExpression struct {
 	AdditiveExpression       *AdditiveExpression
 	AdditiveOperator         AdditiveOperator
@@ -395,8 +423,10 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
+// MultiplicativeOperator determines the multication type for MultiplicativeExpression
 type MultiplicativeOperator int
 
+// Valid MultiplicativeOperator's
 const (
 	MultiplicativeNone MultiplicativeOperator = iota
 	MultiplicativeMultiply
@@ -404,6 +434,8 @@ const (
 	MultiplicativeRemainder
 )
 
+// MultiplicativeExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
 type MultiplicativeExpression struct {
 	MultiplicativeExpression *MultiplicativeExpression
 	MultiplicativeOperator   MultiplicativeOperator
@@ -444,6 +476,8 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 	}
 }
 
+// ExponentiationExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ExponentiationExpression
 type ExponentiationExpression struct {
 	ExponentiationExpression *ExponentiationExpression
 	UnaryExpression          UnaryExpression
@@ -476,8 +510,10 @@ func (ee *ExponentiationExpression) parse(j *jsParser, yield, await bool) error 
 	}
 }
 
+// UnaryOperator determines a unary operator within UnaryExpression
 type UnaryOperator byte
 
+// Valid UnaryOperator's
 const (
 	UnaryNone UnaryOperator = iota
 	UnaryDelete
@@ -490,6 +526,8 @@ const (
 	UnaryAwait
 )
 
+// UnaryExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-UnaryExpression
 type UnaryExpression struct {
 	UnaryOperators   []UnaryOperator
 	UpdateExpression UpdateExpression
@@ -534,8 +572,10 @@ Loop:
 	return nil
 }
 
+// UpdateOperator determines the type of update operation for UpdateExpression
 type UpdateOperator int
 
+// Valid UpdateOperator's
 const (
 	UpdateNone UpdateOperator = iota
 	UpdatePostIncrement
@@ -544,6 +584,8 @@ const (
 	UpdatePreDecrement
 )
 
+// UpdateExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
 type UpdateExpression struct {
 	LeftHandSideExpression *LeftHandSideExpression
 	UpdateOperator         UpdateOperator
