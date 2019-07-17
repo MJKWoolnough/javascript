@@ -37,6 +37,7 @@ var (
 	funcOpen                     = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
 	asyncFuncOpen                = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
 	genFuncOpen                  = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
+	asyncGenFuncOpen             = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
 	parenOpen                    = []byte{'('}
 	tryOpen                      = []byte{'t', 'r', 'y', ' '}
 	catchParenOpen               = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
@@ -583,6 +584,8 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 		w.Write(genFuncOpen)
 	case FunctionAsync:
 		w.Write(asyncFuncOpen)
+	case FunctionAsyncGenerator:
+		w.Write(asyncGenFuncOpen)
 	default:
 		return
 	}
