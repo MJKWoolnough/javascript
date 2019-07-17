@@ -1340,7 +1340,7 @@ func (m Module) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (m ModuleListItem) printSource(w io.Writer, v bool) {
+func (m ModuleItem) printSource(w io.Writer, v bool) {
 	if m.ImportDeclaration != nil {
 		m.ImportDeclaration.printSource(w, v)
 	} else if m.ExportDeclaration != nil {

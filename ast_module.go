@@ -6,7 +6,7 @@ import (
 )
 
 type Module struct {
-	ModuleListItems []ModuleListItem
+	ModuleListItems []ModuleItem
 	Tokens          Tokens
 }
 
@@ -26,7 +26,7 @@ func (m *Module) parse(j *jsParser) error {
 	for j.AcceptRunWhitespace() != parser.TokenDone {
 		g := j.NewGoal()
 		ml := len(m.ModuleListItems)
-		m.ModuleListItems = append(m.ModuleListItems, ModuleListItem{})
+		m.ModuleListItems = append(m.ModuleListItems, ModuleItem{})
 		if err := m.ModuleListItems[ml].parse(&g); err != nil {
 			return j.Error("Module", err)
 		}
@@ -36,14 +36,14 @@ func (m *Module) parse(j *jsParser) error {
 	return nil
 }
 
-type ModuleListItem struct {
+type ModuleItem struct {
 	ImportDeclaration *ImportDeclaration
 	StatementListItem *StatementListItem
 	ExportDeclaration *ExportDeclaration
 	Tokens            Tokens
 }
 
-func (ml *ModuleListItem) parse(j *jsParser) error {
+func (ml *ModuleItem) parse(j *jsParser) error {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{TokenKeyword, "import"}:
@@ -367,6 +367,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	return nil
 }
 
+// Errors
 var (
 	ErrInvalidImport          = errors.New("invalid import statement")
 	ErrInvalidNameSpaceImport = errors.New("invalid namespace import")

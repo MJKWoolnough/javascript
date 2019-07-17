@@ -654,7 +654,7 @@ func (f ArrowFunction) Format(s fmt.State, v rune) { format(s, v, f) }
 func (f Module) Format(s fmt.State, v rune) { format(s, v, f) }
 
 // Format implements the fmt.Formatter interface
-func (f ModuleListItem) Format(s fmt.State, v rune) { format(s, v, f) }
+func (f ModuleItem) Format(s fmt.State, v rune) { format(s, v, f) }
 
 // Format implements the fmt.Formatter interface
 func (f ImportDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }

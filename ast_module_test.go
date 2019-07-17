@@ -6,7 +6,7 @@ func TestModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`import 'a';`, func(t *test, tk Tokens) { // 1
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							FromClause: FromClause{
@@ -23,7 +23,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import a from 'b';`, func(t *test, tk Tokens) { // 2
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -44,7 +44,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import * as a from 'b';`, func(t *test, tk Tokens) { // 3
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -65,7 +65,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import {a} from 'b';`, func(t *test, tk Tokens) { // 4
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -94,7 +94,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import {a as b} from 'c';`, func(t *test, tk Tokens) { // 5
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -124,7 +124,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import {a as b, c} from 'd';`, func(t *test, tk Tokens) { // 6
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -158,7 +158,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import a, * as b from 'c';`, func(t *test, tk Tokens) { // 7
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -180,7 +180,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`import a, {b} from 'c';`, func(t *test, tk Tokens) { // 8
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
@@ -210,7 +210,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {};`, func(t *test, tk Tokens) { // 9
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -226,7 +226,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a};`, func(t *test, tk Tokens) { // 10
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -248,7 +248,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a as b};`, func(t *test, tk Tokens) { // 11
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -271,7 +271,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a as b, c as d, e, f};`, func(t *test, tk Tokens) { // 12
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -307,7 +307,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export * from 'a';`, func(t *test, tk Tokens) { // 13
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							FromClause: &FromClause{
@@ -324,7 +324,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {} from 'a';`, func(t *test, tk Tokens) { // 14
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -344,7 +344,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a} from 'b';`, func(t *test, tk Tokens) { // 15
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -370,7 +370,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a as b} from 'c';`, func(t *test, tk Tokens) { // 16
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -397,7 +397,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export {a as b, c as d, e, f} from 'g';`, func(t *test, tk Tokens) { // 17
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							ExportClause: &ExportClause{
@@ -438,7 +438,7 @@ func TestModule(t *testing.T) {
 		{`export var a = 1;`, func(t *test, tk Tokens) { // 18
 			litA := makeConditionLiteral(tk, 8)
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							VariableStatement: &VariableStatement{
@@ -464,7 +464,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export function a(){}`, func(t *test, tk Tokens) { // 19
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							Declaration: &Declaration{
@@ -490,7 +490,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export default function(){}`, func(t *test, tk Tokens) { // 20
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							DefaultFunction: &FunctionDeclaration{
@@ -512,7 +512,7 @@ func TestModule(t *testing.T) {
 		}},
 		{`export default class{}`, func(t *test, tk Tokens) { // 21
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							DefaultClass: &ClassDeclaration{
@@ -529,7 +529,7 @@ func TestModule(t *testing.T) {
 		{`export default 1;`, func(t *test, tk Tokens) { // 22
 			litA := makeConditionLiteral(tk, 4)
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						ExportDeclaration: &ExportDeclaration{
 							DefaultAssignmentExpression: &AssignmentExpression{
@@ -547,7 +547,7 @@ func TestModule(t *testing.T) {
 		{`1;`, func(t *test, tk Tokens) { // 23
 			litA := makeConditionLiteral(tk, 0)
 			t.Output = Module{
-				ModuleListItems: []ModuleListItem{
+				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
 							Statement: &Statement{
