@@ -7,6 +7,8 @@ import (
 
 // ClassDeclaration as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
+//
+// Also covers ClassExpression when BindingIdentifier is nil.
 type ClassDeclaration struct {
 	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
@@ -217,6 +219,8 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 
 // PropertyName as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-PropertyName
+//
+// Only one of LiteralPropertyName or ComputedPropertyName must be non-nil.
 type PropertyName struct {
 	LiteralPropertyName  *Token
 	ComputedPropertyName *AssignmentExpression

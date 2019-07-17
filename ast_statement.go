@@ -36,6 +36,7 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 
 // StatementListItem as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-StatementListItem
+// Only one of Statement, or Declaration must be non-nil.
 type StatementListItem struct {
 	Statement   *Statement
 	Declaration *Declaration
@@ -102,6 +103,14 @@ const (
 
 // Statement as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-Statement
+//
+// It is only valid for one of the pointer type to be non-nil.
+//
+// If LabelIdentifier is non-nil, either one of LabelledItemFunction, or
+// LabelledItemStatement must be non-nil, or Type must be StatementContinue or
+// StatementBreak.
+//
+// If Type is StatementThrow, ExpressionStatement must be non-nil.
 type Statement struct {
 	Type                    StatementType
 	BlockStatement          *Block
@@ -434,6 +443,13 @@ const (
 //
 // Includes TC39 proposal for for-await-of
 // https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
+//
+// The Type determines which fields must be non-nil:
+//
+//	ForInLeftHandSide: LeftHandSideExpression and In
+//	ForInVar, ForInLet, ForInConst: ForBindingIdentifier, ForBindingPatternObject, or ForBindingPatternArray and In
+//	ForOfLeftHandSide, ForAwaitOfLeftHandSide: LeftHandSideExpression and Of
+//	ForOfVar, ForAwaitOfVar, ForOfLet, ForAwaitOfLet, ForOfConst, ForAwaitOfConst: ForBindingIdentifier, ForBindingPatternObject, or ForBindingPatternArray and Of
 type IterationStatementFor struct {
 	Type ForType
 
@@ -839,6 +855,14 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 
 // TryStatement as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-TryStatement
+//
+// Only one of CatchParameterBindingIdentifier,
+// CatchParameterObjectBindingPattern, and CatchParameterArrayBindingPattern can
+// be non-nil, and must be so if CatchBlock is non-nil.
+//
+// If one of CatchParameterBindingIdentifier,
+// CatchParameterObjectBindingPattern, CatchParameterArrayBindingPattern is
+// non-nil, then CatchBlock must be non-nil.
 type TryStatement struct {
 	TryBlock                           Block
 	CatchParameterBindingIdentifier    *Token
@@ -914,6 +938,8 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 
 // VariableStatement as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-VariableStatement
+//
+// VariableDeclarationList must have a length or at least one.
 type VariableStatement struct {
 	VariableDeclarationList []VariableDeclaration
 	Tokens                  Tokens

@@ -4,6 +4,8 @@ import "vimagination.zapto.org/parser"
 
 // ConditionalExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
+//
+// If True is non-nil, False must be non-nil also.
 type ConditionalExpression struct {
 	LogicalORExpression LogicalORExpression
 	True                *AssignmentExpression
@@ -213,6 +215,9 @@ const (
 
 // EqualityExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
+//
+// If EqualityOperator is not EqualityNone, then EqualityExpression must be
+// non-nil, and vice-versa.
 type EqualityExpression struct {
 	EqualityExpression   *EqualityExpression
 	EqualityOperator     EqualityOperator
@@ -271,6 +276,9 @@ const (
 
 // RelationalExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
+//
+// If RelationshipOperator is not RelationshipNone then RelationalExpression
+// must be non-nil, and vice-verse.
 type RelationalExpression struct {
 	RelationalExpression *RelationalExpression
 	RelationshipOperator RelationshipOperator
@@ -333,6 +341,9 @@ const (
 
 // ShiftExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
+//
+// If ShiftOperator is not ShiftNone then ShiftExpression must be non-nil, and
+// vice-versa.
 type ShiftExpression struct {
 	ShiftExpression    *ShiftExpression
 	ShiftOperator      ShiftOperator
@@ -385,6 +396,9 @@ const (
 
 // AdditiveExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
+//
+// If AdditiveOperator is not AdditiveNone then AdditiveExpression must be
+// non-nil, and vice-versa.
 type AdditiveExpression struct {
 	AdditiveExpression       *AdditiveExpression
 	AdditiveOperator         AdditiveOperator
@@ -436,6 +450,9 @@ const (
 
 // MultiplicativeExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
+//
+// If MultiplicativeOperator is not MultiplicativeNone then
+// MultiplicativeExpression must be non-nil, and vice-versa.
 type MultiplicativeExpression struct {
 	MultiplicativeExpression *MultiplicativeExpression
 	MultiplicativeOperator   MultiplicativeOperator
@@ -586,6 +603,10 @@ const (
 
 // UpdateExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
+//
+// If UpdateOperator is UpdatePreIncrement or UpdatePreDecrement
+// UnaryExpression must be non-nil, and vice-versa. In all other cases,
+// LeftHandSideExpression must be non-nil.
 type UpdateExpression struct {
 	LeftHandSideExpression *LeftHandSideExpression
 	UpdateOperator         UpdateOperator

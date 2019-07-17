@@ -66,6 +66,9 @@ func (j *jsParser) parseSemicolon() bool {
 
 // Declaration as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-Declaration
+//
+// Only one of ClassDeclaration, FunctionDeclaration or LexicalDeclaration must
+// be non-nil
 type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
@@ -147,6 +150,9 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 
 // LexicalBinding as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
+//
+// Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern
+// must be non-nil. The Initializer is optional.
 type LexicalBinding struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
@@ -290,6 +296,10 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 
 // BindingProperty as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-BindingProperty
+//
+// It is only valid for either SingleNameBinding, with an optional Initializer,
+// or PropertyName and BindingElement (PropertyName: BindingElement) to be
+// non-nil.
 type BindingProperty struct {
 	SingleNameBinding *Token
 	Initializer       *AssignmentExpression
@@ -436,6 +446,11 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 
 // PropertyDefinition as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
+//
+// It is only valid for either IdentifierReference, IdentifierReference and
+// AssignmentExpression (CoverInitializedName), PropertyName and
+// AssignmentExpression (PropertyName: AssignmentExpression), MethodDefinition,
+// or AssignmentExpression (...AssignmentExpression) to be non-nil.
 type PropertyDefinition struct {
 	IdentifierReference  *Token
 	PropertyName         *PropertyName
@@ -528,6 +543,13 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 
 // TemplateLiteral as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
+//
+// If NoSubstitutionTemplate is non-nil it is only valid for TemplateHead,
+// Expressions, TemplateMiddleList, and TemplateTail to be nil.
+//
+// If NoSubstitutionTemplate is nil, the TemplateHead, Expressions, and
+// TemplateTail must be non-nil. TemplateMiddleList must have a length of one
+// less than the length of Expressions.
 type TemplateLiteral struct {
 	NoSubstitutionTemplate *Token
 	TemplateHead           *Token
@@ -570,7 +592,13 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 // ArrowFunction as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
 //
-// Also includes AsyncArrowFunction
+// Also includes AsyncArrowFunction.
+//
+// It is only valid for one of BindingIdentifier,
+// CoverParenthesizedExpressionAndArrowParameterList (!Async), and
+// FormalParameters (+Async) to be non-nil.
+//
+// Only one of AssignmentExpression or FunctionBody must be non-nil.
 type ArrowFunction struct {
 	Async                                             bool
 	BindingIdentifier                                 *Token

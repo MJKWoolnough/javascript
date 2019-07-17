@@ -40,6 +40,9 @@ func (m *Module) parse(j *jsParser) error {
 
 // ModuleItem as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ModuleItem
+//
+// Only one of ImportDeclaration, StatementListItem, or ExportDeclaration must
+// be non-nil.
 type ModuleItem struct {
 	ImportDeclaration *ImportDeclaration
 	StatementListItem *StatementListItem
@@ -108,6 +111,11 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 
 // ImportClause as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ImportClause
+//
+// At least one of ImportedDefaultBinding, NameSpaceImport, and NamedImports
+// must be non-nil.
+//
+// Both NameSpaceImport and NamedImports can not be non-nil.
 type ImportClause struct {
 	ImportedDefaultBinding *Token
 	NameSpaceImport        *Token
@@ -162,6 +170,8 @@ func (ic *ImportClause) parse(j *jsParser) error {
 
 // FromClause as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-FromClause
+//
+// ModuleSpecifier must be non-nil.
 type FromClause struct {
 	ModuleSpecifier *Token
 	Tokens          Tokens
@@ -214,6 +224,8 @@ func (ni *NamedImports) parse(j *jsParser) error {
 
 // ImportSpecifier as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
+//
+// ImportedBinding mmust be non-nil.
 type ImportSpecifier struct {
 	IdentifierName  *Token
 	ImportedBinding *Token
@@ -243,6 +255,11 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 
 // ExportDeclaration as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
+//
+// It is only valid for one of ExportClause, VariableStatement, Declaration,
+// DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
+//
+// FromClause can be non-nil exclusively or paired with ExportClause.
 type ExportDeclaration struct {
 	ExportClause                *ExportClause
 	FromClause                  *FromClause
@@ -363,6 +380,8 @@ func (ec *ExportClause) parse(j *jsParser) error {
 
 // ExportSpecifier as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
+//
+// IdentifierName must be non-nil
 type ExportSpecifier struct {
 	IdentifierName, EIdentifierName *Token
 	Tokens                          Tokens

@@ -60,6 +60,19 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 
 // AssignmentExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
+//
+// It is only valid for one of ConditionalExpression, ArrowFunction,
+// LeftHandSideExpression to be non-nil.
+//
+// If LeftHandSideExpression is non-nil, then AssignmentOperator must not be
+// AssignmentNone and AssignmentExpression must be non-nil.
+//
+// If Yield is true, AssignmentExpression must be non-nil.
+//
+// If AssignmentOperator is AssignmentNone LeftHandSideExpression must be nil.
+//
+// If LeftHandSideExpression is nil and Yield is false, AssignmentExpression
+// must be nil.
 type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
@@ -134,6 +147,8 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 
 // LeftHandSideExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
+//
+// It is only valid for one of NewExpression or CallExpression to be non-nil.
 type LeftHandSideExpression struct {
 	NewExpression  *NewExpression
 	CallExpression *CallExpression
@@ -178,6 +193,8 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 
 // Expression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-Expression
+//
+// Expressions must have a length of at least one to be valid.
 type Expression struct {
 	Expressions []AssignmentExpression
 	Tokens      Tokens
@@ -234,6 +251,15 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 
 // MemberExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-MemberExpression
+//
+// If PrimaryExpression is nil, SuperProperty is true, or MetaProperty = is,
+// Expression, IdentifierName, TemplateLiteral, and Arguments must be nil.
+//
+// If Expression, IdentifierName, TemplateLiteral, or Arguments is non-nil,
+// then MemberExpression must be non-nil.
+//
+// It is only valid if one of Expression, IdentifierName, TemplateLiteral, and
+// Arguments is non-nil.
 type MemberExpression struct {
 	MemberExpression  *MemberExpression
 	PrimaryExpression *PrimaryExpression
@@ -360,6 +386,10 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 
 // PrimaryExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
+//
+// It is only valid is one IdentifierReference, Literal, ArrayLiteral,
+// ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
+// CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
 type PrimaryExpression struct {
 	This                                              bool
 	IdentifierReference                               *Token
@@ -433,6 +463,9 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 
 // CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
+//
+// It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
+// ObjectBindingPattern to be non-nil
 type CoverParenthesizedExpressionAndArrowParameterList struct {
 	Expressions          []AssignmentExpression
 	BindingIdentifier    *Token
@@ -543,6 +576,15 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 //
 // Includes the TC39 proposal for the dynamic import function call
 // https://github.com/tc39/proposal-dynamic-import/#import
+//
+// It is only valid for one of MemberExpression, ImportCall, or CallExpression
+// to be non-nil or SuperCall to be true.
+//
+// If MemberExpression is non-nil, or SuperCall is true, Arguments must be
+// non-nil.
+//
+// If CallExpression is non-nil, only one of Arguments, Expression,
+// IdentifierName, or TemplateLiteral must be non-nil.
 type CallExpression struct {
 	MemberExpression *MemberExpression
 	SuperCall        bool

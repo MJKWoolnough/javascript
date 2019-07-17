@@ -19,7 +19,7 @@ const (
 // FunctionDeclaration as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
 //
-// Also parses FunctionExpression
+// Also parses FunctionExpression, for when BindingIdentifier is nil.
 //
 // Include TC39 proposal for async generator functions
 // https://github.com/tc39/proposal-async-iteration#async-generator-functions
@@ -125,6 +125,11 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 
 // BindingElement as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-BindingElement
+//
+// Only one of SingleNameBinding, ArrayBindingPattern, or ObjectBindingPattern
+// must be non-nil.
+//
+// The Initializer is optional.
 type BindingElement struct {
 	SingleNameBinding    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
@@ -167,6 +172,9 @@ func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 
 // FunctionRestParameter as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
+//
+// Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern
+// must be non-nil.
 type FunctionRestParameter struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
