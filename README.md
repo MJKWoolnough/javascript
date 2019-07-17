@@ -2,7 +2,6 @@
 --
     import "vimagination.zapto.org/javascript"
 
-Package javascript provides tools to tokenise and parse javascript source files
 
 ## Usage
 
@@ -25,9 +24,83 @@ const (
 	TokenDivPunctuator
 	TokenRightBracePunctuator
 	TokenRegularExpressionLiteral
+	TokenNullLiteral
+	TokenFutureReservedWord
 )
 ```
 Javascript Token values
+
+```go
+var (
+	ErrReservedIdentifier         = errors.New("reserved identifier")
+	ErrNoIdentifier               = errors.New("missing identifier")
+	ErrMissingFunction            = errors.New("missing function")
+	ErrMissingOpeningParenthesis  = errors.New("missing opening parenthesis")
+	ErrMissingClosingParenthesis  = errors.New("missing closing parenthesis")
+	ErrMissingOpeningBrace        = errors.New("missing opening brace")
+	ErrMissingClosingBrace        = errors.New("missing closing brace")
+	ErrMissingOpeningBracket      = errors.New("missing opening bracket")
+	ErrMissingClosingBracket      = errors.New("missing closing bracket")
+	ErrMissingComma               = errors.New("missing comma")
+	ErrMissingArrow               = errors.New("missing arrow")
+	ErrMissingCaseClause          = errors.New("missing case clause")
+	ErrMissingExpression          = errors.New("missing expression")
+	ErrMissingCatchFinally        = errors.New("missing catch/finally block")
+	ErrMissingSemiColon           = errors.New("missing semi-colon")
+	ErrMissingColon               = errors.New("missing colon")
+	ErrMissingInitializer         = errors.New("missing initializer")
+	ErrInvalidStatementList       = errors.New("invalid statement list")
+	ErrInvalidStatement           = errors.New("invalid statement")
+	ErrInvalidFormalParameterList = errors.New("invalid formal parameter list")
+	ErrInvalidDeclaration         = errors.New("invalid declaration")
+	ErrInvalidLexicalDeclaration  = errors.New("invalid lexical declaration")
+	ErrInvalidAssignment          = errors.New("invalid assignment operator")
+	ErrInvalidSuperProperty       = errors.New("invalid super property")
+	ErrInvalidMetaProperty        = errors.New("invalid meta property")
+	ErrInvalidTemplate            = errors.New("invalid template")
+	ErrInvalidAsyncArrowFunction  = errors.New("invalid async arrow function")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidMethodName       = errors.New("invalid method name")
+	ErrInvalidPropertyName     = errors.New("invalid property name")
+	ErrInvalidClassDeclaration = errors.New("invalid class declaration")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidImport          = errors.New("invalid import statement")
+	ErrInvalidNameSpaceImport = errors.New("invalid namespace import")
+	ErrMissingFrom            = errors.New("missing from")
+	ErrMissingModuleSpecifier = errors.New("missing module specifier")
+	ErrInvalidNamedImport     = errors.New("invalid named import list")
+	ErrInvalidImportSpecifier = errors.New("invalid import specifier")
+	ErrInvalidExportClause    = errors.New("invalid export clause")
+)
+```
+Errors
+
+```go
+var (
+	ErrDuplicateDefaultClause      = errors.New("duplicate default clause")
+	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")
+	ErrInvalidForLoop              = errors.New("invalid for loop")
+	ErrInvalidForAwaitLoop         = errors.New("invalid for await loop")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidFunction = errors.New("invalid function")
+)
+```
+Errors
 
 #### func  SetTokeniser
 
@@ -36,529 +109,1680 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser
 ```
 SetTokeniser provides javascript parsing functions to a Tokeniser
 
-#### type Boolean
+#### type AdditiveExpression
 
 ```go
-type Boolean bool
-```
-
-Boolean represents a literal boolean value (true, false)
-
-#### func (Boolean) Data
-
-```go
-func (tk Boolean) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Boolean) WriteTo
-
-```go
-func (tk Boolean) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Identifier
-
-```go
-type Identifier string
-```
-
-Identifier represents a non-keyword identified, usually a variable name or
-global
-
-#### func (Identifier) Data
-
-```go
-func (tk Identifier) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Identifier) String
-
-```go
-func (tk Identifier) String() string
-```
-String returns the unescaped string
-
-#### func (Identifier) WriteTo
-
-```go
-func (tk Identifier) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Keyword
-
-```go
-type Keyword string
-```
-
-Keyword represents one of the following reserved keywords:
-
-await, break, case, catch, class, const, continue, debugger, default, delete,
-do, else, export, extends, finally, for, function, if, import, in, instanceof,
-new, return, super, switch, this, throw, try, typeof, var, void, while, with,
-yield
-
-#### func (Keyword) Data
-
-```go
-func (tk Keyword) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Keyword) WriteTo
-
-```go
-func (tk Keyword) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type LineTerminators
-
-```go
-type LineTerminators string
-```
-
-LineTerminators is sequential line feeds, carriage returns, line separators and
-paragraph separators
-
-#### func (LineTerminators) Data
-
-```go
-func (tk LineTerminators) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (LineTerminators) WriteTo
-
-```go
-func (tk LineTerminators) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type MultiLineComment
-
-```go
-type MultiLineComment string
-```
-
-MultiLineComment is a comment started by a slash and an asterix
-
-#### func (MultiLineComment) Comment
-
-```go
-func (tk MultiLineComment) Comment() string
-```
-Comment returns the contents of the comment
-
-#### func (MultiLineComment) Data
-
-```go
-func (tk MultiLineComment) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (MultiLineComment) WriteTo
-
-```go
-func (tk MultiLineComment) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type NoSubstitutionTemplate
-
-```go
-type NoSubstitutionTemplate string
-```
-
-NoSubstitutionTemplate represents a template literal
-
-#### func (NoSubstitutionTemplate) Data
-
-```go
-func (tk NoSubstitutionTemplate) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (NoSubstitutionTemplate) String
-
-```go
-func (tk NoSubstitutionTemplate) String() string
-```
-String returns the unescaped string
-
-#### func (NoSubstitutionTemplate) WriteTo
-
-```go
-func (tk NoSubstitutionTemplate) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Number
-
-```go
-type Number string
-```
-
-Number represents a number literal
-
-#### func (Number) Data
-
-```go
-func (tk Number) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Number) Number
-
-```go
-func (tk Number) Number() float64
-```
-Number returns a a numeric interpretation of the data
-
-#### func (Number) WriteTo
-
-```go
-func (tk Number) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type NumberBinary
-
-```go
-type NumberBinary string
-```
-
-NumberBinary represents a binary literal
-
-#### func (NumberBinary) Data
-
-```go
-func (tk NumberBinary) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (NumberBinary) Number
-
-```go
-func (tk NumberBinary) Number() float64
-```
-Number returns a a numeric interpretation of the data
-
-#### func (NumberBinary) WriteTo
-
-```go
-func (tk NumberBinary) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type NumberHexadecimal
-
-```go
-type NumberHexadecimal string
-```
-
-NumberHexadecimal represents a hexadecimal literal
-
-#### func (NumberHexadecimal) Data
-
-```go
-func (tk NumberHexadecimal) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (NumberHexadecimal) Number
-
-```go
-func (tk NumberHexadecimal) Number() float64
-```
-Number returns a a numeric interpretation of the data
-
-#### func (NumberHexadecimal) WriteTo
-
-```go
-func (tk NumberHexadecimal) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type NumberOctal
-
-```go
-type NumberOctal string
-```
-
-NumberOctal represents an octal literal
-
-#### func (NumberOctal) Data
-
-```go
-func (tk NumberOctal) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (NumberOctal) Number
-
-```go
-func (tk NumberOctal) Number() float64
-```
-Number returns a a numeric interpretation of the data
-
-#### func (NumberOctal) WriteTo
-
-```go
-func (tk NumberOctal) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Punctuator
-
-```go
-type Punctuator string
-```
-
-Punctuator represents one of the following:
-
-{, }, [, ], (, ), ;, ,, ?, :, ~, ., <, >, >=, <=, >>=, <<=, >>>, =, ==, ===,
-==>, !, !=, !==, +, +=, -, -=, *, **, *=, /, /= &, &&, |, ||, &=, |=, %, %=, ^,
-^=
-
-#### func (Punctuator) Data
-
-```go
-func (tk Punctuator) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Punctuator) WriteTo
-
-```go
-func (tk Punctuator) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Regex
-
-```go
-type Regex string
-```
-
-Regex represents a regular expression literal
-
-#### func (Regex) Data
-
-```go
-func (tk Regex) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Regex) WriteTo
-
-```go
-func (tk Regex) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type SingleLineComment
-
-```go
-type SingleLineComment string
-```
-
-SingleLineComment is a comment started by two slashes
-
-#### func (SingleLineComment) Comment
-
-```go
-func (tk SingleLineComment) Comment() string
-```
-Comment returns the contents of the comment
-
-#### func (SingleLineComment) Data
-
-```go
-func (tk SingleLineComment) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (SingleLineComment) WriteTo
-
-```go
-func (tk SingleLineComment) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type String
-
-```go
-type String string
-```
-
-String represents a string literal
-
-#### func (String) Data
-
-```go
-func (tk String) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (String) String
-
-```go
-func (tk String) String() string
-```
-String returns the unescaped string
-
-#### func (String) WriteTo
-
-```go
-func (tk String) WriteTo(w io.Writer) (int64, error)
-```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
-
-#### type Template
-
-```go
-type Template struct {
-	TemplateStart
-	TemplateMiddle Tokens
-	TemplateEnd
+type AdditiveExpression struct {
+	AdditiveExpression       *AdditiveExpression
+	AdditiveOperator         AdditiveOperator
+	MultiplicativeExpression MultiplicativeExpression
+	Tokens                   Tokens
 }
 ```
 
-Template represents a template with substitutions
+AdditiveExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
 
-#### func (Template) Data
-
-```go
-func (tk Template) Data() interface{}
-```
-Data returns typed interpreted data
-
-#### func (Template) WriteTo
+#### func (AdditiveExpression) Format
 
 ```go
-func (tk Template) WriteTo(w io.Writer) (int64, error)
+func (f AdditiveExpression) Format(s fmt.State, v rune)
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
+Format implements the fmt.Formatter interface
 
-#### type TemplateEnd
+#### type AdditiveOperator
 
 ```go
-type TemplateEnd string
+type AdditiveOperator int
 ```
 
-TemplateEnd represents the end of a template
-
-#### func (TemplateEnd) Data
+AdditiveOperator determines the additive type for AdditiveExpression
 
 ```go
-func (tk TemplateEnd) Data() interface{}
+const (
+	AdditiveNone AdditiveOperator = iota
+	AdditiveAdd
+	AdditiveMinus
+)
 ```
-Data returns typed interpreted data
+Valid AdditiveOperator's
 
-#### func (TemplateEnd) String
+#### func (AdditiveOperator) String
 
 ```go
-func (tk TemplateEnd) String() string
+func (a AdditiveOperator) String() string
 ```
-String returns the unescaped string
+String implements the fmt.Stringer interface
 
-#### func (TemplateEnd) WriteTo
+#### type Arguments
 
 ```go
-func (tk TemplateEnd) WriteTo(w io.Writer) (int64, error)
+type Arguments struct {
+	ArgumentList   []AssignmentExpression
+	SpreadArgument *AssignmentExpression
+	Tokens         Tokens
+}
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
 
-#### type TemplateMiddle
+Arguments as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-Arguments
+
+#### func (Arguments) Format
 
 ```go
-type TemplateMiddle string
+func (f Arguments) Format(s fmt.State, v rune)
 ```
+Format implements the fmt.Formatter interface
 
-TemplateMiddle represents a middle chunk of a template
-
-#### func (TemplateMiddle) Data
+#### type ArrayBindingPattern
 
 ```go
-func (tk TemplateMiddle) Data() interface{}
+type ArrayBindingPattern struct {
+	BindingElementList []BindingElement
+	BindingRestElement *BindingElement
+	Tokens             Tokens
+}
 ```
-Data returns typed interpreted data
 
-#### func (TemplateMiddle) String
+ArrayBindingPattern as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ArrayBindingPattern
+
+#### func (ArrayBindingPattern) Format
 
 ```go
-func (tk TemplateMiddle) String() string
+func (f ArrayBindingPattern) Format(s fmt.State, v rune)
 ```
-String returns the unescaped string
+Format implements the fmt.Formatter interface
 
-#### func (TemplateMiddle) WriteTo
+#### type ArrayLiteral
 
 ```go
-func (tk TemplateMiddle) WriteTo(w io.Writer) (int64, error)
+type ArrayLiteral struct {
+	ElementList   []AssignmentExpression
+	SpreadElement *AssignmentExpression
+	Tokens        Tokens
+}
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
 
-#### type TemplateStart
+ArrayLiteral as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ArrayLiteral
+
+#### func (ArrayLiteral) Format
 
 ```go
-type TemplateStart string
+func (f ArrayLiteral) Format(s fmt.State, v rune)
 ```
+Format implements the fmt.Formatter interface
 
-TemplateStart represents the opening of a template
-
-#### func (TemplateStart) Data
+#### type ArrowFunction
 
 ```go
-func (tk TemplateStart) Data() interface{}
+type ArrowFunction struct {
+	Async                                             bool
+	BindingIdentifier                                 *Token
+	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
+	FormalParameters                                  *FormalParameters
+	AssignmentExpression                              *AssignmentExpression
+	FunctionBody                                      *Block
+	Tokens                                            Tokens
+}
 ```
-Data returns typed interpreted data
 
-#### func (TemplateStart) String
+ArrowFunction as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
+
+Also includes AsyncArrowFunction
+
+#### func (ArrowFunction) Format
 
 ```go
-func (tk TemplateStart) String() string
+func (f ArrowFunction) Format(s fmt.State, v rune)
 ```
-String returns the unescaped string
+Format implements the fmt.Formatter interface
 
-#### func (TemplateStart) WriteTo
+#### type AssignmentExpression
 
 ```go
-func (tk TemplateStart) WriteTo(w io.Writer) (int64, error)
+type AssignmentExpression struct {
+	ConditionalExpression  *ConditionalExpression
+	ArrowFunction          *ArrowFunction
+	LeftHandSideExpression *LeftHandSideExpression
+	Yield                  bool
+	Delegate               bool
+	AssignmentOperator     AssignmentOperator
+	AssignmentExpression   *AssignmentExpression
+	Tokens                 Tokens
+}
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
+
+AssignmentExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
+
+#### func (AssignmentExpression) Format
+
+```go
+func (f AssignmentExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type AssignmentOperator
+
+```go
+type AssignmentOperator uint8
+```
+
+AssignmentOperator specifies the type of assignment in AssignmentExpression
+
+```go
+const (
+	AssignmentNone AssignmentOperator = iota
+	AssignmentAssign
+	AssignmentMultiply
+	AssignmentDivide
+	AssignmentRemainder
+	AssignmentAdd
+	AssignmentSubtract
+	AssignmentLeftShift
+	AssignmentSignPropagatinRightShift
+	AssignmentZeroFillRightShift
+	AssignmentBitwiseAND
+	AssignmentBitwiseXOR
+	AssignmentBitwiseOR
+	AssignmentExponentiation
+)
+```
+Valid AssignmentOperator's
+
+#### func (AssignmentOperator) String
+
+```go
+func (a AssignmentOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type BindingElement
+
+```go
+type BindingElement struct {
+	SingleNameBinding    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Initializer          *AssignmentExpression
+	Tokens               Tokens
+}
+```
+
+BindingElement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-BindingElement
+
+#### func (BindingElement) Format
+
+```go
+func (f BindingElement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type BindingProperty
+
+```go
+type BindingProperty struct {
+	SingleNameBinding *Token
+	Initializer       *AssignmentExpression
+	PropertyName      *PropertyName
+	BindingElement    *BindingElement
+	Tokens            Tokens
+}
+```
+
+BindingProperty as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-BindingProperty
+
+#### func (BindingProperty) Format
+
+```go
+func (f BindingProperty) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type BitwiseANDExpression
+
+```go
+type BitwiseANDExpression struct {
+	BitwiseANDExpression *BitwiseANDExpression
+	EqualityExpression   EqualityExpression
+	Tokens               Tokens
+}
+```
+
+BitwiseANDExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-BitwiseANDExpression
+
+#### func (BitwiseANDExpression) Format
+
+```go
+func (f BitwiseANDExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type BitwiseORExpression
+
+```go
+type BitwiseORExpression struct {
+	BitwiseORExpression  *BitwiseORExpression
+	BitwiseXORExpression BitwiseXORExpression
+	Tokens               Tokens
+}
+```
+
+BitwiseORExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-BitwiseORExpression
+
+#### func (BitwiseORExpression) Format
+
+```go
+func (f BitwiseORExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type BitwiseXORExpression
+
+```go
+type BitwiseXORExpression struct {
+	BitwiseXORExpression *BitwiseXORExpression
+	BitwiseANDExpression BitwiseANDExpression
+	Tokens               Tokens
+}
+```
+
+BitwiseXORExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-BitwiseXORExpression
+
+#### func (BitwiseXORExpression) Format
+
+```go
+func (f BitwiseXORExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type Block
+
+```go
+type Block struct {
+	StatementList []StatementListItem
+	Tokens        Tokens
+}
+```
+
+Block as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-Block
+
+#### func (Block) Format
+
+```go
+func (f Block) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type CallExpression
+
+```go
+type CallExpression struct {
+	MemberExpression *MemberExpression
+	SuperCall        bool
+	ImportCall       *AssignmentExpression
+	CallExpression   *CallExpression
+	Arguments        *Arguments
+	Expression       *Expression
+	IdentifierName   *Token
+	TemplateLiteral  *TemplateLiteral
+	Tokens           Tokens
+}
+```
+
+CallExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-CallExpression
+
+Includes the TC39 proposal for the dynamic import function call
+https://github.com/tc39/proposal-dynamic-import/#import
+
+#### func (CallExpression) Format
+
+```go
+func (f CallExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type CaseClause
+
+```go
+type CaseClause struct {
+	Expression    Expression
+	StatementList []StatementListItem
+	Tokens        Tokens
+}
+```
+
+CaseClause as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-CaseClauses
+
+#### func (CaseClause) Format
+
+```go
+func (f CaseClause) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ClassDeclaration
+
+```go
+type ClassDeclaration struct {
+	BindingIdentifier *Token
+	ClassHeritage     *LeftHandSideExpression
+	ClassBody         []MethodDefinition
+	Tokens            Tokens
+}
+```
+
+ClassDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
+
+#### func (ClassDeclaration) Format
+
+```go
+func (f ClassDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ConditionalExpression
+
+```go
+type ConditionalExpression struct {
+	LogicalORExpression LogicalORExpression
+	True                *AssignmentExpression
+	False               *AssignmentExpression
+	Tokens              Tokens
+}
+```
+
+ConditionalExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
+
+#### func (ConditionalExpression) Format
+
+```go
+func (f ConditionalExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type CoverParenthesizedExpressionAndArrowParameterList
+
+```go
+type CoverParenthesizedExpressionAndArrowParameterList struct {
+	Expressions          []AssignmentExpression
+	BindingIdentifier    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               Tokens
+}
+```
+
+CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
+
+#### func (CoverParenthesizedExpressionAndArrowParameterList) Format
+
+```go
+func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type Declaration
+
+```go
+type Declaration struct {
+	ClassDeclaration    *ClassDeclaration
+	FunctionDeclaration *FunctionDeclaration
+	LexicalDeclaration  *LexicalDeclaration
+	Tokens              Tokens
+}
+```
+
+Declaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-Declaration
+
+#### func (Declaration) Format
+
+```go
+func (f Declaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type EqualityExpression
+
+```go
+type EqualityExpression struct {
+	EqualityExpression   *EqualityExpression
+	EqualityOperator     EqualityOperator
+	RelationalExpression RelationalExpression
+	Tokens               Tokens
+}
+```
+
+EqualityExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
+
+#### func (EqualityExpression) Format
+
+```go
+func (f EqualityExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type EqualityOperator
+
+```go
+type EqualityOperator int
+```
+
+EqualityOperator determines the type of EqualityExpression
+
+```go
+const (
+	EqualityNone EqualityOperator = iota
+	EqualityEqual
+	EqualityNotEqual
+	EqualityStrictEqual
+	EqualityStrictNotEqual
+)
+```
+Valid EqualityOperator's
+
+#### func (EqualityOperator) String
+
+```go
+func (e EqualityOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type Error
+
+```go
+type Error struct {
+	Err     error
+	Parsing string
+	Token   Token
+}
+```
+
+Error is a parsing error with trace details
+
+#### func (Error) Error
+
+```go
+func (e Error) Error() string
+```
+
+#### type ExponentiationExpression
+
+```go
+type ExponentiationExpression struct {
+	ExponentiationExpression *ExponentiationExpression
+	UnaryExpression          UnaryExpression
+	Tokens                   Tokens
+}
+```
+
+ExponentiationExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ExponentiationExpression
+
+#### func (ExponentiationExpression) Format
+
+```go
+func (f ExponentiationExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ExportClause
+
+```go
+type ExportClause struct {
+	ExportList []ExportSpecifier
+	Tokens     Tokens
+}
+```
+
+ExportClause as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ExportClause
+
+#### func (ExportClause) Format
+
+```go
+func (f ExportClause) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ExportDeclaration
+
+```go
+type ExportDeclaration struct {
+	ExportClause                *ExportClause
+	FromClause                  *FromClause
+	VariableStatement           *VariableStatement
+	Declaration                 *Declaration
+	DefaultFunction             *FunctionDeclaration
+	DefaultClass                *ClassDeclaration
+	DefaultAssignmentExpression *AssignmentExpression
+	Tokens                      Tokens
+}
+```
+
+ExportDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
+
+#### func (ExportDeclaration) Format
+
+```go
+func (f ExportDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ExportSpecifier
+
+```go
+type ExportSpecifier struct {
+	IdentifierName, EIdentifierName *Token
+	Tokens                          Tokens
+}
+```
+
+ExportSpecifier as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
+
+#### func (ExportSpecifier) Format
+
+```go
+func (f ExportSpecifier) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type Expression
+
+```go
+type Expression struct {
+	Expressions []AssignmentExpression
+	Tokens      Tokens
+}
+```
+
+Expression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-Expression
+
+#### func (Expression) Format
+
+```go
+func (f Expression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ForType
+
+```go
+type ForType uint8
+```
+
+ForType determines which kind of for-loop is described by IterationStatementFor
+
+```go
+const (
+	ForNormal ForType = iota
+	ForNormalVar
+	ForNormalLexicalDeclaration
+	ForNormalExpression
+	ForInLeftHandSide
+	ForInVar
+	ForInLet
+	ForInConst
+	ForOfLeftHandSide
+	ForOfVar
+	ForOfLet
+	ForOfConst
+	ForAwaitOfLeftHandSide
+	ForAwaitOfVar
+	ForAwaitOfLet
+	ForAwaitOfConst
+)
+```
+Valid ForType's
+
+#### func (ForType) Format
+
+```go
+func (ft ForType) Format(s fmt.State, _ rune)
+```
+Format implements the fmt.Formatter interface
+
+#### func (ForType) String
+
+```go
+func (ft ForType) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type FormalParameters
+
+```go
+type FormalParameters struct {
+	FormalParameterList   []BindingElement
+	FunctionRestParameter *FunctionRestParameter
+	Tokens                Tokens
+}
+```
+
+FormalParameters as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-FormalParameters
+
+#### func (FormalParameters) Format
+
+```go
+func (f FormalParameters) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type FromClause
+
+```go
+type FromClause struct {
+	ModuleSpecifier *Token
+	Tokens          Tokens
+}
+```
+
+FromClause as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-FromClause
+
+#### func (FromClause) Format
+
+```go
+func (f FromClause) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type FunctionDeclaration
+
+```go
+type FunctionDeclaration struct {
+	Type              FunctionType
+	BindingIdentifier *Token
+	FormalParameters  FormalParameters
+	FunctionBody      Block
+	Tokens            Tokens
+}
+```
+
+FunctionDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
+
+
+Also parses FunctionExpression
+
+Include TC39 proposal for async generator functions
+https://github.com/tc39/proposal-async-iteration#async-generator-functions
+
+#### func (FunctionDeclaration) Format
+
+```go
+func (f FunctionDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type FunctionRestParameter
+
+```go
+type FunctionRestParameter struct {
+	BindingIdentifier    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               Tokens
+}
+```
+
+FunctionRestParameter as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
+
+#### func (FunctionRestParameter) Format
+
+```go
+func (f FunctionRestParameter) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type FunctionType
+
+```go
+type FunctionType uint8
+```
+
+FunctionType determines which type of function is specified by
+FunctionDeclaration
+
+```go
+const (
+	FunctionNormal FunctionType = iota
+	FunctionGenerator
+	FunctionAsync
+	FunctionAsyncGenerator
+)
+```
+Valid FunctionType's
+
+#### func (FunctionType) Format
+
+```go
+func (ft FunctionType) Format(s fmt.State, _ rune)
+```
+Format implements the fmt.Formatter interface
+
+#### func (FunctionType) String
+
+```go
+func (ft FunctionType) String() string
+```
+Format implements the fmt.Formatter interface
+
+#### type IfStatement
+
+```go
+type IfStatement struct {
+	Expression    Expression
+	Statement     Statement
+	ElseStatement *Statement
+	Tokens        Tokens
+}
+```
+
+IfStatement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-IfStatement
+
+#### func (IfStatement) Format
+
+```go
+func (f IfStatement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ImportClause
+
+```go
+type ImportClause struct {
+	ImportedDefaultBinding *Token
+	NameSpaceImport        *Token
+	NamedImports           *NamedImports
+	Tokens                 Tokens
+}
+```
+
+ImportClause as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ImportClause
+
+#### func (ImportClause) Format
+
+```go
+func (f ImportClause) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ImportDeclaration
+
+```go
+type ImportDeclaration struct {
+	*ImportClause
+	FromClause
+	Tokens Tokens
+}
+```
+
+ImportDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ImportDeclaration
+
+#### func (ImportDeclaration) Format
+
+```go
+func (f ImportDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ImportSpecifier
+
+```go
+type ImportSpecifier struct {
+	IdentifierName  *Token
+	ImportedBinding *Token
+	Tokens          Tokens
+}
+```
+
+ImportSpecifier as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
+
+#### func (ImportSpecifier) Format
+
+```go
+func (f ImportSpecifier) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type IterationStatementDo
+
+```go
+type IterationStatementDo struct {
+	Statement  Statement
+	Expression Expression
+	Tokens     Tokens
+}
+```
+
+IterationStatementDo is the do-while part of IterationStatement as defined in
+ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+
+#### func (IterationStatementDo) Format
+
+```go
+func (f IterationStatementDo) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type IterationStatementFor
+
+```go
+type IterationStatementFor struct {
+	Type ForType
+
+	InitExpression *Expression
+	InitVar        []VariableDeclaration
+	InitLexical    *LexicalDeclaration
+	Conditional    *Expression
+	Afterthought   *Expression
+
+	LeftHandSideExpression  *LeftHandSideExpression
+	ForBindingIdentifier    *Token
+	ForBindingPatternObject *ObjectBindingPattern
+	ForBindingPatternArray  *ArrayBindingPattern
+	In                      *Expression
+	Of                      *AssignmentExpression
+
+	Statement Statement
+	Tokens    Tokens
+}
+```
+
+IterationStatementFor is the for part of IterationStatement as defined in
+ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+
+Includes TC39 proposal for for-await-of
+https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
+
+#### func (IterationStatementFor) Format
+
+```go
+func (f IterationStatementFor) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type IterationStatementWhile
+
+```go
+type IterationStatementWhile struct {
+	Expression Expression
+	Statement  Statement
+	Tokens     Tokens
+}
+```
+
+IterationStatementWhile is the while part of IterationStatement as defined in
+ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+
+#### func (IterationStatementWhile) Format
+
+```go
+func (f IterationStatementWhile) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type LeftHandSideExpression
+
+```go
+type LeftHandSideExpression struct {
+	NewExpression  *NewExpression
+	CallExpression *CallExpression
+	Tokens         Tokens
+}
+```
+
+LeftHandSideExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
+
+#### func (LeftHandSideExpression) Format
+
+```go
+func (f LeftHandSideExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type LetOrConst
+
+```go
+type LetOrConst bool
+```
+
+LetOrConst specifies whether a LexicalDeclaration is a let or const declaration
+
+```go
+const (
+	Let   LetOrConst = false
+	Const LetOrConst = true
+)
+```
+Valid LetOrConst values
+
+#### func (LetOrConst) String
+
+```go
+func (l LetOrConst) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type LexicalBinding
+
+```go
+type LexicalBinding struct {
+	BindingIdentifier    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Initializer          *AssignmentExpression
+	Tokens               Tokens
+}
+```
+
+LexicalBinding as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
+
+#### func (LexicalBinding) Format
+
+```go
+func (f LexicalBinding) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type LexicalDeclaration
+
+```go
+type LexicalDeclaration struct {
+	LetOrConst
+	BindingList []LexicalBinding
+	Tokens      Tokens
+}
+```
+
+LexicalDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-LexicalDeclaration
+
+#### func (LexicalDeclaration) Format
+
+```go
+func (f LexicalDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type LogicalANDExpression
+
+```go
+type LogicalANDExpression struct {
+	LogicalANDExpression *LogicalANDExpression
+	BitwiseORExpression  BitwiseORExpression
+	Tokens               Tokens
+}
+```
+
+LogicalANDExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-LogicalANDExpression
+
+#### func (LogicalANDExpression) Format
+
+```go
+func (f LogicalANDExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type LogicalORExpression
+
+```go
+type LogicalORExpression struct {
+	LogicalORExpression  *LogicalORExpression
+	LogicalANDExpression LogicalANDExpression
+	Tokens               Tokens
+}
+```
+
+LogicalORExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-LogicalORExpression
+
+#### func (LogicalORExpression) Format
+
+```go
+func (f LogicalORExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type MemberExpression
+
+```go
+type MemberExpression struct {
+	MemberExpression  *MemberExpression
+	PrimaryExpression *PrimaryExpression
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	SuperProperty     bool
+	MetaProperty      bool
+	Arguments         *Arguments
+	Tokens            Tokens
+}
+```
+
+MemberExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-MemberExpression
+
+#### func (MemberExpression) Format
+
+```go
+func (f MemberExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type MethodDefinition
+
+```go
+type MethodDefinition struct {
+	Type         MethodType
+	PropertyName PropertyName
+	Params       FormalParameters
+	FunctionBody Block
+	Tokens       Tokens
+}
+```
+
+MethodDefinition as specified in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-MethodDefinition
+
+Static methods from ClassElement are parsed here with the `static` prefix
+
+#### func (MethodDefinition) Format
+
+```go
+func (f MethodDefinition) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type MethodType
+
+```go
+type MethodType uint8
+```
+
+MethodType determines the prefixes for MethodDefinition
+
+```go
+const (
+	MethodNormal MethodType = iota
+	MethodGenerator
+	MethodAsync
+	MethodAsyncGenerator
+	MethodGetter
+	MethodSetter
+	MethodStatic
+	MethodStaticGenerator
+	MethodStaticAsync
+	MethodStaticAsyncGenerator
+	MethodStaticGetter
+	MethodStaticSetter
+)
+```
+Valid MethodType's
+
+#### func (MethodType) Format
+
+```go
+func (mt MethodType) Format(s fmt.State, _ rune)
+```
+Format implements the fmt.Formatter interface
+
+#### func (MethodType) String
+
+```go
+func (mt MethodType) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type Module
+
+```go
+type Module struct {
+	ModuleListItems []ModuleItem
+	Tokens          Tokens
+}
+```
+
+Module represents the top-level of a parsed javascript module
+
+#### func  ParseModule
+
+```go
+func ParseModule(t parser.Tokeniser) (*Module, error)
+```
+ParseModule parses a javascript module
+
+#### func (Module) Format
+
+```go
+func (f Module) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ModuleItem
+
+```go
+type ModuleItem struct {
+	ImportDeclaration *ImportDeclaration
+	StatementListItem *StatementListItem
+	ExportDeclaration *ExportDeclaration
+	Tokens            Tokens
+}
+```
+
+ModuleItem as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ModuleItem
+
+#### func (ModuleItem) Format
+
+```go
+func (f ModuleItem) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type MultiplicativeExpression
+
+```go
+type MultiplicativeExpression struct {
+	MultiplicativeExpression *MultiplicativeExpression
+	MultiplicativeOperator   MultiplicativeOperator
+	ExponentiationExpression ExponentiationExpression
+	Tokens                   Tokens
+}
+```
+
+MultiplicativeExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
+
+#### func (MultiplicativeExpression) Format
+
+```go
+func (f MultiplicativeExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type MultiplicativeOperator
+
+```go
+type MultiplicativeOperator int
+```
+
+MultiplicativeOperator determines the multication type for
+MultiplicativeExpression
+
+```go
+const (
+	MultiplicativeNone MultiplicativeOperator = iota
+	MultiplicativeMultiply
+	MultiplicativeDivide
+	MultiplicativeRemainder
+)
+```
+Valid MultiplicativeOperator's
+
+#### func (MultiplicativeOperator) String
+
+```go
+func (m MultiplicativeOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type NamedImports
+
+```go
+type NamedImports struct {
+	ImportList []ImportSpecifier
+	Tokens     Tokens
+}
+```
+
+NamedImports as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-NamedImports
+
+#### func (NamedImports) Format
+
+```go
+func (f NamedImports) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type NewExpression
+
+```go
+type NewExpression struct {
+	News             uint
+	MemberExpression MemberExpression
+	Tokens           Tokens
+}
+```
+
+NewExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-NewExpression
+
+The News field is a count of the number of 'new' keywords that proceed the
+MemberExpression
+
+#### func (NewExpression) Format
+
+```go
+func (f NewExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ObjectBindingPattern
+
+```go
+type ObjectBindingPattern struct {
+	BindingPropertyList []BindingProperty
+	BindingRestProperty *Token
+	Tokens              Tokens
+}
+```
+
+ObjectBindingPattern as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ObjectBindingPattern
+
+#### func (ObjectBindingPattern) Format
+
+```go
+func (f ObjectBindingPattern) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ObjectLiteral
+
+```go
+type ObjectLiteral struct {
+	PropertyDefinitionList []PropertyDefinition
+	Tokens                 Tokens
+}
+```
+
+ObjectLiteral as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ObjectLiteral
+
+#### func (ObjectLiteral) Format
+
+```go
+func (f ObjectLiteral) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type PrimaryExpression
+
+```go
+type PrimaryExpression struct {
+	This                                              bool
+	IdentifierReference                               *Token
+	Literal                                           *Token
+	ArrayLiteral                                      *ArrayLiteral
+	ObjectLiteral                                     *ObjectLiteral
+	FunctionExpression                                *FunctionDeclaration
+	ClassExpression                                   *ClassDeclaration
+	TemplateLiteral                                   *TemplateLiteral
+	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
+	Tokens                                            Tokens
+}
+```
+
+PrimaryExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
+
+#### func (PrimaryExpression) Format
+
+```go
+func (f PrimaryExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type PropertyDefinition
+
+```go
+type PropertyDefinition struct {
+	IdentifierReference  *Token
+	PropertyName         *PropertyName
+	AssignmentExpression *AssignmentExpression
+	MethodDefinition     *MethodDefinition
+	Tokens               Tokens
+}
+```
+
+PropertyDefinition as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
+
+#### func (PropertyDefinition) Format
+
+```go
+func (f PropertyDefinition) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type PropertyName
+
+```go
+type PropertyName struct {
+	LiteralPropertyName  *Token
+	ComputedPropertyName *AssignmentExpression
+	Tokens               Tokens
+}
+```
+
+PropertyName as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-PropertyName
+
+#### func (PropertyName) Format
+
+```go
+func (f PropertyName) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type RelationalExpression
+
+```go
+type RelationalExpression struct {
+	RelationalExpression *RelationalExpression
+	RelationshipOperator RelationshipOperator
+	ShiftExpression      ShiftExpression
+	Tokens               Tokens
+}
+```
+
+RelationalExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
+
+#### func (RelationalExpression) Format
+
+```go
+func (f RelationalExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type RelationshipOperator
+
+```go
+type RelationshipOperator int
+```
+
+RelationshipOperator determines the relationship type for RelationalExpression
+
+```go
+const (
+	RelationshipNone RelationshipOperator = iota
+	RelationshipLessThan
+	RelationshipGreaterThan
+	RelationshipLessThanEqual
+	RelationshipGreaterThanEqual
+	RelationshipInstanceOf
+	RelationshipIn
+)
+```
+Valid RelationshipOperator's
+
+#### func (RelationshipOperator) String
+
+```go
+func (r RelationshipOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type Script
+
+```go
+type Script struct {
+	StatementList []StatementListItem
+	Tokens        Tokens
+}
+```
+
+Script represents the top-level of a parsed javascript text
+
+#### func  ParseScript
+
+```go
+func ParseScript(t parser.Tokeniser) (*Script, error)
+```
+ParseScript parses a javascript input into an AST.
+
+It is recommended to use ParseModule instead of this function.
+
+#### func (Script) Format
+
+```go
+func (f Script) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ShiftExpression
+
+```go
+type ShiftExpression struct {
+	ShiftExpression    *ShiftExpression
+	ShiftOperator      ShiftOperator
+	AdditiveExpression AdditiveExpression
+	Tokens             Tokens
+}
+```
+
+ShiftExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
+
+#### func (ShiftExpression) Format
+
+```go
+func (f ShiftExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ShiftOperator
+
+```go
+type ShiftOperator int
+```
+
+ShiftOperator determines the shift tyoe for ShiftExpression
+
+```go
+const (
+	ShiftNone ShiftOperator = iota
+	ShiftLeft
+	ShiftRight
+	ShiftUnsignedRight
+)
+```
+Valid ShiftOperator's
+
+#### func (ShiftOperator) String
+
+```go
+func (s ShiftOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type Statement
+
+```go
+type Statement struct {
+	Type                    StatementType
+	BlockStatement          *Block
+	VariableStatement       *VariableStatement
+	ExpressionStatement     *Expression
+	IfStatement             *IfStatement
+	IterationStatementDo    *IterationStatementDo
+	IterationStatementWhile *IterationStatementWhile
+	IterationStatementFor   *IterationStatementFor
+	SwitchStatement         *SwitchStatement
+	WithStatement           *WithStatement
+	LabelIdentifier         *Token
+	LabelledItemFunction    *FunctionDeclaration
+	LabelledItemStatement   *Statement
+	TryStatement            *TryStatement
+	DebuggerStatement       *Token
+	Tokens                  Tokens
+}
+```
+
+Statement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-Statement
+
+#### func (Statement) Format
+
+```go
+func (f Statement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type StatementListItem
+
+```go
+type StatementListItem struct {
+	Statement   *Statement
+	Declaration *Declaration
+	Tokens      Tokens
+}
+```
+
+StatementListItem as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-StatementListItem
+
+#### func (StatementListItem) Format
+
+```go
+func (f StatementListItem) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type StatementType
+
+```go
+type StatementType uint8
+```
+
+StatementType determines the type of a Statement type
+
+```go
+const (
+	StatementNormal StatementType = iota
+	StatementContinue
+	StatementBreak
+	StatementReturn
+	StatementThrow
+)
+```
+Valid StatementType's
+
+#### func (StatementType) Format
+
+```go
+func (st StatementType) Format(s fmt.State, _ rune)
+```
+Format implements the fmt.Formatter interface
+
+#### func (StatementType) String
+
+```go
+func (st StatementType) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type SwitchStatement
+
+```go
+type SwitchStatement struct {
+	Expression             Expression
+	CaseClauses            []CaseClause
+	DefaultClause          []StatementListItem
+	PostDefaultCaseClauses []CaseClause
+	Tokens                 Tokens
+}
+```
+
+SwitchStatement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-SwitchStatement
+
+#### func (SwitchStatement) Format
+
+```go
+func (f SwitchStatement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type TemplateLiteral
+
+```go
+type TemplateLiteral struct {
+	NoSubstitutionTemplate *Token
+	TemplateHead           *Token
+	Expressions            []Expression
+	TemplateMiddleList     []*Token
+	TemplateTail           *Token
+	Tokens                 Tokens
+}
+```
+
+TemplateLiteral as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
+
+#### func (TemplateLiteral) Format
+
+```go
+func (f TemplateLiteral) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
 
 #### type Token
 
 ```go
-type Token interface {
-	io.WriterTo
-	Data() interface{}
+type Token struct {
+	parser.Token
+	Pos, Line, LinePos uint64
 }
 ```
 
-Token represents a parsed Token in the tree
+Token represents a single parsed token with source positioning
+
+#### func (Token) Format
+
+```go
+func (t Token) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### func (*Token) String
+
+```go
+func (t *Token) String() string
+```
+String implements the fmt.Stringer interface
 
 #### type Tokens
 
@@ -566,50 +1790,187 @@ Token represents a parsed Token in the tree
 type Tokens []Token
 ```
 
-Tokens represents a list of Tokens
+Tokens is a collection of Token values
 
-#### func  Tree
-
-```go
-func Tree(t parser.Tokeniser) (Tokens, error)
-```
-Tree uses the given Tokeniser to produce a tree of tokens
-
-#### func (Tokens) Data
+#### func (Tokens) Format
 
 ```go
-func (tk Tokens) Data() interface{}
+func (t Tokens) Format(s fmt.State, v rune)
 ```
-Data returns typed interpreted data
+Format implements the fmt.Formatter interface
 
-#### func (Tokens) WriteTo
+#### type TryStatement
 
 ```go
-func (tk Tokens) WriteTo(w io.Writer) (int64, error)
+type TryStatement struct {
+	TryBlock                           Block
+	CatchParameterBindingIdentifier    *Token
+	CatchParameterObjectBindingPattern *ObjectBindingPattern
+	CatchParameterArrayBindingPattern  *ArrayBindingPattern
+	CatchBlock                         *Block
+	FinallyBlock                       *Block
+	Tokens                             Tokens
+}
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the tokens
 
-#### type Whitespace
+TryStatement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-TryStatement
+
+#### func (TryStatement) Format
 
 ```go
-type Whitespace string
+func (f TryStatement) Format(s fmt.State, v rune)
 ```
+Format implements the fmt.Formatter interface
 
-Whitespace is sequential tabs, vertical tabs, form feeds, spaces, no-break
-spaces and zero width no-break spaces
-
-#### func (Whitespace) Data
+#### type UnaryExpression
 
 ```go
-func (tk Whitespace) Data() interface{}
+type UnaryExpression struct {
+	UnaryOperators   []UnaryOperator
+	UpdateExpression UpdateExpression
+	Tokens           Tokens
+}
 ```
-Data returns typed interpreted data
 
-#### func (Whitespace) WriteTo
+UnaryExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-UnaryExpression
+
+#### func (UnaryExpression) Format
 
 ```go
-func (tk Whitespace) WriteTo(w io.Writer) (int64, error)
+func (f UnaryExpression) Format(s fmt.State, v rune)
 ```
-WriteTo implements the io.WriterTo interface and writes to the Writer the
-original contents of the token
+Format implements the fmt.Formatter interface
+
+#### type UnaryOperator
+
+```go
+type UnaryOperator byte
+```
+
+UnaryOperator determines a unary operator within UnaryExpression
+
+```go
+const (
+	UnaryNone UnaryOperator = iota
+	UnaryDelete
+	UnaryVoid
+	UnaryTypeOf
+	UnaryAdd
+	UnaryMinus
+	UnaryBitwiseNot
+	UnaryLogicalNot
+	UnaryAwait
+)
+```
+Valid UnaryOperator's
+
+#### func (UnaryOperator) String
+
+```go
+func (u UnaryOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type UpdateExpression
+
+```go
+type UpdateExpression struct {
+	LeftHandSideExpression *LeftHandSideExpression
+	UpdateOperator         UpdateOperator
+	UnaryExpression        *UnaryExpression
+	Tokens                 Tokens
+}
+```
+
+UpdateExpression as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
+
+#### func (UpdateExpression) Format
+
+```go
+func (f UpdateExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type UpdateOperator
+
+```go
+type UpdateOperator int
+```
+
+UpdateOperator determines the type of update operation for UpdateExpression
+
+```go
+const (
+	UpdateNone UpdateOperator = iota
+	UpdatePostIncrement
+	UpdatePostDecrement
+	UpdatePreIncrement
+	UpdatePreDecrement
+)
+```
+Valid UpdateOperator's
+
+#### func (UpdateOperator) String
+
+```go
+func (u UpdateOperator) String() string
+```
+String implements the fmt.Stringer interface
+
+#### type VariableDeclaration
+
+```go
+type VariableDeclaration LexicalBinding
+```
+
+VariableDeclaration as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-VariableDeclaration
+
+#### func (VariableDeclaration) Format
+
+```go
+func (f VariableDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type VariableStatement
+
+```go
+type VariableStatement struct {
+	VariableDeclarationList []VariableDeclaration
+	Tokens                  Tokens
+}
+```
+
+VariableStatement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-VariableStatement
+
+#### func (VariableStatement) Format
+
+```go
+func (f VariableStatement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type WithStatement
+
+```go
+type WithStatement struct {
+	Expression Expression
+	Statement  Statement
+	Tokens     Tokens
+}
+```
+
+WithStatement as defined in ECMA-262
+https://www.ecma-international.org/ecma-262/#prod-WithStatement
+
+#### func (WithStatement) Format
+
+```go
+func (f WithStatement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
