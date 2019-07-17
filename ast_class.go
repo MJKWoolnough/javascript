@@ -5,6 +5,8 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// ClassDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
 type ClassDeclaration struct {
 	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
@@ -56,8 +58,10 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	return nil
 }
 
+// MethodType determines the prefixes for MethodDefinition
 type MethodType uint8
 
+// Valid MethodType's
 const (
 	MethodNormal MethodType = iota
 	MethodGenerator
@@ -73,6 +77,10 @@ const (
 	MethodStaticSetter
 )
 
+// MethodDefinition as specified in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-MethodDefinition
+//
+// Static methods from ClassElement are parsed here with the `static` prefix
 type MethodDefinition struct {
 	Type         MethodType
 	PropertyName PropertyName
@@ -207,6 +215,8 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	return nil
 }
 
+// PropertyName as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-PropertyName
 type PropertyName struct {
 	LiteralPropertyName  *Token
 	ComputedPropertyName *AssignmentExpression
@@ -235,6 +245,7 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// Errors
 var (
 	ErrInvalidMethodName       = errors.New("invalid method name")
 	ErrInvalidPropertyName     = errors.New("invalid property name")
