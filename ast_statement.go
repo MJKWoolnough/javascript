@@ -5,6 +5,8 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Block as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-Block
 type Block struct {
 	StatementList []StatementListItem
 	Tokens        Tokens
@@ -32,6 +34,8 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// StatementListItem as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-StatementListItem
 type StatementListItem struct {
 	Statement   *Statement
 	Declaration *Declaration
@@ -84,8 +88,10 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// StatementType determines the type of a Statement type
 type StatementType uint8
 
+// Valid StatementType's
 const (
 	StatementNormal StatementType = iota
 	StatementContinue
@@ -94,6 +100,8 @@ const (
 	StatementThrow
 )
 
+// Statement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-Statement
 type Statement struct {
 	Type                    StatementType
 	BlockStatement          *Block
@@ -272,6 +280,8 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// IfStatement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-IfStatement
 type IfStatement struct {
 	Expression    Expression
 	Statement     Statement
@@ -317,6 +327,9 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// IterationStatementDo is the do-while part of IterationStatement as defined
+// in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
 type IterationStatementDo struct {
 	Statement  Statement
 	Expression Expression
@@ -357,6 +370,9 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 	return nil
 }
 
+// IterationStatementWhile is the while part of IterationStatement as defined
+// in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
 type IterationStatementWhile struct {
 	Expression Expression
 	Statement  Statement
@@ -389,8 +405,10 @@ func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) er
 	return nil
 }
 
+// ForType determines which kind of for-loop is described by IterationStatementFor
 type ForType uint8
 
+// Valid ForType's
 const (
 	ForNormal ForType = iota
 	ForNormalVar
@@ -410,6 +428,12 @@ const (
 	ForAwaitOfConst
 )
 
+// IterationStatementFor is the for part of IterationStatement as defined
+// in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+//
+// Includes TC39 proposal for for-await-of
+// https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
 type IterationStatementFor struct {
 	Type ForType
 
@@ -662,6 +686,8 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	return nil
 }
 
+// SwitchStatement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-SwitchStatement
 type SwitchStatement struct {
 	Expression             Expression
 	CaseClauses            []CaseClause
@@ -736,6 +762,8 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// CaseClause as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-CaseClauses
 type CaseClause struct {
 	Expression    Expression
 	StatementList []StatementListItem
@@ -775,6 +803,8 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// WithStatement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-WithStatement
 type WithStatement struct {
 	Expression Expression
 	Statement  Statement
@@ -807,6 +837,8 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// TryStatement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-TryStatement
 type TryStatement struct {
 	TryBlock                           Block
 	CatchParameterBindingIdentifier    *Token
@@ -880,6 +912,8 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	return nil
 }
 
+// VariableStatement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-VariableStatement
 type VariableStatement struct {
 	VariableDeclarationList []VariableDeclaration
 	Tokens                  Tokens
