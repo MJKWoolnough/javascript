@@ -30,7 +30,7 @@ func (m *Module) parse(j *jsParser) error {
 		ml := len(m.ModuleListItems)
 		m.ModuleListItems = append(m.ModuleListItems, ModuleItem{})
 		if err := m.ModuleListItems[ml].parse(&g); err != nil {
-			return j.Error("Module", err)
+			return err
 		}
 		j.Score(g)
 	}

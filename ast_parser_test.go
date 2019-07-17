@@ -109,4 +109,56 @@ func TestNewJSParser(t *testing.T) {
 			}
 		}
 	}
+	pErr := Error{
+		Err:     errors.Error("read invalid character: @"),
+		Parsing: "Tokens",
+		Token: Token{
+			Token: parser.Token{
+				Type: parser.TokenError,
+				Data: "read invalid character: @",
+			},
+			Pos:     0,
+			Line:    0,
+			LinePos: 0,
+		},
+	}
+	if _, err := ParseScript(parser.NewStringTokeniser("@")); !reflect.DeepEqual(err, pErr) {
+		t.Errorf("Script token error test: expecting %s, got %s", pErr, err)
+	}
+	if _, err := ParseModule(parser.NewStringTokeniser("@")); !reflect.DeepEqual(err, pErr) {
+		t.Errorf("Module token error test: expecting %s, got %s", pErr, err)
+	}
+	tk := Token{
+		Token: parser.Token{
+			Type: TokenPunctuator,
+			Data: "?",
+		},
+		Pos:     0,
+		Line:    0,
+		LinePos: 0,
+	}
+	sErr := Error{
+		Err: Error{
+			Err: Error{
+				Err:     assignmentError(tk),
+				Parsing: "Expression",
+				Token:   tk,
+			},
+			Parsing: "Statement",
+			Token:   tk,
+		},
+		Parsing: "StatementListItem",
+		Token:   tk,
+	}
+	if _, err := ParseScript(parser.NewStringTokeniser("?")); !reflect.DeepEqual(err, sErr) {
+		t.Errorf("Script error test: expecting %s, got %s", sErr, err)
+	}
+	mErr := Error{
+		Err:     sErr,
+		Parsing: "ModuleStatement",
+		Token:   tk,
+	}
+	if _, err := ParseModule(parser.NewStringTokeniser("?")); !reflect.DeepEqual(err, mErr) {
+		t.Errorf("Module error test: expecting %s, got %s", mErr, err)
+	}
 }
