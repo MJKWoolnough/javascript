@@ -5,11 +5,13 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Module represents the top-level of a parsed javascript module
 type Module struct {
 	ModuleListItems []ModuleItem
 	Tokens          Tokens
 }
 
+// ParseModule parses a javascript module
 func ParseModule(t parser.Tokeniser) (*Module, error) {
 	j, err := newJSParser(t)
 	if err != nil {
@@ -36,6 +38,8 @@ func (m *Module) parse(j *jsParser) error {
 	return nil
 }
 
+// ModuleItem as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ModuleItem
 type ModuleItem struct {
 	ImportDeclaration *ImportDeclaration
 	StatementListItem *StatementListItem
@@ -67,6 +71,8 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 	return nil
 }
 
+// ImportDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ImportDeclaration
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
@@ -100,6 +106,8 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	return nil
 }
 
+// ImportClause as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ImportClause
 type ImportClause struct {
 	ImportedDefaultBinding *Token
 	NameSpaceImport        *Token
@@ -152,6 +160,8 @@ func (ic *ImportClause) parse(j *jsParser) error {
 	return nil
 }
 
+// FromClause as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-FromClause
 type FromClause struct {
 	ModuleSpecifier *Token
 	Tokens          Tokens
@@ -170,6 +180,8 @@ func (fc *FromClause) parse(j *jsParser) error {
 	return nil
 }
 
+// NamedImports as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-NamedImports
 type NamedImports struct {
 	ImportList []ImportSpecifier
 	Tokens     Tokens
@@ -200,6 +212,8 @@ func (ni *NamedImports) parse(j *jsParser) error {
 	return nil
 }
 
+// ImportSpecifier as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
 type ImportSpecifier struct {
 	IdentifierName  *Token
 	ImportedBinding *Token
@@ -227,6 +241,8 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 	return nil
 }
 
+// ExportDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
 type ExportDeclaration struct {
 	ExportClause                *ExportClause
 	FromClause                  *FromClause
@@ -314,6 +330,8 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	return nil
 }
 
+// ExportClause as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ExportClause
 type ExportClause struct {
 	ExportList []ExportSpecifier
 	Tokens     Tokens
@@ -343,6 +361,8 @@ func (ec *ExportClause) parse(j *jsParser) error {
 	return nil
 }
 
+// ExportSpecifier as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
 type ExportSpecifier struct {
 	IdentifierName, EIdentifierName *Token
 	Tokens                          Tokens
