@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -68,6 +69,23 @@ func TestNewJSParser(t *testing.T) {
 			},
 			nil,
 		},
+		{
+			"@",
+			jsParser{
+				{
+					parser.Token{parser.TokenError, "read invalid character: @"},
+					0, 0, 0,
+				},
+			},
+			Error{
+				Err:     errors.Error("read invalid character: @"),
+				Parsing: "Tokens",
+				Token: Token{
+					parser.Token{parser.TokenError, "read invalid character: @"},
+					0, 0, 0,
+				},
+			},
+		},
 	} {
 		j, err := newJSParser(parser.NewStringTokeniser(test.Source))
 		if !reflect.DeepEqual(err, test.Err) {
@@ -85,8 +103,10 @@ func TestNewJSParser(t *testing.T) {
 				t.Errorf("test %d.%d.3: expectign to GetLast %v, got %v", n+1, m+1, tkn, *tkl)
 			}
 		}
-		if tk := j.next(); tk.Type != parser.TokenDone {
-			t.Errorf("test %d: expecting TokenDone, got %v", cap(j)+1, tk)
+		if test.Err == nil {
+			if tk := j.next(); tk.Type != parser.TokenDone {
+				t.Errorf("test %d: expecting TokenDone, got %v", cap(j)+1, tk)
+			}
 		}
 	}
 }

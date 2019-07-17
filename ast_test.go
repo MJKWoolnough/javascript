@@ -1224,7 +1224,14 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+		{"let\na b;", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrInvalidLexicalDeclaration,
+				Parsing: "LexicalDeclaration",
+				Token:   tk[3],
+			}
+		}},
+	}, func(t *test) (interface{}, error) { // 13
 		var ld LexicalDeclaration
 		err := ld.parse(&t.Tokens, t.In, t.Yield, t.Await)
 		return ld, err
@@ -1309,6 +1316,40 @@ func TestLexicalBinding(t *testing.T) {
 					Tokens:                tk[5:6],
 				},
 				Tokens: tk[:6],
+			}
+		}},
+		{`[!]`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "LexicalBinding",
+				Token:   tk[0],
+			}
+		}},
+		{`{!}`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[1],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[1],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "LexicalBinding",
+				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
@@ -2261,6 +2302,17 @@ func TestTemplateLiteral(t *testing.T) {
 				},
 				TemplateTail: &tk[12],
 				Tokens:       tk[:13],
+			}
+		}},
+		{"`${,}`", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[1]),
+					Parsing: "Expression",
+					Token:   tk[1],
+				},
+				Parsing: "TemplateLiteral",
+				Token:   tk[1],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
