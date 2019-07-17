@@ -1461,7 +1461,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1482,7 +1482,7 @@ func TestStatement(t *testing.T) {
 						},
 						CatchParameterBindingIdentifier: &tk[7],
 						CatchBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1515,7 +1515,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1544,7 +1544,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[7:10],
 						},
 						CatchBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1577,7 +1577,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1597,7 +1597,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[1:5],
 						},
 						FinallyBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1631,7 +1631,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1660,7 +1660,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[7:10],
 						},
 						CatchBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -1680,7 +1680,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[11:15],
 						},
 						FinallyBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -2028,7 +2028,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -2048,7 +2048,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[1:5],
 						},
 						CatchBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -2082,7 +2082,7 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					TryStatement: &TryStatement{
 						TryBlock: Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -2102,7 +2102,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[1:5],
 						},
 						CatchBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{
@@ -2122,7 +2122,7 @@ func TestStatement(t *testing.T) {
 							Tokens: tk[6:10],
 						},
 						FinallyBlock: &Block{
-							StatementListItems: []StatementListItem{
+							StatementList: []StatementListItem{
 								{
 									Statement: &Statement{
 										ExpressionStatement: &Expression{

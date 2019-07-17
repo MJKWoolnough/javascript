@@ -344,7 +344,7 @@ for(
 									Tokens: tk[20:23],
 								},
 								FunctionBody: Block{
-									StatementListItems: []StatementListItem{
+									StatementList: []StatementListItem{
 										{
 											Declaration: &Declaration{
 												LexicalDeclaration: &LexicalDeclaration{
@@ -423,7 +423,7 @@ for(
 								},
 								Statement: Statement{
 									BlockStatement: &Block{
-										StatementListItems: []StatementListItem{
+										StatementList: []StatementListItem{
 											{
 												Statement: &Statement{
 													ExpressionStatement: &Expression{
@@ -567,7 +567,7 @@ for(
 					{
 						Statement: &Statement{
 							BlockStatement: &Block{
-								StatementListItems: []StatementListItem{
+								StatementList: []StatementListItem{
 									{
 										Statement: &Statement{
 											ExpressionStatement: &Expression{
@@ -643,7 +643,7 @@ for(
 									Tokens: tk[3:5],
 								},
 								FunctionBody: Block{
-									StatementListItems: []StatementListItem{
+									StatementList: []StatementListItem{
 										{
 											Statement: &Statement{
 												Type:   StatementReturn,

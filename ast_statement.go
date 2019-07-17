@@ -6,8 +6,8 @@ import (
 )
 
 type Block struct {
-	StatementListItems []StatementListItem
-	Tokens             Tokens
+	StatementList []StatementListItem
+	Tokens        Tokens
 }
 
 func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
@@ -20,9 +20,9 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 			break
 		}
 		g := j.NewGoal()
-		si := len(b.StatementListItems)
-		b.StatementListItems = append(b.StatementListItems, StatementListItem{})
-		if err := b.StatementListItems[si].parse(&g, yield, await, ret); err != nil {
+		si := len(b.StatementList)
+		b.StatementList = append(b.StatementList, StatementListItem{})
+		if err := b.StatementList[si].parse(&g, yield, await, ret); err != nil {
 			return j.Error("Block", err)
 		}
 		j.Score(g)
@@ -913,6 +913,7 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// Errors
 var (
 	ErrDuplicateDefaultClause      = errors.New("duplicate default clause")
 	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")

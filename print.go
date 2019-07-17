@@ -227,7 +227,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 		lastLine = b.Tokens[0].Line
 	}
 	pp := indentPrinter{w}
-	for _, stmt := range b.StatementListItems {
+	for _, stmt := range b.StatementList {
 		if v {
 			if len(stmt.Tokens) > 0 {
 				if ll := stmt.Tokens[0].Line; ll > lastLine {
@@ -243,7 +243,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 		}
 		stmt.printSource(&pp, v)
 	}
-	if len(b.StatementListItems) > 0 {
+	if len(b.StatementList) > 0 {
 		w.Write(newLine)
 	}
 	w.Write(blockClose)
