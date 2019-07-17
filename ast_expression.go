@@ -2,8 +2,10 @@ package javascript
 
 import "vimagination.zapto.org/parser"
 
+// AssignmentOperator specifies the type of assignment in AssignmentExpression
 type AssignmentOperator uint8
 
+// Valid AssignmentOperator's
 const (
 	AssignmentNone AssignmentOperator = iota
 	AssignmentAssign
@@ -56,6 +58,8 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 	return nil
 }
 
+// AssignmentExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
 type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
@@ -128,6 +132,8 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 	return nil
 }
 
+// LeftHandSideExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
 type LeftHandSideExpression struct {
 	NewExpression  *NewExpression
 	CallExpression *CallExpression
@@ -170,6 +176,8 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// Expression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-Expression
 type Expression struct {
 	Expressions []AssignmentExpression
 	Tokens      Tokens
@@ -196,6 +204,11 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+// NewExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-NewExpression
+//
+// The News field is a count of the number of 'new' keywords that proceed the
+// MemberExpression
 type NewExpression struct {
 	News             uint
 	MemberExpression MemberExpression
@@ -219,6 +232,8 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// MemberExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-MemberExpression
 type MemberExpression struct {
 	MemberExpression  *MemberExpression
 	PrimaryExpression *PrimaryExpression
@@ -343,6 +358,8 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
+// PrimaryExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
 type PrimaryExpression struct {
 	This                                              bool
 	IdentifierReference                               *Token
@@ -414,6 +431,8 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
 type CoverParenthesizedExpressionAndArrowParameterList struct {
 	Expressions          []AssignmentExpression
 	BindingIdentifier    *Token
@@ -472,6 +491,8 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 	return nil
 }
 
+// Arguments as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-Arguments
 type Arguments struct {
 	ArgumentList   []AssignmentExpression
 	SpreadArgument *AssignmentExpression
@@ -517,6 +538,11 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// CallExpression as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-CallExpression
+//
+// Includes the TC39 proposal for the dynamic import function call
+// https://github.com/tc39/proposal-dynamic-import/#import
 type CallExpression struct {
 	MemberExpression *MemberExpression
 	SuperCall        bool
