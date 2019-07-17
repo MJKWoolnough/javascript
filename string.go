@@ -55,6 +55,7 @@ func (i *indentPrinter) WriteString(s string) (int, error) {
 	return i.Write([]byte(s))
 }
 
+// Format implements the fmt.Formatter interface
 func (t Token) Format(s fmt.State, v rune) {
 	var typ string
 	switch t.Type {
@@ -109,6 +110,7 @@ func (t Token) Format(s fmt.State, v rune) {
 	}
 }
 
+// Format implements the fmt.Formatter interface
 func (t Tokens) Format(s fmt.State, v rune) {
 	formatArray(s, s.Flag('+'), reflect.ValueOf(t))
 }
@@ -208,6 +210,7 @@ func formatArray(ip io.Writer, verbose bool, v reflect.Value) {
 	ip.Write(arrayClose)
 }
 
+// Format implements the fmt.Formatter interface
 func (ft FunctionType) Format(s fmt.State, _ rune) {
 	if s.Flag('+') {
 		fmt.Fprintf(s, "%s (%d)", ft.String(), uint8(ft))
@@ -216,6 +219,7 @@ func (ft FunctionType) Format(s fmt.State, _ rune) {
 	}
 }
 
+// Format implements the fmt.Formatter interface
 func (ft FunctionType) String() string {
 	switch ft {
 	case FunctionNormal:
@@ -229,6 +233,7 @@ func (ft FunctionType) String() string {
 	}
 }
 
+// Format implements the fmt.Formatter interface
 func (mt MethodType) Format(s fmt.State, _ rune) {
 	if s.Flag('+') {
 		fmt.Fprintf(s, "%s (%d)", mt.String(), uint8(mt))
@@ -237,6 +242,7 @@ func (mt MethodType) Format(s fmt.State, _ rune) {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (mt MethodType) String() string {
 	switch mt {
 	case MethodNormal:
@@ -268,6 +274,7 @@ func (mt MethodType) String() string {
 	}
 }
 
+// Format implements the fmt.Formatter interface
 func (st StatementType) Format(s fmt.State, _ rune) {
 	if s.Flag('+') {
 		fmt.Fprintf(s, "%s (%d)", st.String(), uint8(st))
@@ -276,6 +283,7 @@ func (st StatementType) Format(s fmt.State, _ rune) {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (st StatementType) String() string {
 	switch st {
 	case StatementNormal:
@@ -293,6 +301,7 @@ func (st StatementType) String() string {
 	}
 }
 
+// Format implements the fmt.Formatter interface
 func (ft ForType) Format(s fmt.State, _ rune) {
 	if s.Flag('+') {
 		fmt.Fprintf(s, "%s (%d)", ft.String(), uint8(ft))
@@ -301,6 +310,7 @@ func (ft ForType) Format(s fmt.State, _ rune) {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (ft ForType) String() string {
 	switch ft {
 	case ForNormal:
@@ -340,6 +350,7 @@ func (ft ForType) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (e EqualityOperator) String() string {
 	switch e {
 	case EqualityNone:
@@ -357,6 +368,7 @@ func (e EqualityOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (r RelationshipOperator) String() string {
 	switch r {
 	case RelationshipNone:
@@ -378,6 +390,7 @@ func (r RelationshipOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (s ShiftOperator) String() string {
 	switch s {
 	case ShiftNone:
@@ -393,6 +406,7 @@ func (s ShiftOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (a AdditiveOperator) String() string {
 	switch a {
 	case AdditiveNone:
@@ -406,6 +420,7 @@ func (a AdditiveOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (m MultiplicativeOperator) String() string {
 	switch m {
 	case MultiplicativeNone:
@@ -421,6 +436,7 @@ func (m MultiplicativeOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (u UnaryOperator) String() string {
 	switch u {
 	case UnaryNone:
@@ -446,6 +462,7 @@ func (u UnaryOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (u UpdateOperator) String() string {
 	switch u {
 	case UpdateNone:
@@ -463,6 +480,7 @@ func (u UpdateOperator) String() string {
 	}
 }
 
+// String implements the fmt.Stringer interface
 func (l LetOrConst) String() string {
 	if l {
 		return "Const"
@@ -470,6 +488,7 @@ func (l LetOrConst) String() string {
 	return "Let"
 }
 
+// String implements the fmt.Stringer interface
 func (a AssignmentOperator) String() string {
 	switch a {
 	case AssignmentNone:
@@ -505,74 +524,204 @@ func (a AssignmentOperator) String() string {
 	}
 }
 
-func (f ClassDeclaration) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f MethodDefinition) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f PropertyName) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f ConditionalExpression) Format(s fmt.State, v rune)    { format(s, v, f) }
-func (f LogicalORExpression) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f LogicalANDExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f BitwiseORExpression) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f BitwiseXORExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f BitwiseANDExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f EqualityExpression) Format(s fmt.State, v rune)       { format(s, v, f) }
-func (f RelationalExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f ShiftExpression) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f AdditiveExpression) Format(s fmt.State, v rune)       { format(s, v, f) }
+// Format implements the fmt.Formatter interface
+func (f ClassDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f MethodDefinition) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f PropertyName) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ConditionalExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f LogicalORExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f LogicalANDExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f BitwiseORExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f BitwiseXORExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f BitwiseANDExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f EqualityExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f RelationalExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ShiftExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f AdditiveExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
 func (f MultiplicativeExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
 func (f ExponentiationExpression) Format(s fmt.State, v rune) { format(s, v, f) }
-func (f UnaryExpression) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f UpdateExpression) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f AssignmentExpression) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f LeftHandSideExpression) Format(s fmt.State, v rune)   { format(s, v, f) }
-func (f Expression) Format(s fmt.State, v rune)               { format(s, v, f) }
-func (f NewExpression) Format(s fmt.State, v rune)            { format(s, v, f) }
-func (f MemberExpression) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f PrimaryExpression) Format(s fmt.State, v rune)        { format(s, v, f) }
-func (f Arguments) Format(s fmt.State, v rune)                { format(s, v, f) }
-func (f CallExpression) Format(s fmt.State, v rune)           { format(s, v, f) }
-func (f FunctionDeclaration) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f FormalParameters) Format(s fmt.State, v rune)         { format(s, v, f) }
-func (f BindingElement) Format(s fmt.State, v rune)           { format(s, v, f) }
-func (f FunctionRestParameter) Format(s fmt.State, v rune)    { format(s, v, f) }
-func (f Script) Format(s fmt.State, v rune)                   { format(s, v, f) }
-func (f Declaration) Format(s fmt.State, v rune)              { format(s, v, f) }
-func (f LexicalDeclaration) Format(s fmt.State, v rune)       { format(s, v, f) }
-func (f LexicalBinding) Format(s fmt.State, v rune)           { format(s, v, f) }
-func (f ArrayBindingPattern) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f ObjectBindingPattern) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f BindingProperty) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f VariableDeclaration) Format(s fmt.State, v rune)      { format(s, v, f) }
-func (f ArrayLiteral) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f ObjectLiteral) Format(s fmt.State, v rune)            { format(s, v, f) }
-func (f PropertyDefinition) Format(s fmt.State, v rune)       { format(s, v, f) }
-func (f TemplateLiteral) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f ArrowFunction) Format(s fmt.State, v rune)            { format(s, v, f) }
-func (f Module) Format(s fmt.State, v rune)                   { format(s, v, f) }
-func (f ModuleListItem) Format(s fmt.State, v rune)           { format(s, v, f) }
-func (f ImportDeclaration) Format(s fmt.State, v rune)        { format(s, v, f) }
-func (f ImportClause) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f FromClause) Format(s fmt.State, v rune)               { format(s, v, f) }
-func (f NamedImports) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f ImportSpecifier) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f ExportDeclaration) Format(s fmt.State, v rune)        { format(s, v, f) }
-func (f ExportClause) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f ExportSpecifier) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f Block) Format(s fmt.State, v rune)                    { format(s, v, f) }
-func (f StatementListItem) Format(s fmt.State, v rune)        { format(s, v, f) }
-func (f Statement) Format(s fmt.State, v rune)                { format(s, v, f) }
-func (f IfStatement) Format(s fmt.State, v rune)              { format(s, v, f) }
-func (f IterationStatementDo) Format(s fmt.State, v rune)     { format(s, v, f) }
-func (f IterationStatementWhile) Format(s fmt.State, v rune)  { format(s, v, f) }
-func (f IterationStatementFor) Format(s fmt.State, v rune)    { format(s, v, f) }
-func (f SwitchStatement) Format(s fmt.State, v rune)          { format(s, v, f) }
-func (f CaseClause) Format(s fmt.State, v rune)               { format(s, v, f) }
-func (f WithStatement) Format(s fmt.State, v rune)            { format(s, v, f) }
-func (f TryStatement) Format(s fmt.State, v rune)             { format(s, v, f) }
-func (f VariableStatement) Format(s fmt.State, v rune)        { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f UnaryExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f UpdateExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f AssignmentExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f LeftHandSideExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Expression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f NewExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f MemberExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f PrimaryExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Arguments) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f CallExpression) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f FunctionDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f FormalParameters) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f BindingElement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f FunctionRestParameter) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Script) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Declaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f LexicalDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f LexicalBinding) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ArrayBindingPattern) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ObjectBindingPattern) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f BindingProperty) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f VariableDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ArrayLiteral) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ObjectLiteral) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f PropertyDefinition) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f TemplateLiteral) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ArrowFunction) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Module) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ModuleListItem) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ImportDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ImportClause) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f FromClause) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f NamedImports) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ImportSpecifier) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ExportDeclaration) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ExportClause) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f ExportSpecifier) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Block) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f StatementListItem) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f Statement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f IfStatement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f IterationStatementDo) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f IterationStatementWhile) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f IterationStatementFor) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f SwitchStatement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f CaseClause) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f WithStatement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f TryStatement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
+func (f VariableStatement) Format(s fmt.State, v rune) { format(s, v, f) }
+
+// Format implements the fmt.Formatter interface
 func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v rune) {
 	format(s, v, f)
 }
 
+// String implements the fmt.Stringer interface
 func (t *Token) String() string {
 	if t == nil {
 		return ""
