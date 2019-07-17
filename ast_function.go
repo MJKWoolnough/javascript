@@ -5,14 +5,20 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// FunctionType determines which type of function is specified by FunctionDeclaration
 type FunctionType uint8
 
+// Valid FunctionType's
 const (
 	FunctionNormal FunctionType = iota
 	FunctionGenerator
 	FunctionAsync
 )
 
+// FunctionDeclaration as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
+//
+// Also parses FunctionExpression
 type FunctionDeclaration struct {
 	Type              FunctionType
 	BindingIdentifier *Token
@@ -57,6 +63,8 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 	return nil
 }
 
+// FormalParameters as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-FormalParameters
 type FormalParameters struct {
 	FormalParameterList   []BindingElement
 	FunctionRestParameter *FunctionRestParameter
@@ -107,6 +115,8 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// BindingElement as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-BindingElement
 type BindingElement struct {
 	SingleNameBinding    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
@@ -147,6 +157,8 @@ func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// FunctionRestParameter as defined in ECMA-262
+// https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
 type FunctionRestParameter struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
@@ -174,6 +186,7 @@ func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// Errors
 var (
 	ErrInvalidFunction = errors.New("invalid function")
 )
