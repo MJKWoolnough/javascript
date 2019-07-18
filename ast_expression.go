@@ -54,7 +54,7 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 	default:
 		return ErrInvalidAssignment
 	}
-	j.Except()
+	j.Skip()
 	return nil
 }
 
@@ -346,14 +346,14 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		case TokenPunctuator:
 			switch tk.Data {
 			case ".":
-				h.Except()
+				h.Skip()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
 					return g.Error("MemberExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
 			case "[":
-				h.Except()
+				h.Skip()
 				h.AcceptRunWhitespace()
 				i := h.NewGoal()
 				e = new(Expression)
@@ -654,14 +654,14 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 					return g.Error("CallExpression", err)
 				}
 			case ".":
-				h.Except()
+				h.Skip()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
 					return g.Error("CallExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
 			case "[":
-				h.Except()
+				h.Skip()
 				h.AcceptRunWhitespace()
 				i := h.NewGoal()
 				e = new(Expression)

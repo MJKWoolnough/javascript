@@ -50,20 +50,20 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	case parser.Token{TokenIdentifier, "let"}, parser.Token{TokenKeyword, "const"}:
 		declaration = true
 	case parser.Token{TokenKeyword, "class"}:
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		if g.parseIdentifier(yield, await) != nil {
 			declaration = true
 		}
 	case parser.Token{TokenIdentifier, "async"}:
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		if g.Peek() != (parser.Token{TokenKeyword, "function"}) {
 			break
 		}
 		fallthrough
 	case parser.Token{TokenKeyword, "function"}:
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 			g.AcceptRunWhitespace()
@@ -144,7 +144,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenPunctuator, ";"}:
-		g.Except()
+		g.Skip()
 	case parser.Token{TokenKeyword, "if"}:
 		s.IfStatement = new(IfStatement)
 		if err := s.IfStatement.parse(&g, yield, await, ret); err != nil {
@@ -171,7 +171,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "continue"}:
-		g.Except()
+		g.Skip()
 		s.Type = StatementContinue
 		if !g.parseSemicolon() {
 			g.AcceptRunWhitespaceNoNewLine()
@@ -183,7 +183,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			}
 		}
 	case parser.Token{TokenKeyword, "break"}:
-		g.Except()
+		g.Skip()
 		s.Type = StatementBreak
 		if !g.parseSemicolon() {
 			g.AcceptRunWhitespaceNoNewLine()
@@ -198,7 +198,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		if !ret {
 			return g.Error("Statement", ErrInvalidStatement)
 		}
-		g.Except()
+		g.Skip()
 		s.Type = StatementReturn
 		if !g.parseSemicolon() {
 			g.AcceptRunWhitespaceNoNewLine()
@@ -218,7 +218,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "throw"}:
-		g.Except()
+		g.Skip()
 		s.Type = StatementThrow
 		g.AcceptRunWhitespaceNoNewLine()
 		h := g.NewGoal()
@@ -236,7 +236,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			return j.Error("Statement", err)
 		}
 	case parser.Token{TokenKeyword, "debugger"}:
-		g.Except()
+		g.Skip()
 		s.DebuggerStatement = g.GetLastToken()
 		if !g.parseSemicolon() {
 			return g.Error("Statement", ErrMissingSemiColon)
@@ -269,7 +269,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 				return j.Error("Statement", ErrInvalidStatement)
 			case parser.Token{TokenIdentifier, "async"}:
 				h := g.NewGoal()
-				h.Except()
+				h.Skip()
 				h.AcceptRunWhitespaceNoNewLine()
 				if h.AcceptToken(parser.Token{TokenKeyword, "function"}) {
 					return j.Error("Statement", ErrInvalidStatement)
@@ -488,7 +488,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	case parser.Token{TokenKeyword, "var"}:
 		is.Type++
 		g := j.NewGoal()
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		var (
 			opener = "{"
@@ -510,14 +510,14 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 				case closer:
 					level--
 					if level == 0 {
-						g.Except()
+						g.Skip()
 						break Loop
 					}
 				}
-				g.Except()
+				g.Skip()
 			}
 		default:
-			g.Except()
+			g.Skip()
 		}
 		g.AcceptRunWhitespace()
 		switch g.Peek() {
@@ -541,10 +541,10 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	}
 	switch is.Type {
 	case ForNormal:
-		j.Except()
+		j.Skip()
 		j.AcceptRunWhitespace()
 	case ForNormalVar:
-		j.Except()
+		j.Skip()
 		for {
 			j.AcceptRunWhitespace()
 			g := j.NewGoal()
@@ -606,7 +606,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			j.AcceptRunWhitespace()
 		}
 	case ForInVar, ForInLet, ForInConst, ForOfVar, ForOfLet, ForOfConst:
-		j.Except()
+		j.Skip()
 		j.AcceptRunWhitespace()
 		switch j.Peek() {
 		case parser.Token{TokenPunctuator, "{"}:

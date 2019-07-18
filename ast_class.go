@@ -102,7 +102,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	case parser.Token{TokenIdentifier, "get"}:
 		j.Score(g)
 		g = j.NewGoal()
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		prev = md.Type
 		switch md.Type {
@@ -114,7 +114,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	case parser.Token{TokenIdentifier, "set"}:
 		j.Score(g)
 		g = j.NewGoal()
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		prev = md.Type
 		switch md.Type {
@@ -126,7 +126,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	case parser.Token{TokenIdentifier, "async"}:
 		j.Score(g)
 		g = j.NewGoal()
-		g.Except()
+		g.Skip()
 		if t := g.AcceptRunWhitespaceNoNewLine(); t == TokenLineTerminator || t == TokenSingleLineComment || t == TokenMultiLineComment {
 			g = j.NewGoal()
 			break

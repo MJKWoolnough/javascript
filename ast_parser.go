@@ -130,15 +130,8 @@ Loop:
 	}
 }
 
-func (j *jsParser) Except(ts ...parser.TokenType) bool {
-	tt := j.next().Type
-	for _, pt := range ts {
-		if pt == tt {
-			j.backup()
-			return false
-		}
-	}
-	return true
+func (j *jsParser) Skip() {
+	j.next()
 }
 
 func (j *jsParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
@@ -179,7 +172,7 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 		if strings.ContainsAny(j.Peek().Data, lineTerminators) {
 			return tt
 		}
-		j.Except()
+		j.Skip()
 	}
 }
 

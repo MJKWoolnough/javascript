@@ -494,7 +494,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 			case parser.Token{TokenPunctuator, "*"}:
 				propertyName = false
 			case parser.Token{TokenIdentifier, "async"}, parser.Token{TokenIdentifier, "get"}, parser.Token{TokenIdentifier, "set"}:
-				g.Except()
+				g.Skip()
 				g.AcceptRunWhitespace()
 				if !g.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
 					propertyName = false

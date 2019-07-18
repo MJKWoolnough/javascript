@@ -248,7 +248,7 @@ func (ee *EqualityExpression) parse(j *jsParser, in, yield, await bool) error {
 		default:
 			return nil
 		}
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		nee := new(EqualityExpression)
 		*nee = *ee
@@ -316,7 +316,7 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 		default:
 			return nil
 		}
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		nre := new(RelationalExpression)
 		*nre = *re
@@ -372,7 +372,7 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 		default:
 			return nil
 		}
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		nse := new(ShiftExpression)
 		*nse = *se
@@ -425,7 +425,7 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 		default:
 			return nil
 		}
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		nae := new(AdditiveExpression)
 		*nae = *ae
@@ -481,7 +481,7 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 		default:
 			return nil
 		}
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		nmw := new(MultiplicativeExpression)
 		*nmw = *me
@@ -577,7 +577,7 @@ Loop:
 		default:
 			break Loop
 		}
-		j.Except()
+		j.Skip()
 		j.AcceptRunWhitespace()
 	}
 	g := j.NewGoal()

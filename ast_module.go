@@ -142,7 +142,7 @@ func (ic *ImportClause) parse(j *jsParser) error {
 	}
 	if j.Peek() == (parser.Token{TokenPunctuator, "*"}) {
 		g := j.NewGoal()
-		g.Except()
+		g.Skip()
 		g.AcceptRunWhitespace()
 		if !g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 			return j.Error("ImportClause", ErrInvalidNameSpaceImport)
