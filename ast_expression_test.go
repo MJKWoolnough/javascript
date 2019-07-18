@@ -2,7 +2,7 @@ package javascript
 
 import "testing"
 
-func TestLeftHandSideExpression(t *testing.T) {
+func TestLeftHandSideExpressionOld(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`this`, func(t *test, tk Tokens) { // 1
 			t.Output = LeftHandSideExpression{
@@ -1143,5 +1143,185 @@ func TestAssignmentExpression(t *testing.T) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
 		return ae, err
+	})
+}
+
+func TestLeftHandSideExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "PrimaryExpression",
+							Token:   tk[0],
+						},
+						Parsing: "MemberExpression",
+						Token:   tk[0],
+					},
+					Parsing: "NewExpression",
+					Token:   tk[0],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"super\n(,)", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[3]),
+						Parsing: "Arguments",
+						Token:   tk[3],
+					},
+					Parsing: "CallExpression",
+					Token:   tk[2],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"super\n()", func(t *test, tk Tokens) { // 3
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"import\n(,)", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[3]),
+					Parsing: "CallExpression",
+					Token:   tk[3],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"import\n(a)", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 3)
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					ImportCall: &AssignmentExpression{
+						ConditionalExpression: &litA,
+						Tokens:                tk[3:4],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`super`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidSuperProperty,
+						Parsing: "MemberExpression",
+						Token:   tk[1],
+					},
+					Parsing: "NewExpression",
+					Token:   tk[0],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`import`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "PrimaryExpression",
+							Token:   tk[0],
+						},
+						Parsing: "MemberExpression",
+						Token:   tk[0],
+					},
+					Parsing: "NewExpression",
+					Token:   tk[0],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{",", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "PrimaryExpression",
+							Token:   tk[0],
+						},
+						Parsing: "MemberExpression",
+						Token:   tk[0],
+					},
+					Parsing: "NewExpression",
+					Token:   tk[0],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 9
+			t.Output = LeftHandSideExpression{
+				NewExpression: &NewExpression{
+					MemberExpression: MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"a\n()", func(t *test, tk Tokens) { // 10
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"a\n(,)", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[3]),
+						Parsing: "Arguments",
+						Token:   tk[3],
+					},
+					Parsing: "CallExpression",
+					Token:   tk[2],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[0],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var lhs LeftHandSideExpression
+		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
+		return lhs, err
 	})
 }
