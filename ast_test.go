@@ -2203,6 +2203,40 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"async/* */a (){}", func(t *test, tk Tokens) { // 19
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					Type: MethodAsync,
+					PropertyName: PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Params: FormalParameters{
+						Tokens: tk[4:6],
+					},
+					FunctionBody: Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"async/*\n*/a (){}", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingOpeningParenthesis,
+						Parsing: "FormalParameters",
+						Token:   tk[2],
+					},
+					Parsing: "MethodDefinition",
+					Token:   tk[2],
+				},
+				Parsing: "PropertyDefinition",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var pd PropertyDefinition
 		err := pd.parse(&t.Tokens, t.Yield, t.Await)
