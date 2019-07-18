@@ -270,6 +270,34 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{
+			"0n",
+			[]parser.Token{
+				{TokenNumericLiteral, "0n"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"1n",
+			[]parser.Token{
+				{TokenNumericLiteral, "1n"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"1234567890n",
+			[]parser.Token{
+				{TokenNumericLiteral, "1234567890n"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"0x1234567890n",
+			[]parser.Token{
+				{TokenNumericLiteral, "0x1234567890n"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
 			"Infinity",
 			[]parser.Token{
 				{TokenNumericLiteral, "Infinity"},

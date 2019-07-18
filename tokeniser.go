@@ -382,6 +382,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				return t.Error()
 			}
 			t.AcceptRun(binaryDigit)
+			t.Accept("n")
 		} else if t.Accept("oO") {
 			if !t.Accept(octalDigit) {
 				t.Except("")
@@ -389,6 +390,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				return t.Error()
 			}
 			t.AcceptRun(octalDigit)
+			t.Accept("n")
 		} else if t.Accept("xX") {
 			if !t.Accept(hexDigit) {
 				t.Except("")
@@ -396,21 +398,26 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				return t.Error()
 			}
 			t.AcceptRun(hexDigit)
+			t.Accept("n")
 		} else if t.Accept(".") {
 			t.AcceptRun(decimalDigit)
 			if t.Accept("eE") {
 				t.Accept("+-")
 				t.AcceptRun(decimalDigit)
 			}
+		} else {
+			t.Accept("n")
 		}
 	} else {
 		t.AcceptRun(decimalDigit)
-		if t.Accept(".") {
-			t.AcceptRun(decimalDigit)
-		}
-		if t.Accept("eE") {
-			t.Accept("+-")
-			t.AcceptRun(decimalDigit)
+		if !t.Accept("n") {
+			if t.Accept(".") {
+				t.AcceptRun(decimalDigit)
+			}
+			if t.Accept("eE") {
+				t.Accept("+-")
+				t.AcceptRun(decimalDigit)
+			}
 		}
 	}
 	return parser.Token{
