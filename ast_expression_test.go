@@ -344,7 +344,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 	})
 }
 
-func TestAssignmentExpression(t *testing.T) {
+func TestAssignmentExpressionOld(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`yield 1`, func(t *test, tk Tokens) {}}, // 1
 		{`yield 1`, func(t *test, tk Tokens) { // 2
@@ -929,6 +929,214 @@ func TestAssignmentExpression(t *testing.T) {
 			t.Output = AssignmentExpression{
 				ConditionalExpression: &call,
 				Tokens:                tk[0:4],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ae AssignmentExpression
+		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
+		return ae, err
+	})
+}
+
+func TestAssignmentExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = assignmentError(tk[0])
+		}},
+		{"yield", func(t *test, tk Tokens) { // 2
+			litYield := makeConditionLiteral(tk, 0)
+			t.Output = AssignmentExpression{
+				ConditionalExpression: &litYield,
+				Tokens:                tk[:1],
+			}
+		}},
+		{"yield", func(t *test, tk Tokens) { // 3
+			t.Yield = true
+			t.Err = Error{
+				Err:     assignmentError(tk[1]),
+				Parsing: "AssignmentExpression",
+				Token:   tk[1],
+			}
+		}},
+		{"yield\n,", func(t *test, tk Tokens) { // 4
+			t.Yield = true
+			t.Err = Error{
+				Err:     assignmentError(tk[2]),
+				Parsing: "AssignmentExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"yield\n1", func(t *test, tk Tokens) { // 5
+			lit1 := makeConditionLiteral(tk, 2)
+			t.Yield = true
+			t.Output = AssignmentExpression{
+				Yield: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"yield\n*\n", func(t *test, tk Tokens) { // 6
+			t.Yield = true
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "AssignmentExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"yield\n*\n*", func(t *test, tk Tokens) { // 7
+			t.Yield = true
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "AssignmentExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"yield\n*\n1", func(t *test, tk Tokens) { // 8
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Yield = true
+			t.Output = AssignmentExpression{
+				Yield:    true,
+				Delegate: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"async", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "ArrowFunction",
+					Token:   tk[1],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"async a => {}", func(t *test, tk Tokens) { // 10
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					Async:             true,
+					BindingIdentifier: &tk[2],
+					FunctionBody: &Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"() => {}", func(t *test, tk Tokens) { // 11
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Tokens: tk[:2],
+					},
+					FunctionBody: &Block{
+						Tokens: tk[5:7],
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"a => {}", func(t *test, tk Tokens) { // 12
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					BindingIdentifier: &tk[0],
+					FunctionBody: &Block{
+						Tokens: tk[4:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"() => a", func(t *test, tk Tokens) { // 13
+			litA := makeConditionLiteral(tk, 5)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+						Tokens: tk[:2],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litA,
+						Tokens:                tk[5:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"a => b", func(t *test, tk Tokens) { // 14
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					BindingIdentifier: &tk[0],
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: &litB,
+						Tokens:                tk[4:5],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a =>", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[3]),
+					Parsing: "ArrowFunction",
+					Token:   tk[3],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"1", func(t *test, tk Tokens) { // 16
+			lit1 := makeConditionLiteral(tk, 0)
+			t.Output = AssignmentExpression{
+				ConditionalExpression: &lit1,
+				Tokens:                tk[:1],
+			}
+		}},
+		{",", func(t *test, tk Tokens) { // 17
+			t.Err = assignmentError(tk[0])
+		}},
+		{"a\n=", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     assignmentError(tk[3]),
+				Parsing: "AssignmentExpression",
+				Token:   tk[3],
+			}
+		}},
+		{"a\n=\n1", func(t *test, tk Tokens) { // 19
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
