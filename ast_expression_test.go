@@ -1325,3 +1325,55 @@ func TestLeftHandSideExpression(t *testing.T) {
 		return lhs, err
 	})
 }
+
+func TestExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     assignmentError(tk[0]),
+				Parsing: "Expression",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 2
+			litA := makeConditionLiteral(tk, 0)
+			t.Output = Expression{
+				Expressions: []AssignmentExpression{
+					{
+						ConditionalExpression: &litA,
+						Tokens:                tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"a\n,\n", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "Expression",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n,\nb", func(t *test, tk Tokens) { // 4
+			litA := makeConditionLiteral(tk, 0)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = Expression{
+				Expressions: []AssignmentExpression{
+					{
+						ConditionalExpression: &litA,
+						Tokens:                tk[:1],
+					},
+					{
+						ConditionalExpression: &litB,
+						Tokens:                tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var e Expression
+		err := e.parse(&t.Tokens, t.In, t.Yield, t.Await)
+		return e, err
+	})
+}
