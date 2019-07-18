@@ -174,18 +174,18 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 		if err := lhs.NewExpression.parse(&g, yield, await); err != nil {
 			return j.Error("LeftHandSideExpression", err)
 		}
-		j.Score(g)
 		if lhs.NewExpression.News == 0 {
-			g = j.NewGoal()
-			g.AcceptRunWhitespace()
-			if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+			h := g.NewGoal()
+			h.AcceptRunWhitespace()
+			if h.Peek() == (parser.Token{TokenPunctuator, "("}) {
 				lhs.CallExpression = new(CallExpression)
-				if err := lhs.CallExpression.parse(j, &lhs.NewExpression.MemberExpression, yield, await); err != nil {
+				if err := lhs.CallExpression.parse(&g, &lhs.NewExpression.MemberExpression, yield, await); err != nil {
 					return j.Error("LeftHandSideExpression", err)
 				}
 				lhs.NewExpression = nil
 			}
 		}
+		j.Score(g)
 	}
 	lhs.Tokens = j.ToTokens()
 	return nil
