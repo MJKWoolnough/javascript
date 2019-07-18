@@ -177,9 +177,6 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 }
 
 func (j *jsParser) GetLastToken() *Token {
-	if len(*j) == 0 {
-		return nil
-	}
 	return &(*j)[len(*j)-1]
 }
 
