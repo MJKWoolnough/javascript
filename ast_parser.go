@@ -198,7 +198,3 @@ func (j *jsParser) Error(parsingFunc string, err error) error {
 		Token:   j.next(),
 	}
 }
-
-var (
-	errNotApplicable = errors.New("")
-)
