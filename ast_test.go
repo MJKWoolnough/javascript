@@ -2181,6 +2181,28 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"[\n\"a\"\n]\n()\n{}", func(t *test, tk Tokens) { // 18
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = PropertyDefinition{
+				MethodDefinition: &MethodDefinition{
+					PropertyName: PropertyName{
+						ComputedPropertyName: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[:5],
+					},
+					Params: FormalParameters{
+						Tokens: tk[6:8],
+					},
+					FunctionBody: Block{
+						Tokens: tk[9:11],
+					},
+					Tokens: tk[:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var pd PropertyDefinition
 		err := pd.parse(&t.Tokens, t.Yield, t.Await)

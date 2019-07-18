@@ -1023,6 +1023,21 @@ func TestMethodDefinition(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"get(){}", func(t *test, tk Tokens) { // 41
+			t.Output = MethodDefinition{
+				PropertyName: PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				Params: FormalParameters{
+					Tokens: tk[1:3],
+				},
+				FunctionBody: Block{
+					Tokens: tk[3:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var md MethodDefinition
 		err := md.parse(&t.Tokens, nil, t.Yield, t.Await)
