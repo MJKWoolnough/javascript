@@ -696,6 +696,201 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
+		{ // 72
+			"{",
+			[]parser.Token{
+				{TokenPunctuator, "{"},
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 73
+			"[",
+			[]parser.Token{
+				{TokenPunctuator, "["},
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 74
+			"(",
+			[]parser.Token{
+				{TokenPunctuator, "("},
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 75
+			"/*",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 76
+			"[}",
+			[]parser.Token{
+				{TokenPunctuator, "["},
+				{parser.TokenError, "invalid character: }"},
+			},
+		},
+		{ // 77
+			"(}",
+			[]parser.Token{
+				{TokenPunctuator, "("},
+				{parser.TokenError, "invalid character: }"},
+			},
+		},
+		{ // 78
+			"{)",
+			[]parser.Token{
+				{TokenPunctuator, "{"},
+				{parser.TokenError, "invalid character: )"},
+			},
+		},
+		{ // 79
+			"{]",
+			[]parser.Token{
+				{TokenPunctuator, "{"},
+				{parser.TokenError, "invalid character: ]"},
+			},
+		},
+		{ // 80
+			"(]",
+			[]parser.Token{
+				{TokenPunctuator, "("},
+				{parser.TokenError, "invalid character: ]"},
+			},
+		},
+		{ // 81
+			"[)",
+			[]parser.Token{
+				{TokenPunctuator, "["},
+				{parser.TokenError, "invalid character: )"},
+			},
+		},
+		{ // 82
+			"..",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 83
+			"..a",
+			[]parser.Token{
+				{parser.TokenError, "invalid character sequence: ..a"},
+			},
+		},
+		{ // 84
+			"/\\\n/",
+			[]parser.Token{
+				{parser.TokenError, "invalid regexp character sequence: /\\\n"},
+			},
+		},
+		{ // 85
+			"/[",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 86
+			"/[\\",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 87
+			"/",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 88
+			"/\n",
+			[]parser.Token{
+				{parser.TokenError, "invalid regexp character: \n"},
+			},
+		},
+		{ // 89
+			"/a",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 90
+			"/a\\\n/",
+			[]parser.Token{
+				{parser.TokenError, "invalid regexp character sequence: /a\\\n"},
+			},
+		},
+		{ // 91
+			"/a[",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
+		{ // 92
+			"/a\n",
+			[]parser.Token{
+				{parser.TokenError, "invalid regexp character: \n"},
+			},
+		},
+		{ // 93
+			"0B9",
+			[]parser.Token{
+				{parser.TokenError, "invalid binary number: 0B9"},
+			},
+		},
+		{ // 94
+			"0O9",
+			[]parser.Token{
+				{parser.TokenError, "invalid octal number: 0O9"},
+			},
+		},
+		{ // 95
+			"0XG",
+			[]parser.Token{
+				{parser.TokenError, "invalid hex number: 0XG"},
+			},
+		},
+		{ // 96
+			"\\x60",
+			[]parser.Token{
+				{parser.TokenError, "unexpected backslash: \\x"},
+			},
+		},
+		{ // 97
+			"\\ug",
+			[]parser.Token{
+				{parser.TokenError, "invalid unicode escape sequence: \\ug"},
+			},
+		},
+		{ // 98
+			"\\u{G}",
+			[]parser.Token{
+				{parser.TokenError, "invalid unicode escape sequence: \\u{G"},
+			},
+		},
+		{ // 99
+			"\\u{ffff",
+			[]parser.Token{
+				{parser.TokenError, "invalid unicode escape sequence: \\u{ffff"},
+			},
+		},
+		{ // 100
+			"}",
+			[]parser.Token{
+				{parser.TokenError, "invalid character: }"},
+			},
+		},
+		{ // 101
+			"`\\G`",
+			[]parser.Token{
+				{parser.TokenError, "invalid escape sequence: `\\G"},
+			},
+		},
+		{ // 102
+			"`",
+			[]parser.Token{
+				{parser.TokenError, "unexpected EOF"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
