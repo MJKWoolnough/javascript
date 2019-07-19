@@ -1467,3 +1467,11 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 	}
 	io.WriteString(w, i.ImportedBinding.Data)
 }
+
+func (f FunctionRestParameter) printSource(w io.Writer, v bool) {
+
+}
+
+func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
+
+}
