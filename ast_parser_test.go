@@ -73,15 +73,15 @@ func TestNewJSParser(t *testing.T) {
 			"@",
 			jsParser{
 				{
-					parser.Token{parser.TokenError, "read invalid character: @"},
+					parser.Token{parser.TokenError, "invalid character: @"},
 					0, 0, 0,
 				},
 			},
 			Error{
-				Err:     errors.Error("read invalid character: @"),
+				Err:     errors.Error("invalid character: @"),
 				Parsing: "Tokens",
 				Token: Token{
-					parser.Token{parser.TokenError, "read invalid character: @"},
+					parser.Token{parser.TokenError, "invalid character: @"},
 					0, 0, 0,
 				},
 			},
@@ -110,12 +110,12 @@ func TestNewJSParser(t *testing.T) {
 		}
 	}
 	pErr := Error{
-		Err:     errors.Error("read invalid character: @"),
+		Err:     errors.Error("invalid character: @"),
 		Parsing: "Tokens",
 		Token: Token{
 			Token: parser.Token{
 				Type: parser.TokenError,
-				Data: "read invalid character: @",
+				Data: "invalid character: @",
 			},
 			Pos:     0,
 			Line:    0,

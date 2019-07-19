@@ -229,7 +229,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 						t.Err = io.ErrUnexpectedEOF
 					} else {
 						t.Except("")
-						t.Err = errors.WithContext("invalid character sequence: ", errors.Error(t.Get()))
+						t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
 					}
 					return t.Error()
 				}
@@ -274,7 +274,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '%', '^':
 			t.Accept("=") // %=, ^=
 		default:
-			t.Err = errors.WithContext("read invalid character: ", errors.Error(t.Get()))
+			t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
 			return t.Error()
 		}
 		return parser.Token{
