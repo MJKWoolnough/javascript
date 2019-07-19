@@ -161,4 +161,17 @@ func TestNewJSParser(t *testing.T) {
 	if _, err := ParseModule(parser.NewStringTokeniser("?")); !reflect.DeepEqual(err, mErr) {
 		t.Errorf("Module error test: expecting %s, got %s", mErr, err)
 	}
+	fErr := Error{
+		Err:     errors.Error("TEST"),
+		Parsing: "FAUX",
+		Token: Token{
+			Pos:     1,
+			Line:    2,
+			LinePos: 3,
+		},
+	}
+	const e = "FAUX: error at position 1 (2:3):\nTEST"
+	if str := fErr.Error(); str != e {
+		t.Errorf("error test: expecting %q, got %q", e, str)
+	}
 }
