@@ -619,6 +619,83 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
+		{
+			"$",
+			[]parser.Token{
+				{TokenIdentifier, "$"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"_",
+			[]parser.Token{
+				{TokenIdentifier, "_"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"\\u0060",
+			[]parser.Token{
+				{TokenIdentifier, "\\u0060"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"// Comment",
+			[]parser.Token{
+				{TokenSingleLineComment, "// Comment"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"enum",
+			[]parser.Token{
+				{TokenFutureReservedWord, "enum"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			".01234E56",
+			[]parser.Token{
+				{TokenNumericLiteral, ".01234E56"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"0.01234E56",
+			[]parser.Token{
+				{TokenNumericLiteral, "0.01234E56"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"0o1234567",
+			[]parser.Token{
+				{TokenNumericLiteral, "0o1234567"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"`\\x60`",
+			[]parser.Token{
+				{TokenNoSubstitutionTemplate, "`\\x60`"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"/\\(/",
+			[]parser.Token{
+				{TokenRegularExpressionLiteral, "/\\(/"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{
+			"/a\\(/",
+			[]parser.Token{
+				{TokenRegularExpressionLiteral, "/a\\(/"},
+				{parser.TokenDone, ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
