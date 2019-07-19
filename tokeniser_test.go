@@ -11,27 +11,27 @@ func TestTokeniser(t *testing.T) {
 		Input  string
 		Output []parser.Token
 	}{
-		{
+		{ // 1
 			"",
 			[]parser.Token{
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 2
 			" ",
 			[]parser.Token{
 				{TokenWhitespace, " "},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 3
 			" 	",
 			[]parser.Token{
 				{TokenWhitespace, " 	"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 4
 			" \n ",
 			[]parser.Token{
 				{TokenWhitespace, " "},
@@ -40,88 +40,88 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 5
 			"\"\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 6
 			"\"\\\"\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\\"\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 7
 			"\"\n\"",
 			[]parser.Token{
 				{parser.TokenError, "line terminator in string: \"\n"},
 			},
 		},
-		{
+		{ // 8
 			"\"\\n\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\n\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 9
 			"\"\\0\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\0\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 10
 			"\"\\x20\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\x20\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 11
 			"\"\\u2020\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\u2020\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 12
 			"\"\\u\"",
 			[]parser.Token{
 				{parser.TokenError, "invalid escape sequence: \"\\u\""},
 			},
 		},
-		{
+		{ // 13
 			"\"\\up\"",
 			[]parser.Token{
 				{parser.TokenError, "invalid escape sequence: \"\\up"},
 			},
 		},
-		{
+		{ // 14
 			"\"\\u{20}\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"\\u{20}\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 15
 			"\"use strict\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"use strict\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 16
 			"\"use\\u{20}strict\\x65!\\0\"",
 			[]parser.Token{
 				{TokenStringLiteral, "\"use\\u{20}strict\\x65!\\0\""},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 17
 			"\"use strict\";",
 			[]parser.Token{
 				{TokenStringLiteral, "\"use strict\""},
@@ -129,231 +129,231 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 18
 			"0",
 			[]parser.Token{
 				{TokenNumericLiteral, "0"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 19
 			"0.1",
 			[]parser.Token{
 				{TokenNumericLiteral, "0.1"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 20
 			".1",
 			[]parser.Token{
 				{TokenNumericLiteral, ".1"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 21
 			"0b0",
 			[]parser.Token{
 				{TokenNumericLiteral, "0b0"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 22
 			"0b1",
 			[]parser.Token{
 				{TokenNumericLiteral, "0b1"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 23
 			"0b1001010101",
 			[]parser.Token{
 				{TokenNumericLiteral, "0b1001010101"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 24
 			"0",
 			[]parser.Token{
 				{TokenNumericLiteral, "0"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 25
 			"1",
 			[]parser.Token{
 				{TokenNumericLiteral, "1"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 26
 			"9",
 			[]parser.Token{
 				{TokenNumericLiteral, "9"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 27
 			"12345678901",
 			[]parser.Token{
 				{TokenNumericLiteral, "12345678901"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 28
 			"12345678.901",
 			[]parser.Token{
 				{TokenNumericLiteral, "12345678.901"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 29
 			"12345678901E123",
 			[]parser.Token{
 				{TokenNumericLiteral, "12345678901E123"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 30
 			"12345678901e+123",
 			[]parser.Token{
 				{TokenNumericLiteral, "12345678901e+123"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 31
 			"12345678.901E-123",
 			[]parser.Token{
 				{TokenNumericLiteral, "12345678.901E-123"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 32
 			"0x0",
 			[]parser.Token{
 				{TokenNumericLiteral, "0x0"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 33
 			"0xa",
 			[]parser.Token{
 				{TokenNumericLiteral, "0xa"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 34
 			"0xf",
 			[]parser.Token{
 				{TokenNumericLiteral, "0xf"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 35
 			"0x0f",
 			[]parser.Token{
 				{TokenNumericLiteral, "0x0f"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 36
 			"0xaf",
 			[]parser.Token{
 				{TokenNumericLiteral, "0xaf"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 37
 			"0xDeAdBeEf",
 			[]parser.Token{
 				{TokenNumericLiteral, "0xDeAdBeEf"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 38
 			"0n",
 			[]parser.Token{
 				{TokenNumericLiteral, "0n"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 39
 			"1n",
 			[]parser.Token{
 				{TokenNumericLiteral, "1n"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 40
 			"1234567890n",
 			[]parser.Token{
 				{TokenNumericLiteral, "1234567890n"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 41
 			"0x1234567890n",
 			[]parser.Token{
 				{TokenNumericLiteral, "0x1234567890n"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 42
 			"Infinity",
 			[]parser.Token{
 				{TokenNumericLiteral, "Infinity"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 43
 			"true",
 			[]parser.Token{
 				{TokenBooleanLiteral, "true"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 44
 			"false",
 			[]parser.Token{
 				{TokenBooleanLiteral, "false"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 45
 			"hello",
 			[]parser.Token{
 				{TokenIdentifier, "hello"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 46
 			"this",
 			[]parser.Token{
 				{TokenKeyword, "this"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 47
 			"function",
 			[]parser.Token{
 				{TokenKeyword, "function"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 48
 			"/[a-z]+/g",
 			[]parser.Token{
 				{TokenRegularExpressionLiteral, "/[a-z]+/g"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 49
 			"/[\\n]/g",
 			[]parser.Token{
 				{TokenRegularExpressionLiteral, "/[\\n]/g"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 50
 			"var a =	 /^ab[cd]*$/ig;",
 			[]parser.Token{
 				{TokenKeyword, "var"},
@@ -367,7 +367,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 51
 			"num /= 4",
 			[]parser.Token{
 				{TokenIdentifier, "num"},
@@ -378,7 +378,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 52
 			"const num = 8 / 4;",
 			[]parser.Token{
 				{TokenKeyword, "const"},
@@ -396,21 +396,21 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 53
 			"``",
 			[]parser.Token{
 				{TokenNoSubstitutionTemplate, "``"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 54
 			"`abc`",
 			[]parser.Token{
 				{TokenNoSubstitutionTemplate, "`abc`"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 55
 			"`ab${ (val.a / 2) + 1 }c${str}`",
 			[]parser.Token{
 				{TokenTemplateHead, "`ab${"},
@@ -435,7 +435,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 56
 			"const myFunc = function(aye, bee, cea) {\n	const num = [123, 4, lastNum(aye, \"beep\", () => window, val => val * 2, (myVar) => {myVar /= 2;return myVar;})], elm = document.getElementByID();\n	console.log(bee, num, elm);}",
 			[]parser.Token{
 				{TokenKeyword, "const"},
@@ -549,7 +549,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 57
 			"export {name1, name2};",
 			[]parser.Token{
 				{TokenKeyword, "export"},
@@ -564,7 +564,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 58
 			"export {var1 as name1, var2 as name2};",
 			[]parser.Token{
 				{TokenKeyword, "export"},
@@ -587,7 +587,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 59
 			"export * from './other.js';",
 			[]parser.Token{
 				{TokenKeyword, "export"},
@@ -601,7 +601,7 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 60
 			"import * as name from './module.js';",
 			[]parser.Token{
 				{TokenKeyword, "import"},
@@ -619,77 +619,77 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 61
 			"$",
 			[]parser.Token{
 				{TokenIdentifier, "$"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 62
 			"_",
 			[]parser.Token{
 				{TokenIdentifier, "_"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 63
 			"\\u0060",
 			[]parser.Token{
 				{TokenIdentifier, "\\u0060"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 64
 			"// Comment",
 			[]parser.Token{
 				{TokenSingleLineComment, "// Comment"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 65
 			"enum",
 			[]parser.Token{
 				{TokenFutureReservedWord, "enum"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 66
 			".01234E56",
 			[]parser.Token{
 				{TokenNumericLiteral, ".01234E56"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 67
 			"0.01234E56",
 			[]parser.Token{
 				{TokenNumericLiteral, "0.01234E56"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 68
 			"0o1234567",
 			[]parser.Token{
 				{TokenNumericLiteral, "0o1234567"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 69
 			"`\\x60`",
 			[]parser.Token{
 				{TokenNoSubstitutionTemplate, "`\\x60`"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 70
 			"/\\(/",
 			[]parser.Token{
 				{TokenRegularExpressionLiteral, "/\\(/"},
 				{parser.TokenDone, ""},
 			},
 		},
-		{
+		{ // 71
 			"/a\\(/",
 			[]parser.Token{
 				{TokenRegularExpressionLiteral, "/a\\(/"},
