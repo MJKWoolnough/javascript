@@ -542,9 +542,8 @@ Loop:
 			if j.escapeSequence(t) {
 				continue
 			}
-			if t.Err == nil {
-				t.Err = errors.WithContext("invalid escape sequence: ", errors.Error(t.Get()))
-			}
+			t.Except("")
+			t.Err = errors.WithContext("invalid escape sequence: ", errors.Error(t.Get()))
 			return t.Error()
 		case '$':
 			t.Except("")
