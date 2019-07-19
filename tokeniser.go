@@ -217,7 +217,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case ';', ',', '?', ':', '~':
 		case ')', ']':
 			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
-				t.Err = errors.WithContext("read invalid character: ", errors.Error(t.Get()))
+				t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
 				return t.Error()
 			}
 			j.divisionAllowed = true
