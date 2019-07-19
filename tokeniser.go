@@ -356,13 +356,10 @@ Loop:
 			t.Except("")
 			break Loop
 		default:
-			if strings.ContainsRune(lineTerminators, c) {
-				t.Get()
-				t.Except("")
-				t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
-				return t.Error()
-			}
+			t.Get()
 			t.Except("")
+			t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
+			return t.Error()
 		}
 	}
 	for {
@@ -440,7 +437,7 @@ func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 			return t.Error()
 		}
 		if !j.unicodeEscapeSequence(t) {
-			t.Except("")
+			t.Err = errors.WithContext("invalid unicode escape sequence: ", errors.Error(t.Get()))
 			return t.Error()
 		}
 	}
@@ -462,12 +459,10 @@ func (j *jsTokeniser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
 	if t.Accept("{") {
 		if !t.Accept(hexDigit) {
 			t.Except("")
-			t.Err = errors.WithContext("expecting hex digit: ", errors.Error(t.Get()))
 			return false
 		}
 		t.AcceptRun(hexDigit)
 		if !t.Accept("}") {
-			t.Err = errors.WithContext("expecting ending unicode brace: ", errors.Error(t.Get()))
 			return false
 		}
 	} else if !t.Accept(hexDigit) || !t.Accept(hexDigit) || !t.Accept(hexDigit) || !t.Accept(hexDigit) {
