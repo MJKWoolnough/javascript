@@ -229,7 +229,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 						t.Err = io.ErrUnexpectedEOF
 					} else {
 						t.Except("")
-						t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
+						t.Err = errors.WithContext("invalid character sequence: ", errors.Error(t.Get()))
 					}
 					return t.Error()
 				}
@@ -291,7 +291,7 @@ func (j *jsTokeniser) regexpBackslashSequence(t *parser.Tokeniser) bool {
 			t.Err = io.ErrUnexpectedEOF
 		} else {
 			t.Except("")
-			t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
+			t.Err = errors.WithContext("invalid regexp character sequence: ", errors.Error(t.Get()))
 		}
 		return false
 	}
@@ -330,11 +330,13 @@ func (j *jsTokeniser) regexp(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			return t.Error()
 		}
 	default:
-		t.Except("")
 		if strings.ContainsRune(lineTerminators, c) {
+			t.Get()
+			t.Except("")
 			t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
 			return t.Error()
 		}
+		t.Except("")
 	}
 Loop:
 	for {
@@ -354,11 +356,13 @@ Loop:
 			t.Except("")
 			break Loop
 		default:
-			t.Except("")
 			if strings.ContainsRune(lineTerminators, c) {
+				t.Get()
+				t.Except("")
 				t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
 				return t.Error()
 			}
+			t.Except("")
 		}
 	}
 	for {
