@@ -284,6 +284,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				return g.Error("MemberExpression", err)
 			}
 			g.Score(h)
+			g.AcceptRunWhitespace()
 			if !g.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 				return g.Error("MemberExpression", ErrInvalidSuperProperty)
 			}
