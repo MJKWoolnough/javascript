@@ -949,9 +949,6 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	j.AcceptToken(parser.Token{TokenKeyword, "var"})
 	for {
 		j.AcceptRunWhitespace()
-		if j.parseSemicolon() {
-			break
-		}
 		g := j.NewGoal()
 		vd := len(vs.VariableDeclarationList)
 		vs.VariableDeclarationList = append(vs.VariableDeclarationList, VariableDeclaration{})
