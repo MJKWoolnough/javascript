@@ -233,18 +233,22 @@ type NewExpression struct {
 }
 
 func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
-	for {
-		g := j.NewGoal()
-		if err := ne.MemberExpression.parse(&g, yield, await); err == nil {
-			j.Score(g)
-			break
-		} else if !j.AcceptToken(parser.Token{TokenKeyword, "new"}) {
-			return j.Error("NewExpression", err)
+	g := j.NewGoal()
+	if err := ne.MemberExpression.parse(&g, yield, await); err != nil {
+		h := j.NewGoal()
+		for {
+			if ne.MemberExpression.MemberExpression == nil || !h.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+				return j.Error("NewExpression", err)
+			}
+			ne.MemberExpression = *ne.MemberExpression.MemberExpression
+			ne.News++
+			if ne.MemberExpression.Tokens != nil {
+				break
+			}
+			h.AcceptRunWhitespace()
 		}
-		ne.MemberExpression = MemberExpression{}
-		ne.News++
-		j.AcceptRunWhitespace()
 	}
+	j.Score(g)
 	ne.Tokens = j.ToTokens()
 	return nil
 }
@@ -310,15 +314,22 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			h := g.NewGoal()
 			me.MemberExpression = new(MemberExpression)
 			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
-				return j.Error("MemberExpression", err)
+				h.backup()
+				err = j.Error("MemberExpression", err)
+				g.Score(h)
+				j.Score(g)
+				return err
 			}
 			g.Score(h)
-			g.AcceptRunWhitespace()
 			h = g.NewGoal()
+			h.AcceptRunWhitespace()
+			i := h.NewGoal()
 			me.Arguments = new(Arguments)
-			if err := me.Arguments.parse(&h, yield, await); err != nil {
+			if err := me.Arguments.parse(&i, yield, await); err != nil {
+				j.Score(g)
 				return g.Error("MemberExpression", err)
 			}
+			h.Score(i)
 			g.Score(h)
 		}
 	} else {

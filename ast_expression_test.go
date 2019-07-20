@@ -1414,15 +1414,19 @@ func TestNewExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrNoIdentifier,
-						Parsing: "PrimaryExpression",
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						},
+						Parsing: "MemberExpression",
 						Token:   tk[2],
 					},
 					Parsing: "MemberExpression",
-					Token:   tk[2],
+					Token:   tk[0],
 				},
 				Parsing: "NewExpression",
-				Token:   tk[2],
+				Token:   tk[0],
 			}
 		}},
 		{"1", func(t *test, tk Tokens) { // 4
