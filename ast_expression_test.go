@@ -1780,7 +1780,14 @@ func TestMemberExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"a\n[\n1\n]", func(t *test, tk Tokens) { // 24
+		{"a\n[\n1\n2\n]", func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "MemberExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"a\n[\n1\n]", func(t *test, tk Tokens) { // 25
 			lit1 := makeConditionLiteral(tk, 4)
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
@@ -1802,7 +1809,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"a\n.\nb\n[\nc\n]\n``", func(t *test, tk Tokens) { // 25
+		{"a\n.\nb\n[\nc\n]\n``", func(t *test, tk Tokens) { // 26
 			litC := makeConditionLiteral(tk, 8)
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
