@@ -1487,6 +1487,25 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
+		{"new new\nnew\na\n()", func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				News: 2,
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[8:10],
+					},
+					Tokens: tk[4:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ne NewExpression
 		err := ne.parse(&t.Tokens, t.Yield, t.Await)
