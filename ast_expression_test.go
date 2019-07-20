@@ -1380,7 +1380,7 @@ func TestExpression(t *testing.T) {
 
 func TestNewExpression(t *testing.T) {
 	doTests(t, []sourceFn{
-		{``, func(t *test, tk Tokens) {
+		{``, func(t *test, tk Tokens) { // 1
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1395,7 +1395,7 @@ func TestNewExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{",", func(t *test, tk Tokens) {
+		{",", func(t *test, tk Tokens) { // 2
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1410,7 +1410,7 @@ func TestNewExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"new\n,", func(t *test, tk Tokens) {
+		{"new\n,", func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1425,7 +1425,7 @@ func TestNewExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"1", func(t *test, tk Tokens) {
+		{"1", func(t *test, tk Tokens) { // 4
 			t.Output = NewExpression{
 				MemberExpression: MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -1437,7 +1437,7 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{"new\na", func(t *test, tk Tokens) {
+		{"new\na", func(t *test, tk Tokens) { // 5
 			t.Output = NewExpression{
 				News: 1,
 				MemberExpression: MemberExpression{
@@ -1450,7 +1450,7 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"new\na\n()", func(t *test, tk Tokens) {
+		{"new\na\n()", func(t *test, tk Tokens) { // 6
 			t.Output = NewExpression{
 				MemberExpression: MemberExpression{
 					MemberExpression: &MemberExpression{
@@ -1468,7 +1468,7 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"new\nnew\na\n()", func(t *test, tk Tokens) {
+		{"new\nnew\na\n()", func(t *test, tk Tokens) { // 7
 			t.Output = NewExpression{
 				News: 1,
 				MemberExpression: MemberExpression{
@@ -1487,7 +1487,7 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"new new\nnew\na\n()", func(t *test, tk Tokens) {
+		{"new new\nnew\na\n()", func(t *test, tk Tokens) { // 8
 			t.Output = NewExpression{
 				News: 2,
 				MemberExpression: MemberExpression{
