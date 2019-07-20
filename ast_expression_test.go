@@ -1516,3 +1516,328 @@ func TestNewExpression(t *testing.T) {
 		return ne, err
 	})
 }
+
+func TestMemberExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"super\n[\n,\n]", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"super\n[\n1\n]", func(t *test, tk Tokens) { // 3
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = MemberExpression{
+				SuperProperty: true,
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &lit1,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"super\n[\n1\n2\n]", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrInvalidSuperProperty,
+				Parsing: "MemberExpression",
+				Token:   tk[6],
+			}
+		}},
+		{"super\n.\n", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "MemberExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"super\n.\n1", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "MemberExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"super\n.\na", func(t *test, tk Tokens) { // 7
+			t.Output = MemberExpression{
+				SuperProperty:  true,
+				IdentifierName: &tk[4],
+				Tokens:         tk[:5],
+			}
+		}},
+		{"super\n", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrInvalidSuperProperty,
+				Parsing: "MemberExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"new", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "PrimaryExpression",
+						Token:   tk[1],
+					},
+					Parsing: "MemberExpression",
+					Token:   tk[1],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"new\n.\n", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrInvalidMetaProperty,
+				Parsing: "MemberExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"new\n.\ntarget", func(t *test, tk Tokens) { // 11
+			t.Output = MemberExpression{
+				MetaProperty: true,
+				Tokens:       tk[:5],
+			}
+		}},
+		{"new\n,", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "PrimaryExpression",
+						Token:   tk[2],
+					},
+					Parsing: "MemberExpression",
+					Token:   tk[2],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"new\n1\n", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "Arguments",
+					Token:   tk[4],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[3],
+			}
+		}},
+		{"new\n1\n()", func(t *test, tk Tokens) { // 14
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Literal: &tk[2],
+						Tokens:  tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[4:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"new\nnew\n1\n()", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "Arguments",
+					Token:   tk[8],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[8],
+			}
+		}},
+		{"new\nnew\n1\n()\n()", func(t *test, tk Tokens) { // 16
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							Literal: &tk[4],
+							Tokens:  tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[2:8],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{",", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"1", func(t *test, tk Tokens) { // 18
+			t.Output = MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Literal: &tk[0],
+					Tokens:  tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 18
+			t.Output = MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: &tk[0],
+					Tokens:              tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"a\n`${\n1\n1\n}`", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidTemplate,
+					Parsing: "TemplateLiteral",
+					Token:   tk[6],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"a\n``", func(t *test, tk Tokens) { // 20
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[2],
+					Tokens:                 tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"a\n.\n", func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "MemberExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"a\n.\nb", func(t *test, tk Tokens) { // 22
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				IdentifierName: &tk[4],
+				Tokens:         tk[:5],
+			}
+		}},
+		{"a\n[\n]", func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "MemberExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"a\n[\n1\n]", func(t *test, tk Tokens) { // 24
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &lit1,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"a\n.\nb\n[\nc\n]\n``", func(t *test, tk Tokens) { // 25
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						MemberExpression: &MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						IdentifierName: &tk[4],
+						Tokens:         tk[:5],
+					},
+					Expression: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litC,
+								Tokens:                tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[:11],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[12],
+					Tokens:                 tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var me MemberExpression
+		err := me.parse(&t.Tokens, t.Yield, t.Await)
+		return me, err
+	})
+}
