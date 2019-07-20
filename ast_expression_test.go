@@ -1377,3 +1377,119 @@ func TestExpression(t *testing.T) {
 		return e, err
 	})
 }
+
+func TestNewExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "MemberExpression",
+					Token:   tk[0],
+				},
+				Parsing: "NewExpression",
+				Token:   tk[0],
+			}
+		}},
+		{",", func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "MemberExpression",
+					Token:   tk[0],
+				},
+				Parsing: "NewExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"new\n,", func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "PrimaryExpression",
+						Token:   tk[2],
+					},
+					Parsing: "MemberExpression",
+					Token:   tk[2],
+				},
+				Parsing: "NewExpression",
+				Token:   tk[2],
+			}
+		}},
+		{"1", func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Literal: &tk[0],
+						Tokens:  tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"new\na", func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				News: 1,
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"new\na\n()", func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[4:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"new\nnew\na\n()", func(t *test, tk Tokens) {
+			t.Output = NewExpression{
+				News: 1,
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[4],
+							Tokens:              tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[2:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ne NewExpression
+		err := ne.parse(&t.Tokens, t.Yield, t.Await)
+		return ne, err
+	})
+}
