@@ -1848,3 +1848,232 @@ func TestMemberExpression(t *testing.T) {
 		return me, err
 	})
 }
+
+func TestPrimaryExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`this`, func(t *test, tk Tokens) { // 2
+			t.Output = PrimaryExpression{
+				This:   true,
+				Tokens: tk[:1],
+			}
+		}},
+		{`null`, func(t *test, tk Tokens) { // 3
+			t.Output = PrimaryExpression{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
+			}
+		}},
+		{`true`, func(t *test, tk Tokens) { // 4
+			t.Output = PrimaryExpression{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
+			}
+		}},
+		{`1.234`, func(t *test, tk Tokens) { // 5
+			t.Output = PrimaryExpression{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
+			}
+		}},
+		{`"string"`, func(t *test, tk Tokens) { // 6
+			t.Output = PrimaryExpression{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
+			}
+		}},
+		{`/a/`, func(t *test, tk Tokens) { // 7
+			t.Output = PrimaryExpression{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
+			}
+		}},
+		{`[yield]`, func(t *test, tk Tokens) { // 8
+			t.Yield = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[2]),
+						Parsing: "AssignmentExpression",
+						Token:   tk[2],
+					},
+					Parsing: "ArrayLiteral",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`[]`, func(t *test, tk Tokens) { // 9
+			t.Output = PrimaryExpression{
+				ArrayLiteral: &ArrayLiteral{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`{,}`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[1],
+						},
+						Parsing: "PropertyDefinition",
+						Token:   tk[1],
+					},
+					Parsing: "ObjectLiteral",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`{}`, func(t *test, tk Tokens) { // 11
+			t.Output = PrimaryExpression{
+				ObjectLiteral: &ObjectLiteral{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"async", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidFunction,
+					Parsing: "FunctionDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"async function(){}", func(t *test, tk Tokens) { // 13
+			t.Output = PrimaryExpression{
+				FunctionExpression: &FunctionDeclaration{
+					Type: FunctionAsync,
+					FormalParameters: FormalParameters{
+						Tokens: tk[3:5],
+					},
+					FunctionBody: Block{
+						Tokens: tk[5:7],
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"function", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingOpeningParenthesis,
+						Parsing: "FormalParameters",
+						Token:   tk[1],
+					},
+					Parsing: "FunctionDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"function(){}", func(t *test, tk Tokens) { // 15
+			t.Output = PrimaryExpression{
+				FunctionExpression: &FunctionDeclaration{
+					FormalParameters: FormalParameters{
+						Tokens: tk[1:3],
+					},
+					FunctionBody: Block{
+						Tokens: tk[3:5],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"class", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "ClassDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"class{}", func(t *test, tk Tokens) { // 17
+			t.Output = PrimaryExpression{
+				ClassExpression: &ClassDeclaration{
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"``", func(t *test, tk Tokens) { // 18
+			t.Output = PrimaryExpression{
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[0],
+					Tokens:                 tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"`${1 1}`", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidTemplate,
+					Parsing: "TemplateLiteral",
+					Token:   tk[3],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"(,)", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[1]),
+					Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"()", func(t *test, tk Tokens) { // 21
+			t.Output = PrimaryExpression{
+				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{".", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 23
+			t.Output = PrimaryExpression{
+				IdentifierReference: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var pe PrimaryExpression
+		err := pe.parse(&t.Tokens, t.Yield, t.Await)
+		return pe, err
+	})
+}
