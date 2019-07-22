@@ -195,3 +195,139 @@ func TestParseFunction(t *testing.T) {
 		return fd, err
 	})
 }
+
+func TestFunctionDeclaration(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidFunction,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[0],
+			}
+		}},
+		{"function", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[1],
+			}
+		}},
+		{"async function", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[3],
+			}
+		}},
+		{"async\nfunction", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrInvalidFunction,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[1],
+			}
+		}},
+		{"function*", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[2],
+			}
+		}},
+		{"async function*", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[4],
+			}
+		}},
+		{"function", func(t *test, tk Tokens) { // 7
+			t.Def = true
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "FormalParameters",
+					Token:   tk[1],
+				},
+				Parsing: "FunctionDeclaration",
+				Token:   tk[1],
+			}
+		}},
+		{"function\na", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "FormalParameters",
+					Token:   tk[3],
+				},
+				Parsing: "FunctionDeclaration",
+				Token:   tk[3],
+			}
+		}},
+		{"function\na\n()", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "Block",
+					Token:   tk[6],
+				},
+				Parsing: "FunctionDeclaration",
+				Token:   tk[6],
+			}
+		}},
+		{"function\na\n()\n{}", func(t *test, tk Tokens) { // 10
+			t.Output = FunctionDeclaration{
+				BindingIdentifier: &tk[2],
+				FormalParameters: FormalParameters{
+					Tokens: tk[4:6],
+				},
+				FunctionBody: Block{
+					Tokens: tk[7:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"async function\na\n()\n{}", func(t *test, tk Tokens) { // 11
+			t.Output = FunctionDeclaration{
+				Type:              FunctionAsync,
+				BindingIdentifier: &tk[4],
+				FormalParameters: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 12
+			t.Output = FunctionDeclaration{
+				Type:              FunctionGenerator,
+				BindingIdentifier: &tk[4],
+				FormalParameters: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"async function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 10
+			t.Output = FunctionDeclaration{
+				Type:              FunctionAsyncGenerator,
+				BindingIdentifier: &tk[6],
+				FormalParameters: FormalParameters{
+					Tokens: tk[8:10],
+				},
+				FunctionBody: Block{
+					Tokens: tk[11:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var fd FunctionDeclaration
+		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
+		return fd, err
+	})
+}
