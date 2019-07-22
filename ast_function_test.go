@@ -437,3 +437,110 @@ func TestFunctionDeclaration(t *testing.T) {
 		return fd, err
 	})
 }
+
+func TestFormalParameters(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "FormalParameters",
+				Token:   tk[0],
+			}
+		}},
+		{"(\n)", func(t *test, tk Tokens) { // 2
+			t.Output = FormalParameters{
+				Tokens: tk[:3],
+			}
+		}},
+		{"(\n...\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "FunctionRestParameter",
+					Token:   tk[4],
+				},
+				Parsing: "FormalParameters",
+				Token:   tk[2],
+			}
+		}},
+		{"(\n...\na\n)", func(t *test, tk Tokens) { // 4
+			t.Output = FormalParameters{
+				FunctionRestParameter: &FunctionRestParameter{
+					BindingIdentifier: &tk[4],
+					Tokens:            tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"(\n...\na\nb)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "FormalParameters",
+				Token:   tk[6],
+			}
+		}},
+		{"(\n,)", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "BindingElement",
+					Token:   tk[2],
+				},
+				Parsing: "FormalParameters",
+				Token:   tk[2],
+			}
+		}},
+		{"(\na\n)", func(t *test, tk Tokens) { // 7
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"(\na\nb)", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "FormalParameters",
+				Token:   tk[4],
+			}
+		}},
+		{"(\na\n,\nb\n)", func(t *test, tk Tokens) { // 9
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{
+						SingleNameBinding: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"(\na\n,\n...\nb\n)", func(t *test, tk Tokens) { // 10
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				FunctionRestParameter: &FunctionRestParameter{
+					BindingIdentifier: &tk[8],
+					Tokens:            tk[8:9],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var fp FormalParameters
+		err := fp.parse(&t.Tokens, t.Yield, t.Await)
+		return fp, err
+	})
+}
