@@ -1,6 +1,9 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"vimagination.zapto.org/errors"
+	"vimagination.zapto.org/parser"
+)
 
 // AssignmentOperator specifies the type of assignment in AssignmentExpression
 type AssignmentOperator uint8
@@ -633,6 +636,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			}
 			ce.Tokens = j.ToTokens()
 			return nil
+		} else {
+			return j.Error("CallExpression", ErrInvalidCallExpression)
 		}
 	} else {
 		ce.MemberExpression = me
@@ -707,3 +712,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		j.Score(g)
 	}
 }
+
+// Errors
+var (
+	ErrInvalidCallExpression = errors.Error("invalid CallExpression")
+)
