@@ -624,6 +624,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 				return j.Error("CallExpression", ErrMissingOpeningParenthesis)
 			}
+			j.AcceptRunWhitespace()
 			g := j.NewGoal()
 			ce.ImportCall = new(AssignmentExpression)
 			if err := ce.ImportCall.parse(&g, true, yield, await); err != nil {
