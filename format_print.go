@@ -788,11 +788,18 @@ func (c CaseClause) printSource(w io.Writer, v bool) {
 
 func (f FormalParameters) printSource(w io.Writer, v bool) {
 	w.Write(parenOpen)
-	for n, be := range f.FormalParameterList {
-		if n > 0 {
+	if len(f.FormalParameterList) > 0 {
+		f.FormalParameterList[0].printSource(w, v)
+		for _, be := range f.FormalParameterList[1:] {
+			w.Write(commaSep)
+			be.printSource(w, v)
+		}
+		if f.FunctionRestParameter != nil {
 			w.Write(commaSep)
 		}
-		be.printSource(w, v)
+	}
+	if f.FunctionRestParameter != nil {
+		f.FunctionRestParameter.printSource(w, v)
 	}
 	w.Write(parenCloseSpace)
 }
@@ -1469,9 +1476,18 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 }
 
 func (f FunctionRestParameter) printSource(w io.Writer, v bool) {
-
+	if f.BindingIdentifier != nil {
+		w.Write(ellipsis)
+		io.WriteString(w, f.BindingIdentifier.Data)
+	} else if f.ArrayBindingPattern != nil {
+		w.Write(ellipsis)
+		f.ArrayBindingPattern.printSource(w, v)
+	} else if f.ObjectBindingPattern != nil {
+		w.Write(ellipsis)
+		f.ObjectBindingPattern.printSource(w, v)
+	}
 }
 
 func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
-
+	LexicalBinding(vd).printSource(w, v)
 }
