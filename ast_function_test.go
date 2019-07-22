@@ -667,3 +667,75 @@ func TestBindingElement(t *testing.T) {
 		return be, err
 	})
 }
+
+func TestFunctionRestParameter(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "FunctionRestParameter",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 2
+			t.Output = FunctionRestParameter{
+				BindingIdentifier: &tk[0],
+				Tokens:            tk[:1],
+			}
+		}},
+		{"[]", func(t *test, tk Tokens) { // 3
+			t.Output = FunctionRestParameter{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"{}", func(t *test, tk Tokens) { // 4
+			t.Output = FunctionRestParameter{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`[!]`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "FunctionRestParameter",
+				Token:   tk[0],
+			}
+		}},
+		{`{!}`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[1],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[1],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "FunctionRestParameter",
+				Token:   tk[0],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var fp FunctionRestParameter
+		err := fp.parse(&t.Tokens, t.Yield, t.Await)
+		return fp, err
+	})
+}
