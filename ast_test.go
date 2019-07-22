@@ -1291,21 +1291,21 @@ func TestLexicalBinding(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`{a}`, func(t *test, tk Tokens) { // 4
+		{`{a}`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingInitializer,
 				Parsing: "LexicalBinding",
 				Token:   tk[3],
 			}
 		}},
-		{"{a}\n=\n", func(t *test, tk Tokens) { // 5
+		{"{a}\n=\n", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     assignmentError(tk[6]),
 				Parsing: "LexicalBinding",
 				Token:   tk[6],
 			}
 		}},
-		{"{}\n=\na", func(t *test, tk Tokens) { // 6
+		{"{}\n=\na", func(t *test, tk Tokens) { // 9
 			litA := makeConditionLiteral(tk, 5)
 			t.Output = LexicalBinding{
 				ObjectBindingPattern: &ObjectBindingPattern{
@@ -1318,7 +1318,7 @@ func TestLexicalBinding(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`[!]`, func(t *test, tk Tokens) { // 7
+		{`[!]`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1333,7 +1333,7 @@ func TestLexicalBinding(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`{!}`, func(t *test, tk Tokens) { // 8
+		{`{!}`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
