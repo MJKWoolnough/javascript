@@ -312,7 +312,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"async function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 10
+		{"async function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 13
 			t.Output = FunctionDeclaration{
 				Type:              FunctionAsyncGenerator,
 				BindingIdentifier: &tk[6],
@@ -323,6 +323,112 @@ func TestFunctionDeclaration(t *testing.T) {
 					Tokens: tk[11:13],
 				},
 				Tokens: tk[:13],
+			}
+		}},
+		{"function\na\n()\n{}", func(t *test, tk Tokens) { // 14
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				BindingIdentifier: &tk[2],
+				FormalParameters: FormalParameters{
+					Tokens: tk[4:6],
+				},
+				FunctionBody: Block{
+					Tokens: tk[7:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"async function\na\n()\n{}", func(t *test, tk Tokens) { // 15
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type:              FunctionAsync,
+				BindingIdentifier: &tk[4],
+				FormalParameters: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 16
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type:              FunctionGenerator,
+				BindingIdentifier: &tk[4],
+				FormalParameters: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"async function\n*\na\n()\n{}", func(t *test, tk Tokens) { // 17
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type:              FunctionAsyncGenerator,
+				BindingIdentifier: &tk[6],
+				FormalParameters: FormalParameters{
+					Tokens: tk[8:10],
+				},
+				FunctionBody: Block{
+					Tokens: tk[11:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"function\n()\n{}", func(t *test, tk Tokens) { // 18
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				FormalParameters: FormalParameters{
+					Tokens: tk[2:4],
+				},
+				FunctionBody: Block{
+					Tokens: tk[5:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"async function\n()\n{}", func(t *test, tk Tokens) { // 19
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type: FunctionAsync,
+				FormalParameters: FormalParameters{
+					Tokens: tk[4:6],
+				},
+				FunctionBody: Block{
+					Tokens: tk[7:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"function\n*\n()\n{}", func(t *test, tk Tokens) { // 20
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type: FunctionGenerator,
+				FormalParameters: FormalParameters{
+					Tokens: tk[4:6],
+				},
+				FunctionBody: Block{
+					Tokens: tk[7:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"async function\n*\n()\n{}", func(t *test, tk Tokens) { // 21
+			t.Def = true
+			t.Output = FunctionDeclaration{
+				Type: FunctionAsyncGenerator,
+				FormalParameters: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[9:11],
+				},
+				Tokens: tk[:11],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
