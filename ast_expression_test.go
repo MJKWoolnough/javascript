@@ -2347,3 +2347,222 @@ func TestArguments(t *testing.T) {
 		return a, err
 	})
 }
+
+func TestCallExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidCallExpression,
+				Parsing: "CallExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"super", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningParenthesis,
+					Parsing: "Arguments",
+					Token:   tk[1],
+				},
+				Parsing: "CallExpression",
+				Token:   tk[1],
+			}
+		}},
+		{"super\n()", func(t *test, tk Tokens) { // 3
+			t.Output = CallExpression{
+				SuperCall: true,
+				Arguments: &Arguments{
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"import", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "CallExpression",
+				Token:   tk[1],
+			}
+		}},
+		{"import\n(\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "CallExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"import\n(\na\n)", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = CallExpression{
+				ImportCall: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"import\n(\na\n,\nb\n)", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "CallExpression",
+				Token:   tk[6],
+			}
+		}},
+		{"super\n()\n`${1 1}`", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidTemplate,
+					Parsing: "TemplateLiteral",
+					Token:   tk[8],
+				},
+				Parsing: "CallExpression",
+				Token:   tk[5],
+			}
+		}},
+		{"super\n()\n``", func(t *test, tk Tokens) { // 9
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[5],
+					Tokens:                 tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"super\n()\n(,)", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[6]),
+					Parsing: "Arguments",
+					Token:   tk[6],
+				},
+				Parsing: "CallExpression",
+				Token:   tk[5],
+			}
+		}},
+		{"super\n()\n()", func(t *test, tk Tokens) { // 11
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[5:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"super\n()\n.\n", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "CallExpression",
+				Token:   tk[7],
+			}
+		}},
+		{"super\n()\n.\na", func(t *test, tk Tokens) { // 13
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				IdentifierName: &tk[7],
+				Tokens:         tk[:8],
+			}
+		}},
+		{"super\n()\n[\n]", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[7]),
+					Parsing: "Expression",
+					Token:   tk[7],
+				},
+				Parsing: "CallExpression",
+				Token:   tk[5],
+			}
+		}},
+		{"super\n()\n[\na\n]", func(t *test, tk Tokens) { // 15
+			litA := makeConditionLiteral(tk, 7)
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[7:8],
+						},
+					},
+					Tokens: tk[7:8],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"super\n()\n[\na\nb]", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "CallExpression",
+				Token:   tk[9],
+			}
+		}},
+		{"super\n()\n``\n()\n.\na\n[\nb\n]", func(t *test, tk Tokens) { // 17
+			litB := makeConditionLiteral(tk, 16)
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					CallExpression: &CallExpression{
+						CallExpression: &CallExpression{
+							CallExpression: &CallExpression{
+								SuperCall: true,
+								Arguments: &Arguments{
+									Tokens: tk[2:4],
+								},
+								Tokens: tk[:4],
+							},
+							TemplateLiteral: &TemplateLiteral{
+								NoSubstitutionTemplate: &tk[5],
+								Tokens:                 tk[5:6],
+							},
+							Tokens: tk[:6],
+						},
+						Arguments: &Arguments{
+							Tokens: tk[7:9],
+						},
+						Tokens: tk[:9],
+					},
+					IdentifierName: &tk[12],
+					Tokens:         tk[:13],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[16:17],
+						},
+					},
+					Tokens: tk[16:17],
+				},
+				Tokens: tk[:19],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ce CallExpression
+		err := ce.parse(&t.Tokens, nil, t.Yield, t.Await)
+		return ce, err
+	})
+}
