@@ -83,40 +83,40 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
 	}
-	for {
-		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			break
-		}
-		g := j.NewGoal()
-		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
-			g.AcceptRunWhitespace()
+	j.AcceptRunWhitespace()
+	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		for {
+			g := j.NewGoal()
+			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+				g.AcceptRunWhitespace()
+				h := g.NewGoal()
+				fp.FunctionRestParameter = new(FunctionRestParameter)
+				if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
+					return j.Error("FormalParameters", err)
+				}
+				g.Score(h)
+				j.Score(g)
+				j.AcceptRunWhitespace()
+				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+					return j.Error("FormalParameters", ErrMissingClosingParenthesis)
+				}
+				break
+			}
 			h := g.NewGoal()
-			fp.FunctionRestParameter = new(FunctionRestParameter)
-			if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
-				return j.Error("FormalParameters", err)
+			be := len(fp.FormalParameterList)
+			fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
+			if err := fp.FormalParameterList[be].parse(&h, yield, await); err != nil {
+				return g.Error("FormalParameters", err)
 			}
 			g.Score(h)
 			j.Score(g)
 			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-				return j.Error("FormalParameters", ErrMissingClosingParenthesis)
+			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				break
+			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+				return j.Error("FormalParameters", ErrInvalidFormalParameterList)
 			}
-			break
-		}
-		h := g.NewGoal()
-		be := len(fp.FormalParameterList)
-		fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
-		if err := fp.FormalParameterList[be].parse(&h, yield, await); err != nil {
-			return g.Error("FormalParameters", err)
-		}
-		g.Score(h)
-		j.Score(g)
-		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
-			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-			return j.Error("FormalParameters", ErrInvalidFormalParameterList)
+			j.AcceptRunWhitespace()
 		}
 	}
 	fp.Tokens = j.ToTokens()
