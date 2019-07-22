@@ -692,7 +692,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				h.Score(i)
 				h.AcceptRunWhitespace()
 				if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
-					return g.Error("CallExpression", ErrMissingClosingBracket)
+					return h.Error("CallExpression", ErrMissingClosingBracket)
 				}
 			default:
 				return nil
