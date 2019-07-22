@@ -578,7 +578,15 @@ func TestBindingElement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"[]\n=\na", func(t *test, tk Tokens) { // 5
+		{"[]", func(t *test, tk Tokens) { // 5
+			t.Output = BindingElement{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"[]\n=\na", func(t *test, tk Tokens) { // 6
 			litA := makeConditionLiteral(tk, 5)
 			t.Output = BindingElement{
 				ArrayBindingPattern: &ArrayBindingPattern{
@@ -591,14 +599,22 @@ func TestBindingElement(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"{a}\n=\n", func(t *test, tk Tokens) { // 6
+		{"{a}\n=\n", func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     assignmentError(tk[6]),
 				Parsing: "BindingElement",
 				Token:   tk[6],
 			}
 		}},
-		{"{}\n=\na", func(t *test, tk Tokens) { // 7
+		{"{}", func(t *test, tk Tokens) { // 8
+			t.Output = BindingElement{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"{}\n=\na", func(t *test, tk Tokens) { // 9
 			litA := makeConditionLiteral(tk, 5)
 			t.Output = BindingElement{
 				ObjectBindingPattern: &ObjectBindingPattern{
@@ -611,7 +627,7 @@ func TestBindingElement(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`[!]`, func(t *test, tk Tokens) { // 8
+		{`[!]`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -626,7 +642,7 @@ func TestBindingElement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`{!}`, func(t *test, tk Tokens) { // 9
+		{`{!}`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
