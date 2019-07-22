@@ -2242,3 +2242,101 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		return c, err
 	})
 }
+
+func TestArguments(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "Arguments",
+				Token:   tk[0],
+			}
+		}},
+		{"(\n)", func(t *test, tk Tokens) { // 2
+			t.Output = Arguments{
+				Tokens: tk[:3],
+			}
+		}},
+		{"(\n...\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "Arguments",
+				Token:   tk[2],
+			}
+		}},
+		{"(\n...\na\n)", func(t *test, tk Tokens) { // 4
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = Arguments{
+				SpreadArgument: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"(\n,)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     assignmentError(tk[2]),
+				Parsing: "Arguments",
+				Token:   tk[2],
+			}
+		}},
+		{"(\na\n)", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Arguments{
+				ArgumentList: []AssignmentExpression{
+					{
+						ConditionalExpression: &litA,
+						Tokens:                tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"(\na\nb)", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "Arguments",
+				Token:   tk[4],
+			}
+		}},
+		{"(\na\n,\nb\n)", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 6)
+			t.Output = Arguments{
+				ArgumentList: []AssignmentExpression{
+					{
+						ConditionalExpression: &litA,
+						Tokens:                tk[2:3],
+					},
+					{
+						ConditionalExpression: &litB,
+						Tokens:                tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"(\na\n,\n...\nb\n)", func(t *test, tk Tokens) { // 9
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = Arguments{
+				ArgumentList: []AssignmentExpression{
+					{
+						ConditionalExpression: &litA,
+						Tokens:                tk[2:3],
+					},
+				},
+				SpreadArgument: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[8:9],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var a Arguments
+		err := a.parse(&t.Tokens, t.Yield, t.Await)
+		return a, err
+	})
+}
