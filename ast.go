@@ -152,7 +152,7 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 // https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
 //
 // Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern
-// must be non-nil. The Initializer is optional.
+// must be non-nil. The Initializer is optional ony for a BindingIdentifier.
 type LexicalBinding struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
