@@ -556,10 +556,12 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
 			g.AcceptRunWhitespace()
+			h := g.NewGoal()
 			a.SpreadArgument = new(AssignmentExpression)
-			if err := a.SpreadArgument.parse(&g, true, yield, await); err != nil {
+			if err := a.SpreadArgument.parse(&h, true, yield, await); err != nil {
 				return j.Error("Arguments", err)
 			}
+			g.Score(h)
 			j.Score(g)
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				return j.Error("Arguments", ErrMissingClosingParenthesis)
