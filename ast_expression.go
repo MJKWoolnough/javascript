@@ -563,6 +563,7 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 			}
 			g.Score(h)
 			j.Score(g)
+			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				return j.Error("Arguments", ErrMissingClosingParenthesis)
 			}
