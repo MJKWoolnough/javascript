@@ -544,3 +544,110 @@ func TestFormalParameters(t *testing.T) {
 		return fp, err
 	})
 }
+
+func TestBindingElement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "BindingElement",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 2
+			t.Output = BindingElement{
+				SingleNameBinding: &tk[0],
+				Tokens:            tk[:1],
+			}
+		}},
+		{"a\n=\n1", func(t *test, tk Tokens) { // 3
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = BindingElement{
+				SingleNameBinding: &tk[0],
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"[a]\n=\n", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     assignmentError(tk[6]),
+				Parsing: "BindingElement",
+				Token:   tk[6],
+			}
+		}},
+		{"[]\n=\na", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 5)
+			t.Output = BindingElement{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[:2],
+				},
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"{a}\n=\n", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     assignmentError(tk[6]),
+				Parsing: "BindingElement",
+				Token:   tk[6],
+			}
+		}},
+		{"{}\n=\na", func(t *test, tk Tokens) { // 7
+			litA := makeConditionLiteral(tk, 5)
+			t.Output = BindingElement{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[:2],
+				},
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`[!]`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "BindingElement",
+				Token:   tk[0],
+			}
+		}},
+		{`{!}`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[1],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[1],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[1],
+				},
+				Parsing: "BindingElement",
+				Token:   tk[0],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var be BindingElement
+		err := be.parse(&t.Tokens, t.Yield, t.Await)
+		return be, err
+	})
+}
