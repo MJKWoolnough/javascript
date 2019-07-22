@@ -114,7 +114,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
-				return j.Error("FormalParameters", ErrInvalidFormalParameterList)
+				return j.Error("FormalParameters", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
 		}
