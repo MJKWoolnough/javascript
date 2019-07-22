@@ -2274,14 +2274,21 @@ func TestArguments(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"(\n,)", func(t *test, tk Tokens) { // 5
+		{"(\n...\na\nb)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "Arguments",
+				Token:   tk[6],
+			}
+		}},
+		{"(\n,)", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     assignmentError(tk[2]),
 				Parsing: "Arguments",
 				Token:   tk[2],
 			}
 		}},
-		{"(\na\n)", func(t *test, tk Tokens) { // 6
+		{"(\na\n)", func(t *test, tk Tokens) { // 7
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = Arguments{
 				ArgumentList: []AssignmentExpression{
@@ -2293,14 +2300,14 @@ func TestArguments(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"(\na\nb)", func(t *test, tk Tokens) { // 7
+		{"(\na\nb)", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "Arguments",
 				Token:   tk[4],
 			}
 		}},
-		{"(\na\n,\nb\n)", func(t *test, tk Tokens) { // 8
+		{"(\na\n,\nb\n)", func(t *test, tk Tokens) { // 9
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 6)
 			t.Output = Arguments{
@@ -2317,7 +2324,7 @@ func TestArguments(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"(\na\n,\n...\nb\n)", func(t *test, tk Tokens) { // 9
+		{"(\na\n,\n...\nb\n)", func(t *test, tk Tokens) { // 10
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 8)
 			t.Output = Arguments{
