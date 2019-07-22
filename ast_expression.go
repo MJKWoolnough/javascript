@@ -678,7 +678,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				h.Skip()
 				h.AcceptRunWhitespace()
 				if !h.Accept(TokenIdentifier, TokenKeyword) {
-					return g.Error("CallExpression", ErrNoIdentifier)
+					return h.Error("CallExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
 			case "[":
