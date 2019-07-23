@@ -630,3 +630,128 @@ func TestModule(t *testing.T) {
 		return m, err
 	})
 }
+
+func TestModuleItem(t *testing.T) {
+	doTests(t, []sourceFn{ // 1
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     assignmentError(tk[0]),
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "Statement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{"import", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidImport,
+						Parsing: "ImportClause",
+						Token:   tk[1],
+					},
+					Parsing: "ImportDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{"import\n'a';", func(t *test, tk Tokens) { // 3
+			t.Output = ModuleItem{
+				ImportDeclaration: &ImportDeclaration{
+					FromClause: FromClause{
+						ModuleSpecifier: &tk[2],
+						Tokens:          tk[2:3],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"export", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidDeclaration,
+						Parsing: "Declaration",
+						Token:   tk[1],
+					},
+					Parsing: "ExportDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{"export\n*\nfrom\n'a';", func(t *test, tk Tokens) { // 5
+			t.Output = ModuleItem{
+				ExportDeclaration: &ExportDeclaration{
+					FromClause: &FromClause{
+						ModuleSpecifier: &tk[6],
+						Tokens:          tk[4:7],
+					},
+					Tokens: tk[:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"var", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "LexicalBinding",
+								Token:   tk[1],
+							},
+							Parsing: "VariableStatement",
+							Token:   tk[1],
+						},
+						Parsing: "Statement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{"var\na;", func(t *test, tk Tokens) { // 7
+			t.Output = ModuleItem{
+				StatementListItem: &StatementListItem{
+					Statement: &Statement{
+						VariableStatement: &VariableStatement{
+							VariableDeclarationList: []VariableDeclaration{
+								{
+									BindingIdentifier: &tk[2],
+									Tokens:            tk[2:3],
+								},
+							},
+							Tokens: tk[:4],
+						},
+						Tokens: tk[:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var mi ModuleItem
+		err := mi.parse(&t.Tokens)
+		return mi, err
+	})
+}
