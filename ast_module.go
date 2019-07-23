@@ -56,17 +56,17 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 	case parser.Token{TokenKeyword, "import"}:
 		ml.ImportDeclaration = new(ImportDeclaration)
 		if err := ml.ImportDeclaration.parse(&g); err != nil {
-			return j.Error("ModuleStatement", err)
+			return j.Error("ModuleItem", err)
 		}
 	case parser.Token{TokenKeyword, "export"}:
 		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
-			return j.Error("ModuleStatement", err)
+			return j.Error("ModuleItem", err)
 		}
 	default:
 		ml.StatementListItem = new(StatementListItem)
 		if err := ml.StatementListItem.parse(&g, false, false, false); err != nil {
-			return j.Error("ModuleStatement", err)
+			return j.Error("ModuleItem", err)
 		}
 	}
 	j.Score(g)

@@ -155,7 +155,7 @@ func TestNewJSParser(t *testing.T) {
 	}
 	mErr := Error{
 		Err:     sErr,
-		Parsing: "ModuleStatement",
+		Parsing: "ModuleItem",
 		Token:   tk,
 	}
 	if _, err := ParseModule(parser.NewStringTokeniser("?")); !reflect.DeepEqual(err, mErr) {

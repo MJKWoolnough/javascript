@@ -577,7 +577,7 @@ func TestModuleOld(t *testing.T) {
 	})
 }
 
-func TestParseModule(t *testing.T) {
+func TestModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
 			t.Output = Module{
@@ -595,7 +595,7 @@ func TestParseModule(t *testing.T) {
 					Parsing: "ImportDeclaration",
 					Token:   tk[1],
 				},
-				Parsing: "ModuleStatement",
+				Parsing: "ModuleItem",
 				Token:   tk[0],
 			}
 		}},
