@@ -2,7 +2,7 @@ package javascript
 
 import "testing"
 
-func TestModule(t *testing.T) {
+func TestModuleOld(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`import 'a';`, func(t *test, tk Tokens) { // 1
 			t.Output = Module{
@@ -565,6 +565,60 @@ func TestModule(t *testing.T) {
 							Tokens: tk[:2],
 						},
 						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var m Module
+		err := m.parse(&t.Tokens)
+		return m, err
+	})
+}
+
+func TestParseModule(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Output = Module{
+				Tokens: tk[:0],
+			}
+		}},
+		{`import`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidImport,
+						Parsing: "ImportClause",
+						Token:   tk[1],
+					},
+					Parsing: "ImportDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "ModuleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`;;`, func(t *test, tk Tokens) { // 3
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
 					},
 				},
 				Tokens: tk[:2],
