@@ -143,19 +143,15 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		g = j.NewGoal()
 	}
 	if j.Peek() == (parser.Token{TokenPunctuator, "*"}) {
-		g := j.NewGoal()
-		g.Skip()
-		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+		j.Skip()
+		j.AcceptRunWhitespace()
+		if !j.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 			return j.Error("ImportClause", ErrInvalidNameSpaceImport)
 		}
-		g.AcceptRunWhitespace()
-		h := g.NewGoal()
-		if ic.NameSpaceImport = h.parseIdentifier(false, false); ic.NameSpaceImport == nil {
-			return g.Error("ImportClause", ErrNoIdentifier)
+		j.AcceptRunWhitespace()
+		if ic.NameSpaceImport = j.parseIdentifier(false, false); ic.NameSpaceImport == nil {
+			return j.Error("ImportClause", ErrNoIdentifier)
 		}
-		g.Score(h)
-		j.Score(g)
 	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		g := j.NewGoal()
 		ic.NamedImports = new(NamedImports)
