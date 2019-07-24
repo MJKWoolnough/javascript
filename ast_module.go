@@ -83,7 +83,9 @@ type ImportDeclaration struct {
 }
 
 func (id *ImportDeclaration) parse(j *jsParser) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "import"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
+		return j.Error("ImportDeclaration", ErrInvalidImport)
+	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
 	if g.Accept(TokenStringLiteral) {
