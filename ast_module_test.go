@@ -755,3 +755,99 @@ func TestModuleItem(t *testing.T) {
 		return mi, err
 	})
 }
+
+func TestImportDeclaration(t *testing.T) {
+	doTests(t, []sourceFn{ // 1
+		{``, func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err:     ErrInvalidImport,
+				Parsing: "ImportDeclaration",
+				Token:   tk[0],
+			}
+		}},
+		{"import", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidImport,
+					Parsing: "ImportClause",
+					Token:   tk[1],
+				},
+				Parsing: "ImportDeclaration",
+				Token:   tk[1],
+			}
+		}},
+		{"import\n\"\";", func(t *test, tk Tokens) { // 3
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[2],
+					Tokens:          tk[2:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"import\n*\n", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidNameSpaceImport,
+					Parsing: "ImportClause",
+					Token:   tk[4],
+				},
+				Parsing: "ImportDeclaration",
+				Token:   tk[2],
+			}
+		}},
+		{"import\n*\nas\na\n", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingFrom,
+					Parsing: "FromClause",
+					Token:   tk[8],
+				},
+				Parsing: "ImportDeclaration",
+				Token:   tk[8],
+			}
+		}},
+		{"import\n*\nas\na\nfrom\n\"\";", func(t *test, tk Tokens) { // 6
+			t.Output = ImportDeclaration{
+				ImportClause: &ImportClause{
+					NameSpaceImport: &tk[6],
+					Tokens:          tk[2:7],
+				},
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[10],
+					Tokens:          tk[8:11],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{"import\n\"\"", func(t *test, tk Tokens) { // 7
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[2],
+					Tokens:          tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"import\n\"\"\na", func(t *test, tk Tokens) { // 8
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[2],
+					Tokens:          tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"import\n\"\" a", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "ImportDeclaration",
+				Token:   tk[3],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var id ImportDeclaration
+		err := id.parse(&t.Tokens)
+		return id, err
+	})
+}
