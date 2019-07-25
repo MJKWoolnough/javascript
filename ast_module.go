@@ -224,7 +224,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 // ImportSpecifier as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
 //
-// ImportedBinding mmust be non-nil.
+// ImportedBinding must be non-nil.
 type ImportSpecifier struct {
 	IdentifierName  *Token
 	ImportedBinding *Token
