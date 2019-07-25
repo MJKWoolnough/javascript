@@ -140,7 +140,6 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		}
 		g.AcceptRunWhitespace()
 		j.Score(g)
-		g = j.NewGoal()
 	}
 	if j.Peek() == (parser.Token{TokenPunctuator, "*"}) {
 		j.Skip()
