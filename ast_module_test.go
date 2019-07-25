@@ -986,3 +986,32 @@ func TestImportClause(t *testing.T) {
 		return ic, err
 	})
 }
+
+func TestFromClause(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingFrom,
+				Parsing: "FromClause",
+				Token:   tk[0],
+			}
+		}},
+		{"from\n", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingModuleSpecifier,
+				Parsing: "FromClause",
+				Token:   tk[2],
+			}
+		}},
+		{"from\n\"\"", func(t *test, tk Tokens) { // 3
+			t.Output = FromClause{
+				ModuleSpecifier: &tk[2],
+				Tokens:          tk[:3],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var fc FromClause
+		err := fc.parse(&t.Tokens)
+		return fc, err
+	})
+}
