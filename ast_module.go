@@ -325,17 +325,24 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.Peek() == (parser.Token{TokenIdentifier, "from"}) {
+			h := g.NewGoal()
+			h.Skip()
+			h.AcceptRunWhitespace()
+			if h.Accept(TokenStringLiteral) {
+				h = g.NewGoal()
+				ed.FromClause = new(FromClause)
+				if err := ed.FromClause.parse(&h); err != nil {
+					return g.Error("ExportDeclaration", err)
+				}
+				g.Score(h)
+				j.Score(g)
+			}
+		}
 		if !j.parseSemicolon() {
-			j.AcceptRunWhitespace()
-			g = j.NewGoal()
-			ed.FromClause = new(FromClause)
-			if err := ed.FromClause.parse(&g); err != nil {
-				return j.Error("ExportDeclaration", err)
-			}
-			j.Score(g)
-			if !j.parseSemicolon() {
-				return j.Error("ExportDeclaration", ErrMissingSemiColon)
-			}
+			return j.Error("ExportDeclaration", ErrMissingSemiColon)
 		}
 	} else {
 		ed.Declaration = new(Declaration)
