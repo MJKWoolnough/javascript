@@ -243,7 +243,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 			is.IdentifierName = is.ImportedBinding
 			g.AcceptRunWhitespace()
 			if is.ImportedBinding = g.parseIdentifier(false, false); is.ImportedBinding == nil {
-				return j.Error("ImportSpecifier", ErrNoIdentifier)
+				return g.Error("ImportSpecifier", ErrNoIdentifier)
 			}
 			j.Score(g)
 		}
