@@ -319,7 +319,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
-	} else if g.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	} else if g.Peek() == (parser.Token{TokenPunctuator, "{"}) {
 		ed.ExportClause = new(ExportClause)
 		if err := ed.ExportClause.parse(&g); err != nil {
 			return j.Error("ExportDeclaration", err)
@@ -361,6 +361,9 @@ type ExportClause struct {
 }
 
 func (ec *ExportClause) parse(j *jsParser) error {
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return j.Error("ExportClause", ErrInvalidExportClause)
+	}
 	for {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
