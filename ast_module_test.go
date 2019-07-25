@@ -1378,3 +1378,79 @@ func TestExportDeclaration(t *testing.T) {
 		return ed, err
 	})
 }
+
+func TestExportClause(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidExportClause,
+				Parsing: "ExportClause",
+				Token:   tk[0],
+			}
+		}},
+		{"{\n}", func(t *test, tk Tokens) { // 2
+			t.Output = ExportClause{
+				Tokens: tk[:3],
+			}
+		}},
+		{"{\n,}", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "ExportSpecifier",
+					Token:   tk[2],
+				},
+				Parsing: "ExportClause",
+				Token:   tk[2],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 4
+			t.Output = ExportClause{
+				ExportList: []ExportSpecifier{
+					{
+						IdentifierName: &tk[2],
+						Tokens:         tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"{\na\nb}", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrInvalidExportClause,
+				Parsing: "ExportClause",
+				Token:   tk[4],
+			}
+		}},
+		{"{\na\n,\n}", func(t *test, tk Tokens) { // 6
+			t.Output = ExportClause{
+				ExportList: []ExportSpecifier{
+					{
+						IdentifierName: &tk[2],
+						Tokens:         tk[2:3],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"{\na\n,\nb\n}", func(t *test, tk Tokens) { // 7
+			t.Output = ExportClause{
+				ExportList: []ExportSpecifier{
+					{
+						IdentifierName: &tk[2],
+						Tokens:         tk[2:3],
+					},
+					{
+						IdentifierName: &tk[6],
+						Tokens:         tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ec ExportClause
+		err := ec.parse(&t.Tokens)
+		return ec, err
+	})
+}
