@@ -195,7 +195,9 @@ type NamedImports struct {
 }
 
 func (ni *NamedImports) parse(j *jsParser) error {
-	j.AcceptToken(parser.Token{TokenPunctuator, "{"})
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+		return j.Error("NamedImports", ErrInvalidNamedImport)
+	}
 	for {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
