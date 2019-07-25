@@ -1091,3 +1091,58 @@ func TestNamedImports(t *testing.T) {
 		return ni, err
 	})
 }
+
+func TestImportSpecifier(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidImportSpecifier,
+				Parsing: "ImportSpecifier",
+				Token:   tk[0],
+			}
+		}},
+		{`,`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrInvalidImportSpecifier,
+				Parsing: "ImportSpecifier",
+				Token:   tk[0],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 3
+			t.Output = ImportSpecifier{
+				ImportedBinding: &tk[0],
+				Tokens:          tk[:1],
+			}
+		}},
+		{"for", func(t *test, tk Tokens) { // 4
+			t.Output = ImportSpecifier{
+				ImportedBinding: &tk[0],
+				Tokens:          tk[:1],
+			}
+		}},
+		{"for\nas", func(t *test, tk Tokens) { // 5
+			t.Output = ImportSpecifier{
+				ImportedBinding: &tk[0],
+				Tokens:          tk[:1],
+			}
+		}},
+		{"a\nas", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ImportSpecifier",
+				Token:   tk[3],
+			}
+		}},
+		{"a\nas\nb", func(t *test, tk Tokens) { // 7
+			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[0],
+				ImportedBinding: &tk[4],
+				Tokens:          tk[:5],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var is ImportSpecifier
+		err := is.parse(&t.Tokens)
+		return is, err
+	})
+}
