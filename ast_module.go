@@ -390,7 +390,7 @@ type ExportSpecifier struct {
 
 func (es *ExportSpecifier) parse(j *jsParser) error {
 	if !j.Accept(TokenIdentifier, TokenKeyword) {
-		return j.Error("ExportClause", ErrNoIdentifier)
+		return j.Error("ExportSpecifier", ErrNoIdentifier)
 	}
 	es.IdentifierName = j.GetLastToken()
 	g := j.NewGoal()
@@ -398,7 +398,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
 		g.AcceptRunWhitespace()
 		if !g.Accept(TokenIdentifier, TokenKeyword) {
-			return j.Error("ExportClause", ErrNoIdentifier)
+			return j.Error("ExportSpecifier", ErrNoIdentifier)
 		}
 		j.Score(g)
 		es.EIdentifierName = j.GetLastToken()
