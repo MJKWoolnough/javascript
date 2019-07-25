@@ -1146,3 +1146,235 @@ func TestImportSpecifier(t *testing.T) {
 		return is, err
 	})
 }
+
+func TestExportDeclaration(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidExportDeclaration,
+				Parsing: "ExportDeclaration",
+				Token:   tk[0],
+			}
+		}},
+		{"export\ndefault\nfunction", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingOpeningParenthesis,
+						Parsing: "FormalParameters",
+						Token:   tk[5],
+					},
+					Parsing: "FunctionDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "ExportDeclaration",
+				Token:   tk[4],
+			}
+		}},
+		{"export\ndefault\nfunction(){}", func(t *test, tk Tokens) { // 3
+			t.Output = ExportDeclaration{
+				DefaultFunction: &FunctionDeclaration{
+					FormalParameters: FormalParameters{
+						Tokens: tk[5:7],
+					},
+					FunctionBody: Block{
+						Tokens: tk[7:9],
+					},
+					Tokens: tk[4:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"export\ndefault\nclass", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "ClassDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "ExportDeclaration",
+				Token:   tk[4],
+			}
+		}},
+		{"export\ndefault\nclass{}", func(t *test, tk Tokens) { // 5
+			t.Output = ExportDeclaration{
+				DefaultClass: &ClassDeclaration{
+					Tokens: tk[4:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"export\ndefault\n,", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     assignmentError(tk[4]),
+				Parsing: "ExportDeclaration",
+				Token:   tk[4],
+			}
+		}},
+		{"export\ndefault\n1", func(t *test, tk Tokens) { // 7
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = ExportDeclaration{
+				DefaultAssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"export\ndefault\n1 2", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "ExportDeclaration",
+				Token:   tk[5],
+			}
+		}},
+		{"export\ndefault\n1; 2", func(t *test, tk Tokens) { // 9
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = ExportDeclaration{
+				DefaultAssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"export\n*", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingFrom,
+					Parsing: "FromClause",
+					Token:   tk[3],
+				},
+				Parsing: "ExportDeclaration",
+				Token:   tk[3],
+			}
+		}},
+		{"export\n*\nfrom\n''", func(t *test, tk Tokens) { // 11
+			t.Output = ExportDeclaration{
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[6],
+					Tokens:          tk[4:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"export\n*\nfrom\n'' b", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "ExportDeclaration",
+				Token:   tk[7],
+			}
+		}},
+		{"export\n*\nfrom\n'';b", func(t *test, tk Tokens) { // 13
+			t.Output = ExportDeclaration{
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[6],
+					Tokens:          tk[4:7],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"export\nvar", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "LexicalBinding",
+						Token:   tk[3],
+					},
+					Parsing: "VariableStatement",
+					Token:   tk[3],
+				},
+				Parsing: "ExportDeclaration",
+				Token:   tk[2],
+			}
+		}},
+		{"export\nvar\na", func(t *test, tk Tokens) { // 15
+			t.Output = ExportDeclaration{
+				VariableStatement: &VariableStatement{
+					VariableDeclarationList: []VariableDeclaration{
+						{
+							BindingIdentifier: &tk[4],
+							Tokens:            tk[4:5],
+						},
+					},
+					Tokens: tk[2:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"export\n{,}", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "ExportSpecifier",
+						Token:   tk[3],
+					},
+					Parsing: "ExportClause",
+					Token:   tk[3],
+				},
+				Parsing: "ExportDeclaration",
+				Token:   tk[2],
+			}
+		}},
+		{"export\n{}", func(t *test, tk Tokens) { // 17
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"export\n{};", func(t *test, tk Tokens) { // 18
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"export\n{} b", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "ExportDeclaration",
+				Token:   tk[4],
+			}
+		}},
+		{"export\n{}\nfrom\n''", func(t *test, tk Tokens) { // 20
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[7],
+					Tokens:          tk[5:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"export\n{}\nfrom\n'' a", func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "ExportDeclaration",
+				Token:   tk[8],
+			}
+		}},
+		{"export\n{}\nfrom\n'';a", func(t *test, tk Tokens) { // 22
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[7],
+					Tokens:          tk[5:8],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ed ExportDeclaration
+		err := ed.parse(&t.Tokens)
+		return ed, err
+	})
+}
