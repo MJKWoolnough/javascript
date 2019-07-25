@@ -1015,3 +1015,79 @@ func TestFromClause(t *testing.T) {
 		return fc, err
 	})
 }
+
+func TestNamedImports(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[0],
+			}
+		}},
+		{"{\n}", func(t *test, tk Tokens) { // 2
+			t.Output = NamedImports{
+				Tokens: tk[:3],
+			}
+		}},
+		{"{\n,}", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidImportSpecifier,
+					Parsing: "ImportSpecifier",
+					Token:   tk[2],
+				},
+				Parsing: "NamedImports",
+				Token:   tk[2],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 4
+			t.Output = NamedImports{
+				ImportList: []ImportSpecifier{
+					{
+						ImportedBinding: &tk[2],
+						Tokens:          tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"{\na\n,\n}", func(t *test, tk Tokens) { // 5
+			t.Output = NamedImports{
+				ImportList: []ImportSpecifier{
+					{
+						ImportedBinding: &tk[2],
+						Tokens:          tk[2:3],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"{\na\nb}", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[4],
+			}
+		}},
+		{"{\na\n,\nb\n}", func(t *test, tk Tokens) { // 7
+			t.Output = NamedImports{
+				ImportList: []ImportSpecifier{
+					{
+						ImportedBinding: &tk[2],
+						Tokens:          tk[2:3],
+					},
+					{
+						ImportedBinding: &tk[6],
+						Tokens:          tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ni NamedImports
+		err := ni.parse(&t.Tokens)
+		return ni, err
+	})
+}
