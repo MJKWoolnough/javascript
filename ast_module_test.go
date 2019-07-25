@@ -851,3 +851,138 @@ func TestImportDeclaration(t *testing.T) {
 		return id, err
 	})
 }
+
+func TestImportClause(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidImport,
+				Parsing: "ImportClause",
+				Token:   tk[0],
+			}
+		}},
+		{`for`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ImportClause",
+				Token:   tk[0],
+			}
+		}},
+		{"a\n", func(t *test, tk Tokens) { // 3
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[0],
+				Tokens:                 tk[:1],
+			}
+		}},
+		{"a\n,", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrInvalidImport,
+				Parsing: "ImportClause",
+				Token:   tk[3],
+			}
+		}},
+		{"a\n,\n*", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrInvalidNameSpaceImport,
+				Parsing: "ImportClause",
+				Token:   tk[5],
+			}
+
+		}},
+		{"a\n,\n*\nas", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ImportClause",
+				Token:   tk[7],
+			}
+
+		}},
+		{"a\n,\n*\nas\nb", func(t *test, tk Tokens) { // 7
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[0],
+				NameSpaceImport:        &tk[8],
+				Tokens:                 tk[:9],
+			}
+		}},
+		{",", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrInvalidImport,
+				Parsing: "ImportClause",
+				Token:   tk[0],
+			}
+		}},
+		{"*", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidNameSpaceImport,
+				Parsing: "ImportClause",
+				Token:   tk[1],
+			}
+
+		}},
+		{"*\nas", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ImportClause",
+				Token:   tk[3],
+			}
+
+		}},
+		{"*\nas\nb", func(t *test, tk Tokens) { // 11
+			t.Output = ImportClause{
+				NameSpaceImport: &tk[4],
+				Tokens:          tk[:5],
+			}
+		}},
+		{"a\n,\n{+}", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidImportSpecifier,
+						Parsing: "ImportSpecifier",
+						Token:   tk[5],
+					},
+					Parsing: "NamedImports",
+					Token:   tk[5],
+				},
+				Parsing: "ImportClause",
+				Token:   tk[4],
+			}
+		}},
+		{"a\n,\n{}", func(t *test, tk Tokens) { // 13
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[0],
+				NamedImports: &NamedImports{
+					Tokens: tk[4:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"{+}", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidImportSpecifier,
+						Parsing: "ImportSpecifier",
+						Token:   tk[1],
+					},
+					Parsing: "NamedImports",
+					Token:   tk[1],
+				},
+				Parsing: "ImportClause",
+				Token:   tk[0],
+			}
+		}},
+		{"{}", func(t *test, tk Tokens) { // 15
+			t.Output = ImportClause{
+				NamedImports: &NamedImports{
+					Tokens: tk[:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ic ImportClause
+		err := ic.parse(&t.Tokens)
+		return ic, err
+	})
+}
