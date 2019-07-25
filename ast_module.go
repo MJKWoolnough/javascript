@@ -404,11 +404,11 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
 	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
-		g.AcceptRunWhitespace()
-		if !g.Accept(TokenIdentifier, TokenKeyword) {
+		j.Score(g)
+		j.AcceptRunWhitespace()
+		if !j.Accept(TokenIdentifier, TokenKeyword) {
 			return j.Error("ExportSpecifier", ErrNoIdentifier)
 		}
-		j.Score(g)
 		es.EIdentifierName = j.GetLastToken()
 	}
 	es.Tokens = j.ToTokens()
