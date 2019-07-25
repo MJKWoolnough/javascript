@@ -271,7 +271,9 @@ type ExportDeclaration struct {
 }
 
 func (ed *ExportDeclaration) parse(j *jsParser) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "export"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "export"}) {
+		return j.Error("ExportDeclaration", ErrInvalidExportDeclaration)
+	}
 	j.AcceptRunWhitespace()
 	if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
 		j.AcceptRunWhitespace()
@@ -407,11 +409,12 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 
 // Errors
 var (
-	ErrInvalidImport          = errors.New("invalid import statement")
-	ErrInvalidNameSpaceImport = errors.New("invalid namespace import")
-	ErrMissingFrom            = errors.New("missing from")
-	ErrMissingModuleSpecifier = errors.New("missing module specifier")
-	ErrInvalidNamedImport     = errors.New("invalid named import list")
-	ErrInvalidImportSpecifier = errors.New("invalid import specifier")
-	ErrInvalidExportClause    = errors.New("invalid export clause")
+	ErrInvalidImport            = errors.New("invalid import statement")
+	ErrInvalidExportDeclaration = errors.New("invalid export declaration")
+	ErrInvalidNameSpaceImport   = errors.New("invalid namespace import")
+	ErrMissingFrom              = errors.New("missing from")
+	ErrMissingModuleSpecifier   = errors.New("missing module specifier")
+	ErrInvalidNamedImport       = errors.New("invalid named import list")
+	ErrInvalidImportSpecifier   = errors.New("invalid import specifier")
+	ErrInvalidExportClause      = errors.New("invalid export clause")
 )
