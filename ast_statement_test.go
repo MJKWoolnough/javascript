@@ -2154,3 +2154,120 @@ func TestStatement(t *testing.T) {
 		return sl, err
 	})
 }
+
+func TestBlock(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "Block",
+				Token:   tk[0],
+			}
+		}},
+		{"{\n}", func(t *test, tk Tokens) { // 2
+			t.Output = Block{
+				Tokens: tk[:3],
+			}
+		}},
+		{"{\n,\n}", func(t *test, tk Tokens) { //3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     assignmentError(tk[2]),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "Statement",
+						Token:   tk[2],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[2],
+				},
+				Parsing: "Block",
+				Token:   tk[2],
+			}
+		}},
+		{"{\na\n}", func(t *test, tk Tokens) { // 4
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = Block{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litA,
+										Tokens:                tk[2:3],
+									},
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"{\na\nfunction}", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidStatement,
+						Parsing: "Statement",
+						Token:   tk[4],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[4],
+				},
+				Parsing: "Block",
+				Token:   tk[4],
+			}
+		}},
+		{"{\na\nb\n}", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 4)
+			t.Output = Block{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litA,
+										Tokens:                tk[2:3],
+									},
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litB,
+										Tokens:                tk[4:5],
+									},
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var b Block
+		err := b.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return b, err
+	})
+}
