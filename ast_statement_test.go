@@ -2271,3 +2271,282 @@ func TestBlock(t *testing.T) {
 		return b, err
 	})
 }
+
+func TestStatementListItem(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[0]),
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"let", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "LexicalBinding",
+							Token:   tk[1],
+						},
+						Parsing: "LexicalDeclaration",
+						Token:   tk[1],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"const", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "LexicalBinding",
+							Token:   tk[1],
+						},
+						Parsing: "LexicalDeclaration",
+						Token:   tk[1],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"class", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidStatement,
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"class\na", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingOpeningBrace,
+						Parsing: "ClassDeclaration",
+						Token:   tk[3],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"async", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "ArrowFunction",
+								Token:   tk[1],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[0],
+						},
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"async function\na", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningParenthesis,
+							Parsing: "FormalParameters",
+							Token:   tk[5],
+						},
+						Parsing: "FunctionDeclaration",
+						Token:   tk[5],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"async function\n*\na", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningParenthesis,
+							Parsing: "FormalParameters",
+							Token:   tk[7],
+						},
+						Parsing: "FunctionDeclaration",
+						Token:   tk[7],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"async function\n*", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidStatement,
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"async\nfunction\na", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "ArrowFunction",
+								Token:   tk[1],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[0],
+						},
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"function", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidStatement,
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"function\n*", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidStatement,
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"function\n*\na", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningParenthesis,
+							Parsing: "FormalParameters",
+							Token:   tk[5],
+						},
+						Parsing: "FunctionDeclaration",
+						Token:   tk[5],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"function\na", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningParenthesis,
+							Parsing: "FormalParameters",
+							Token:   tk[3],
+						},
+						Parsing: "FunctionDeclaration",
+						Token:   tk[3],
+					},
+					Parsing: "Declaration",
+					Token:   tk[0],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
+		{"function\na(){}", func(t *test, tk Tokens) { //15
+			t.Output = StatementListItem{
+				Declaration: &Declaration{
+					FunctionDeclaration: &FunctionDeclaration{
+						BindingIdentifier: &tk[2],
+						FormalParameters: FormalParameters{
+							Tokens: tk[3:5],
+						},
+						FunctionBody: Block{
+							Tokens: tk[5:7],
+						},
+						Tokens: tk[:7],
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 16
+			litA := makeConditionLiteral(tk, 0)
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[:1],
+							},
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var si StatementListItem
+		err := si.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return si, err
+	})
+}
