@@ -99,6 +99,7 @@ const (
 	StatementBreak
 	StatementReturn
 	StatementThrow
+	StatementDebugger
 )
 
 // Statement as defined in ECMA-262
@@ -126,7 +127,6 @@ type Statement struct {
 	LabelledItemFunction    *FunctionDeclaration
 	LabelledItemStatement   *Statement
 	TryStatement            *TryStatement
-	DebuggerStatement       *Token
 	Tokens                  Tokens
 }
 
@@ -237,7 +237,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		}
 	case parser.Token{TokenKeyword, "debugger"}:
 		g.Skip()
-		s.DebuggerStatement = g.GetLastToken()
+		s.Type = StatementDebugger
 		if !g.parseSemicolon() {
 			return g.Error("Statement", ErrMissingSemiColon)
 		}

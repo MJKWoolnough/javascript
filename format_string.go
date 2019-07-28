@@ -140,7 +140,6 @@ var (
 	nameLabelledItemFunction                              = []byte{'\n', 'L', 'a', 'b', 'e', 'l', 'l', 'e', 'd', 'I', 't', 'e', 'm', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', ':', ' '}
 	nameLabelledItemStatement                             = []byte{'\n', 'L', 'a', 'b', 'e', 'l', 'l', 'e', 'd', 'I', 't', 'e', 'm', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameTryStatement                                      = []byte{'\n', 'T', 'r', 'y', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', ':', ' '}
-	nameDebuggerStatement                                 = []byte{'\n', 'D', 'e', 'b', 'u', 'g', 'g', 'e', 'r', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameCaseClauses                                       = []byte{'\n', 'C', 'a', 's', 'e', 'C', 'l', 'a', 'u', 's', 'e', 's', ':', ' '}
 	nameDefaultClause                                     = []byte{'\n', 'D', 'e', 'f', 'a', 'u', 'l', 't', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
 	namePostDefaultCaseClauses                            = []byte{'\n', 'P', 'o', 's', 't', 'D', 'e', 'f', 'a', 'u', 'l', 't', 'C', 'a', 's', 'e', 'C', 'l', 'a', 'u', 's', 'e', 's', ':', ' '}
@@ -1948,13 +1947,6 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		f.TryStatement.printType(&pp, v)
 	} else if v {
 		pp.Write(nameTryStatement)
-		pp.Write(nilStr)
-	}
-	if f.DebuggerStatement != nil {
-		pp.Write(nameDebuggerStatement)
-		f.DebuggerStatement.printType(&pp, v)
-	} else if v {
-		pp.Write(nameDebuggerStatement)
 		pp.Write(nilStr)
 	}
 	if v {

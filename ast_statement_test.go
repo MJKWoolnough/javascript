@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestStatement(t *testing.T) {
+func TestStatementOld(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`{}`, func(t *test, tk Tokens) { // 1
 			t.Output = StatementListItem{
@@ -1709,8 +1709,8 @@ func TestStatement(t *testing.T) {
 		{`debugger;`, func(t *test, tk Tokens) { // 48
 			t.Output = StatementListItem{
 				Statement: &Statement{
-					DebuggerStatement: &tk[0],
-					Tokens:            tk[:2],
+					Type:   StatementDebugger,
+					Tokens: tk[:2],
 				},
 				Tokens: tk[:2],
 			}
@@ -1720,8 +1720,8 @@ func TestStatement(t *testing.T) {
 				Statement: &Statement{
 					LabelIdentifier: &tk[0],
 					LabelledItemStatement: &Statement{
-						DebuggerStatement: &tk[3],
-						Tokens:            tk[3:5],
+						Type:   StatementDebugger,
+						Tokens: tk[3:5],
 					},
 					Tokens: tk[0:5],
 				},

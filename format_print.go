@@ -175,8 +175,6 @@ func (s Statement) printSource(w io.Writer, v bool) {
 			}
 		} else if s.TryStatement != nil {
 			s.TryStatement.printSource(w, v)
-		} else if s.DebuggerStatement != nil {
-			io.WriteString(w, "debugger;")
 		}
 	case StatementContinue:
 		if s.LabelIdentifier == nil {
@@ -208,6 +206,8 @@ func (s Statement) printSource(w io.Writer, v bool) {
 			s.ExpressionStatement.printSource(w, v)
 			w.Write(semiColon)
 		}
+	case StatementDebugger:
+		io.WriteString(w, "debugger;")
 	}
 }
 
