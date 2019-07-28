@@ -57,7 +57,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 		}
 	case parser.Token{TokenIdentifier, "async"}:
 		g.Skip()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoNewLine()
 		if g.Peek() != (parser.Token{TokenKeyword, "function"}) {
 			break
 		}
