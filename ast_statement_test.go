@@ -3256,3 +3256,143 @@ func TestStatement(t *testing.T) {
 		return s, err
 	})
 }
+
+func TestIfStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidIfStatement,
+				Parsing: "IfStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`if`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IfStatement",
+				Token:   tk[1],
+			}
+		}},
+		{"if\n(\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"if\n(\na\nb\n)", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "IfStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"if\n(\na\n)\n", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[8]),
+						Parsing: "Expression",
+						Token:   tk[8],
+					},
+					Parsing: "Statement",
+					Token:   tk[8],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"if\n(\na\n)\nb", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IfStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"if\n(\na\n)\nb\nelse", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[11]),
+						Parsing: "Expression",
+						Token:   tk[11],
+					},
+					Parsing: "Statement",
+					Token:   tk[11],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[11],
+			}
+		}},
+		{"if\n(\na\n)\nb\nelse\nc", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 8)
+			litC := makeConditionLiteral(tk, 12)
+			t.Output = IfStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				ElseStatement: &Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litC,
+								Tokens:                tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var is IfStatement
+		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return is, err
+	})
+}
