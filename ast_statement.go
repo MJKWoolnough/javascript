@@ -299,7 +299,9 @@ type IfStatement struct {
 }
 
 func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "if"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "if"}) {
+		return j.Error("IfStatement", ErrInvalidIfStatement)
+	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("IfStatement", ErrMissingOpeningParenthesis)
@@ -976,4 +978,5 @@ var (
 	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")
 	ErrInvalidForLoop              = errors.New("invalid for loop")
 	ErrInvalidForAwaitLoop         = errors.New("invalid for await loop")
+	ErrInvalidIfStatement          = errors.New("invalid if statement")
 )
