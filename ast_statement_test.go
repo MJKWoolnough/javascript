@@ -3550,3 +3550,87 @@ func TestIterationStatementDo(t *testing.T) {
 		return is, err
 	})
 }
+
+func TestIterationStatementWhile(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidIterationStatementWhile,
+				Parsing: "IterationStatementWhile",
+				Token:   tk[0],
+			}
+		}},
+		{`while`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IterationStatementWhile",
+				Token:   tk[1],
+			}
+		}},
+		{"while\n(\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "IterationStatementWhile",
+				Token:   tk[4],
+			}
+		}},
+		{"while\n(\na\nb\n)", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "IterationStatementWhile",
+				Token:   tk[6],
+			}
+		}},
+		{"while\n(\na\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[7]),
+						Parsing: "Expression",
+						Token:   tk[7],
+					},
+					Parsing: "Statement",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementWhile",
+				Token:   tk[7],
+			}
+		}},
+		{"while\n(\na\n)\nb", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementWhile{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var is IterationStatementWhile
+		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return is, err
+	})
+}
