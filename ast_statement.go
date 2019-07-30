@@ -477,7 +477,9 @@ type IterationStatementFor struct {
 }
 
 func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "for"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "for"}) {
+		return j.Error("IterationStatementFor", ErrInvalidIterationStatementFor)
+	}
 	j.AcceptRunWhitespace()
 	forAwait := j.AcceptToken(parser.Token{TokenKeyword, "await"})
 	j.AcceptRunWhitespace()
@@ -981,6 +983,7 @@ var (
 	ErrDuplicateDefaultClause         = errors.New("duplicate default clause")
 	ErrInvalidIterationStatementDo    = errors.New("invalid do interation statement")
 	ErrInvalidIterationStatementWhile = errors.New("invalid while interation statement")
+	ErrInvalidIterationStatementFor   = errors.New("invalid for interation statement")
 	ErrInvalidForLoop                 = errors.New("invalid for loop")
 	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
 	ErrInvalidIfStatement             = errors.New("invalid if statement")
