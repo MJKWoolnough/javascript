@@ -393,7 +393,9 @@ type IterationStatementWhile struct {
 }
 
 func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "while"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "while"}) {
+		return j.Error("IterationStatementWhile", ErrInvalidIterationStatementWhile)
+	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("IterationStatementWhile", ErrMissingOpeningParenthesis)
@@ -976,9 +978,10 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 
 // Errors
 var (
-	ErrDuplicateDefaultClause      = errors.New("duplicate default clause")
-	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")
-	ErrInvalidForLoop              = errors.New("invalid for loop")
-	ErrInvalidForAwaitLoop         = errors.New("invalid for await loop")
-	ErrInvalidIfStatement          = errors.New("invalid if statement")
+	ErrDuplicateDefaultClause         = errors.New("duplicate default clause")
+	ErrInvalidIterationStatementDo    = errors.New("invalid do interation statement")
+	ErrInvalidIterationStatementWhile = errors.New("invalid while interation statement")
+	ErrInvalidForLoop                 = errors.New("invalid for loop")
+	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
+	ErrInvalidIfStatement             = errors.New("invalid if statement")
 )
