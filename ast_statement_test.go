@@ -1898,6 +1898,7 @@ func TestStatementOld(t *testing.T) {
 			}
 		}},
 		{`for await(a of b) {}`, func(t *test, tk Tokens) { // 58
+			t.Await = true
 			litB := makeConditionLiteral(tk, 8)
 			t.Output = StatementListItem{
 				Statement: &Statement{
@@ -1934,6 +1935,7 @@ func TestStatementOld(t *testing.T) {
 			}
 		}},
 		{`for await(var a of b) {}`, func(t *test, tk Tokens) { // 59
+			t.Await = true
 			litB := makeConditionLiteral(tk, 10)
 			t.Output = StatementListItem{
 				Statement: &Statement{
@@ -1958,6 +1960,7 @@ func TestStatementOld(t *testing.T) {
 			}
 		}},
 		{`for await(let {a} of b) {}`, func(t *test, tk Tokens) { // 60
+			t.Await = true
 			litB := makeConditionLiteral(tk, 12)
 			t.Output = StatementListItem{
 				Statement: &Statement{
@@ -1990,6 +1993,7 @@ func TestStatementOld(t *testing.T) {
 			}
 		}},
 		{`for await(const [a] of b) {}`, func(t *test, tk Tokens) { // 61
+			t.Await = true
 			litB := makeConditionLiteral(tk, 12)
 			t.Output = StatementListItem{
 				Statement: &Statement{

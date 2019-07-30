@@ -481,8 +481,11 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		return j.Error("IterationStatementFor", ErrInvalidIterationStatementFor)
 	}
 	j.AcceptRunWhitespace()
-	forAwait := j.AcceptToken(parser.Token{TokenKeyword, "await"})
-	j.AcceptRunWhitespace()
+	var forAwait bool
+	if await {
+		forAwait = j.AcceptToken(parser.Token{TokenKeyword, "await"})
+		j.AcceptRunWhitespace()
+	}
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("IterationStatementFor", ErrMissingOpeningParenthesis)
 	}
