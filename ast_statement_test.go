@@ -3396,3 +3396,157 @@ func TestIfStatement(t *testing.T) {
 		return is, err
 	})
 }
+
+func TestIterationStatementDo(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidIterationStatementDo,
+				Parsing: "IterationStatementDo",
+				Token:   tk[0],
+			}
+		}},
+		{`do`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[1]),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "Statement",
+					Token:   tk[1],
+				},
+				Parsing: "IterationStatementDo",
+				Token:   tk[1],
+			}
+		}},
+		{"do\na", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrInvalidIterationStatementDo,
+				Parsing: "IterationStatementDo",
+				Token:   tk[3],
+			}
+		}},
+		{"do\na\nwhile", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IterationStatementDo",
+				Token:   tk[5],
+			}
+		}},
+		{"do\na\nwhile\n(\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[8]),
+					Parsing: "Expression",
+					Token:   tk[8],
+				},
+				Parsing: "IterationStatementDo",
+				Token:   tk[8],
+			}
+		}},
+		{"do\na\nwhile\n(\nb\nc\n)", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "IterationStatementDo",
+				Token:   tk[10],
+			}
+		}},
+		{"do\na\nwhile\n(\nb\n)", func(t *test, tk Tokens) { // 7
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementDo{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"do\na\nwhile\n(\nb\n)\n;", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementDo{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"do\na\nwhile\n(\nb\n) c", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementDo",
+				Token:   tk[11],
+			}
+		}},
+		{"do\na\nwhile\n(\nb\n)\nc", func(t *test, tk Tokens) { // 10
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementDo{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var is IterationStatementDo
+		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return is, err
+	})
+}
