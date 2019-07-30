@@ -348,7 +348,9 @@ type IterationStatementDo struct {
 }
 
 func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "do"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "do"}) {
+		return j.Error("IterationStatementDo", ErrInvalidIterationStatementDo)
+	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
 	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
