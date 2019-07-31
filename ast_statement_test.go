@@ -3638,3 +3638,244 @@ func TestIterationStatementWhile(t *testing.T) {
 		return is, err
 	})
 }
+
+func TestIterationStatementFor(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidIterationStatementFor,
+				Parsing: "IterationStatementFor",
+				Token:   tk[0],
+			}
+		}},
+		{`for`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IterationStatementFor",
+				Token:   tk[1],
+			}
+		}},
+		{"for\nawait", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IterationStatementFor",
+				Token:   tk[2],
+			}
+		}},
+		{"for\nawait", func(t *test, tk Tokens) { // 4
+			t.Await = true
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "IterationStatementFor",
+				Token:   tk[3],
+			}
+		}},
+		{"for\n(\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\nawait\n(\n)", func(t *test, tk Tokens) { // 6
+			t.Await = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "PrimaryExpression",
+								Token:   tk[6],
+							},
+							Parsing: "MemberExpression",
+							Token:   tk[6],
+						},
+						Parsing: "NewExpression",
+						Token:   tk[6],
+					},
+					Parsing: "LeftHandSideExpression",
+					Token:   tk[6],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\n;\n)", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[6]),
+					Parsing: "Expression",
+					Token:   tk[6],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\nawait\n(\n;\n)", func(t *test, tk Tokens) { // 8
+			t.Await = true
+			t.Err = Error{
+				Err:     ErrInvalidForAwaitLoop,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\n;\n;\n)", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[9]),
+						Parsing: "Expression",
+						Token:   tk[9],
+					},
+					Parsing: "Statement",
+					Token:   tk[9],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[9],
+			}
+		}},
+		{"for\n(\n;\n;\n)\na", func(t *test, tk Tokens) { // 10
+			litA := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[10:11],
+							},
+						},
+						Tokens: tk[10:11],
+					},
+					Tokens: tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"for\n(\n;\n,\n)", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[6]),
+					Parsing: "Expression",
+					Token:   tk[6],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\n;\n;\n,)", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[8]),
+					Parsing: "Expression",
+					Token:   tk[8],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[8],
+			}
+		}},
+		{"for\n(\n;\na\n;\n)\nb", func(t *test, tk Tokens) { // 13
+			litA := makeConditionLiteral(tk, 6)
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[6:7],
+						},
+					},
+					Tokens: tk[6:7],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"for\n(\n;\n;\na\n)\nb", func(t *test, tk Tokens) { // 13
+			litA := makeConditionLiteral(tk, 8)
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"for\n(\n;\na\n;\nb\n)\nc", func(t *test, tk Tokens) { // 13
+			litA := makeConditionLiteral(tk, 6)
+			litB := makeConditionLiteral(tk, 10)
+			litC := makeConditionLiteral(tk, 14)
+			t.Output = IterationStatementFor{
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[6:7],
+						},
+					},
+					Tokens: tk[6:7],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litC,
+								Tokens:                tk[14:15],
+							},
+						},
+						Tokens: tk[14:15],
+					},
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var is IterationStatementFor
+		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return is, err
+	})
+}
