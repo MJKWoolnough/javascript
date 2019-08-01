@@ -713,7 +713,7 @@ func TestModuleItem(t *testing.T) {
 						Err: Error{
 							Err: Error{
 								Err:     ErrNoIdentifier,
-								Parsing: "LexicalBinding",
+								Parsing: "VariableDeclaration",
 								Token:   tk[1],
 							},
 							Parsing: "VariableStatement",
@@ -1279,7 +1279,7 @@ func TestExportDeclaration(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err:     ErrNoIdentifier,
-						Parsing: "LexicalBinding",
+						Parsing: "VariableDeclaration",
 						Token:   tk[3],
 					},
 					Parsing: "VariableStatement",

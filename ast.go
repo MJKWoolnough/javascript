@@ -355,7 +355,12 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 type VariableDeclaration LexicalBinding
 
 func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
-	return ((*LexicalBinding)(v)).parse(j, in, yield, await)
+	if err := ((*LexicalBinding)(v)).parse(j, in, yield, await); err != nil {
+		errr := err.(Error)
+		errr.Parsing = "VariableDeclaration"
+		return errr
+	}
+	return nil
 }
 
 // ArrayLiteral as defined in ECMA-262

@@ -2604,7 +2604,7 @@ func TestStatement(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err:     ErrNoIdentifier,
-						Parsing: "LexicalBinding",
+						Parsing: "VariableDeclaration",
 						Token:   tk[1],
 					},
 					Parsing: "VariableStatement",
