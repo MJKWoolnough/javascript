@@ -673,7 +673,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			j.Score(g)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
-		j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
+		j.AcceptToken(parser.Token{TokenKeyword, "in"})
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		is.In = new(Expression)
