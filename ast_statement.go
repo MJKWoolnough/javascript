@@ -673,9 +673,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			j.Score(g)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
-		if !j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
-			return j.Error("IterationStatementFor", ErrInvalidForLoop)
-		}
+		j.AcceptToken(parser.Token{TokenKeyword, "in"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		is.In = new(Expression)
@@ -704,7 +702,6 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-
 	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
 		return j.Error("IterationStatementFor", err)
 	}
