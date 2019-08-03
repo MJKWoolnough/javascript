@@ -170,7 +170,7 @@ func TestNewJSParser(t *testing.T) {
 			LinePos: 3,
 		},
 	}
-	const e = "FAUX: error at position 1 (2:3):\nTEST"
+	const e = "FAUX: error at position 2 (3:4):\nTEST"
 	if str := fErr.Error(); str != e {
 		t.Errorf("error test: expecting %q, got %q", e, str)
 	}

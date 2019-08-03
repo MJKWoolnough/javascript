@@ -188,7 +188,7 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos, e.Token.Line, e.Token.LinePos, e.Err)
+	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
 }
 
 func (j *jsParser) Error(parsingFunc string, err error) error {
