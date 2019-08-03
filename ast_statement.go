@@ -746,10 +746,11 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break
-		} else if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
+		} else if j.Peek() == (parser.Token{TokenKeyword, "default"}) {
 			if ss.DefaultClause != nil {
 				return j.Error("SwitchStatement", ErrDuplicateDefaultClause)
 			}
+			j.Skip()
 			j.AcceptRunWhitespace()
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
 				return j.Error("SwitchStatement", ErrMissingColon)
