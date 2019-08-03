@@ -3807,7 +3807,7 @@ func TestIterationStatementFor(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"for\n(\n;\n;\na\n)\nb", func(t *test, tk Tokens) { // 13
+		{"for\n(\n;\n;\na\n)\nb", func(t *test, tk Tokens) { // 14
 			litA := makeConditionLiteral(tk, 8)
 			litB := makeConditionLiteral(tk, 12)
 			t.Output = IterationStatementFor{
@@ -3835,7 +3835,7 @@ func TestIterationStatementFor(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"for\n(\n;\na\n;\nb\n)\nc", func(t *test, tk Tokens) { // 13
+		{"for\n(\n;\na\n;\nb\n)\nc", func(t *test, tk Tokens) { // 15
 			litA := makeConditionLiteral(tk, 6)
 			litB := makeConditionLiteral(tk, 10)
 			litC := makeConditionLiteral(tk, 14)
@@ -3871,6 +3871,1708 @@ func TestIterationStatementFor(t *testing.T) {
 					Tokens: tk[14:15],
 				},
 				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nvar)", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "VariableDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[5],
+			}
+		}},
+		{"for\n(\nvar\na\nb)", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[8],
+			}
+		}},
+		{"for\n(\nvar\na,\nb)", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\n(\nvar\na\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 19
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[14:16],
+					},
+					Tokens: tk[14:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nvar\na\n,\nb\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 20
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+					{
+						BindingIdentifier: &tk[10],
+						Tokens:            tk[10:11],
+					},
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nvar\na\n;\nb\n;\n)\n{}", func(t *test, tk Tokens) { // 21
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nvar\na\n;\nb)", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nvar\na\n,\nb\n;\nc\n;\n)\n{}", func(t *test, tk Tokens) { // 23
+			litC := makeConditionLiteral(tk, 14)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+					{
+						BindingIdentifier: &tk[10],
+						Tokens:            tk[10:11],
+					},
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[14:15],
+						},
+					},
+					Tokens: tk[14:15],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[20:22],
+					},
+					Tokens: tk[20:22],
+				},
+				Tokens: tk[:22],
+			}
+		}},
+		{"for\n(\nvar\na\n;\n;\nb\nc)", func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "IterationStatementFor",
+				Token:   tk[14],
+			}
+		}},
+		{"for\n(\nvar\na\n;\n;\nb\n)\n{}", func(t *test, tk Tokens) { // 25
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[12:13],
+						},
+					},
+					Tokens: tk[12:13],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nvar\na\n,\nb\n;\n;\nc\n)\n{}", func(t *test, tk Tokens) { // 26
+			litC := makeConditionLiteral(tk, 16)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+					{
+						BindingIdentifier: &tk[10],
+						Tokens:            tk[10:11],
+					},
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[16:17],
+						},
+					},
+					Tokens: tk[16:17],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[20:22],
+					},
+					Tokens: tk[20:22],
+				},
+				Tokens: tk[:22],
+			}
+		}},
+		{"for\n(\nvar\na\n;\nb\n;\nc\n)\n{}", func(t *test, tk Tokens) { // 27
+			litB := makeConditionLiteral(tk, 10)
+			litC := makeConditionLiteral(tk, 14)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[14:15],
+						},
+					},
+					Tokens: tk[14:15],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nvar\na\n,\nb\n;\nc\n;\nd\n)\n{}", func(t *test, tk Tokens) { // 28
+			litC := makeConditionLiteral(tk, 14)
+			litD := makeConditionLiteral(tk, 18)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+					{
+						BindingIdentifier: &tk[10],
+						Tokens:            tk[10:11],
+					},
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[14:15],
+						},
+					},
+					Tokens: tk[14:15],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litD,
+							Tokens:                tk[18:19],
+						},
+					},
+					Tokens: tk[18:19],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[22:24],
+					},
+					Tokens: tk[22:24],
+				},
+				Tokens: tk[:24],
+			}
+		}},
+		{"for\n(\nlet)", func(t *test, tk Tokens) { // 29
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "LexicalBinding",
+						Token:   tk[5],
+					},
+					Parsing: "LexicalDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\n(\nlet\na\nb)", func(t *test, tk Tokens) { // 30
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[8],
+			}
+		}},
+		{"for\n(\nlet\na,\nb)", func(t *test, tk Tokens) { // 31
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidLexicalDeclaration,
+					Parsing: "LexicalDeclaration",
+					Token:   tk[10],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\n(\nlet\na\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 32
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[14:16],
+					},
+					Tokens: tk[14:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nlet\na\n,\nb\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 33
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+						{
+							BindingIdentifier: &tk[10],
+							Tokens:            tk[10:11],
+						},
+					},
+					Tokens: tk[4:13],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nlet\na\n;\nb\n;\n)\n{}", func(t *test, tk Tokens) { // 34
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nlet\na\n;\n;\nb\n)\n{}", func(t *test, tk Tokens) { // 35
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[12:13],
+						},
+					},
+					Tokens: tk[12:13],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nlet\na\n;\nb\n;\nc\n)\n{}", func(t *test, tk Tokens) { // 36
+			litB := makeConditionLiteral(tk, 10)
+			litC := makeConditionLiteral(tk, 14)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[14:15],
+						},
+					},
+					Tokens: tk[14:15],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nconst)", func(t *test, tk Tokens) { // 37
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "LexicalBinding",
+						Token:   tk[5],
+					},
+					Parsing: "LexicalDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\n(\nconst\na\nb)", func(t *test, tk Tokens) { // 38
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[8],
+			}
+		}},
+		{"for\n(\nconst\na,\nb)", func(t *test, tk Tokens) { // 39
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidLexicalDeclaration,
+					Parsing: "LexicalDeclaration",
+					Token:   tk[10],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\n(\nconst\na\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 40
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[14:16],
+					},
+					Tokens: tk[14:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nconst\na\n,\nb\n;\n;\n)\n{}", func(t *test, tk Tokens) { // 41
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+						{
+							BindingIdentifier: &tk[10],
+							Tokens:            tk[10:11],
+						},
+					},
+					Tokens: tk[4:13],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nconst\na\n;\nb\n;\n)\n{}", func(t *test, tk Tokens) { // 42
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nconst\na\n;\n;\nb\n)\n{}", func(t *test, tk Tokens) { // 43
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[12:13],
+						},
+					},
+					Tokens: tk[12:13],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[16:18],
+					},
+					Tokens: tk[16:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"for\n(\nconst\na\n;\nb\n;\nc\n)\n{}", func(t *test, tk Tokens) { // 44
+			litB := makeConditionLiteral(tk, 10)
+			litC := makeConditionLiteral(tk, 14)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[6],
+							Tokens:            tk[6:7],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litC,
+							Tokens:                tk[14:15],
+						},
+					},
+					Tokens: tk[14:15],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[18:20],
+					},
+					Tokens: tk[18:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nvar\n{}\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 45
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						ObjectBindingPattern: &ObjectBindingPattern{
+							Tokens: tk[6:8],
+						},
+						Initializer: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[11:12],
+						},
+						Tokens: tk[6:12],
+					},
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nvar\n[]\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 46
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						ArrayBindingPattern: &ArrayBindingPattern{
+							Tokens: tk[6:8],
+						},
+						Initializer: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[11:12],
+						},
+						Tokens: tk[6:12],
+					},
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nlet\n{}\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 47
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								Tokens: tk[6:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[11:12],
+							},
+							Tokens: tk[6:12],
+						},
+					},
+					Tokens: tk[4:14],
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nlet\n[]\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 48
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							ArrayBindingPattern: &ArrayBindingPattern{
+								Tokens: tk[6:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[11:12],
+							},
+							Tokens: tk[6:12],
+						},
+					},
+					Tokens: tk[4:14],
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nconst\n{}\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 49
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								Tokens: tk[6:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[11:12],
+							},
+							Tokens: tk[6:12],
+						},
+					},
+					Tokens: tk[4:14],
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nconst\n[]\n=\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 50
+			litA := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							ArrayBindingPattern: &ArrayBindingPattern{
+								Tokens: tk[6:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[11:12],
+							},
+							Tokens: tk[6:12],
+						},
+					},
+					Tokens: tk[4:14],
+				},
+				Statement: Statement{
+					Tokens: tk[19:20],
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"for\n(\nvar\n{,}\nin)", func(t *test, tk Tokens) { // 51
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n[+]\nin)", func(t *test, tk Tokens) { // 52
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n,\nin)", func(t *test, tk Tokens) { // 53
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n{,}\nin)", func(t *test, tk Tokens) { // 54
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n[+]\nin)", func(t *test, tk Tokens) { // 55
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n,\nin)", func(t *test, tk Tokens) { // 56
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n{,}\nin)", func(t *test, tk Tokens) { // 57
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n[+]\nin)", func(t *test, tk Tokens) { // 58
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n,\nin)", func(t *test, tk Tokens) { // 59
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n{}\nin\n)", func(t *test, tk Tokens) { // 60
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[11]),
+					Parsing: "Expression",
+					Token:   tk[11],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nlet\n{}\nin\n)", func(t *test, tk Tokens) { // 61
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[11]),
+					Parsing: "Expression",
+					Token:   tk[11],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nconst\n{}\nin\n)", func(t *test, tk Tokens) { // 62
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[11]),
+					Parsing: "Expression",
+					Token:   tk[11],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nvar\na\nin\nb\n)\n;", func(t *test, tk Tokens) { // 63
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForInVar,
+				ForBindingIdentifier: &tk[6],
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nlet\na\nin\nb\n)\n;", func(t *test, tk Tokens) { // 64
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForInLet,
+				ForBindingIdentifier: &tk[6],
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nconst\na\nin\nb\n)\n;", func(t *test, tk Tokens) { // 65
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForInConst,
+				ForBindingIdentifier: &tk[6],
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nvar\n{}\nin\nb\n)\n;", func(t *test, tk Tokens) { // 66
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInVar,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nlet\n{}\nin\nb\n)\n;", func(t *test, tk Tokens) { // 67
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInLet,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nconst\n{}\nin\nb\n)\n;", func(t *test, tk Tokens) { // 68
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInConst,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nvar\n[]\nin\nb\n)\n;", func(t *test, tk Tokens) { // 69
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInVar,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nlet\n[]\nin\nb\n)\n;", func(t *test, tk Tokens) { // 70
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInLet,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nconst\n[]\nin\nb\n)\n;", func(t *test, tk Tokens) { // 71
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForInConst,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[11:12],
+						},
+					},
+					Tokens: tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\nawait\n(\nvar\na\nin\nb\n)\n;", func(t *test, tk Tokens) { // 72
+			t.Await = true
+			t.Err = Error{
+				Err:     ErrInvalidForAwaitLoop,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n{,}\nof)", func(t *test, tk Tokens) { // 73
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n[+]\nof)", func(t *test, tk Tokens) { // 74
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n,\nof)", func(t *test, tk Tokens) { // 75
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n{,}\nof)", func(t *test, tk Tokens) { // 76
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n[+]\nof)", func(t *test, tk Tokens) { // 77
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nlet\n,\nof)", func(t *test, tk Tokens) { // 78
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n{,}\nof)", func(t *test, tk Tokens) { // 79
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[7],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[7],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n[+]\nof)", func(t *test, tk Tokens) { // 80
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[7],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[7],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nconst\n,\nof)", func(t *test, tk Tokens) { // 81
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\nvar\n{}\nof\n)", func(t *test, tk Tokens) { // 82
+			t.Err = Error{
+				Err:     assignmentError(tk[11]),
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nlet\n{}\nof\n)", func(t *test, tk Tokens) { // 83
+			t.Err = Error{
+				Err:     assignmentError(tk[11]),
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nconst\n{}\nof\n)", func(t *test, tk Tokens) { // 84
+			t.Err = Error{
+				Err:     assignmentError(tk[11]),
+				Parsing: "IterationStatementFor",
+				Token:   tk[11],
+			}
+		}},
+		{"for\n(\nvar\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 85
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForOfVar,
+				ForBindingIdentifier: &tk[6],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nlet\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 86
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForOfLet,
+				ForBindingIdentifier: &tk[6],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nconst\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 87
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type:                 ForOfConst,
+				ForBindingIdentifier: &tk[6],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\nvar\n{}\nof\nb\n)\n;", func(t *test, tk Tokens) { // 88
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfVar,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nlet\n{}\nof\nb\n)\n;", func(t *test, tk Tokens) { // 89
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfLet,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nconst\n{}\nof\nb\n)\n;", func(t *test, tk Tokens) { // 90
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfConst,
+				ForBindingPatternObject: &ObjectBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nvar\n[]\nof\nb\n)\n;", func(t *test, tk Tokens) { // 91
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfVar,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nlet\n[]\nof\nb\n)\n;", func(t *test, tk Tokens) { // 92
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfLet,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\n(\nconst\n[]\nof\nb\n)\n;", func(t *test, tk Tokens) { // 93
+			litB := makeConditionLiteral(tk, 11)
+			t.Output = IterationStatementFor{
+				Type: ForOfConst,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[6:8],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[11:12],
+				},
+				Statement: Statement{
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"for\nawait\n(\nvar\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 94
+			t.Await = true
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type:                 ForAwaitOfVar,
+				ForBindingIdentifier: &tk[8],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[12:13],
+				},
+				Statement: Statement{
+					Tokens: tk[16:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"for\nawait\n(\nlet\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 95
+			t.Await = true
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type:                 ForAwaitOfLet,
+				ForBindingIdentifier: &tk[8],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[12:13],
+				},
+				Statement: Statement{
+					Tokens: tk[16:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"for\nawait\n(\nconst\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 96
+			t.Await = true
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = IterationStatementFor{
+				Type:                 ForAwaitOfConst,
+				ForBindingIdentifier: &tk[8],
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[12:13],
+				},
+				Statement: Statement{
+					Tokens: tk[16:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"for\nawait\n(\n)", func(t *test, tk Tokens) { // 97
+			t.Await = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "PrimaryExpression",
+								Token:   tk[6],
+							},
+							Parsing: "MemberExpression",
+							Token:   tk[6],
+						},
+						Parsing: "NewExpression",
+						Token:   tk[6],
+					},
+					Parsing: "LeftHandSideExpression",
+					Token:   tk[6],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\nawait\n(\na\n)", func(t *test, tk Tokens) { // 98
+			t.Await = true
+			t.Err = Error{
+				Err:     ErrInvalidForAwaitLoop,
+				Parsing: "IterationStatementFor",
+				Token:   tk[8],
+			}
+		}},
+		{"for\nawait\n(\na\nof\n)", func(t *test, tk Tokens) { // 99
+			t.Await = true
+			t.Err = Error{
+				Err:     assignmentError(tk[10]),
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\nawait\n(\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 100
+			t.Await = true
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = IterationStatementFor{
+				Type: ForAwaitOfLeftHandSide,
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[6],
+								Tokens:              tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[10:11],
+				},
+				Statement: Statement{
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"for\n(\n)\n;", func(t *test, tk Tokens) { // 101
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "IterationStatementFor",
+				Token:   tk[4],
+			}
+		}},
+		{"for\n(\na\n)", func(t *test, tk Tokens) { // 102
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[6],
+			}
+		}},
+		{"for\n(\na\n;\n;\n)\n;", func(t *test, tk Tokens) { // 103
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = IterationStatementFor{
+				Type: ForNormalExpression,
+				InitExpression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Statement: Statement{
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"for\n(\na\nin\nb\n)\n;", func(t *test, tk Tokens) { // 104
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementFor{
+				Type: ForInLeftHandSide,
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[4],
+								Tokens:              tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Statement: Statement{
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"for\n(\na\nof\nb\n)\n;", func(t *test, tk Tokens) { // 105
+			litB := makeConditionLiteral(tk, 8)
+			t.Output = IterationStatementFor{
+				Type: ForOfLeftHandSide,
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[4],
+								Tokens:              tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[8:9],
+				},
+				Statement: Statement{
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"for\n(\na\n,\nb\nin)", func(t *test, tk Tokens) { // 106
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\n(\na\n,\nb\nof)", func(t *test, tk Tokens) { // 107
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\n(\na\n=\n1\nin)", func(t *test, tk Tokens) { // 108
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\n(\na\n=\n1\nof)", func(t *test, tk Tokens) { // 109
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
+			}
+		}},
+		{"for\n(\n!a\nin)", func(t *test, tk Tokens) { // 110
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[7],
+			}
+		}},
+		{"for\n(\n!a\nof)", func(t *test, tk Tokens) { // 111
+			t.Err = Error{
+				Err:     ErrMissingSemiColon,
+				Parsing: "IterationStatementFor",
+				Token:   tk[7],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
