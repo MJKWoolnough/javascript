@@ -839,7 +839,9 @@ type WithStatement struct {
 }
 
 func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "with"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "with"}) {
+		return j.Error("WithStatement", ErrInvalidWithStatement)
+	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("WithStatement", ErrMissingOpeningParenthesis)
@@ -991,4 +993,5 @@ var (
 	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
 	ErrInvalidIfStatement             = errors.New("invalid if statement")
 	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
+	ErrInvalidWithStatement           = errors.New("invalid with statement")
 )
