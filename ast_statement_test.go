@@ -5581,3 +5581,469 @@ func TestIterationStatementFor(t *testing.T) {
 		return is, err
 	})
 }
+
+func TestSwitchStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidSwitchStatement,
+				Parsing: "SwitchStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`switch`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "SwitchStatement",
+				Token:   tk[1],
+			}
+		}},
+		{"switch\n(\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "SwitchStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"switch\n(\na\nb\n)", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "SwitchStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"switch\n(\na\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "SwitchStatement",
+				Token:   tk[7],
+			}
+		}},
+		{"switch\n(\na\n)\n{\n}", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n}", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "SwitchStatement",
+				Token:   tk[12],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\n}", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				DefaultClause: []StatementListItem{},
+				Tokens:        tk[:15],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\nlet\n}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "LexicalBinding",
+								Token:   tk[16],
+							},
+							Parsing: "LexicalDeclaration",
+							Token:   tk[16],
+						},
+						Parsing: "Declaration",
+						Token:   tk[14],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[14],
+				},
+				Parsing: "SwitchStatement",
+				Token:   tk[14],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\nb\n}", func(t *test, tk Tokens) { // 10
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 14)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				DefaultClause: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litB,
+										Tokens:                tk[14:15],
+									},
+								},
+								Tokens: tk[14:15],
+							},
+							Tokens: tk[14:15],
+						},
+						Tokens: tk[14:15],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\nb;\nc\n}", func(t *test, tk Tokens) { // 11
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 14)
+			litC := makeConditionLiteral(tk, 17)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				DefaultClause: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litB,
+										Tokens:                tk[14:15],
+									},
+								},
+								Tokens: tk[14:15],
+							},
+							Tokens: tk[14:16],
+						},
+						Tokens: tk[14:16],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litC,
+										Tokens:                tk[17:18],
+									},
+								},
+								Tokens: tk[17:18],
+							},
+							Tokens: tk[17:18],
+						},
+						Tokens: tk[17:18],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\ncase}", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[15]),
+						Parsing: "Expression",
+						Token:   tk[15],
+					},
+					Parsing: "CaseClause",
+					Token:   tk[15],
+				},
+				Parsing: "SwitchStatement",
+				Token:   tk[14],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\ncase b:\n}", func(t *test, tk Tokens) { // 13
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 16)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				DefaultClause: []StatementListItem{},
+				PostDefaultCaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litB,
+									Tokens:                tk[16:17],
+								},
+							},
+							Tokens: tk[16:17],
+						},
+						Tokens: tk[14:18],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ndefault\n:\ncase b:\ncase c:}", func(t *test, tk Tokens) { // 14
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 16)
+			litC := makeConditionLiteral(tk, 21)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				DefaultClause: []StatementListItem{},
+				PostDefaultCaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litB,
+									Tokens:                tk[16:17],
+								},
+							},
+							Tokens: tk[16:17],
+						},
+						Tokens: tk[14:18],
+					},
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litC,
+									Tokens:                tk[21:22],
+								},
+							},
+							Tokens: tk[21:22],
+						},
+						Tokens: tk[19:23],
+					},
+				},
+				Tokens: tk[:24],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ncase b:\n}", func(t *test, tk Tokens) { // 15
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 12)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				CaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litB,
+									Tokens:                tk[12:13],
+								},
+							},
+							Tokens: tk[12:13],
+						},
+						Tokens: tk[10:14],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:}", func(t *test, tk Tokens) { // 15
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 12)
+			litC := makeConditionLiteral(tk, 17)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				CaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litB,
+									Tokens:                tk[12:13],
+								},
+							},
+							Tokens: tk[12:13],
+						},
+						Tokens: tk[10:14],
+					},
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litC,
+									Tokens:                tk[17:18],
+								},
+							},
+							Tokens: tk[17:18],
+						},
+						Tokens: tk[15:19],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd\ne\ncase f:\ncase g:}", func(t *test, tk Tokens) { // 16
+			litA := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 12)
+			litC := makeConditionLiteral(tk, 17)
+			litD := makeConditionLiteral(tk, 24)
+			litE := makeConditionLiteral(tk, 26)
+			litF := makeConditionLiteral(tk, 30)
+			litG := makeConditionLiteral(tk, 35)
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				CaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litB,
+									Tokens:                tk[12:13],
+								},
+							},
+							Tokens: tk[12:13],
+						},
+						Tokens: tk[10:14],
+					},
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litC,
+									Tokens:                tk[17:18],
+								},
+							},
+							Tokens: tk[17:18],
+						},
+						Tokens: tk[15:19],
+					},
+				},
+				DefaultClause: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litD,
+										Tokens:                tk[24:25],
+									},
+								},
+								Tokens: tk[24:25],
+							},
+							Tokens: tk[24:25],
+						},
+						Tokens: tk[24:25],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litE,
+										Tokens:                tk[26:27],
+									},
+								},
+								Tokens: tk[26:27],
+							},
+							Tokens: tk[26:27],
+						},
+						Tokens: tk[26:27],
+					},
+				},
+				PostDefaultCaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litF,
+									Tokens:                tk[30:31],
+								},
+							},
+							Tokens: tk[30:31],
+						},
+						Tokens: tk[28:32],
+					},
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: &litG,
+									Tokens:                tk[35:36],
+								},
+							},
+							Tokens: tk[35:36],
+						},
+						Tokens: tk[33:37],
+					},
+				},
+				Tokens: tk[:38],
+			}
+		}},
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd;\ne;\ncase f:\ncase g:default:}", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrDuplicateDefaultClause,
+				Parsing: "SwitchStatement",
+				Token:   tk[39],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ss SwitchStatement
+		err := ss.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return ss, err
+	})
+}
