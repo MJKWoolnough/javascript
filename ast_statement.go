@@ -887,7 +887,9 @@ type TryStatement struct {
 }
 
 func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "try"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "try"}) {
+		return j.Error("TryStatement", ErrInvalidTryStatement)
+	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
 	if err := ts.TryBlock.parse(&g, yield, await, ret); err != nil {
@@ -994,4 +996,5 @@ var (
 	ErrInvalidIfStatement             = errors.New("invalid if statement")
 	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
 	ErrInvalidWithStatement           = errors.New("invalid with statement")
+	ErrInvalidTryStatement            = errors.New("invalid try statement")
 )
