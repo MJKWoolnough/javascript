@@ -6047,3 +6047,154 @@ func TestSwitchStatement(t *testing.T) {
 		return ss, err
 	})
 }
+
+func TestCaseClause(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingCaseClause,
+				Parsing: "CaseClause",
+				Token:   tk[0],
+			}
+		}},
+		{`case`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[1]),
+					Parsing: "Expression",
+					Token:   tk[1],
+				},
+				Parsing: "CaseClause",
+				Token:   tk[1],
+			}
+		}},
+		{"case\na", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "CaseClause",
+				Token:   tk[3],
+			}
+		}},
+		{"case\na\n:", func(t *test, tk Tokens) { // 4
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"case\na\n:case", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"case\na\n:default", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 2)
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"case\na\n:\nlet", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrNoIdentifier,
+								Parsing: "LexicalBinding",
+								Token:   tk[7],
+							},
+							Parsing: "LexicalDeclaration",
+							Token:   tk[7],
+						},
+						Parsing: "Declaration",
+						Token:   tk[6],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[6],
+				},
+				Parsing: "CaseClause",
+				Token:   tk[6],
+			}
+		}},
+		{"case\na\n:\nb\nc", func(t *test, tk Tokens) { // 8
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 6)
+			litC := makeConditionLiteral(tk, 8)
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litB,
+										Tokens:                tk[6:7],
+									},
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: &litC,
+										Tokens:                tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var cc CaseClause
+		err := cc.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return cc, err
+	})
+}
