@@ -683,7 +683,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.Score(g)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst:
 		if !j.AcceptToken(parser.Token{TokenIdentifier, "of"}) {
-			return j.Error("IterationStatementFor", ErrInvalidForLoop)
+			return j.Error("IterationStatementFor", ErrInvalidForAwaitLoop)
 		}
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
