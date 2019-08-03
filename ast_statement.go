@@ -810,9 +810,9 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 	if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
 		return j.Error("CaseClause", ErrMissingColon)
 	}
-	g = j.NewGoal()
-	g.AcceptRunWhitespace()
 	for {
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
 		if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "case"}) || tk == (parser.Token{TokenKeyword, "default"}) || tk == (parser.Token{TokenRightBracePunctuator, "}"}) {
 			break
 		}
@@ -823,8 +823,8 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 			return g.Error("CaseClause", err)
 		}
 		g.Score(h)
+		j.Score(g)
 	}
-	j.Score(g)
 	cc.Tokens = j.ToTokens()
 	return nil
 }
