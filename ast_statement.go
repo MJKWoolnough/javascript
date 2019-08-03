@@ -721,7 +721,9 @@ type SwitchStatement struct {
 }
 
 func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "switch"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "switch"}) {
+		return j.Error("SwitchStatement", ErrInvalidSwitchStatement)
+	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
 		return j.Error("SwitchStatement", ErrMissingOpeningParenthesis)
@@ -987,4 +989,5 @@ var (
 	ErrInvalidForLoop                 = errors.New("invalid for loop")
 	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
 	ErrInvalidIfStatement             = errors.New("invalid if statement")
+	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
 )
