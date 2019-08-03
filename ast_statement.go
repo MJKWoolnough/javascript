@@ -814,7 +814,7 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 	for {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
-		if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "case"}) || tk == (parser.Token{TokenKeyword, "default"}) || tk == (parser.Token{TokenRightBracePunctuator, "}"}) {
+		if tk := g.Peek(); tk == (parser.Token{TokenKeyword, "case"}) || tk == (parser.Token{TokenKeyword, "default"}) || tk == (parser.Token{TokenRightBracePunctuator, "}"}) || tk.Type == parser.TokenDone {
 			break
 		}
 		h := g.NewGoal()
