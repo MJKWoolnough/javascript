@@ -6486,3 +6486,137 @@ func TestTryStatement(t *testing.T) {
 		return ts, err
 	})
 }
+
+func TestVariableStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidVariableStatement,
+				Parsing: "VariableStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`var`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "VariableDeclaration",
+					Token:   tk[1],
+				},
+				Parsing: "VariableStatement",
+				Token:   tk[1],
+			}
+		}},
+		{"var\na", func(t *test, tk Tokens) { // 3
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"var\na\n,", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "VariableDeclaration",
+					Token:   tk[5],
+				},
+				Parsing: "VariableStatement",
+				Token:   tk[5],
+			}
+		}},
+		{"var\na\n", func(t *test, tk Tokens) { // 5
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"var\na\n;", func(t *test, tk Tokens) { // 6
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"var\na\nb", func(t *test, tk Tokens) { // 7
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"var\na\n,\nb", func(t *test, tk Tokens) { // 8
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"var\na\n,\nb\n", func(t *test, tk Tokens) { // 9
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"var\na\n,\nb\n;", func(t *test, tk Tokens) { // 10
+			t.Output = VariableStatement{
+				VariableDeclarationList: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[2],
+						Tokens:            tk[2:3],
+					},
+					{
+						BindingIdentifier: &tk[6],
+						Tokens:            tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"var\na b\n;", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "VariableStatement",
+				Token:   tk[3],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var vs VariableStatement
+		err := vs.parse(&t.Tokens, t.Yield, t.Await)
+		return vs, err
+	})
+}
