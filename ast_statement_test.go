@@ -6198,3 +6198,77 @@ func TestCaseClause(t *testing.T) {
 		return cc, err
 	})
 }
+
+func TestWithStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidWithStatement,
+				Parsing: "WithStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`with`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingOpeningParenthesis,
+				Parsing: "WithStatement",
+				Token:   tk[1],
+			}
+		}},
+		{"with\n(\n)", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "WithStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"with\n(\na\nb\n)", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "WithStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"with\n(\na\n)", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[7]),
+						Parsing: "Expression",
+						Token:   tk[7],
+					},
+					Parsing: "Statement",
+					Token:   tk[7],
+				},
+				Parsing: "WithStatement",
+				Token:   tk[7],
+			}
+		}},
+		{"with\n(\na\n)\n;", func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = WithStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Statement: Statement{
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ws WithStatement
+		err := ws.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return ws, err
+	})
+}
