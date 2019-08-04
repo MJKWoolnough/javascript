@@ -6473,6 +6473,13 @@ func TestTryStatement(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
+		{"try\n{\n}\ncatch\n(\na\nb\n)", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingClosingParenthesis,
+				Parsing: "TryStatement",
+				Token:   tk[12],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ts TryStatement
 		err := ts.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
