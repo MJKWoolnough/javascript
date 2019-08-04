@@ -961,7 +961,9 @@ type VariableStatement struct {
 }
 
 func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
-	j.AcceptToken(parser.Token{TokenKeyword, "var"})
+	if !j.AcceptToken(parser.Token{TokenKeyword, "var"}) {
+		return j.Error("VariableStatement", ErrInvalidVariableStatement)
+	}
 	for {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
@@ -997,4 +999,5 @@ var (
 	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
 	ErrInvalidWithStatement           = errors.New("invalid with statement")
 	ErrInvalidTryStatement            = errors.New("invalid try statement")
+	ErrInvalidVariableStatement       = errors.New("invalid variabl statement")
 )
