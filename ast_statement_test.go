@@ -6272,3 +6272,210 @@ func TestWithStatement(t *testing.T) {
 		return ws, err
 	})
 }
+
+func TestTryStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrInvalidTryStatement,
+				Parsing: "TryStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`try`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "Block",
+					Token:   tk[1],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[1],
+			}
+		}},
+		{"try\n{\n}", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingCatchFinally,
+				Parsing: "TryStatement",
+				Token:   tk[5],
+			}
+		}},
+		{"try\n{\n}\ncatch", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "Block",
+					Token:   tk[7],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[7],
+			}
+		}},
+		{"try\n{\n}\ncatch\n{,}", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     assignmentError(tk[9]),
+								Parsing: "Expression",
+								Token:   tk[9],
+							},
+							Parsing: "Statement",
+							Token:   tk[9],
+						},
+						Parsing: "StatementListItem",
+						Token:   tk[9],
+					},
+					Parsing: "Block",
+					Token:   tk[9],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"try\n{\n}\ncatch\n{\n}", func(t *test, tk Tokens) { // 6
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				CatchBlock: &Block{
+					Tokens: tk[8:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\n)", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "TryStatement",
+				Token:   tk[10],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\na\n)\n{\n}", func(t *test, tk Tokens) { // 8
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				CatchParameterBindingIdentifier: &tk[10],
+				CatchBlock: &Block{
+					Tokens: tk[14:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\n{,}\n)", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[11],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[11],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[11],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[10],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\n{}\n)\n{\n}", func(t *test, tk Tokens) { // 10
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				CatchParameterObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[10:12],
+				},
+				CatchBlock: &Block{
+					Tokens: tk[15:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\n[!]\n)", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[11],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[11],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[10],
+			}
+		}},
+		{"try\n{\n}\ncatch\n(\n[]\n)\n{\n}", func(t *test, tk Tokens) { // 12
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				CatchParameterArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[10:12],
+				},
+				CatchBlock: &Block{
+					Tokens: tk[15:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"try\n{\n}\nfinally", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "Block",
+					Token:   tk[7],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[7],
+			}
+		}},
+		{"try\n{\n}\nfinally\n{\n}", func(t *test, tk Tokens) { // 14
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				FinallyBlock: &Block{
+					Tokens: tk[8:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"try\n{\n}\nfinally\n{\n}\ncatch\n{\n}", func(t *test, tk Tokens) { // 15
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				FinallyBlock: &Block{
+					Tokens: tk[8:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"try\n{\n}\ncatch\n{\n}\nfinally\n{\n}", func(t *test, tk Tokens) { // 16
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:5],
+				},
+				CatchBlock: &Block{
+					Tokens: tk[8:11],
+				},
+				FinallyBlock: &Block{
+					Tokens: tk[14:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var ts TryStatement
+		err := ts.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
+		return ts, err
+	})
+}
