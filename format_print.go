@@ -245,7 +245,15 @@ func (b Block) printSource(w io.Writer, v bool) {
 		stmt.printSource(&pp, v)
 	}
 	if len(b.StatementList) > 0 {
-		w.Write(newLine)
+		if v && len(b.Tokens) > 0 {
+			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
+				w.Write(newLine)
+			} else {
+				pp.Write(space)
+			}
+		} else {
+			w.Write(newLine)
+		}
 	}
 	w.Write(blockClose)
 }
