@@ -313,11 +313,13 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 	w.Write(ifOpen)
 	if v {
 		pp := indentPrinter{w}
+		var nl bool
 		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
+			nl = true
 			pp.Write(newLine)
 		}
 		i.Expression.printSource(&pp, true)
-		if len(i.Expression.Tokens) > 0 && i.Expression.Tokens[len(i.Expression.Tokens)-1].Line > i.Expression.Tokens[0].Line {
+		if nl {
 			w.Write(newLine)
 		}
 	} else {
