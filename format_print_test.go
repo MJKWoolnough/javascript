@@ -19,150 +19,157 @@ func (s *state) Flag(c int) bool     { return c == '+' == s.Verbose }
 func TestPrintingScript(t *testing.T) {
 	var st state
 	for n, test := range [...]struct {
-		Input, Output string
-		Verbose       bool
+		Input, SimpleOutput, VerboseOutput string
 	}{
 		{ // 1
-			Input:  `1;`,
-			Output: `1;`,
+			"1;",
+			"1;",
+			"1;",
 		},
 		{ // 2
-			Input:  `1;2;`,
-			Output: "1;\n\n2;",
+			"1",
+			"1;",
+			"1;",
 		},
 		{ // 3
-			Input: `function	a	(  ){   }`,
-			Output: `function a() {}`,
-		},
-		{ // 3
-			Input:  "const a = function(){\n};",
-			Output: "const a = function () {};",
+			"1;2;",
+			"1;\n\n2;",
+			"1;\n\n2;",
 		},
 		{ // 4
-			Input:  "function a(){}function b(){}",
-			Output: "function a() {}\n\nfunction b() {}",
+			"1\n2;",
+			"1;\n\n2;",
+			"1;\n\n2;",
 		},
 		{ // 5
-			Input: `class	a	extends	b	{c(d){alert(1);}e(f,
-g){alert(2);}}`,
-			Output: `class a extends b {
-	c(d) {
-		alert(1);
-	}
-	e(f, g) {
-		alert(2);
-	}
-}`,
+			"continue",
+			"continue;",
+			"continue;",
 		},
 		{ // 6
-			Input: `a.Method(b=>1);c.Map((d,e)=>{f(e, d);});`,
-			Output: `a.Method(b => 1);
-
-c.Map((d, e) => {
-	f(e, d);
-});`,
+			"break",
+			"break;",
+			"break;",
 		},
 		{ // 7
-			Input:  "var a = b&c==d||e^f==g&&h?i+j:k**l, m = n();",
-			Output: "var a = b & c == d || e ^ f == g && h ? i + j : k**l, m = n();",
+			"break a",
+			"break a;",
+			"break a;",
 		},
 		{ // 8
-			Input:  "var a = b&c==d||e^f==g&&h?i+j:k**l,\nm = n();",
-			Output: "var a = b & c == d || e ^ f == g && h ? i + j : k**l, m = n();",
+			"() => {return}",
+			"() => {\n	return;\n};",
+			"() => { return; };",
 		},
 		{ // 9
-			Input:   "var a = b&c==d||e^f==g&&h?i+j:k**l,\nm = n();",
-			Output:  "var a = b & c == d || e ^ f == g && h ? i + j : k**l,\nm = n();",
-			Verbose: true,
+			"() => {return a}",
+			"() => {\n	return a;\n};",
+			"() => { return a; };",
 		},
 		{ // 10
-			Input: `for(
-let a = 0;
-
-a < 10;
-
-a++
-) {
-	console.log(a);
-}`,
-			Output: `for (let a = 0; a < 10; a++) {
-	console.log(a);
-}`,
+			"throw a",
+			"throw a;",
+			"throw a;",
 		},
 		{ // 11
-			Input: `for(
-let a = 0;
-
-a < 10;
-
-a++
-) {
-	console.log(a);
-}`,
-			Output: `for (
-	let a = 0;
-	a < 10;
-	a++
-) {
-	console.log(a);
-}`,
-			Verbose: true,
+			"{\n1\n}",
+			"{\n	1;\n}",
+			"{\n	1;\n}",
 		},
 		{ // 12
-			Input:  `for (a in b) {}`,
-			Output: `for (a in b) {}`,
+			"{\n1\n2\n}",
+			"{\n	1;\n	2;\n}",
+			"{\n	1;\n	2;\n}",
 		},
 		{ // 13
-			Input:  `for (a of b) {}`,
-			Output: `for (a of b) {}`,
+			"{1;}",
+			"{\n	1;\n}",
+			"{ 1; }",
 		},
 		{ // 14
-			Input:  `a = {b:c,d:e};`,
-			Output: `a = {b: c, d: e};`,
+			"{1;2;}",
+			"{\n	1;\n	2;\n}",
+			"{ 1; 2; }",
 		},
 		{ // 15
-			Input:  `var a = {b:c,d:e};`,
-			Output: `var a = {b: c, d: e};`,
+			"var\na;",
+			"var a;",
+			"var a;",
 		},
 		{ // 16
-			Input:  `let a = {b:c,d:e};`,
-			Output: `let a = {b: c, d: e};`,
+			"var\na\n=\n1;",
+			"var a = 1;",
+			"var a = 1;",
 		},
 		{ // 17
-			Input:  `const a = {b:c,d:e};`,
-			Output: `const a = {b: c, d: e};`,
+			"var\na\n=\n1\n,\nb\n=\n2",
+			"var a = 1, b = 2;",
+			"var a = 1,\nb = 2;",
 		},
 		{ // 18
-			Input:  `a = [b,c];`,
-			Output: `a = [b, c];`,
+			"var a=1,b=2",
+			"var a = 1, b = 2;",
+			"var a = 1, b = 2;",
 		},
 		{ // 19
-			Input:  `var a = [b,c];`,
-			Output: `var a = [b, c];`,
+			"a,b,c,d",
+			"a, b, c, d;",
+			"a, b, c, d;",
 		},
 		{ // 20
-			Input:  `let a = [b,c];`,
-			Output: `let a = [b, c];`,
+			"a\n,\nb\n,\nc\n,\nd",
+			"a, b, c, d;",
+			"a,\nb,\nc,\nd;",
 		},
 		{ // 21
-			Input:  `const a = [b,c];`,
-			Output: `const a = [b, c];`,
+			"if(a){}",
+			"if (a) {}",
+			"if (a) {}",
 		},
 		{ // 22
-			Input:  `[a,b,...c]=[d,e,f,g];`,
-			Output: `[a, b, ...c] = [d, e, f, g];`,
+			"if\n(\na\n)\n{\n}",
+			"if (a) {}",
+			"if (\n	a\n) {}",
 		},
 		{ // 23
-			Input:  `var [a,b,...c]=[d,e,f,g];`,
-			Output: `var [a, b, ...c] = [d, e, f, g];`,
+			"if(a)b; else c",
+			"if (a) b; else c;",
+			"if (a) b; else c;",
 		},
 		{ // 24
-			Input:  `let [a,b,...c]=[d,e,f,g];`,
-			Output: `let [a, b, ...c] = [d, e, f, g];`,
+			"if\n(\na\n)\nb\nelse\nc",
+			"if (a) b; else c;",
+			"if (\n	a\n) b; else c;",
 		},
 		{ // 25
-			Input:  `const [a,b,...c]=[d,e,f,g];`,
-			Output: `const [a, b, ...c] = [d, e, f, g];`,
+			"if(a){b}else{c}",
+			"if (a) {\n	b;\n} else {\n	c;\n}",
+			"if (a) { b; } else { c; }",
+		},
+		{ // 26
+			"if\n(\na\n)\n{\nb\n}\nelse\n{\nc\n}",
+			"if (a) {\n	b;\n} else {\n	c;\n}",
+			"if (\n	a\n) {\n	b;\n} else {\n	c;\n}",
+		},
+		{ // 27
+			"do\n	a\nwhile(1)",
+			"do a; while (1);",
+			"do a; while (1);",
+		},
+		{ // 28
+			"do{}while(1)",
+			"do {} while (1);",
+			"do {} while (1);",
+		},
+		{ // 27
+			"do\na\nwhile\n(\n1\n)",
+			"do a; while (1);",
+			"do a; while (1);",
+		},
+		{ // 28
+			"do\n{\n}\nwhile\n(\n1\n)",
+			"do {} while (1);",
+			"do {} while (1);",
 		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
@@ -170,11 +177,17 @@ a++
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 			continue
 		}
+		st.Verbose = false
 		st.Buffer = st.Buffer[:0]
-		st.Verbose = test.Verbose
 		s.Format(&st, 's')
-		if str := string(st.Buffer); str != test.Output {
-			t.Errorf("test %d: expecting %q, got %q\n%s", n+1, test.Output, str, s)
+		if str := string(st.Buffer); str != test.SimpleOutput {
+			t.Errorf("test %d.1: expecting %q, got %q\n%s", n+1, test.SimpleOutput, str, s)
+		}
+		st.Verbose = true
+		st.Buffer = st.Buffer[:0]
+		s.Format(&st, 's')
+		if str := string(st.Buffer); str != test.VerboseOutput {
+			t.Errorf("test %d.2: expecting %q, got %q\n%s", n+1, test.VerboseOutput, str, s)
 		}
 	}
 }
