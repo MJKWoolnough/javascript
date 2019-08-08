@@ -339,11 +339,13 @@ func (i IterationStatementDo) printSource(w io.Writer, v bool) {
 	w.Write(doWhileOpen)
 	if v {
 		pp := indentPrinter{w}
-		if len(i.Statement.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Statement.Tokens[len(i.Statement.Tokens)-1].Line {
+		var nl bool
+		if len(i.Expression.Tokens) > 0 && len(i.Tokens) > 0 && i.Expression.Tokens[0].Line < i.Tokens[len(i.Tokens)-1].Line {
+			nl = true
 			pp.Write(newLine)
 		}
 		i.Expression.printSource(&pp, true)
-		if len(i.Expression.Tokens) > 0 && i.Expression.Tokens[len(i.Expression.Tokens)-1].Line > i.Expression.Tokens[0].Line {
+		if nl {
 			w.Write(newLine)
 		}
 	} else {
