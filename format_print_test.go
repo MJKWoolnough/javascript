@@ -171,6 +171,16 @@ func TestPrintingScript(t *testing.T) {
 			"do {} while (1);",
 			"do {} while (\n\t1\n);",
 		},
+		{ // 31
+			"while(a)b",
+			"while (a) b;",
+			"while (a) b;",
+		},
+		{ // 32
+			"while\n(\na\n)\nb\n;",
+			"while (a) b;",
+			"while (\n	a\n) b;",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
