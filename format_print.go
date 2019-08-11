@@ -435,6 +435,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			}
 			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
 		}
+		w.Write(varOpen)
 		LexicalBinding(i.InitVar[0]).printSource(&pp, v)
 		for _, vd := range i.InitVar[1:] {
 			if v && len(vd.Tokens) > 0 {
@@ -448,6 +449,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			}
 			LexicalBinding(vd).printSource(&pp, v)
 		}
+		w.Write(semiColon)
 	case ForNormalLexicalDeclaration:
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitLexical.Tokens[0].Line > lastLine {
