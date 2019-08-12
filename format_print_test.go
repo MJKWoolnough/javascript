@@ -181,6 +181,126 @@ func TestPrintingScript(t *testing.T) {
 			"while (a) b;",
 			"while (\n	a\n) b;",
 		},
+		{ // 33
+			"for\n(\n;\n;\n)\na",
+			"for (;;) a;",
+			"for (;;) a;",
+		},
+		{ // 34
+			"for\n(a;;) b",
+			"for (a;;) b;",
+			"for (\n\ta;;\n) b;",
+		},
+		{ // 35
+			"for(var a=b;c<d;e++){}",
+			"for (var a = b; c < d; e++) {}",
+			"for (var a = b; c < d; e++) {}",
+		},
+		{ // 36
+			"for(\nvar a=b;\nc<d;\ne++){}",
+			"for (var a = b; c < d; e++) {}",
+			"for (\n	var a = b;\n	c < d;\n	e++\n) {}",
+		},
+		{ // 37
+			"for(let a=b;c<d;e++){}",
+			"for (let a = b; c < d; e++) {}",
+			"for (let a = b; c < d; e++) {}",
+		},
+		{ // 38
+			"for(\nlet a=b;\nc<d;\ne++){}",
+			"for (let a = b; c < d; e++) {}",
+			"for (\n	let a = b;\n	c < d;\n	e++\n) {}",
+		},
+		{ // 39
+			"for(const a=b;c<d;e++){}",
+			"for (const a = b; c < d; e++) {}",
+			"for (const a = b; c < d; e++) {}",
+		},
+		{ // 40
+			"for(\nconst a=b;\nc<d;\ne++){}",
+			"for (const a = b; c < d; e++) {}",
+			"for (\n	const a = b;\n	c < d;\n	e++\n) {}",
+		},
+		{ // 41
+			"for(a in b){}",
+			"for (a in b) {}",
+			"for (a in b) {}",
+		},
+		{ // 42
+			"for\n(a\nin\nb\n)\n{}",
+			"for (a in b) {}",
+			"for (\n	a in b\n) {}",
+		},
+		{ // 43
+			"for(var a in b){}",
+			"for (var a in b) {}",
+			"for (var a in b) {}",
+		},
+		{ // 44
+			"for\n(var\na\nin\nb\n)\n{}",
+			"for (var a in b) {}",
+			"for (var a in b) {}",
+		},
+		{ // 45
+			"for(let a in b){}",
+			"for (let a in b) {}",
+			"for (let a in b) {}",
+		},
+		{ // 46
+			"for\n(let\na\nin\nb\n)\n{}",
+			"for (let a in b) {}",
+			"for (let a in b) {}",
+		},
+		{ // 47
+			"for(const a in b){}",
+			"for (const a in b) {}",
+			"for (const a in b) {}",
+		},
+		{ // 48
+			"for\n(const\na\nin\nb\n)\n{}",
+			"for (const a in b) {}",
+			"for (const a in b) {}",
+		},
+		{ // 49
+			"for(a of b){}",
+			"for (a of b) {}",
+			"for (a of b) {}",
+		},
+		{ // 50
+			"for\n(a\nof\nb\n)\n{}",
+			"for (a of b) {}",
+			"for (\n	a of b\n) {}",
+		},
+		{ // 51
+			"for(var a of b){}",
+			"for (var a of b) {}",
+			"for (var a of b) {}",
+		},
+		{ // 52
+			"for\n(var\na\nof\nb\n)\n{}",
+			"for (var a of b) {}",
+			"for (var a of b) {}",
+		},
+		{ // 53
+			"for(let a of b){}",
+			"for (let a of b) {}",
+			"for (let a of b) {}",
+		},
+		{ // 54
+			"for\n(let\na\nof\nb\n)\n{}",
+			"for (let a of b) {}",
+			"for (let a of b) {}",
+		},
+		{ // 55
+			"for(const a of b){}",
+			"for (const a of b) {}",
+			"for (const a of b) {}",
+		},
+		{ // 56
+			"for\n(const\na\nof\nb\n)\n{}",
+			"for (const a of b) {}",
+			"for (const a of b) {}",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
