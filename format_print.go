@@ -559,8 +559,12 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 		s.Expression.printSource(w, false)
 	}
 	w.Write(switchClose)
+	if len(s.CaseClauses) > 0 || s.DefaultClause != nil || len(s.PostDefaultCaseClauses) > 0 {
+		w.Write(newLine)
+	}
 	for _, c := range s.CaseClauses {
 		c.printSource(w, v)
+		w.Write(newLine)
 	}
 	if s.DefaultClause != nil {
 		w.Write(defaultCase)
@@ -572,6 +576,7 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 	}
 	for _, c := range s.PostDefaultCaseClauses {
 		c.printSource(w, v)
+		w.Write(newLine)
 	}
 	w.Write(blockClose)
 }
