@@ -301,6 +301,26 @@ func TestPrintingScript(t *testing.T) {
 			"for (const a of b) {}",
 			"for (const a of b) {}",
 		},
+		{ // 57
+			"switch(a) {}",
+			"switch (a) {}",
+			"switch (a) {}",
+		},
+		{ // 58
+			"switch\n(\na\n)\n{\n}",
+			"switch (a) {}",
+			"switch (\n	a\n) {}",
+		},
+		{ // 59
+			"switch(a){case b:case c:default:case d:case e:}",
+			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
+			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
+		},
+		{ // 59
+			"switch\n\n(\n\na\n\n)\n\n{\n\ncase\n\nb\n\n:\n\ncase\n\nc\n\n:\n\ndefault\n\n:\n\ncase\n\nd\n\n:\n\ncase\n\ne\n\n:\n\n}",
+			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
+			"switch (\n	a\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
