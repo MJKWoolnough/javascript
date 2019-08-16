@@ -585,11 +585,13 @@ func (ws WithStatement) printSource(w io.Writer, v bool) {
 	w.Write(withOpen)
 	if v {
 		pp := indentPrinter{w}
+		var nl bool
 		if len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line {
+			nl = true
 			pp.Write(newLine)
 		}
 		ws.Expression.printSource(&pp, true)
-		if len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[len(ws.Expression.Tokens)-1].Line > ws.Expression.Tokens[0].Line {
+		if nl {
 			w.Write(newLine)
 		}
 	} else {
