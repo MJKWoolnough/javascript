@@ -321,6 +321,16 @@ func TestPrintingScript(t *testing.T) {
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 			"switch (\n	a\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
+		{ // 60
+			"with(a)b",
+			"with (a) b;",
+			"with (a) b;",
+		},
+		{ // 60
+			"with\n(\na\n)\nb",
+			"with (a) b;",
+			"with (\n	a\n) b;",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
