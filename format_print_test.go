@@ -302,31 +302,41 @@ func TestPrintingScript(t *testing.T) {
 			"for (const a of b) {}",
 		},
 		{ // 57
+			"async () => {\nfor await(a of b) {}\n}",
+			"async () => {\n	for await (a of b) {}\n};",
+			"async () => {\n	for await (a of b) {}\n};",
+		},
+		{ // 58
+			"async () => {\nfor\nawait(a\nof\nb)\n{}\n}",
+			"async () => {\n	for await (a of b) {}\n};",
+			"async () => {\n	for await (\n		a of b\n	) {}\n};",
+		},
+		{ // 59
 			"switch(a) {}",
 			"switch (a) {}",
 			"switch (a) {}",
 		},
-		{ // 58
+		{ // 60
 			"switch\n(\na\n)\n{\n}",
 			"switch (a) {}",
 			"switch (\n	a\n) {}",
 		},
-		{ // 59
+		{ // 61
 			"switch(a){case b:case c:default:case d:case e:}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
-		{ // 59
+		{ // 62
 			"switch\n\n(\n\na\n\n)\n\n{\n\ncase\n\nb\n\n:\n\ncase\n\nc\n\n:\n\ndefault\n\n:\n\ncase\n\nd\n\n:\n\ncase\n\ne\n\n:\n\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 			"switch (\n	a\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
-		{ // 60
+		{ // 63
 			"with(a)b",
 			"with (a) b;",
 			"with (a) b;",
 		},
-		{ // 60
+		{ // 64
 			"with\n(\na\n)\nb",
 			"with (a) b;",
 			"with (\n	a\n) b;",
