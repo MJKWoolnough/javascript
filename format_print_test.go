@@ -341,6 +341,106 @@ func TestPrintingScript(t *testing.T) {
 			"with (a) b;",
 			"with (\n	a\n) b;",
 		},
+		{ // 65
+			"function a(){}",
+			"function a() {}",
+			"function a() {}",
+		},
+		{ // 66
+			"function a(b){}",
+			"function a(b) {}",
+			"function a(b) {}",
+		},
+		{ // 67
+			"function a(b,c){}",
+			"function a(b, c) {}",
+			"function a(b, c) {}",
+		},
+		{ // 68
+			"function\na(\nb\n,\nc\n){}",
+			"function a(b, c) {}",
+			"function a(b, c) {}",
+		},
+		{ // 69
+			"function*a(){}",
+			"function* a() {}",
+			"function* a() {}",
+		},
+		{ // 70
+			"function* a(b){}",
+			"function* a(b) {}",
+			"function* a(b) {}",
+		},
+		{ // 71
+			"function *a(b,c){}",
+			"function* a(b, c) {}",
+			"function* a(b, c) {}",
+		},
+		{ // 72
+			"function\n*a(\nb\n,\nc\n){}",
+			"function* a(b, c) {}",
+			"function* a(b, c) {}",
+		},
+		{ // 73
+			"async function a(){}",
+			"async function a() {}",
+			"async function a() {}",
+		},
+		{ // 74
+			"async function a(b){}",
+			"async function a(b) {}",
+			"async function a(b) {}",
+		},
+		{ // 75
+			"async function a(b,c){}",
+			"async function a(b, c) {}",
+			"async function a(b, c) {}",
+		},
+		{ // 76
+			"async function\na(\nb\n,\nc\n){}",
+			"async function a(b, c) {}",
+			"async function a(b, c) {}",
+		},
+		{ // 77
+			"async function*a(){}",
+			"async function* a() {}",
+			"async function* a() {}",
+		},
+		{ // 78
+			"async function* a(b){}",
+			"async function* a(b) {}",
+			"async function* a(b) {}",
+		},
+		{ // 79
+			"async function *a(b,c){}",
+			"async function* a(b, c) {}",
+			"async function* a(b, c) {}",
+		},
+		{ // 80
+			"async function\n*a(\nb\n,\nc\n){}",
+			"async function* a(b, c) {}",
+			"async function* a(b, c) {}",
+		},
+		{ // 81
+			"a = function(){}",
+			"a = function () {};",
+			"a = function () {};",
+		},
+		{ // 82
+			"a=function(b){}",
+			"a = function (b) {};",
+			"a = function (b) {};",
+		},
+		{ // 83
+			"a=function *(b,c){}",
+			"a = function* (b, c) {};",
+			"a = function* (b, c) {};",
+		},
+		{ // 84
+			"a=function\n(\nb\n,\nc\n){}",
+			"a = function (b, c) {};",
+			"a = function (b, c) {};",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
