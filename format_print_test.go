@@ -441,6 +441,66 @@ func TestPrintingScript(t *testing.T) {
 			"a = function (b, c) {};",
 			"a = function (b, c) {};",
 		},
+		{ // 85
+			"try{}catch{}",
+			"try {} catch {}",
+			"try {} catch {}",
+		},
+		{ // 86
+			"try\n{\n}\ncatch\n{\n}",
+			"try {} catch {}",
+			"try {} catch {}",
+		},
+		{ // 87
+			"try{}catch(a){}",
+			"try {} catch (a) {}",
+			"try {} catch (a) {}",
+		},
+		{ // 88
+			"try\n{\n}\ncatch\n(\na\n)\n{\n}",
+			"try {} catch (a) {}",
+			"try {} catch (a) {}",
+		},
+		{ // 89
+			"try{}catch({}){}",
+			"try {} catch ({}) {}",
+			"try {} catch ({}) {}",
+		},
+		{ // 90
+			"try{}catch([]){}",
+			"try {} catch ([]) {}",
+			"try {} catch ([]) {}",
+		},
+		{ // 91
+			"try{}finally{}",
+			"try {} finally {}",
+			"try {} finally {}",
+		},
+		{ // 92
+			"try\n{\n}\nfinally\n{\n}",
+			"try {} finally {}",
+			"try {} finally {}",
+		},
+		{ // 93
+			"try{}catch{}finally{}",
+			"try {} catch {} finally {}",
+			"try {} catch {} finally {}",
+		},
+		{ // 94
+			"try\n{\n}\ncatch\n{\n}\nfinally\n{\n}",
+			"try {} catch {} finally {}",
+			"try {} catch {} finally {}",
+		},
+		{ // 95
+			"try{}catch(a){}finally{}",
+			"try {} catch (a) {} finally {}",
+			"try {} catch (a) {} finally {}",
+		},
+		{ // 96
+			"try\n{\n}\ncatch\n(\na\n)\n{\n}\nfinally\n{\n}",
+			"try {} catch (a) {} finally {}",
+			"try {} catch (a) {} finally {}",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
