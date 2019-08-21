@@ -501,6 +501,41 @@ func TestPrintingScript(t *testing.T) {
 			"try {} catch (a) {} finally {}",
 			"try {} catch (a) {} finally {}",
 		},
+		{ // 97
+			"class a{}",
+			"class a {}",
+			"class a {}",
+		},
+		{ // 98
+			"class\na\n{\n}\n",
+			"class a {}",
+			"class a {}",
+		},
+		{ // 99
+			"class a extends b {}",
+			"class a extends b {}",
+			"class a extends b {}",
+		},
+		{ // 100
+			"class\na\nextends\nb\n{\n}",
+			"class a extends b {}",
+			"class a extends b {}",
+		},
+		{ // 101
+			"a = class{}",
+			"a = class {};",
+			"a = class {};",
+		},
+		{ // 102
+			"a\n=\nclass\nb\n{\n}",
+			"a = class b {};",
+			"a = class b {};",
+		},
+		{ // 103
+			"a\n=\nclass\nextends\nb\n{\n}",
+			"a = class extends b {};",
+			"a = class extends b {};",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
