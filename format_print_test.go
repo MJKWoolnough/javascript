@@ -536,6 +536,36 @@ func TestPrintingScript(t *testing.T) {
 			"a = class extends b {};",
 			"a = class extends b {};",
 		},
+		{ // 104
+			"let a = 1",
+			"let a = 1;",
+			"let a = 1;",
+		},
+		{ // 105
+			"let\na\n=\n1\n",
+			"let a = 1;",
+			"let a = 1;",
+		},
+		{ // 106
+			"let a=1,b=2,c=3",
+			"let a = 1, b = 2, c = 3;",
+			"let a = 1,\nb = 2,\nc = 3;",
+		},
+		{ // 107
+			"const a = 1",
+			"const a = 1;",
+			"const a = 1;",
+		},
+		{ // 108
+			"const\na\n=\n1\n",
+			"const a = 1;",
+			"const a = 1;",
+		},
+		{ // 109
+			"const a=1,b=2,c=3",
+			"const a = 1, b = 2, c = 3;",
+			"const a = 1,\nb = 2,\nc = 3;",
+		},
 	} {
 		s, err := ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
