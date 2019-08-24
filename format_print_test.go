@@ -589,27 +589,35 @@ func TestPrintingScript(t *testing.T) {
 	}
 }
 
-func TestModulePrinting(t *testing.T) {
+func TestPrintingModule(t *testing.T) {
 	var st state
 	for n, test := range [...]struct {
-		Input, Output string
-		Verbose       bool
+		Input, SimpleOutput, VerboseOutput string
 	}{
 		{ // 1
-			Input:  `1;`,
-			Output: `1;`,
+			"1",
+			"1;",
+			"1;",
 		},
 	} {
-		m, err := ParseModule(parser.NewStringTokeniser(test.Input))
-		if err != nil {
-			t.Errorf("test %d: unexpected error: %s", n+1, err)
-			continue
-		}
-		st.Buffer = st.Buffer[:0]
-		st.Verbose = test.Verbose
-		m.Format(&st, 's')
-		if str := string(st.Buffer); str != test.Output {
-			t.Errorf("test %d: expecting %q, got %q\n%s", n+1, test.Output, str, m)
+		for m, in := range [2]string{test.Input, test.VerboseOutput} {
+			s, err := ParseModule(parser.NewStringTokeniser(in))
+			if err != nil {
+				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
+				continue
+			}
+			st.Verbose = false
+			st.Buffer = st.Buffer[:0]
+			s.Format(&st, 's')
+			if str := string(st.Buffer); str != test.SimpleOutput {
+				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
+			}
+			st.Verbose = true
+			st.Buffer = st.Buffer[:0]
+			s.Format(&st, 's')
+			if str := string(st.Buffer); str != test.VerboseOutput {
+				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
+			}
 		}
 	}
 }
