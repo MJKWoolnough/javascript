@@ -566,6 +566,26 @@ func TestPrintingScript(t *testing.T) {
 			"const a = 1, b = 2, c = 3;",
 			"const a = 1,\nb = 2,\nc = 3;",
 		},
+		{ // 110
+			"let a",
+			"let a;",
+			"let a;",
+		},
+		{ // 111
+			"let\na\n,\nb\n=\n1\n,\nc\n",
+			"let a, b = 1, c;",
+			"let a,\nb = 1,\nc;",
+		},
+		{ // 112
+			"const a",
+			"const a;",
+			"const a;",
+		},
+		{ // 113
+			"const\na\n,\nb\n=\n1\n,\nc\n",
+			"const a, b = 1, c;",
+			"const a,\nb = 1,\nc;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
