@@ -606,6 +606,81 @@ func TestPrintingScript(t *testing.T) {
 			"const {a} = 1;",
 			"const {a} = 1;",
 		},
+		{ // 118
+			"function* a() {yield a}",
+			"function* a() {\n	yield a;\n}",
+			"function* a() { yield a; }",
+		},
+		{ // 119
+			"() => {}",
+			"() => {};",
+			"() => {};",
+		},
+		{ // 120
+			"a=b",
+			"a = b;",
+			"a = b;",
+		},
+		{ // 121
+			"a/=b",
+			"a /= b;",
+			"a /= b;",
+		},
+		{ // 122
+			"a%=b",
+			"a %= b;",
+			"a %= b;",
+		},
+		{ // 123
+			"a+=b",
+			"a += b;",
+			"a += b;",
+		},
+		{ // 124
+			"a-=b",
+			"a -= b;",
+			"a -= b;",
+		},
+		{ // 125
+			"a<<=b",
+			"a <<= b;",
+			"a <<= b;",
+		},
+		{ // 126
+			"a>>=b",
+			"a >>= b;",
+			"a >>= b;",
+		},
+		{ // 127
+			"a>>>=b",
+			"a >>>= b;",
+			"a >>>= b;",
+		},
+		{ // 128
+			"a&=b",
+			"a &= b;",
+			"a &= b;",
+		},
+		{ // 129
+			"a^=b",
+			"a ^= b;",
+			"a ^= b;",
+		},
+		{ // 130
+			"a|=b",
+			"a |= b;",
+			"a |= b;",
+		},
+		{ // 131
+			"a**=b",
+			"a **= b;",
+			"a **= b;",
+		},
+		{ // 132
+			"a?b:c",
+			"a ? b : c;",
+			"a ? b : c;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
