@@ -701,12 +701,12 @@ func TestPrintingScript(t *testing.T) {
 			"var {a, b, ...c} = 1;",
 			"var {a, b, ...c} = 1;",
 		},
-		{ // 135
+		{ // 136
 			"var [a] = 1",
 			"var [a] = 1;",
 			"var [a] = 1;",
 		},
-		{ // 136
+		{ // 137
 			"var [ a , b, ...c ] = 1",
 			"var [a, b, ...c] = 1;",
 			"var [a, b, ...c] = 1;",
