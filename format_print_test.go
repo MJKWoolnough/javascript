@@ -701,22 +701,22 @@ func TestPrintingScript(t *testing.T) {
 			"var {a, b, ...c} = 1;",
 			"var {a, b, ...c} = 1;",
 		},
-		{ // 136
+		{ // 137
 			"var [a] = 1",
 			"var [a] = 1;",
 			"var [a] = 1;",
 		},
-		{ // 137
+		{ // 138
 			"var [ a , b, ...c ] = 1",
 			"var [a, b, ...c] = 1;",
 			"var [a, b, ...c] = 1;",
 		},
-		{ // 138
+		{ // 139
 			"switch (a) {case 1:}",
 			"switch (a) {\ncase 1:\n}",
 			"switch (a) {\ncase 1:\n}",
 		},
-		{ // 139
+		{ // 140
 			"switch (a) {case 1:b;c;d}",
 			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
 			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
