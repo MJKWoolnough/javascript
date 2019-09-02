@@ -721,6 +721,21 @@ func TestPrintingScript(t *testing.T) {
 			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
 			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
 		},
+		{ // 141
+			"function a(b){}",
+			"function a(b) {}",
+			"function a(b) {}",
+		},
+		{ // 142
+			"function\na(\nb\n)\n{\n}\n",
+			"function a(b) {}",
+			"function a(b) {}",
+		},
+		{ // 143
+			"function a(b,c,...d){}",
+			"function a(b, c, ...d) {}",
+			"function a(b, c, ...d) {}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
