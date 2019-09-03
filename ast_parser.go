@@ -191,6 +191,10 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
 }
 
+func (e Error) Unwrap() error {
+	return e.Err
+}
+
 func (j *jsParser) Error(parsingFunc string, err error) error {
 	return Error{
 		Err:     err,
