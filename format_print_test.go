@@ -856,6 +856,16 @@ func TestPrintingScript(t *testing.T) {
 			"async (a, b) => {};",
 			"async (a, b) => {};",
 		},
+		{ // 168
+			"new a",
+			"new a;",
+			"new a;",
+		},
+		{ // 169
+			"new\nnew \n new	new\na",
+			"new new new new a;",
+			"new new new new a;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
