@@ -796,6 +796,21 @@ func TestPrintingScript(t *testing.T) {
 			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
 			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
 		},
+		{ // 156
+			"a",
+			"a;",
+			"a;",
+		},
+		{ // 157
+			"a?b:c",
+			"a ? b : c;",
+			"a ? b : c;",
+		},
+		{ // 158
+			"a\n?\nb\n:\nc\n",
+			"a ? b : c;",
+			"a ? b : c;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
