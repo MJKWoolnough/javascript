@@ -916,6 +916,16 @@ func TestPrintingScript(t *testing.T) {
 			"a()`b`;",
 			"a()`b`;",
 		},
+		{ // 180
+			"var{a}=b",
+			"var {a} = b;",
+			"var {a} = b;",
+		},
+		{ // 181
+			"var\n{\na\n:\nb\n}\n=\nc\n",
+			"var {a: b} = c;",
+			"var {a: b} = c;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
