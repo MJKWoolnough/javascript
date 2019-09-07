@@ -736,6 +736,66 @@ func TestPrintingScript(t *testing.T) {
 			"function a(b, c, ...d) {}",
 			"function a(b, c, ...d) {}",
 		},
+		{ // 144
+			"class\na{b(){}c\n(){}}",
+			"class a {\n	b() {}\n	c() {}\n}",
+			"class a {\n	b() {}\n	c() {}\n}",
+		},
+		{ // 145
+			"class\na{*b(){}\n*\nc\n(){}}",
+			"class a {\n	* b() {}\n	* c() {}\n}",
+			"class a {\n	* b() {}\n	* c() {}\n}",
+		},
+		{ // 146
+			"class\na{async b(){}\nasync c\n(){}}",
+			"class a {\n	async b() {}\n	async c() {}\n}",
+			"class a {\n	async b() {}\n	async c() {}\n}",
+		},
+		{ // 147
+			"class\na{async *b(){}\nasync *\nc\n(){}}",
+			"class a {\n	async * b() {}\n	async * c() {}\n}",
+			"class a {\n	async * b() {}\n	async * c() {}\n}",
+		},
+		{ // 148
+			"class\na{get\nb(){}\nget c\n(){}}",
+			"class a {\n	get b() {}\n	get c() {}\n}",
+			"class a {\n	get b() {}\n	get c() {}\n}",
+		},
+		{ // 149
+			"class\na{set\nb(c){}\nset d\n(e){}}",
+			"class a {\n	set b(c) {}\n	set d(e) {}\n}",
+			"class a {\n	set b(c) {}\n	set d(e) {}\n}",
+		},
+		{ // 150
+			"class\na{static\nb(){}\nstatic c\n(){}}",
+			"class a {\n	static b() {}\n	static c() {}\n}",
+			"class a {\n	static b() {}\n	static c() {}\n}",
+		},
+		{ // 151
+			"class\na{static\n*b(){}\nstatic *\nc\n(){}}",
+			"class a {\n	static * b() {}\n	static * c() {}\n}",
+			"class a {\n	static * b() {}\n	static * c() {}\n}",
+		},
+		{ // 152
+			"class\na{static\nasync b(){}\nstatic async c\n(){}}",
+			"class a {\n	static async b() {}\n	static async c() {}\n}",
+			"class a {\n	static async b() {}\n	static async c() {}\n}",
+		},
+		{ // 153
+			"class\na{static\nasync *b(){}\nstatic async *\nc(){}}",
+			"class a {\n	static async * b() {}\n	static async * c() {}\n}",
+			"class a {\n	static async * b() {}\n	static async * c() {}\n}",
+		},
+		{ // 154
+			"class\na{static\nget\nb(){}static get c\n(){}}",
+			"class a {\n	static get b() {}\n	static get c() {}\n}",
+			"class a {\n	static get b() {}\n	static get c() {}\n}",
+		},
+		{ // 155
+			"class\na{static\nset\nb(c){}static set d\n(e){}}",
+			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
+			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
