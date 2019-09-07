@@ -72,8 +72,8 @@ var (
 	methodStaticGenerator        = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', '*', ' '}
 	methodStaticGet              = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 'g', 'e', 't', ' '}
 	methodStaticSet              = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 's', 'e', 't', ' '}
-	methodGet                    = methodStaticGet[8:]
-	methodSet                    = methodStaticSet[8:]
+	methodGet                    = methodStaticGet[7:]
+	methodSet                    = methodStaticSet[7:]
 	arrow                        = []byte{'=', '>', ' '}
 	news                         = []byte{'n', 'e', 'w', ' '}
 	super                        = []byte{'s', 'u', 'p', 'e', 'r'}
