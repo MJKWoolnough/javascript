@@ -866,6 +866,56 @@ func TestPrintingScript(t *testing.T) {
 			"new new new new a;",
 			"new new new new a;",
 		},
+		{ // 170
+			"super()",
+			"super();",
+			"super();",
+		},
+		{ // 171
+			"super\n()",
+			"super();",
+			"super();",
+		},
+		{ // 172
+			"import(a)",
+			"import(a);",
+			"import(a);",
+		},
+		{ // 173
+			"import\n(a)",
+			"import(a);",
+			"import(a);",
+		},
+		{ // 174
+			"a()",
+			"a();",
+			"a();",
+		},
+		{ // 175
+			"a\n()",
+			"a();",
+			"a();",
+		},
+		{ // 176
+			"a\n()\n()",
+			"a()();",
+			"a()();",
+		},
+		{ // 177
+			"a()[b]",
+			"a()[b];",
+			"a()[b];",
+		},
+		{ // 178
+			"a().b",
+			"a().b;",
+			"a().b;",
+		},
+		{ // 179
+			"a()`b`",
+			"a()`b`;",
+			"a()`b`;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
