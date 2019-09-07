@@ -885,6 +885,8 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
 		w.Write(space)
+	} else if a.FormalParameters != nil {
+		a.FormalParameters.printSource(w, v)
 	} else {
 		w.Write(parenOpen)
 		w.Write(parenCloseSpace)
