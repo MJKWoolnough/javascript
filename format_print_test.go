@@ -956,65 +956,80 @@ func TestPrintingScript(t *testing.T) {
 			"(a, b, c);",
 			"(a, b, c);",
 		},
-		{ // 187
+		{ // 188
 			"(\na\n,\nb\n,\nc\n)\n",
 			"(a, b, c);",
 			"(a, b, c);",
 		},
-		{ // 188
+		{ // 189
 			"var a=(b,c,...d)=>{}",
 			"var a = (b, c, ...d) => {};",
 			"var a = (b, c, ...d) => {};",
 		},
-		{ // 189
+		{ // 190
 			"var a=(b,c,...[e])=>{}",
 			"var a = (b, c, ...[e]) => {};",
 			"var a = (b, c, ...[e]) => {};",
 		},
-		{ // 189
+		{ // 191
 			"var a=(b,c,...{...e})=>{}",
 			"var a = (b, c, ...{...e}) => {};",
 			"var a = (b, c, ...{...e}) => {};",
 		},
-		{ // 190
+		{ // 192
 			"new a()",
 			"new a();",
 			"new a();",
 		},
-		{ // 191
+		{ // 193
 			"new\nnew\na\n(\n)\n(\n)\n",
 			"new new a()();",
 			"new new a()();",
 		},
-		{ // 192
+		{ // 194
 			"a\n[\n1\n]\n",
 			"a[1];",
 			"a[1];",
 		},
-		{ // 193
+		{ // 195
 			"a\n.\nb\n",
 			"a.b;",
 			"a.b;",
 		},
-		{ // 194
+		{ // 196
 			"a\n`b`",
 			"a`b`;",
 			"a`b`;",
 		},
-		{ // 195
+		{ // 197
 			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)\n",
 			"new super[a][b].c`d`(new.target);",
 			"new super[a][b].c`d`(new.target);",
 		},
-		{ // 196
+		{ // 198
 			"a(b,c,...d)",
 			"a(b, c, ...d);",
 			"a(b, c, ...d);",
 		},
-		{ // 197
+		{ // 199
 			"a\n(\n...\nb\n)\n",
 			"a(...b);",
 			"a(...b);",
+		},
+		{ // 200
+			"`a`",
+			"`a`;",
+			"`a`;",
+		},
+		{ // 201
+			"`a${b}c`",
+			"`a${b}c`;",
+			"`a${b}c`;",
+		},
+		{ // 202
+			"`a${\nb\n}c${\nd\n}e`",
+			"`a${b}c${d}e`;",
+			"`a${b}c${d}e`;",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
