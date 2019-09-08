@@ -1076,10 +1076,10 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {
 	if t.NoSubstitutionTemplate != nil {
 		io.WriteString(w, t.NoSubstitutionTemplate.Data)
-	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions)+1 == len(t.TemplateMiddleList) {
+	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions) == len(t.TemplateMiddleList)+1 {
 		io.WriteString(w, t.TemplateHead.Data)
 		t.Expressions[0].printSource(w, v)
-		for n, e := range t.Expressions {
+		for n, e := range t.Expressions[1:] {
 			io.WriteString(w, t.TemplateMiddleList[n].Data)
 			e.printSource(w, v)
 		}
