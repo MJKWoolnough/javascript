@@ -1039,7 +1039,16 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 			io.WriteString(w, m.IdentifierName.Data)
 		}
 	} else if m.SuperProperty {
-		w.Write(super)
+		if m.Expression != nil {
+			w.Write(super)
+			w.Write(bracketOpen)
+			m.Expression.printSource(w, v)
+			w.Write(bracketClose)
+		} else if m.IdentifierName != nil {
+			w.Write(super)
+			w.Write(dot)
+			io.WriteString(w, m.IdentifierName.Data)
+		}
 	} else if m.MetaProperty {
 		w.Write(newTarget)
 	}
