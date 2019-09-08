@@ -1001,10 +1001,20 @@ func TestPrintingScript(t *testing.T) {
 			"a`b`;",
 			"a`b`;",
 		},
-		{ // 194
+		{ // 195
 			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)\n",
 			"new super[a][b].c`d`(new.target);",
 			"new super[a][b].c`d`(new.target);",
+		},
+		{ // 196
+			"a(b,c,...d)",
+			"a(b, c, ...d);",
+			"a(b, c, ...d);",
+		},
+		{ // 197
+			"a\n(\n...\nb\n)\n",
+			"a(...b);",
+			"a(...b);",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
