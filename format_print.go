@@ -969,7 +969,9 @@ func (p PropertyName) printSource(w io.Writer, v bool) {
 	if p.LiteralPropertyName != nil {
 		io.WriteString(w, p.LiteralPropertyName.Data)
 	} else if p.ComputedPropertyName != nil {
+		w.Write(bracketOpen)
 		p.ComputedPropertyName.printSource(w, v)
+		w.Write(bracketClose)
 	}
 }
 
