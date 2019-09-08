@@ -951,6 +951,31 @@ func TestPrintingScript(t *testing.T) {
 			"a || b;",
 			"a || b;",
 		},
+		{ // 187
+			"(a,b,c)",
+			"(a, b, c);",
+			"(a, b, c);",
+		},
+		{ // 187
+			"(\na\n,\nb\n,\nc\n)\n",
+			"(a, b, c);",
+			"(a, b, c);",
+		},
+		{ // 188
+			"var a=(b,c,...d)=>{}",
+			"var a = (b, c, ...d) => {};",
+			"var a = (b, c, ...d) => {};",
+		},
+		{ // 189
+			"var a=(b,c,...[e])=>{}",
+			"var a = (b, c, ...[e]) => {};",
+			"var a = (b, c, ...[e]) => {};",
+		},
+		{ // 189
+			"var a=(b,c,...{...e})=>{}",
+			"var a = (b, c, ...{...e}) => {};",
+			"var a = (b, c, ...{...e}) => {};",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
