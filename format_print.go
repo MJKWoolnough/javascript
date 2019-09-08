@@ -948,16 +948,20 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
-	if b.SingleNameBinding != nil {
+	if b.Initializer == nil && (b.ArrayBindingPattern != nil || b.ObjectBindingPattern != nil) {
+		return
+	} else if b.SingleNameBinding != nil {
 		io.WriteString(w, b.SingleNameBinding.Data)
-	} else if b.Initializer != nil {
-		if b.ArrayBindingPattern != nil {
-			w.Write(assignment)
-			b.ArrayBindingPattern.printSource(w, v)
-		} else if b.ObjectBindingPattern != nil {
-			w.Write(assignment)
-			b.ObjectBindingPattern.printSource(w, v)
-		}
+	} else if b.ArrayBindingPattern != nil {
+		b.ArrayBindingPattern.printSource(w, v)
+	} else if b.ObjectBindingPattern != nil {
+		b.ObjectBindingPattern.printSource(w, v)
+	} else {
+		return
+	}
+	if b.Initializer != nil {
+		w.Write(assignment)
+		b.Initializer.printSource(w, v)
 	}
 }
 
