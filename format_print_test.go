@@ -1291,6 +1291,71 @@ func TestPrintingScript(t *testing.T) {
 			"--a;",
 			"--a;",
 		},
+		{ // 255
+			"a: function b(){}",
+			"a: function b() {}",
+			"a: function b() {}",
+		},
+		{ // 256
+			"a: b",
+			"a: b;",
+			"a: b;",
+		},
+		{ // 257
+			"continue a",
+			"continue a;",
+			"continue a;",
+		},
+		{ // 258
+			"debugger",
+			"debugger;",
+			"debugger;",
+		},
+		{ // 259
+			"for(var a,b,\nc;;){}",
+			"for (var a, b, c;;) {}",
+			"for (var a, b,\n	c;;) {}",
+		},
+		{ // 260
+			"for(var{a}in b){}",
+			"for (var {a} in b) {}",
+			"for (var {a} in b) {}",
+		},
+		{ // 261
+			"for(var[a]in b){}",
+			"for (var [a] in b) {}",
+			"for (var [a] in b) {}",
+		},
+		{ // 262
+			"switch(a){default:b}",
+			"switch (a) {\ndefault:\n	b;\n}",
+			"switch (a) {\ndefault:\n	b;\n}",
+		},
+		{ // 263
+			"function*a(){yield *b}",
+			"function* a() {\n	yield * b;\n}",
+			"function* a() { yield * b; }",
+		},
+		{ // 264
+			"a*=b",
+			"a *= b;",
+			"a *= b;",
+		},
+		{ // 265
+			"var[[a]]=b",
+			"var [[a]] = b;",
+			"var [[a]] = b;",
+		},
+		{ // 266
+			"var[{a}]=b",
+			"var [{a}] = b;",
+			"var [{a}] = b;",
+		},
+		{ // 272
+			"super\n.\na\n",
+			"super.a;",
+			"super.a;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
