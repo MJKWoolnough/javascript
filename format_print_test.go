@@ -1156,6 +1156,36 @@ func TestPrintingScript(t *testing.T) {
 			"a !== b;",
 			"a !== b;",
 		},
+		{ // 228
+			"a<b",
+			"a < b;",
+			"a < b;",
+		},
+		{ // 229
+			"a>b",
+			"a > b;",
+			"a > b;",
+		},
+		{ // 230
+			"a<=b",
+			"a <= b;",
+			"a <= b;",
+		},
+		{ // 231
+			"a>=b",
+			"a >= b;",
+			"a >= b;",
+		},
+		{ // 232
+			"a instanceof b",
+			"a instanceof b;",
+			"a instanceof b;",
+		},
+		{ // 233
+			"a in b",
+			"a in b;",
+			"a in b;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
