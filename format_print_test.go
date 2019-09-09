@@ -1101,6 +1101,26 @@ func TestPrintingScript(t *testing.T) {
 			"[a];",
 			"[a];",
 		},
+		{ // 217
+			"var a={b:c}",
+			"var a = {b: c};",
+			"var a = {b: c};",
+		},
+		{ // 218
+			"var a={b:c,d:e}",
+			"var a = {b: c, d: e};",
+			"var a = {b: c, d: e};",
+		},
+		{ // 219
+			"var a={\nb\n:\nc\n}",
+			"var a = {b: c};",
+			"var a = {\n	b: c\n};",
+		},
+		{ // 220
+			"var a={\nb\n:\nc\n,\nd\n:\ne\n}",
+			"var a = {b: c, d: e};",
+			"var a = {\n	b: c,\n	d: e\n};",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
