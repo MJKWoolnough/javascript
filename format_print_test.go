@@ -1231,6 +1231,46 @@ func TestPrintingScript(t *testing.T) {
 			"a ** b;",
 			"a ** b;",
 		},
+		{ // 243
+			"delete a",
+			"delete a;",
+			"delete a;",
+		},
+		{ // 244
+			"void a",
+			"void a;",
+			"void a;",
+		},
+		{ // 245
+			"typeof a",
+			"typeof a;",
+			"typeof a;",
+		},
+		{ // 246
+			"+\na",
+			"+a;",
+			"+a;",
+		},
+		{ // 247
+			"-\na",
+			"-a;",
+			"-a;",
+		},
+		{ // 248
+			"~\na",
+			"~a;",
+			"~a;",
+		},
+		{ // 249
+			"!\na",
+			"!a;",
+			"!a;",
+		},
+		{ // 250
+			"async function a(){await b}",
+			"async function a() {\n	await b;\n}",
+			"async function a() { await b; }",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
