@@ -1029,14 +1029,6 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 
 	} else if m.PrimaryExpression != nil {
 		m.PrimaryExpression.printSource(w, v)
-		if m.Expression != nil {
-			w.Write(bracketOpen)
-			m.Expression.printSource(w, v)
-			w.Write(bracketClose)
-		} else if m.IdentifierName != nil {
-			w.Write(dot)
-			io.WriteString(w, m.IdentifierName.Data)
-		}
 	} else if m.SuperProperty {
 		if m.Expression != nil {
 			w.Write(super)
