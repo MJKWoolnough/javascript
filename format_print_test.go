@@ -1389,6 +1389,21 @@ func TestPrintingModule(t *testing.T) {
 			"1;",
 			"1;",
 		},
+		{ // 2
+			"1\n2\n3",
+			"1;\n\n2;\n\n3;",
+			"1;\n\n2;\n\n3;",
+		},
+		{ // 3
+			"import\n'a'",
+			"import 'a';",
+			"import 'a';",
+		},
+		{ // 4
+			"import\na\nfrom'b'",
+			"import a from 'b';",
+			"import a from 'b';",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(parser.NewStringTokeniser(in))
