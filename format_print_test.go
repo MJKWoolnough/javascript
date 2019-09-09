@@ -1036,6 +1036,51 @@ func TestPrintingScript(t *testing.T) {
 			"a && b;",
 			"a && b;",
 		},
+		{ // 204
+			"this",
+			"this;",
+			"this;",
+		},
+		{ // 205
+			"a",
+			"a;",
+			"a;",
+		},
+		{ // 206
+			"1",
+			"1;",
+			"1;",
+		},
+		{ // 207
+			"[\n]\n",
+			"[];",
+			"[];",
+		},
+		{ // 208
+			"var a={}",
+			"var a = {};",
+			"var a = {};",
+		},
+		{ // 209
+			"var a=function(){}",
+			"var a = function () {};",
+			"var a = function () {};",
+		},
+		{ // 210
+			"var a=class{}",
+			"var a = class {};",
+			"var a = class {};",
+		},
+		{ // 211
+			"`a`",
+			"`a`;",
+			"`a`;",
+		},
+		{ // 212
+			"(a)",
+			"(a);",
+			"(a);",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
