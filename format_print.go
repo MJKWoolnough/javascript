@@ -1172,11 +1172,9 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 			}
 			pd.printSource(w, v)
 		}
-		if v {
-			if pd := o.PropertyDefinitionList[len(o.PropertyDefinitionList)-1]; len(pd.Tokens) > 0 {
-				if ll := pd.Tokens[len(pd.Tokens)-1].Line; ll > lastLine {
-					w.Write(newLine)
-				}
+		if v && len(o.Tokens) > 0 {
+			if ll := o.Tokens[len(o.Tokens)-1].Line; ll > lastLine {
+				w.Write(newLine)
 			}
 		}
 	}
