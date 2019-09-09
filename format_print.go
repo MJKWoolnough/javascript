@@ -102,7 +102,7 @@ var (
 	additiveAdd                  = []byte{' ', '+', ' '}
 	additiveMinus                = []byte{' ', '-', ' '}
 	multiplicativeMultiply       = []byte{' ', '*', ' '}
-	multiplicativeDivide         = []byte{'/'}
+	multiplicativeDivide         = []byte{' ', '/', ' '}
 	multiplicativeRemainder      = []byte{' ', '%', ' '}
 	exponentionation             = []byte{'*', '*'}
 	unaryDelete                  = []byte{'d', 'e', 'l', 'e', 't', 'e', ' '}
