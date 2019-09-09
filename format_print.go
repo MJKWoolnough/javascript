@@ -27,7 +27,7 @@ var (
 	switchClose                  = []byte{')', ' ', '{'}
 	caseOpen                     = []byte{'c', 'a', 's', 'e', ' '}
 	caseClose                    = labelPost[:1]
-	defaultCase                  = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':', '\n'}
+	defaultCase                  = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':'}
 	withOpen                     = []byte{'w', 'i', 't', 'h', ' ', '('}
 	forIn                        = []byte{' ', 'i', 'n', ' '}
 	forOf                        = []byte{' ', 'o', 'f', ' '}
@@ -570,9 +570,10 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 		w.Write(defaultCase)
 		pp := indentPrinter{w}
 		for _, stmt := range s.DefaultClause {
+			pp.Write(newLine)
 			stmt.printSource(&pp, v)
-			w.Write(newLine)
 		}
+		w.Write(newLine)
 	}
 	for _, c := range s.PostDefaultCaseClauses {
 		c.printSource(w, v)
