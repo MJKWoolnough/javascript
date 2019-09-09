@@ -1389,16 +1389,17 @@ func (m ModuleItem) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportDeclaration) printSource(w io.Writer, v bool) {
-	if i.ImportedDefaultBinding == nil && i.FromClause.ModuleSpecifier == nil {
+	if i.ImportClause == nil && i.FromClause.ModuleSpecifier == nil {
 		return
 	}
 	w.Write(importc)
 	if i.ImportClause != nil {
 		i.ImportClause.printSource(w, v)
 		i.FromClause.printSource(w, v)
-	} else {
+	} else if i.FromClause.ModuleSpecifier != nil {
 		io.WriteString(w, i.FromClause.ModuleSpecifier.Data)
 	}
+	w.Write(semiColon)
 }
 
 func (e ExportDeclaration) printSource(w io.Writer, v bool) {
