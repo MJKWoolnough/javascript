@@ -1271,6 +1271,26 @@ func TestPrintingScript(t *testing.T) {
 			"async function a() {\n	await b;\n}",
 			"async function a() { await b; }",
 		},
+		{ // 251
+			"a ++",
+			"a++;",
+			"a++;",
+		},
+		{ // 252
+			"a --",
+			"a--;",
+			"a--;",
+		},
+		{ // 253
+			"++\na",
+			"++a;",
+			"++a;",
+		},
+		{ // 254
+			"--\na",
+			"--a;",
+			"--a;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
