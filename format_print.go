@@ -949,9 +949,7 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingElement) printSource(w io.Writer, v bool) {
-	if b.Initializer == nil && (b.ArrayBindingPattern != nil || b.ObjectBindingPattern != nil) {
-		return
-	} else if b.SingleNameBinding != nil {
+	if b.SingleNameBinding != nil {
 		io.WriteString(w, b.SingleNameBinding.Data)
 	} else if b.ArrayBindingPattern != nil {
 		b.ArrayBindingPattern.printSource(w, v)
