@@ -104,7 +104,7 @@ var (
 	multiplicativeMultiply       = []byte{' ', '*', ' '}
 	multiplicativeDivide         = []byte{' ', '/', ' '}
 	multiplicativeRemainder      = []byte{' ', '%', ' '}
-	exponentionation             = []byte{'*', '*'}
+	exponentionation             = []byte{' ', '*', '*', ' '}
 	unaryDelete                  = []byte{'d', 'e', 'l', 'e', 't', 'e', ' '}
 	unaryVoid                    = []byte{'v', 'o', 'i', 'd', ' '}
 	unaryTypeOf                  = []byte{'t', 'y', 'p', 'e', 'o', 'f', ' '}
@@ -117,7 +117,7 @@ var (
 	updateDecrement              = []byte{'-', '-'}
 	importc                      = []byte{'i', 'm', 'p', 'o', 'r', 't', ' '}
 	from                         = []byte{' ', 'f', 'r', 'o', 'm', ' '}
-	exportAll                    = exponentionation[:1]
+	exportAll                    = exponentionation[1:2]
 	exportd                      = []byte{'e', 'x', 'p', 'o', 'r', 't', ' ', 'd', 'e', 'f', 'a', 'u', 'l', 't', ' '}
 	exportc                      = exportd[:7]
 	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
