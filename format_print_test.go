@@ -1444,6 +1444,31 @@ func TestPrintingModule(t *testing.T) {
 			"export default a;",
 			"export default a;",
 		},
+		{ // 13
+			"import\n{}\nfrom\n'z'",
+			"import {} from 'z';",
+			"import {} from 'z';",
+		},
+		{ // 14
+			"import\na\nfrom'b'",
+			"import a from 'b';",
+			"import a from 'b';",
+		},
+		{ // 15
+			"import*as\na\nfrom'b'",
+			"import * as a from 'b';",
+			"import * as a from 'b';",
+		},
+		{ // 16
+			"import\na,*as\nb\nfrom'c'",
+			"import a, * as b from 'c';",
+			"import a, * as b from 'c';",
+		},
+		{ // 17
+			"import\na,{b,c}from'd'",
+			"import a, {b, c} from 'd';",
+			"import a, {b, c} from 'd';",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(parser.NewStringTokeniser(in))
