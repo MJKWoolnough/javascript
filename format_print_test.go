@@ -1484,6 +1484,16 @@ func TestPrintingModule(t *testing.T) {
 			"export {a, b};",
 			"export {a, b};",
 		},
+		{ // 21
+			"import{a\nas\nb}from'c'",
+			"import {a as b} from 'c';",
+			"import {a as b} from 'c';",
+		},
+		{ // 21
+			"export{a\nas\nb}",
+			"export {a as b};",
+			"export {a as b};",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(parser.NewStringTokeniser(in))
