@@ -32,33 +32,32 @@ Javascript Token values
 
 ```go
 var (
-	ErrReservedIdentifier         = errors.New("reserved identifier")
-	ErrNoIdentifier               = errors.New("missing identifier")
-	ErrMissingFunction            = errors.New("missing function")
-	ErrMissingOpeningParenthesis  = errors.New("missing opening parenthesis")
-	ErrMissingClosingParenthesis  = errors.New("missing closing parenthesis")
-	ErrMissingOpeningBrace        = errors.New("missing opening brace")
-	ErrMissingClosingBrace        = errors.New("missing closing brace")
-	ErrMissingOpeningBracket      = errors.New("missing opening bracket")
-	ErrMissingClosingBracket      = errors.New("missing closing bracket")
-	ErrMissingComma               = errors.New("missing comma")
-	ErrMissingArrow               = errors.New("missing arrow")
-	ErrMissingCaseClause          = errors.New("missing case clause")
-	ErrMissingExpression          = errors.New("missing expression")
-	ErrMissingCatchFinally        = errors.New("missing catch/finally block")
-	ErrMissingSemiColon           = errors.New("missing semi-colon")
-	ErrMissingColon               = errors.New("missing colon")
-	ErrMissingInitializer         = errors.New("missing initializer")
-	ErrInvalidStatementList       = errors.New("invalid statement list")
-	ErrInvalidStatement           = errors.New("invalid statement")
-	ErrInvalidFormalParameterList = errors.New("invalid formal parameter list")
-	ErrInvalidDeclaration         = errors.New("invalid declaration")
-	ErrInvalidLexicalDeclaration  = errors.New("invalid lexical declaration")
-	ErrInvalidAssignment          = errors.New("invalid assignment operator")
-	ErrInvalidSuperProperty       = errors.New("invalid super property")
-	ErrInvalidMetaProperty        = errors.New("invalid meta property")
-	ErrInvalidTemplate            = errors.New("invalid template")
-	ErrInvalidAsyncArrowFunction  = errors.New("invalid async arrow function")
+	ErrReservedIdentifier        = errors.New("reserved identifier")
+	ErrNoIdentifier              = errors.New("missing identifier")
+	ErrMissingFunction           = errors.New("missing function")
+	ErrMissingOpeningParenthesis = errors.New("missing opening parenthesis")
+	ErrMissingClosingParenthesis = errors.New("missing closing parenthesis")
+	ErrMissingOpeningBrace       = errors.New("missing opening brace")
+	ErrMissingClosingBrace       = errors.New("missing closing brace")
+	ErrMissingOpeningBracket     = errors.New("missing opening bracket")
+	ErrMissingClosingBracket     = errors.New("missing closing bracket")
+	ErrMissingComma              = errors.New("missing comma")
+	ErrMissingArrow              = errors.New("missing arrow")
+	ErrMissingCaseClause         = errors.New("missing case clause")
+	ErrMissingExpression         = errors.New("missing expression")
+	ErrMissingCatchFinally       = errors.New("missing catch/finally block")
+	ErrMissingSemiColon          = errors.New("missing semi-colon")
+	ErrMissingColon              = errors.New("missing colon")
+	ErrMissingInitializer        = errors.New("missing initializer")
+	ErrInvalidStatementList      = errors.New("invalid statement list")
+	ErrInvalidStatement          = errors.New("invalid statement")
+	ErrInvalidDeclaration        = errors.New("invalid declaration")
+	ErrInvalidLexicalDeclaration = errors.New("invalid lexical declaration")
+	ErrInvalidAssignment         = errors.New("invalid assignment operator")
+	ErrInvalidSuperProperty      = errors.New("invalid super property")
+	ErrInvalidMetaProperty       = errors.New("invalid meta property")
+	ErrInvalidTemplate           = errors.New("invalid template")
+	ErrInvalidAsyncArrowFunction = errors.New("invalid async arrow function")
 )
 ```
 Errors
@@ -74,23 +73,38 @@ Errors
 
 ```go
 var (
-	ErrInvalidImport          = errors.New("invalid import statement")
-	ErrInvalidNameSpaceImport = errors.New("invalid namespace import")
-	ErrMissingFrom            = errors.New("missing from")
-	ErrMissingModuleSpecifier = errors.New("missing module specifier")
-	ErrInvalidNamedImport     = errors.New("invalid named import list")
-	ErrInvalidImportSpecifier = errors.New("invalid import specifier")
-	ErrInvalidExportClause    = errors.New("invalid export clause")
+	ErrInvalidImport            = errors.New("invalid import statement")
+	ErrInvalidExportDeclaration = errors.New("invalid export declaration")
+	ErrInvalidNameSpaceImport   = errors.New("invalid namespace import")
+	ErrMissingFrom              = errors.New("missing from")
+	ErrMissingModuleSpecifier   = errors.New("missing module specifier")
+	ErrInvalidNamedImport       = errors.New("invalid named import list")
+	ErrInvalidImportSpecifier   = errors.New("invalid import specifier")
+	ErrInvalidExportClause      = errors.New("invalid export clause")
 )
 ```
 Errors
 
 ```go
 var (
-	ErrDuplicateDefaultClause      = errors.New("duplicate default clause")
-	ErrInvalidIterationStatementDo = errors.New("invalid do interation statement")
-	ErrInvalidForLoop              = errors.New("invalid for loop")
-	ErrInvalidForAwaitLoop         = errors.New("invalid for await loop")
+	ErrDuplicateDefaultClause         = errors.New("duplicate default clause")
+	ErrInvalidIterationStatementDo    = errors.New("invalid do interation statement")
+	ErrInvalidIterationStatementWhile = errors.New("invalid while interation statement")
+	ErrInvalidIterationStatementFor   = errors.New("invalid for interation statement")
+	ErrInvalidForLoop                 = errors.New("invalid for loop")
+	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
+	ErrInvalidIfStatement             = errors.New("invalid if statement")
+	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
+	ErrInvalidWithStatement           = errors.New("invalid with statement")
+	ErrInvalidTryStatement            = errors.New("invalid try statement")
+	ErrInvalidVariableStatement       = errors.New("invalid variabl statement")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidCallExpression = errors.Error("invalid CallExpression")
 )
 ```
 Errors
@@ -673,6 +687,12 @@ Error is a parsing error with trace details
 func (e Error) Error() string
 ```
 
+#### func (Error) Unwrap
+
+```go
+func (e Error) Unwrap() error
+```
+
 #### type ExponentiationExpression
 
 ```go
@@ -814,13 +834,6 @@ const (
 ```
 Valid ForType's
 
-#### func (ForType) Format
-
-```go
-func (ft ForType) Format(s fmt.State, _ rune)
-```
-Format implements the fmt.Formatter interface
-
 #### func (ForType) String
 
 ```go
@@ -939,13 +952,6 @@ const (
 ```
 Valid FunctionType's
 
-#### func (FunctionType) Format
-
-```go
-func (ft FunctionType) Format(s fmt.State, _ rune)
-```
-Format implements the fmt.Formatter interface
-
 #### func (FunctionType) String
 
 ```go
@@ -1033,7 +1039,7 @@ type ImportSpecifier struct {
 ImportSpecifier as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
 
-ImportedBinding mmust be non-nil.
+ImportedBinding must be non-nil.
 
 #### func (ImportSpecifier) Format
 
@@ -1187,7 +1193,7 @@ LexicalBinding as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
 
 Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern must
-be non-nil. The Initializer is optional.
+be non-nil. The Initializer is optional ony for a BindingIdentifier.
 
 #### func (LexicalBinding) Format
 
@@ -1340,13 +1346,6 @@ const (
 )
 ```
 Valid MethodType's
-
-#### func (MethodType) Format
-
-```go
-func (mt MethodType) Format(s fmt.State, _ rune)
-```
-Format implements the fmt.Formatter interface
 
 #### func (MethodType) String
 
@@ -1761,7 +1760,6 @@ type Statement struct {
 	LabelledItemFunction    *FunctionDeclaration
 	LabelledItemStatement   *Statement
 	TryStatement            *TryStatement
-	DebuggerStatement       *Token
 	Tokens                  Tokens
 }
 ```
@@ -1820,16 +1818,10 @@ const (
 	StatementBreak
 	StatementReturn
 	StatementThrow
+	StatementDebugger
 )
 ```
 Valid StatementType's
-
-#### func (StatementType) Format
-
-```go
-func (st StatementType) Format(s fmt.State, _ rune)
-```
-Format implements the fmt.Formatter interface
 
 #### func (StatementType) String
 
@@ -1907,13 +1899,6 @@ Token represents a single parsed token with source positioning
 func (t Token) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
-
-#### func (*Token) String
-
-```go
-func (t *Token) String() string
-```
-String implements the fmt.Stringer interface
 
 #### type Tokens
 
