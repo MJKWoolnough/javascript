@@ -139,9 +139,7 @@ var (
 	arrayOpenClose = []byte{'[', ']'}
 	objectOpen     = []byte{'{'}
 	objectClose    = []byte{'\n', '}'}
-	pointer        = []byte{'*'}
 	nilStr         = []byte{'<', 'n', 'i', 'l', '>'}
-	to             = []byte{':', ' '}
 	tokensTo       = []byte{'\n', 'T', 'o', 'k', 'e', 'n', 's', ':', ' '}
 )
 
