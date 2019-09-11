@@ -2273,7 +2273,7 @@ func (ft FunctionType) String() string {
 	case FunctionAsyncGenerator:
 		return "Async Generator"
 	default:
-		return "Unknown"
+		return unknown
 	}
 }
 
@@ -2305,7 +2305,7 @@ func (mt MethodType) String() string {
 	case MethodStaticSetter:
 		return "MethodStaticSetter"
 	default:
-		return "Unknown"
+		return unknown
 	}
 }
 
@@ -2323,7 +2323,7 @@ func (st StatementType) String() string {
 	case StatementThrow:
 		return "StatementThrow"
 	default:
-		return "Unknown"
+		return unknown
 	}
 }
 
@@ -2363,7 +2363,7 @@ func (ft ForType) String() string {
 	case ForAwaitOfConst:
 		return "ForAwaitOfConst"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2381,7 +2381,7 @@ func (e EqualityOperator) String() string {
 	case EqualityStrictNotEqual:
 		return "!=="
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2403,7 +2403,7 @@ func (r RelationshipOperator) String() string {
 	case RelationshipIn:
 		return "in"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2419,7 +2419,7 @@ func (s ShiftOperator) String() string {
 	case ShiftUnsignedRight:
 		return ">>>"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2433,7 +2433,7 @@ func (a AdditiveOperator) String() string {
 	case AdditiveMinus:
 		return "-"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2449,7 +2449,7 @@ func (m MultiplicativeOperator) String() string {
 	case MultiplicativeRemainder:
 		return "%"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2475,7 +2475,7 @@ func (u UnaryOperator) String() string {
 	case UnaryAwait:
 		return "await"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2493,7 +2493,7 @@ func (u UpdateOperator) String() string {
 	case UpdatePreDecrement:
 		return "--"
 	default:
-		return "unknown"
+		return unknown
 	}
 }
 
@@ -2537,6 +2537,8 @@ func (a AssignmentOperator) String() string {
 	case AssignmentExponentiation:
 		return "**="
 	default:
-		return "unknown"
+		return unknown
 	}
 }
+
+const unknown = "Unknown"
