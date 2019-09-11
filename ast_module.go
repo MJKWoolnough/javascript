@@ -334,7 +334,9 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			if h.Accept(TokenStringLiteral) {
 				h = g.NewGoal()
 				ed.FromClause = new(FromClause)
-				ed.FromClause.parse(&h)
+				if err := ed.FromClause.parse(&h); err != nil {
+					return j.Error("ExportDeclaration", err)
+				}
 				g.Score(h)
 				j.Score(g)
 			}
