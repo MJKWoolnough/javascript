@@ -522,7 +522,6 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				} else {
 					w.Write(space)
 				}
-				lastLine = i.Afterthought.Tokens[len(i.Afterthought.Tokens)-1].Line
 			} else {
 				w.Write(space)
 			}
