@@ -187,10 +187,12 @@ type Error struct {
 	Token   Token
 }
 
+// Error returns the error string
 func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
 }
 
+// Unwrap returns the wrapped error
 func (e Error) Unwrap() error {
 	return e.Err
 }
