@@ -686,12 +686,14 @@ Error is a parsing error with trace details
 ```go
 func (e Error) Error() string
 ```
+Error returns the error string
 
 #### func (Error) Unwrap
 
 ```go
 func (e Error) Unwrap() error
 ```
+Unwrap returns the wrapped error
 
 #### type ExponentiationExpression
 
