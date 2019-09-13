@@ -994,7 +994,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 195
 			"a\n.\nb\n",
 			"a.b;",
-			"a.b;",
+			"a\n.b;",
 		},
 		{ // 196
 			"a\n`b`",
@@ -1004,7 +1004,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 197
 			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)\n",
 			"new super[a][b].c`d`(new.target);",
-			"new super[a][b].c`d`(new.target);",
+			"new super[a][b]\n.c`d`(new.target);",
 		},
 		{ // 198
 			"a(b,c,...d)",
