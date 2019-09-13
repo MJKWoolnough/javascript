@@ -925,6 +925,9 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 			w.Write(bracketClose)
 		} else if c.IdentifierName != nil {
 			c.CallExpression.printSource(w, v)
+			if v && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+				w.Write(newLine)
+			}
 			w.Write(dot)
 			io.WriteString(w, c.IdentifierName.Data)
 		} else if c.TemplateLiteral != nil {
@@ -1016,6 +1019,9 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 			w.Write(bracketClose)
 		} else if m.IdentifierName != nil {
 			m.MemberExpression.printSource(w, v)
+			if v && len(m.MemberExpression.Tokens) > 0 && m.IdentifierName.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
+				w.Write(newLine)
+			}
 			w.Write(dot)
 			io.WriteString(w, m.IdentifierName.Data)
 		} else if m.TemplateLiteral != nil {
