@@ -1103,6 +1103,12 @@ func TestPropertyName(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{`await`, func(t *test, tk Tokens) { // 9
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var pn PropertyName
 		err := pn.parse(&t.Tokens, t.Yield, t.Await)

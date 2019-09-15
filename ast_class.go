@@ -240,7 +240,7 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 		if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
 			return j.Error("PropertyName", ErrMissingClosingBracket)
 		}
-	} else if j.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+	} else if j.Accept(TokenIdentifier, TokenKeyword, TokenStringLiteral, TokenNumericLiteral) {
 		pn.LiteralPropertyName = j.GetLastToken()
 	} else {
 		return j.Error("PropertyName", ErrInvalidPropertyName)
