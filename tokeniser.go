@@ -491,11 +491,13 @@ func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
 	return t.Accept(singleEscapeChar)
 }
 
+var (
+	stringChars       = "'\\" + lineTerminators + "\""
+	doubleStringChars = stringChars[1:]
+	singleStringChars = stringChars[:len(stringChars)-2]
+)
+
 func (j *jsTokeniser) stringToken(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	const (
-		singleStringChars = "'\\" + lineTerminators
-		doubleStringChars = "\"\\" + lineTerminators
-	)
 	var chars string
 	if t.Peek() == '"' {
 		chars = doubleStringChars
