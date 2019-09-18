@@ -7,6 +7,7 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Unquote parses a javascript quoted string and produces the unquoted version
 func Unquote(str string) (string, error) {
 	s := parser.NewStringTokeniser(str)
 	var chars string
