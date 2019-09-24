@@ -1163,7 +1163,7 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 					pp.Write(newLine)
 				}
 			}
-			pd.printSource(w, v)
+			pd.printSource(&pp, v)
 		}
 		if v && len(o.Tokens) > 0 {
 			if ll := o.Tokens[len(o.Tokens)-1].Line; ll > lastLine {

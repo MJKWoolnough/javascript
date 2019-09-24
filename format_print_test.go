@@ -1356,6 +1356,13 @@ func TestPrintingScript(t *testing.T) {
 			"super.a;",
 			"super.a;",
 		},
+		/*
+			{ // 273
+				"var\na\n=\n{\"b\"\n:\n{\n\"c\":\n\"d\"\n}\n}",
+				"var a = {\"b\": {\"c\": \"d\"}};",
+				"var a = {\"b\": {\n	\"c\": \"d\"\n}\n}",
+			},
+		*/
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
