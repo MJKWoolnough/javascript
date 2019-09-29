@@ -116,12 +116,25 @@ var (
 ```
 Errors
 
+```go
+var (
+	ErrInvalidQuoted = errors.New("invalid quoted string")
+)
+```
+
 #### func  SetTokeniser
 
 ```go
 func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser
 ```
 SetTokeniser provides javascript parsing functions to a Tokeniser
+
+#### func  Unquote
+
+```go
+func Unquote(str string) (string, error)
+```
+Unquote parses a javascript quoted string and produces the unquoted version
 
 #### type AdditiveExpression
 
@@ -562,6 +575,37 @@ ConditionalExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
 
 If True is non-nil, False must be non-nil also.
+
+#### func  WrapConditional
+
+```go
+func WrapConditional(p interface{}) *ConditionalExpression
+```
+WrapConditional takes one of many types and wraps it in a
+*ConditionalExpression.
+
+The accepted types are as follows:
+
+    LogicalORExpression
+    LogicalANDExpression
+    BitwiseORExpression
+    BitwiseXORExpression
+    BitwiseANDExpression
+    EqualityExpression
+    RelationalExpression
+    ShiftExpression
+    AdditiveExpression
+    MultiplicativeExpression
+    ExponentiationExpression
+    UnaryExpression
+    UpdateExpression
+    *LeftHandSideExpression
+    *CallExpression
+    *NewExpression
+    MemberExpression
+    *PrimaryExpression
+
+Any other type will result in a panic.
 
 #### func (ConditionalExpression) Format
 
