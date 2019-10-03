@@ -295,6 +295,69 @@ logicalORExpression:
 	return c
 }
 
+// UnwrapConditional returns the first value up the ConditionalExpression chain
+// that contains all of the information required to rebuild the lower chain.
+//
+// Possible returns types are as follows:
+//    *ConditionalExpression
+//    *LogicalORExpression
+//    *LogicalANDExpression
+//    *BitwiseORExpression
+//    *BitwiseXORExpression
+//    *BitwiseANDExpression
+//    *EqualityExpression
+//    *RelationalExpression
+//    *ShiftExpression
+//    *AdditiveExpression
+//    *MultiplicativeExpression
+//    *ExponentiationExpression
+//    *UnaryExpression
+//    *UpdateExpression
+//    *LeftHandSideExpression
+//    *CallExpression
+//    *NewExpression
+//    *MemberExpression
+//    *PrimaryExpression
+func UnwrapConditional(c *ConditionalExpression) interface{} {
+	if c.True != nil {
+		return c
+	} else if c.LogicalORExpression.LogicalORExpression != nil {
+		return &c.LogicalORExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.LogicalANDExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseORExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseXORExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.BitwiseANDExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.EqualityExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.RelationalExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.ShiftExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.AdditiveExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.MultiplicativeExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.ExponentiationExpression != nil {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression
+	} else if len(c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UnaryOperators) > 0 {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression
+	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression == nil || c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.UpdateOperator != UpdateNone {
+		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression
+	} else if lhs := c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs.CallExpression != nil {
+		return lhs.CallExpression
+	} else if lhs.NewExpression.News > 0 {
+		return lhs.NewExpression
+	} else if lhs.NewExpression.MemberExpression.PrimaryExpression == nil {
+		return &lhs.NewExpression.MemberExpression
+	} else {
+		return lhs.NewExpression.MemberExpression.PrimaryExpression
+	}
+}
+
 var (
 	ErrInvalidQuoted = errors.New("invalid quoted string")
 )
