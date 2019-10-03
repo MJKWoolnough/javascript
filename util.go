@@ -98,7 +98,7 @@ Loop:
 // WrapConditional takes one of many types and wraps it in a
 // *ConditionalExpression.
 //
-// The accepted types are as follows:
+// The accepted types/pointers are as follows:
 //    LogicalORExpression
 //    LogicalANDExpression
 //    BitwiseORExpression
@@ -112,66 +112,125 @@ Loop:
 //    ExponentiationExpression
 //    UnaryExpression
 //    UpdateExpression
-//    *LeftHandSideExpression
-//    *CallExpression
-//    *NewExpression
+//    LeftHandSideExpression
+//    CallExpression
+//    NewExpression
 //    MemberExpression
-//    *PrimaryExpression
+//    PrimaryExpression
 //
 // Any other type will result in a panic.
 func WrapConditional(p interface{}) *ConditionalExpression {
 	c := new(ConditionalExpression)
 	switch p := p.(type) {
+	case *LogicalORExpression:
+		c.LogicalORExpression = *p
+		goto logicalORExpression
 	case LogicalORExpression:
 		c.LogicalORExpression = p
 		goto logicalORExpression
+	case *LogicalANDExpression:
+		c.LogicalORExpression.LogicalANDExpression = *p
+		goto logicalANDExpression
 	case LogicalANDExpression:
 		c.LogicalORExpression.LogicalANDExpression = p
 		goto logicalANDExpression
+	case *BitwiseORExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression = *p
+		goto bitwiseORExpression
 	case BitwiseORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression = p
 		goto bitwiseORExpression
+	case *BitwiseXORExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression = *p
+		goto bitwiseXORExpression
 	case BitwiseXORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression = p
 		goto bitwiseXORExpression
+	case *BitwiseANDExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression = *p
+		goto bitwiseANDExpression
 	case BitwiseANDExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression = p
 		goto bitwiseANDExpression
+	case *EqualityExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression = *p
+		goto equalityExpression
 	case EqualityExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression = p
 		goto equalityExpression
+	case *RelationalExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression = *p
+		goto relationalExpression
 	case RelationalExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression = p
 		goto relationalExpression
+	case *ShiftExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression = *p
+		goto shiftExpression
 	case ShiftExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression = p
 		goto shiftExpression
+	case *AdditiveExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression = *p
+		goto additiveExpression
 	case AdditiveExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression = p
 		goto additiveExpression
+	case *MultiplicativeExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression = *p
+		goto multiplicativeExpression
 	case MultiplicativeExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression = p
 		goto multiplicativeExpression
+	case *ExponentiationExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression = *p
+		goto exponentiationExpression
 	case ExponentiationExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression = p
 		goto exponentiationExpression
+	case *UnaryExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression = *p
+		goto unaryExpression
 	case UnaryExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression = p
 		goto unaryExpression
+	case *UpdateExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression = *p
+		goto updateExpression
 	case UpdateExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression = p
 		goto updateExpression
 	case *LeftHandSideExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = p
+	case LeftHandSideExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &p
 	case *CallExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
 			CallExpression: p,
+			Tokens:         p.Tokens,
+		}
+	case CallExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			CallExpression: &p,
 			Tokens:         p.Tokens,
 		}
 	case *NewExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
 			NewExpression: p,
 			Tokens:        p.Tokens,
+		}
+	case NewExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			NewExpression: &p,
+			Tokens:        p.Tokens,
+		}
+	case *MemberExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			NewExpression: &NewExpression{
+				MemberExpression: *p,
+				Tokens:           p.Tokens,
+			},
+			Tokens: p.Tokens,
 		}
 	case MemberExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
@@ -186,6 +245,17 @@ func WrapConditional(p interface{}) *ConditionalExpression {
 			NewExpression: &NewExpression{
 				MemberExpression: MemberExpression{
 					PrimaryExpression: p,
+					Tokens:            p.Tokens,
+				},
+				Tokens: p.Tokens,
+			},
+			Tokens: p.Tokens,
+		}
+	case PrimaryExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			NewExpression: &NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &p,
 					Tokens:            p.Tokens,
 				},
 				Tokens: p.Tokens,
