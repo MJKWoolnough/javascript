@@ -136,6 +136,36 @@ func Unquote(str string) (string, error)
 ```
 Unquote parses a javascript quoted string and produces the unquoted version
 
+#### func  UnwrapConditional
+
+```go
+func UnwrapConditional(c *ConditionalExpression) interface{}
+```
+UnwrapConditional returns the first value up the ConditionalExpression chain
+that contains all of the information required to rebuild the lower chain.
+
+Possible returns types are as follows:
+
+    *ConditionalExpression
+    *LogicalORExpression
+    *LogicalANDExpression
+    *BitwiseORExpression
+    *BitwiseXORExpression
+    *BitwiseANDExpression
+    *EqualityExpression
+    *RelationalExpression
+    *ShiftExpression
+    *AdditiveExpression
+    *MultiplicativeExpression
+    *ExponentiationExpression
+    *UnaryExpression
+    *UpdateExpression
+    *LeftHandSideExpression
+    *CallExpression
+    *NewExpression
+    *MemberExpression
+    *PrimaryExpression
+
 #### type AdditiveExpression
 
 ```go
@@ -584,7 +614,7 @@ func WrapConditional(p interface{}) *ConditionalExpression
 WrapConditional takes one of many types and wraps it in a
 *ConditionalExpression.
 
-The accepted types are as follows:
+The accepted types/pointers are as follows:
 
     LogicalORExpression
     LogicalANDExpression
@@ -599,11 +629,11 @@ The accepted types are as follows:
     ExponentiationExpression
     UnaryExpression
     UpdateExpression
-    *LeftHandSideExpression
-    *CallExpression
-    *NewExpression
+    LeftHandSideExpression
+    CallExpression
+    NewExpression
     MemberExpression
-    *PrimaryExpression
+    PrimaryExpression
 
 Any other type will result in a panic.
 
