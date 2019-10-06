@@ -1141,29 +1141,30 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 	w.Write(blockOpen)
 	if len(o.PropertyDefinitionList) > 0 {
 		var lastLine uint64
+		x := w
 		if v && len(o.Tokens) > 0 {
 			lastLine = o.Tokens[0].Line
+			x = &indentPrinter{w}
 		}
-		pp := indentPrinter{w}
 		for n, pd := range o.PropertyDefinitionList {
 			if n > 0 {
 				if v && len(pd.Tokens) > 0 {
 					if ll := pd.Tokens[0].Line; ll > lastLine {
 						lastLine = ll
-						pp.Write(commaSepNL)
+						x.Write(commaSepNL)
 					} else {
-						w.Write(commaSep)
+						x.Write(commaSep)
 					}
 				} else {
-					w.Write(commaSep)
+					x.Write(commaSep)
 				}
 			} else if v && len(pd.Tokens) > 0 {
 				if ll := pd.Tokens[0].Line; ll > lastLine {
 					lastLine = ll
-					pp.Write(newLine)
+					x.Write(newLine)
 				}
 			}
-			pd.printSource(&pp, v)
+			pd.printSource(x, v)
 		}
 		if v && len(o.Tokens) > 0 {
 			if ll := o.Tokens[len(o.Tokens)-1].Line; ll > lastLine {
