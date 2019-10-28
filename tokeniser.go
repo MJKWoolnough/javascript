@@ -374,50 +374,80 @@ Loop:
 	}, j.inputElement
 }
 
+func numberRun(t *parser.Tokeniser, digits string) bool {
+	for {
+		if !t.Accept(digits) {
+			return false
+		}
+		t.AcceptRun(digits)
+		if !t.Accept("_") {
+			break
+		}
+	}
+	return true
+}
+
 func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept("0") {
 		if t.Accept("bB") {
-			if !t.Accept(binaryDigit) {
+			if !numberRun(t, binaryDigit) {
 				t.Except("")
 				t.Err = errors.WithContext("invalid binary number: ", errors.Error(t.Get()))
 				return t.Error()
 			}
-			t.AcceptRun(binaryDigit)
 			t.Accept("n")
 		} else if t.Accept("oO") {
-			if !t.Accept(octalDigit) {
+			if !numberRun(t, octalDigit) {
 				t.Except("")
 				t.Err = errors.WithContext("invalid octal number: ", errors.Error(t.Get()))
 				return t.Error()
 			}
-			t.AcceptRun(octalDigit)
 			t.Accept("n")
 		} else if t.Accept("xX") {
-			if !t.Accept(hexDigit) {
+			if !numberRun(t, hexDigit) {
 				t.Except("")
 				t.Err = errors.WithContext("invalid hex number: ", errors.Error(t.Get()))
 				return t.Error()
 			}
-			t.AcceptRun(hexDigit)
 			t.Accept("n")
 		} else if t.Accept(".") {
-			t.AcceptRun(decimalDigit)
+			if !numberRun(t, decimalDigit) {
+				t.Except("")
+				t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+				return t.Error()
+			}
 			if t.Accept("eE") {
 				t.Accept("+-")
-				t.AcceptRun(decimalDigit)
+				if !numberRun(t, decimalDigit) {
+					t.Except("")
+					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					return t.Error()
+				}
 			}
 		} else {
 			t.Accept("n")
 		}
 	} else {
-		t.AcceptRun(decimalDigit)
+		if !numberRun(t, decimalDigit) {
+			t.Except("")
+			t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+			return t.Error()
+		}
 		if !t.Accept("n") {
 			if t.Accept(".") {
-				t.AcceptRun(decimalDigit)
+				if !numberRun(t, decimalDigit) {
+					t.Except("")
+					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					return t.Error()
+				}
 			}
 			if t.Accept("eE") {
 				t.Accept("+-")
-				t.AcceptRun(decimalDigit)
+				if !numberRun(t, decimalDigit) {
+					t.Except("")
+					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					return t.Error()
+				}
 			}
 		}
 	}
