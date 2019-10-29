@@ -891,6 +891,67 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenError, "unexpected EOF"},
 			},
 		},
+		{ // 103
+			"1_234_567",
+			[]parser.Token{
+				{TokenNumericLiteral, "1_234_567"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 104
+			"1_",
+			[]parser.Token{
+				{parser.TokenError, "invalid decimal number: 1_"},
+			},
+		},
+		{ // 105
+			"1__234_567",
+			[]parser.Token{
+				{parser.TokenError, "invalid decimal number: 1__"},
+			},
+		},
+		{ // 106
+			"123e-456_789",
+			[]parser.Token{
+				{TokenNumericLiteral, "123e-456_789"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 107
+			"0.123_456",
+			[]parser.Token{
+				{TokenNumericLiteral, "0.123_456"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 108
+			"1.2_3_4_5_6_7",
+			[]parser.Token{
+				{TokenNumericLiteral, "1.2_3_4_5_6_7"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 109
+			"0x1_2",
+			[]parser.Token{
+				{TokenNumericLiteral, "0x1_2"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 110
+			"0b1_0",
+			[]parser.Token{
+				{TokenNumericLiteral, "0b1_0"},
+				{parser.TokenDone, ""},
+			},
+		},
+		{ // 111
+			"0o1_7",
+			[]parser.Token{
+				{TokenNumericLiteral, "0o1_7"},
+				{parser.TokenDone, ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
