@@ -37,7 +37,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
 			return nil, Error{
-				Err:     errorStr(tk.Data),
+				Err:     t.Err,
 				Parsing: "Tokens",
 				Token:   tokens[len(tokens)-1],
 			}

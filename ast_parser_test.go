@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -77,7 +78,7 @@ func TestNewJSParser(t *testing.T) {
 				},
 			},
 			Error{
-				Err:     errorStr("invalid character: @"),
+				Err:     fmt.Errorf("%w: %s", ErrInvalidCharacter, "@"),
 				Parsing: "Tokens",
 				Token: Token{
 					parser.Token{parser.TokenError, "invalid character: @"},
@@ -109,7 +110,7 @@ func TestNewJSParser(t *testing.T) {
 		}
 	}
 	pErr := Error{
-		Err:     errorStr("invalid character: @"),
+		Err:     fmt.Errorf("%w: %s", ErrInvalidCharacter, "@"),
 		Parsing: "Tokens",
 		Token: Token{
 			Token: parser.Token{
