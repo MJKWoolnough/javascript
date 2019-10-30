@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -78,7 +77,7 @@ func TestNewJSParser(t *testing.T) {
 				},
 			},
 			Error{
-				Err:     errors.Error("invalid character: @"),
+				Err:     errorStr("invalid character: @"),
 				Parsing: "Tokens",
 				Token: Token{
 					parser.Token{parser.TokenError, "invalid character: @"},
@@ -110,7 +109,7 @@ func TestNewJSParser(t *testing.T) {
 		}
 	}
 	pErr := Error{
-		Err:     errors.Error("invalid character: @"),
+		Err:     errorStr("invalid character: @"),
 		Parsing: "Tokens",
 		Token: Token{
 			Token: parser.Token{
@@ -162,7 +161,7 @@ func TestNewJSParser(t *testing.T) {
 		t.Errorf("Module error test: expecting %s, got %s", mErr, err)
 	}
 	fErr := Error{
-		Err:     errors.Error("TEST"),
+		Err:     errorStr("TEST"),
 		Parsing: "FAUX",
 		Token: Token{
 			Pos:     1,

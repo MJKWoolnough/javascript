@@ -1,7 +1,8 @@
 package javascript // import "vimagination.zapto.org/javascript"
 
 import (
-	"vimagination.zapto.org/errors"
+	"errors"
+
 	"vimagination.zapto.org/parser"
 )
 

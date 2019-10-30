@@ -1,7 +1,8 @@
 package javascript
 
 import (
-	"vimagination.zapto.org/errors"
+	"errors"
+
 	"vimagination.zapto.org/parser"
 )
 
@@ -716,5 +717,5 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 
 // Errors
 var (
-	ErrInvalidCallExpression = errors.Error("invalid CallExpression")
+	ErrInvalidCallExpression = errors.New("invalid CallExpression")
 )

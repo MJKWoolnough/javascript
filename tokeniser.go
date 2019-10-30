@@ -1,11 +1,12 @@
 package javascript
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"unicode"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -165,7 +166,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
 			return j.template(t)
 		}
-		t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
+		t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
 		return t.Error()
 	case '\'', '"':
 		j.divisionAllowed = true
@@ -217,7 +218,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case ';', ',', '?', ':', '~':
 		case ')', ']':
 			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
-				t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
 				return t.Error()
 			}
 			j.divisionAllowed = true
@@ -229,7 +230,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 						t.Err = io.ErrUnexpectedEOF
 					} else {
 						t.Except("")
-						t.Err = errors.WithContext("invalid character sequence: ", errors.Error(t.Get()))
+						t.Err = fmt.Errorf("%w: %s", ErrInvalidSequence, t.Get())
 					}
 					return t.Error()
 				}
@@ -274,7 +275,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '%', '^':
 			t.Accept("=") // %=, ^=
 		default:
-			t.Err = errors.WithContext("invalid character: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
 			return t.Error()
 		}
 		return parser.Token{
@@ -291,7 +292,7 @@ func (j *jsTokeniser) regexpBackslashSequence(t *parser.Tokeniser) bool {
 			t.Err = io.ErrUnexpectedEOF
 		} else {
 			t.Except("")
-			t.Err = errors.WithContext("invalid regexp character sequence: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidRegexpSequence, t.Get())
 		}
 		return false
 	}
@@ -333,7 +334,7 @@ func (j *jsTokeniser) regexp(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 		if strings.ContainsRune(lineTerminators, c) {
 			t.Get()
 			t.Except("")
-			t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidRegexpCharacter, t.Get())
 			return t.Error()
 		}
 		t.Except("")
@@ -358,7 +359,7 @@ Loop:
 		default:
 			t.Get()
 			t.Except("")
-			t.Err = errors.WithContext("invalid regexp character: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidRegexpCharacter, t.Get())
 			return t.Error()
 		}
 	}
@@ -392,35 +393,35 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 		if t.Accept("bB") {
 			if !numberRun(t, binaryDigit) {
 				t.Except("")
-				t.Err = errors.WithContext("invalid binary number: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 				return t.Error()
 			}
 			t.Accept("n")
 		} else if t.Accept("oO") {
 			if !numberRun(t, octalDigit) {
 				t.Except("")
-				t.Err = errors.WithContext("invalid octal number: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 				return t.Error()
 			}
 			t.Accept("n")
 		} else if t.Accept("xX") {
 			if !numberRun(t, hexDigit) {
 				t.Except("")
-				t.Err = errors.WithContext("invalid hex number: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 				return t.Error()
 			}
 			t.Accept("n")
 		} else if t.Accept(".") {
 			if !numberRun(t, decimalDigit) {
 				t.Except("")
-				t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 				return t.Error()
 			}
 			if t.Accept("eE") {
 				t.Accept("+-")
 				if !numberRun(t, decimalDigit) {
 					t.Except("")
-					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 					return t.Error()
 				}
 			}
@@ -430,14 +431,14 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 	} else {
 		if !numberRun(t, decimalDigit) {
 			t.Except("")
-			t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 			return t.Error()
 		}
 		if !t.Accept("n") {
 			if t.Accept(".") {
 				if !numberRun(t, decimalDigit) {
 					t.Except("")
-					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 					return t.Error()
 				}
 			}
@@ -445,7 +446,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				t.Accept("+-")
 				if !numberRun(t, decimalDigit) {
 					t.Except("")
-					t.Err = errors.WithContext("invalid decimal number: ", errors.Error(t.Get()))
+					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
 					return t.Error()
 				}
 			}
@@ -463,11 +464,11 @@ func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 	if c == '\\' {
 		if !t.Accept("u") {
 			t.Except("")
-			t.Err = errors.WithContext("unexpected backslash: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrUnexpectedBackslash, t.Get())
 			return t.Error()
 		}
 		if !j.unicodeEscapeSequence(t) {
-			t.Err = errors.WithContext("invalid unicode escape sequence: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidUnicode, t.Get())
 			return t.Error()
 		}
 	}
@@ -546,13 +547,13 @@ Loop:
 				continue
 			}
 			if t.Err == nil {
-				t.Err = errors.WithContext("invalid escape sequence: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrInvalidEscapeSequence, t.Get())
 			}
 		default:
 			t.Err = io.ErrUnexpectedEOF
 			if strings.ContainsRune(lineTerminators, c) {
 				t.Except("")
-				t.Err = errors.WithContext("line terminator in string: ", errors.Error(t.Get()))
+				t.Err = fmt.Errorf("%w: %s", ErrUnexpectedLineTerminator, t.Get())
 			}
 		}
 		return t.Error()
@@ -575,7 +576,7 @@ Loop:
 				continue
 			}
 			t.Except("")
-			t.Err = errors.WithContext("invalid escape sequence: ", errors.Error(t.Get()))
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidEscapeSequence, t.Get())
 			return t.Error()
 		case '$':
 			t.Except("")
@@ -611,3 +612,16 @@ Loop:
 		Data: v,
 	}, j.inputElement
 }
+
+// Errors
+var (
+	ErrInvalidCharacter         = errors.New("invalid character")
+	ErrInvalidSequence          = errors.New("invalid character sequence")
+	ErrInvalidRegexpCharacter   = errors.New("invalid regexp character")
+	ErrInvalidRegexpSequence    = errors.New("invalid regexp sequence")
+	ErrInvalidNumber            = errors.New("invalid number")
+	ErrUnexpectedBackslash      = errors.New("unexpected backslash")
+	ErrInvalidUnicode           = errors.New("invalid unicode escape sequence")
+	ErrInvalidEscapeSequence    = errors.New("invalid escape sequence")
+	ErrUnexpectedLineTerminator = errors.New("line terminator in string")
+)

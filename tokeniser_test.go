@@ -780,7 +780,7 @@ func TestTokeniser(t *testing.T) {
 		{ // 84
 			"/\\\n/",
 			[]parser.Token{
-				{parser.TokenError, "invalid regexp character sequence: /\\\n"},
+				{parser.TokenError, "invalid regexp sequence: /\\\n"},
 			},
 		},
 		{ // 85
@@ -816,7 +816,7 @@ func TestTokeniser(t *testing.T) {
 		{ // 90
 			"/a\\\n/",
 			[]parser.Token{
-				{parser.TokenError, "invalid regexp character sequence: /a\\\n"},
+				{parser.TokenError, "invalid regexp sequence: /a\\\n"},
 			},
 		},
 		{ // 91
@@ -834,19 +834,19 @@ func TestTokeniser(t *testing.T) {
 		{ // 93
 			"0B9",
 			[]parser.Token{
-				{parser.TokenError, "invalid binary number: 0B9"},
+				{parser.TokenError, "invalid number: 0B9"},
 			},
 		},
 		{ // 94
 			"0O9",
 			[]parser.Token{
-				{parser.TokenError, "invalid octal number: 0O9"},
+				{parser.TokenError, "invalid number: 0O9"},
 			},
 		},
 		{ // 95
 			"0XG",
 			[]parser.Token{
-				{parser.TokenError, "invalid hex number: 0XG"},
+				{parser.TokenError, "invalid number: 0XG"},
 			},
 		},
 		{ // 96
@@ -901,13 +901,13 @@ func TestTokeniser(t *testing.T) {
 		{ // 104
 			"1_",
 			[]parser.Token{
-				{parser.TokenError, "invalid decimal number: 1_"},
+				{parser.TokenError, "invalid number: 1_"},
 			},
 		},
 		{ // 105
 			"1__234_567",
 			[]parser.Token{
-				{parser.TokenError, "invalid decimal number: 1__"},
+				{parser.TokenError, "invalid number: 1__"},
 			},
 		},
 		{ // 106

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -38,7 +37,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
 			return nil, Error{
-				Err:     errors.Error(tk.Data),
+				Err:     errorStr(tk.Data),
 				Parsing: "Tokens",
 				Token:   tokens[len(tokens)-1],
 			}
@@ -185,6 +184,12 @@ type Error struct {
 	Err     error
 	Parsing string
 	Token   Token
+}
+
+type errorStr string
+
+func (e errorStr) Error() string {
+	return string(e)
 }
 
 // Error returns the error string

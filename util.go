@@ -1,9 +1,9 @@
 package javascript
 
 import (
+	"errors"
 	"strconv"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
