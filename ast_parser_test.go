@@ -175,3 +175,9 @@ func TestNewJSParser(t *testing.T) {
 		t.Errorf("error test: expecting %q, got %q", e, str)
 	}
 }
+
+type errorStr string
+
+func (e errorStr) Error() string {
+	return string(e)
+}

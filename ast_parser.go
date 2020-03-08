@@ -186,12 +186,6 @@ type Error struct {
 	Token   Token
 }
 
-type errorStr string
-
-func (e errorStr) Error() string {
-	return string(e)
-}
-
 // Error returns the error string
 func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
