@@ -123,6 +123,7 @@ var (
 	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
 	as                           = namespaceImport[1:]
 	importCall                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '('}
+	optionalChain                = []byte{'?', '.'}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -761,6 +762,8 @@ func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
 		l.NewExpression.printSource(w, v)
 	} else if l.CallExpression != nil {
 		l.CallExpression.printSource(w, v)
+	} else if l.OptionalExpression != nil {
+		l.OptionalExpression.printSource(w, v)
 	}
 }
 
@@ -1525,4 +1528,34 @@ func (f FunctionRestParameter) printSource(w io.Writer, v bool) {
 
 func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
 	LexicalBinding(vd).printSource(w, v)
+}
+
+func (oe OptionalExpression) printSource(w io.Writer, v bool) {
+	if oe.MemberExpression != nil {
+		oe.MemberExpression.printSource(w, v)
+	} else if oe.CallExpression != nil {
+		oe.CallExpression.printSource(w, v)
+	} else if oe.OptionalExpression != nil {
+		oe.OptionalExpression.printSource(w, v)
+	}
+	oe.OptionalChain.printSource(w, v)
+}
+
+func (oe OptionalChain) printSource(w io.Writer, v bool) {
+	if oe.OptionalChain != nil {
+		oe.OptionalChain.printSource(w, v)
+	} else {
+		w.Write(optionalChain)
+	}
+	if oe.Arguments != nil {
+		oe.Arguments.printSource(w, v)
+	} else if oe.Expression != nil {
+		w.Write(bracketOpen)
+		oe.Expression.printSource(w, v)
+		w.Write(bracketClose)
+	} else if oe.IdentifierName != nil {
+		io.WriteString(w, oe.IdentifierName.Data)
+	} else if oe.TemplateLiteral != nil {
+		oe.TemplateLiteral.printSource(w, v)
+	}
 }
