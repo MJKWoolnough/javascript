@@ -199,22 +199,18 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	g.AcceptRunWhitespace()
 	if g.Peek() == (parser.Token{TokenPunctuator, "?."}) {
 		if lhs.CallExpression != nil {
+			j.AcceptRunWhitespace()
 			lhs.OptionalExpression = new(OptionalExpression)
-			h := g.NewGoal()
-			if err := lhs.OptionalExpression.parse(&h, yield, await, nil, lhs.CallExpression); err != nil {
-				return g.Error("LeftHandSideExpression", err)
-			}
-			g.Score(h)
-			j.Score(g)
-			lhs.CallExpression = nil
-		} else if lhs.NewExpression.News == 0 {
-			lhs.OptionalExpression = new(OptionalExpression)
-			h := g.NewGoal()
-			if err := lhs.OptionalExpression.parse(&h, yield, await, &lhs.NewExpression.MemberExpression, nil); err != nil {
+			if err := lhs.OptionalExpression.parse(j, yield, await, nil, lhs.CallExpression); err != nil {
 				return j.Error("LeftHandSideExpression", err)
 			}
-			g.Score(h)
-			j.Score(g)
+			lhs.CallExpression = nil
+		} else if lhs.NewExpression.News == 0 {
+			j.AcceptRunWhitespace()
+			lhs.OptionalExpression = new(OptionalExpression)
+			if err := lhs.OptionalExpression.parse(j, yield, await, &lhs.NewExpression.MemberExpression, nil); err != nil {
+				return j.Error("LeftHandSideExpression", err)
+			}
 			lhs.NewExpression = nil
 		}
 	}
