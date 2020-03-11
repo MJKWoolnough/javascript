@@ -258,7 +258,7 @@ func (oe *OptionalExpression) parse(j *jsParser, yield, await bool, me *MemberEx
 		}
 		h := g.NewGoal()
 		if err := oe.OptionalChain.parse(&h, yield, await); err != nil {
-			return j.Error("OptionalExpression", err)
+			return g.Error("OptionalExpression", err)
 		}
 		g.Score(h)
 	}
