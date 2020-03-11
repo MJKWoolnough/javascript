@@ -337,6 +337,72 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"a\n?.\nb\n.\nc\n?.\nd", func(t *test, tk Tokens) { // 20
+			t.Output = LeftHandSideExpression{
+				OptionalExpression: &OptionalExpression{
+					OptionalExpression: &OptionalExpression{
+						MemberExpression: &MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						OptionalChain: OptionalChain{
+							OptionalChain: &OptionalChain{
+								IdentifierName: &tk[4],
+								Tokens:         tk[2:5],
+							},
+							IdentifierName: &tk[8],
+							Tokens:         tk[2:9],
+						},
+						Tokens: tk[:9],
+					},
+					OptionalChain: OptionalChain{
+						IdentifierName: &tk[12],
+						Tokens:         tk[10:13],
+					},
+					Tokens: tk[:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"a\n()\n?.\nb\n.\nc\n?.\nd", func(t *test, tk Tokens) { // 21
+			t.Output = LeftHandSideExpression{
+				OptionalExpression: &OptionalExpression{
+					OptionalExpression: &OptionalExpression{
+						CallExpression: &CallExpression{
+							MemberExpression: &MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[0],
+									Tokens:              tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Arguments: &Arguments{
+								Tokens: tk[2:4],
+							},
+							Tokens: tk[:4],
+						},
+						OptionalChain: OptionalChain{
+							OptionalChain: &OptionalChain{
+								IdentifierName: &tk[7],
+								Tokens:         tk[5:8],
+							},
+							IdentifierName: &tk[11],
+							Tokens:         tk[5:12],
+						},
+						Tokens: tk[:12],
+					},
+					OptionalChain: OptionalChain{
+						IdentifierName: &tk[15],
+						Tokens:         tk[13:16],
+					},
+					Tokens: tk[:16],
+				},
+				Tokens: tk[:16],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var lhs LeftHandSideExpression
 		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
