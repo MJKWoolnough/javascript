@@ -73,6 +73,15 @@ Errors
 
 ```go
 var (
+	ErrInvalidCallExpression = errors.New("invalid CallExpression")
+	ErrMissingOptional       = errors.New("missing optional chain punctuator")
+	ErrInvalidOptionalChain  = errors.New("invalid OptionalChain")
+)
+```
+Errors
+
+```go
+var (
 	ErrInvalidImport            = errors.New("invalid import statement")
 	ErrInvalidExportDeclaration = errors.New("invalid export declaration")
 	ErrInvalidNameSpaceImport   = errors.New("invalid namespace import")
@@ -104,7 +113,15 @@ Errors
 
 ```go
 var (
-	ErrInvalidCallExpression = errors.Error("invalid CallExpression")
+	ErrInvalidCharacter         = errors.New("invalid character")
+	ErrInvalidSequence          = errors.New("invalid character sequence")
+	ErrInvalidRegexpCharacter   = errors.New("invalid regexp character")
+	ErrInvalidRegexpSequence    = errors.New("invalid regexp sequence")
+	ErrInvalidNumber            = errors.New("invalid number")
+	ErrUnexpectedBackslash      = errors.New("unexpected backslash")
+	ErrInvalidUnicode           = errors.New("invalid unicode escape sequence")
+	ErrInvalidEscapeSequence    = errors.New("invalid escape sequence")
+	ErrUnexpectedLineTerminator = errors.New("line terminator in string")
 )
 ```
 Errors
@@ -1212,16 +1229,20 @@ Format implements the fmt.Formatter interface
 
 ```go
 type LeftHandSideExpression struct {
-	NewExpression  *NewExpression
-	CallExpression *CallExpression
-	Tokens         Tokens
+	NewExpression      *NewExpression
+	CallExpression     *CallExpression
+	OptionalExpression *OptionalExpression
+	Tokens             Tokens
 }
 ```
 
 LeftHandSideExpression as defined in ECMA-262
 https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
 
-It is only valid for one of NewExpression or CallExpression to be non-nil.
+It is only valid for one of NewExpression, CallExpression or OptionalExpression
+to be non-nil.
+
+Includes OptionalExpression as per TC39 (2020-03)
 
 #### func (LeftHandSideExpression) Format
 
@@ -1607,6 +1628,57 @@ https://www.ecma-international.org/ecma-262/#prod-ObjectLiteral
 
 ```go
 func (f ObjectLiteral) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type OptionalChain
+
+```go
+type OptionalChain struct {
+	OptionalChain   *OptionalChain
+	Arguments       *Arguments
+	Expression      *Expression
+	IdentifierName  *Token
+	TemplateLiteral *TemplateLiteral
+	Tokens          Tokens
+}
+```
+
+LeftHandSideExpression as defined in TC39
+https://tc39.es/ecma262/#prod-OptionalExpression
+
+It is only valid for one of OptionalChain, Arguments, Expression,
+IdentifierName, or TemplateLiteral to be non-nil.
+
+#### func (OptionalChain) Format
+
+```go
+func (f OptionalChain) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type OptionalExpression
+
+```go
+type OptionalExpression struct {
+	MemberExpression   *MemberExpression
+	CallExpression     *CallExpression
+	OptionalExpression *OptionalExpression
+	OptionalChain      OptionalChain
+	Tokens             Tokens
+}
+```
+
+LeftHandSideExpression as defined in TC39
+https://tc39.es/ecma262/#prod-OptionalExpression
+
+It is only valid for one of NewExpression, CallExpression or OptionalExpression
+to be non-nil.
+
+#### func (OptionalExpression) Format
+
+```go
+func (f OptionalExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
