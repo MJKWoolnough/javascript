@@ -149,6 +149,8 @@ var (
 	nameUpdateOperator                                    = []byte{'\n', 'U', 'p', 'd', 'a', 't', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameVariableDeclaration                               = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameVariableDeclarationList                           = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', 'L', 'i', 's', 't', ':', ' '}
+	nameOptionalExpression                                = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameOptionalChain                                     = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'C', 'h', 'a', 'i', 'n', ':', ' '}
 )
 
 func (f *AdditiveExpression) printType(w io.Writer, v bool) {
@@ -1280,6 +1282,13 @@ func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCallExpression)
 		pp.Write(nilStr)
 	}
+	if f.OptionalExpression != nil {
+		pp.Write(nameOptionalExpression)
+		f.OptionalExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameOptionalExpression)
+		pp.Write(nilStr)
+	}
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
@@ -1634,6 +1643,86 @@ func (f *ObjectLiteral) printType(w io.Writer, v bool) {
 		pp.Write(namePropertyDefinitionList)
 		pp.Write(arrayOpenClose)
 	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *OptionalChain) printType(w io.Writer, v bool) {
+	w.Write(nameOptionalChain[1:14])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.OptionalChain != nil {
+		pp.Write(nameOptionalChain)
+		f.OptionalChain.printType(&pp, v)
+	} else if v {
+		pp.Write(nameOptionalChain)
+		pp.Write(nilStr)
+	}
+	if f.Arguments != nil {
+		pp.Write(nameArguments)
+		f.Arguments.printType(&pp, v)
+	} else if v {
+		pp.Write(nameArguments)
+		pp.Write(nilStr)
+	}
+	if f.Expression != nil {
+		pp.Write(nameExpression)
+		f.Expression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameExpression)
+		pp.Write(nilStr)
+	}
+	if f.IdentifierName != nil {
+		pp.Write(nameIdentifierName)
+		f.IdentifierName.printType(&pp, v)
+	} else if v {
+		pp.Write(nameIdentifierName)
+		pp.Write(nilStr)
+	}
+	if f.TemplateLiteral != nil {
+		pp.Write(nameTemplateLiteral)
+		f.TemplateLiteral.printType(&pp, v)
+	} else if v {
+		pp.Write(nameTemplateLiteral)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *OptionalExpression) printType(w io.Writer, v bool) {
+	w.Write(nameOptionalExpression[1:20])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.MemberExpression != nil {
+		pp.Write(nameMemberExpression)
+		f.MemberExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameMemberExpression)
+		pp.Write(nilStr)
+	}
+	if f.CallExpression != nil {
+		pp.Write(nameCallExpression)
+		f.CallExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameCallExpression)
+		pp.Write(nilStr)
+	}
+	if f.OptionalExpression != nil {
+		pp.Write(nameOptionalExpression)
+		f.OptionalExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameOptionalExpression)
+		pp.Write(nilStr)
+	}
+	pp.Write(nameOptionalChain)
+	f.OptionalChain.printType(&pp, v)
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
