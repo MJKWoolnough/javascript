@@ -152,11 +152,15 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 // LeftHandSideExpression as defined in ECMA-262
 // https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
 //
-// It is only valid for one of NewExpression or CallExpression to be non-nil.
+// It is only valid for one of NewExpression, CallExpression or
+// OptionalExpression to be non-nil.
+//
+// Includes OptionalExpression as per TC39 (2020-03)
 type LeftHandSideExpression struct {
-	NewExpression  *NewExpression
-	CallExpression *CallExpression
-	Tokens         Tokens
+	NewExpression      *NewExpression
+	CallExpression     *CallExpression
+	OptionalExpression *OptionalExpression
+	Tokens             Tokens
 }
 
 func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
@@ -191,7 +195,182 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 		}
 		j.Score(g)
 	}
+	g = j.NewGoal()
+	g.AcceptRunWhitespace()
+	if g.Peek() == (parser.Token{TokenPunctuator, "?."}) {
+		if lhs.CallExpression != nil {
+			lhs.OptionalExpression = new(OptionalExpression)
+			h := g.NewGoal()
+			if err := lhs.OptionalExpression.parse(&h, yield, await, nil, lhs.CallExpression); err != nil {
+				return g.Error("LeftHandSideExpression", err)
+			}
+			g.Score(h)
+			j.Score(g)
+			lhs.CallExpression = nil
+		} else if lhs.NewExpression.News == 0 {
+			lhs.OptionalExpression = new(OptionalExpression)
+			h := g.NewGoal()
+			if err := lhs.OptionalExpression.parse(&h, yield, await, &lhs.NewExpression.MemberExpression, nil); err != nil {
+				return j.Error("LeftHandSideExpression", err)
+			}
+			g.Score(h)
+			j.Score(g)
+			lhs.NewExpression = nil
+		}
+	}
 	lhs.Tokens = j.ToTokens()
+	return nil
+}
+
+// LeftHandSideExpression as defined in TC39
+// https://tc39.es/ecma262/#prod-OptionalExpression
+//
+// It is only valid for one of NewExpression, CallExpression or
+// OptionalExpression to be non-nil.
+type OptionalExpression struct {
+	MemberExpression   *MemberExpression
+	CallExpression     *CallExpression
+	OptionalExpression *OptionalExpression
+	OptionalChain      OptionalChain
+	Tokens             Tokens
+}
+
+func (oe *OptionalExpression) parse(j *jsParser, yield, await bool, me *MemberExpression, ce *CallExpression) error {
+	if me != nil {
+		oe.MemberExpression = me
+	} else {
+		oe.CallExpression = ce
+	}
+	g := j.NewGoal()
+	if err := oe.OptionalChain.parse(&g, yield, await); err != nil {
+		return j.Error("OptionalExpression", err)
+	}
+	for {
+		j.Score(g)
+		oe.Tokens = j.ToTokens()
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.Peek() != (parser.Token{TokenPunctuator, "?."}) {
+			break
+		}
+		*oe = OptionalExpression{
+			OptionalExpression: oe,
+		}
+		h := g.NewGoal()
+		if err := oe.OptionalChain.parse(&h, yield, await); err != nil {
+			return j.Error("OptionalExpression", err)
+		}
+		g.Score(h)
+	}
+	return nil
+}
+
+// LeftHandSideExpression as defined in TC39
+// https://tc39.es/ecma262/#prod-OptionalExpression
+//
+// It is only valid for one of OptionalChain, Arguments, Expression,
+// IdentifierName, or TemplateLiteral to be non-nil.
+type OptionalChain struct {
+	OptionalChain   *OptionalChain
+	Arguments       *Arguments
+	Expression      *Expression
+	IdentifierName  *Token
+	TemplateLiteral *TemplateLiteral
+	Tokens          Tokens
+}
+
+func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
+	if !j.AcceptToken(parser.Token{TokenPunctuator, "?."}) {
+		return j.Error("OptionalChain", ErrMissingOptional)
+	}
+	j.AcceptRunWhitespace()
+	if j.Peek() == (parser.Token{TokenPunctuator, "("}) {
+		g := j.NewGoal()
+		oc.Arguments = new(Arguments)
+		if err := oc.Arguments.parse(&g, yield, await); err != nil {
+			return j.Error("OptionalChain", err)
+		}
+		j.Score(g)
+	} else if j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		oc.Expression = new(Expression)
+		if err := oc.Expression.parse(&g, true, yield, await); err != nil {
+			return j.Error("OptionalChain", err)
+		}
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+			return g.Error("OptionalChain", ErrMissingClosingBracket)
+		}
+		j.Score(g)
+	} else if j.Accept(TokenIdentifier, TokenKeyword) {
+		oc.IdentifierName = j.GetLastToken()
+	} else if t := j.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
+		g := j.NewGoal()
+		oc.TemplateLiteral = new(TemplateLiteral)
+		if err := oc.TemplateLiteral.parse(&g, yield, await); err != nil {
+			return j.Error("OptionalChain", err)
+		}
+		j.Score(g)
+	} else {
+		return j.Error("OptionalChain", ErrInvalidOptionalChain)
+	}
+	for {
+		oc.Tokens = j.ToTokens()
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		var (
+			arguments       *Arguments
+			expression      *Expression
+			identifierName  *Token
+			templateLiteral *TemplateLiteral
+		)
+		if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+			h := g.NewGoal()
+			arguments = new(Arguments)
+			if err := arguments.parse(&h, yield, await); err != nil {
+				return g.Error("OptionalChain", err)
+			}
+			g.Score(h)
+		} else if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+			g.AcceptRunWhitespace()
+			h := g.NewGoal()
+			expression = new(Expression)
+			if err := expression.parse(&h, true, yield, await); err != nil {
+				return g.Error("OptionalChain", err)
+			}
+			h.AcceptRunWhitespace()
+			if !h.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+				return h.Error("OptionalChain", ErrMissingClosingBracket)
+			}
+			g.Score(h)
+		} else if g.AcceptToken(parser.Token{TokenPunctuator, "."}) {
+			g.AcceptRunWhitespace()
+			if !g.Accept(TokenIdentifier, TokenKeyword) {
+				return g.Error("OptionalChain", ErrNoIdentifier)
+			}
+			identifierName = g.GetLastToken()
+		} else if t := g.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
+			h := g.NewGoal()
+			templateLiteral = new(TemplateLiteral)
+			if err := templateLiteral.parse(&h, yield, await); err != nil {
+				return g.Error("OptionalChain", err)
+			}
+			g.Score(h)
+		} else {
+			break
+		}
+		noc := new(OptionalChain)
+		*noc = *oc
+		*oc = OptionalChain{
+			Arguments:       arguments,
+			Expression:      expression,
+			IdentifierName:  identifierName,
+			TemplateLiteral: templateLiteral,
+			OptionalChain:   noc,
+		}
+		j.Score(g)
+	}
 	return nil
 }
 
@@ -718,4 +897,6 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 // Errors
 var (
 	ErrInvalidCallExpression = errors.New("invalid CallExpression")
+	ErrMissingOptional       = errors.New("missing optional chain punctuator")
+	ErrInvalidOptionalChain  = errors.New("invalid OptionalChain")
 )
