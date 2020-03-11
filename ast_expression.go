@@ -253,8 +253,10 @@ func (oe *OptionalExpression) parse(j *jsParser, yield, await bool, me *MemberEx
 		if g.Peek() != (parser.Token{TokenPunctuator, "?."}) {
 			break
 		}
+		noe := new(OptionalExpression)
+		*noe = *oe
 		*oe = OptionalExpression{
-			OptionalExpression: oe,
+			OptionalExpression: noe,
 		}
 		h := g.NewGoal()
 		if err := oe.OptionalChain.parse(&h, yield, await); err != nil {
