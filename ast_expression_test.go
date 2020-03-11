@@ -2702,3 +2702,70 @@ func TestOptionalChain(t *testing.T) {
 		return oc, err
 	})
 }
+
+func TestOptionalExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOptional,
+					Parsing: "OptionalChain",
+					Token:   tk[0],
+				},
+				Parsing: "OptionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"?.", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidOptionalChain,
+					Parsing: "OptionalChain",
+					Token:   tk[1],
+				},
+				Parsing: "OptionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"?.\na", func(t *test, tk Tokens) { // 3
+			t.Output = OptionalExpression{
+				OptionalChain: OptionalChain{
+					IdentifierName: &tk[2],
+					Tokens:         tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"?.\na\n?.", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidOptionalChain,
+					Parsing: "OptionalChain",
+					Token:   tk[5],
+				},
+				Parsing: "OptionalExpression",
+				Token:   tk[4],
+			}
+		}},
+		{"?.\na\n?.\nb", func(t *test, tk Tokens) { // 5
+			t.Output = OptionalExpression{
+				OptionalExpression: &OptionalExpression{
+					OptionalChain: OptionalChain{
+						IdentifierName: &tk[2],
+						Tokens:         tk[:3],
+					},
+					Tokens: tk[:3],
+				},
+				OptionalChain: OptionalChain{
+					IdentifierName: &tk[6],
+					Tokens:         tk[4:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var oe OptionalExpression
+		err := oe.parse(&t.Tokens, t.Yield, t.Await, nil, nil)
+		return oe, err
+	})
+}
