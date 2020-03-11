@@ -2566,3 +2566,139 @@ func TestCallExpression(t *testing.T) {
 		return ce, err
 	})
 }
+
+func TestOptionalChain(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOptional,
+				Parsing: "OptionalChain",
+				Token:   tk[0],
+			}
+		}},
+		{"?.", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrInvalidOptionalChain,
+				Parsing: "OptionalChain",
+				Token:   tk[1],
+			}
+		}},
+		{"?.\n", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrInvalidOptionalChain,
+				Parsing: "OptionalChain",
+				Token:   tk[2],
+			}
+		}},
+		{"?.\n()", func(t *test, tk Tokens) { // 4
+			t.Output = OptionalChain{
+				Arguments: &Arguments{
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"?.\n[\na\n]", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = OptionalChain{
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"?.\na", func(t *test, tk Tokens) { // 6
+			t.Output = OptionalChain{
+				IdentifierName: &tk[2],
+				Tokens:         tk[:3],
+			}
+		}},
+		{"?.\n``", func(t *test, tk Tokens) { // 7
+			t.Output = OptionalChain{
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[2],
+					Tokens:                 tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"?.\n()\n``", func(t *test, tk Tokens) { // 8
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					Arguments: &Arguments{
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[:4],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[5],
+					Tokens:                 tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"?.\n``\n[\na\n]", func(t *test, tk Tokens) { // 9
+			litA := makeConditionLiteral(tk, 6)
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					TemplateLiteral: &TemplateLiteral{
+						NoSubstitutionTemplate: &tk[2],
+						Tokens:                 tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: &litA,
+							Tokens:                tk[6:7],
+						},
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"?.\n[\na\n]\n.\nb", func(t *test, tk Tokens) { // 10
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					Expression: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: &litA,
+								Tokens:                tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[:7],
+				},
+				IdentifierName: &tk[10],
+				Tokens:         tk[:11],
+			}
+		}},
+		{"?.\na\n()", func(t *test, tk Tokens) { // 11
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					IdentifierName: &tk[2],
+					Tokens:         tk[:3],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[4:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+	}, func(t *test) (interface{}, error) {
+		var oc OptionalChain
+		err := oc.parse(&t.Tokens, t.Yield, t.Await)
+		return oc, err
+	})
+}
