@@ -307,6 +307,12 @@ func (f ObjectBindingPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f ObjectLiteral) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
+func (f OptionalExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f OptionalChain) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
 func (f PrimaryExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
