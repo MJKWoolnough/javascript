@@ -164,6 +164,7 @@ that contains all of the information required to rebuild the lower chain.
 Possible returns types are as follows:
 
     *ConditionalExpression
+    *CoalesceExpression
     *LogicalORExpression
     *LogicalANDExpression
     *BitwiseORExpression
@@ -607,14 +608,36 @@ func (f ClassDeclaration) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type CoalesceExpression
+
+```go
+type CoalesceExpression struct {
+	CoalesceExpressionHead CoalesceExpressionHead
+	BitwiseORExpression    BitwiseORExpression
+	Tokens                 Tokens
+}
+```
+
+
+#### type CoalesceExpressionHead
+
+```go
+type CoalesceExpressionHead struct {
+	CoalesceExpression  *CoalesceExpression
+	BitwiseORExpression *BitwiseORExpression
+	Tokens              Tokens
+}
+```
+
+
 #### type ConditionalExpression
 
 ```go
 type ConditionalExpression struct {
-	LogicalORExpression LogicalORExpression
-	True                *AssignmentExpression
-	False               *AssignmentExpression
-	Tokens              Tokens
+	ShortCircuitExpression ShortCircuitExpression
+	True                   *AssignmentExpression
+	False                  *AssignmentExpression
+	Tokens                 Tokens
 }
 ```
 
@@ -1644,7 +1667,7 @@ type OptionalChain struct {
 }
 ```
 
-LeftHandSideExpression as defined in TC39
+OptionalChain as defined in TC39
 https://tc39.es/ecma262/#prod-OptionalExpression
 
 It is only valid for one of OptionalChain, Arguments, Expression,
@@ -1669,7 +1692,7 @@ type OptionalExpression struct {
 }
 ```
 
-LeftHandSideExpression as defined in TC39
+OptionalExpression as defined in TC39
 https://tc39.es/ecma262/#prod-OptionalExpression
 
 It is only valid for one of NewExpression, CallExpression or OptionalExpression
@@ -1889,6 +1912,17 @@ Valid ShiftOperator's
 func (s ShiftOperator) String() string
 ```
 String implements the fmt.Stringer interface
+
+#### type ShortCircuitExpression
+
+```go
+type ShortCircuitExpression struct {
+	LogicalORExpression *LogicalORExpression
+	CoalesceExpression  *CoalesceExpression
+	Tokens              Tokens
+}
+```
+
 
 #### type Statement
 
