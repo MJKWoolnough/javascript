@@ -945,6 +945,36 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"a\n??\nb", func(t *test, tk Tokens) { // 74
+			t.Output = ConditionalExpression{
+				CoalesceExpression: &CoalesceExpression{
+					CoalesceExpressionHead: &CoalesceExpression{
+						BitwiseORExpression: makeConditionLiteral(tk, 0).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+						Tokens:              tk[:1],
+					},
+					BitwiseORExpression: makeConditionLiteral(tk, 4).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+					Tokens:              tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a\n??\nb\n??\nc", func(t *test, tk Tokens) { // 75
+			t.Output = ConditionalExpression{
+				CoalesceExpression: &CoalesceExpression{
+					CoalesceExpressionHead: &CoalesceExpression{
+						CoalesceExpressionHead: &CoalesceExpression{
+							BitwiseORExpression: makeConditionLiteral(tk, 0).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+							Tokens:              tk[:1],
+						},
+						BitwiseORExpression: makeConditionLiteral(tk, 4).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+						Tokens:              tk[:5],
+					},
+					BitwiseORExpression: makeConditionLiteral(tk, 8).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+					Tokens:              tk[:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
