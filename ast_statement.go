@@ -597,7 +597,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		if len(is.InitExpression.Expressions) == 1 && is.InitExpression.Expressions[0].ConditionalExpression != nil {
+		if len(is.InitExpression.Expressions) == 1 && is.InitExpression.Expressions[0].ConditionalExpression != nil && is.InitExpression.Expressions[0].ConditionalExpression.LogicalORExpression != nil {
 			if lhs := is.InitExpression.Expressions[0].ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(is.InitExpression.Tokens) == len(lhs.Tokens) {
 				switch j.Peek() {
 				case parser.Token{TokenKeyword, "in"}:
