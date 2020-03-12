@@ -27,7 +27,7 @@ func TestConditional(t *testing.T) {
 			litA := makeConditionLiteral(tk, 0)
 			litB := makeConditionLiteral(tk, 4)
 			t.Output = wrapConditional(LogicalORExpression{
-				LogicalORExpression:  &litA.LogicalORExpression,
+				LogicalORExpression:  litA.LogicalORExpression,
 				LogicalANDExpression: litB.LogicalORExpression.LogicalANDExpression,
 				Tokens:               tk[:5],
 			})
@@ -50,7 +50,7 @@ func TestConditional(t *testing.T) {
 			litC := makeConditionLiteral(tk, 8)
 			t.Output = wrapConditional(LogicalORExpression{
 				LogicalORExpression: &LogicalORExpression{
-					LogicalORExpression:  &litA.LogicalORExpression,
+					LogicalORExpression:  litA.LogicalORExpression,
 					LogicalANDExpression: litB.LogicalORExpression.LogicalANDExpression,
 					Tokens:               tk[:5],
 				},
@@ -94,7 +94,7 @@ func TestConditional(t *testing.T) {
 			litB := makeConditionLiteral(tk, 4)
 			litC := makeConditionLiteral(tk, 8)
 			t.Output = wrapConditional(LogicalORExpression{
-				LogicalORExpression: &litA.LogicalORExpression,
+				LogicalORExpression: litA.LogicalORExpression,
 				LogicalANDExpression: LogicalANDExpression{
 					LogicalANDExpression: &litB.LogicalORExpression.LogicalANDExpression,
 					BitwiseORExpression:  litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
