@@ -164,7 +164,6 @@ that contains all of the information required to rebuild the lower chain.
 Possible returns types are as follows:
 
     *ConditionalExpression
-    *CoalesceExpression
     *LogicalORExpression
     *LogicalANDExpression
     *BitwiseORExpression
@@ -612,37 +611,38 @@ Format implements the fmt.Formatter interface
 
 ```go
 type CoalesceExpression struct {
-	CoalesceExpressionHead CoalesceExpressionHead
+	CoalesceExpressionHead *CoalesceExpression
 	BitwiseORExpression    BitwiseORExpression
 	Tokens                 Tokens
 }
 ```
 
+CoalesceExpression as defined in TC39
+https://tc39.es/ecma262/#prod-CoalesceExpression
 
-#### type CoalesceExpressionHead
+#### func (CoalesceExpression) Format
 
 ```go
-type CoalesceExpressionHead struct {
-	CoalesceExpression  *CoalesceExpression
-	BitwiseORExpression *BitwiseORExpression
-	Tokens              Tokens
-}
+func (f CoalesceExpression) Format(s fmt.State, v rune)
 ```
-
+Format implements the fmt.Formatter interface
 
 #### type ConditionalExpression
 
 ```go
 type ConditionalExpression struct {
-	ShortCircuitExpression ShortCircuitExpression
-	True                   *AssignmentExpression
-	False                  *AssignmentExpression
-	Tokens                 Tokens
+	LogicalORExpression *LogicalORExpression
+	CoalesceExpression  *CoalesceExpression
+	True                *AssignmentExpression
+	False               *AssignmentExpression
+	Tokens              Tokens
 }
 ```
 
-ConditionalExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
+ConditionalExpression as defined in TC39
+https://tc39.es/ecma262/#prod-ConditionalExpression
+
+One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil
 
 If True is non-nil, False must be non-nil also.
 
@@ -1912,17 +1912,6 @@ Valid ShiftOperator's
 func (s ShiftOperator) String() string
 ```
 String implements the fmt.Stringer interface
-
-#### type ShortCircuitExpression
-
-```go
-type ShortCircuitExpression struct {
-	LogicalORExpression *LogicalORExpression
-	CoalesceExpression  *CoalesceExpression
-	Tokens              Tokens
-}
-```
-
 
 #### type Statement
 
