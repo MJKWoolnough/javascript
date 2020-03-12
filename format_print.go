@@ -1568,7 +1568,7 @@ func (oe OptionalChain) printSource(w io.Writer, v bool) {
 func (ce CoalesceExpression) printSource(w io.Writer, v bool) {
 	if ce.CoalesceExpressionHead != nil {
 		ce.CoalesceExpressionHead.printSource(w, v)
+		w.Write(coalesceOperator)
 	}
-	w.Write(coalesceOperator)
 	ce.BitwiseORExpression.printSource(w, v)
 }
