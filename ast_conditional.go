@@ -2,12 +2,15 @@ package javascript
 
 import "vimagination.zapto.org/parser"
 
-// ConditionalExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ConditionalExpression
+// ConditionalExpression as defined in TC39
+// https://tc39.es/ecma262/#prod-ConditionalExpression
+//
+// One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil
 //
 // If True is non-nil, False must be non-nil also.
 type ConditionalExpression struct {
-	LogicalORExpression LogicalORExpression
+	LogicalORExpression *LogicalORExpression
+	CoalesceExpression  *CoalesceExpression
 	True                *AssignmentExpression
 	False               *AssignmentExpression
 	Tokens              Tokens
@@ -15,12 +18,24 @@ type ConditionalExpression struct {
 
 func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error {
 	g := j.NewGoal()
+	ce.LogicalORExpression = new(LogicalORExpression)
 	if err := ce.LogicalORExpression.parse(&g, in, yield, await); err != nil {
 		return j.Error("ConditionalExpression", err)
 	}
 	j.Score(g)
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
+	if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{TokenPunctuator, "??"}) {
+		g = j.NewGoal()
+		ce.CoalesceExpression = new(CoalesceExpression)
+		if err := ce.CoalesceExpression.parse(&g, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
+			return j.Error("ConditionalExpression", err)
+		}
+		ce.LogicalORExpression = nil
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+	}
 	if g.AcceptToken(parser.Token{TokenPunctuator, "?"}) {
 		j.Score(g)
 		j.AcceptRunWhitespace()
@@ -43,6 +58,38 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 		j.Score(g)
 	}
 	ce.Tokens = j.ToTokens()
+	return nil
+}
+
+// CoalesceExpression as defined in TC39
+// https://tc39.es/ecma262/#prod-CoalesceExpression
+type CoalesceExpression struct {
+	CoalesceExpressionHead *CoalesceExpression
+	BitwiseORExpression    BitwiseORExpression
+	Tokens                 Tokens
+}
+
+func (ce *CoalesceExpression) parse(j *jsParser, in, yield, await bool, be BitwiseORExpression) error {
+	ce.BitwiseORExpression = be
+	for {
+		ce.Tokens = j.ToTokens()
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{TokenPunctuator, "??"}) {
+			break
+		}
+		g.AcceptRunWhitespace()
+		nce := new(CoalesceExpression)
+		*nce = *ce
+		*ce = CoalesceExpression{
+			CoalesceExpressionHead: nce,
+		}
+		h := g.NewGoal()
+		if err := ce.BitwiseORExpression.parse(&h, in, yield, await); err != nil {
+			return g.Error("CoalesceExpression", err)
+		}
+		g.Score(h)
+	}
 	return nil
 }
 
