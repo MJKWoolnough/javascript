@@ -968,6 +968,14 @@ func TestTokeniser(t *testing.T) {
 				{TokenIdentifier, "b"},
 			},
 		},
+		{ // 114
+			"a??b",
+			[]parser.Token{
+				{TokenIdentifier, "a"},
+				{TokenPunctuator, "??"},
+				{TokenIdentifier, "b"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
