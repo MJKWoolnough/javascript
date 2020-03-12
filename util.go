@@ -120,13 +120,15 @@ Loop:
 //
 // Any other type will result in a panic.
 func WrapConditional(p interface{}) *ConditionalExpression {
-	c := new(ConditionalExpression)
+	c := &ConditionalExpression{
+		LogicalORExpression: new(LogicalORExpression),
+	}
 	switch p := p.(type) {
 	case *LogicalORExpression:
-		c.LogicalORExpression = *p
+		c.LogicalORExpression = p
 		goto logicalORExpression
 	case LogicalORExpression:
-		c.LogicalORExpression = p
+		c.LogicalORExpression = &p
 		goto logicalORExpression
 	case *LogicalANDExpression:
 		c.LogicalORExpression.LogicalANDExpression = *p
@@ -319,10 +321,10 @@ logicalORExpression:
 //    *MemberExpression
 //    *PrimaryExpression
 func UnwrapConditional(c *ConditionalExpression) interface{} {
-	if c.True != nil {
+	if c.True != nil || c.LogicalORExpression == nil {
 		return c
 	} else if c.LogicalORExpression.LogicalORExpression != nil {
-		return &c.LogicalORExpression
+		return c.LogicalORExpression
 	} else if c.LogicalORExpression.LogicalANDExpression.LogicalANDExpression != nil {
 		return &c.LogicalORExpression.LogicalANDExpression
 	} else if c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseORExpression != nil {
