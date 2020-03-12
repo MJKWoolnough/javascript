@@ -124,6 +124,7 @@ var (
 	as                           = namespaceImport[1:]
 	importCall                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '('}
 	optionalChain                = []byte{'?', '.'}
+	coalesceOperator             = []byte{' ', '?', '?', ' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
@@ -866,7 +867,11 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 }
 
 func (c ConditionalExpression) printSource(w io.Writer, v bool) {
-	c.LogicalORExpression.printSource(w, v)
+	if c.LogicalORExpression != nil {
+		c.LogicalORExpression.printSource(w, v)
+	} else if c.CoalesceExpression != nil {
+		c.CoalesceExpression.printSource(w, v)
+	}
 	if c.True != nil && c.False != nil {
 		w.Write(conditionalStart)
 		c.True.printSource(w, v)
@@ -1558,4 +1563,12 @@ func (oe OptionalChain) printSource(w io.Writer, v bool) {
 	} else if oe.TemplateLiteral != nil {
 		oe.TemplateLiteral.printSource(w, v)
 	}
+}
+
+func (ce CoalesceExpression) printSource(w io.Writer, v bool) {
+	if ce.CoalesceExpressionHead != nil {
+		ce.CoalesceExpressionHead.printSource(w, v)
+	}
+	w.Write(coalesceOperator)
+	ce.BitwiseORExpression.printSource(w, v)
 }
