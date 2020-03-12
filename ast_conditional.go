@@ -26,13 +26,11 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
 	if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{TokenPunctuator, "??"}) {
-		g = j.NewGoal()
 		ce.CoalesceExpression = new(CoalesceExpression)
-		if err := ce.CoalesceExpression.parse(&g, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
+		if err := ce.CoalesceExpression.parse(j, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
 			return j.Error("ConditionalExpression", err)
 		}
 		ce.LogicalORExpression = nil
-		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 	}
@@ -89,6 +87,7 @@ func (ce *CoalesceExpression) parse(j *jsParser, in, yield, await bool, be Bitwi
 			return g.Error("CoalesceExpression", err)
 		}
 		g.Score(h)
+		j.Score(g)
 	}
 	return nil
 }
