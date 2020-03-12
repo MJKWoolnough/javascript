@@ -151,6 +151,8 @@ var (
 	nameVariableDeclarationList                           = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', 'L', 'i', 's', 't', ':', ' '}
 	nameOptionalExpression                                = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameOptionalChain                                     = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'C', 'h', 'a', 'i', 'n', ':', ' '}
+	nameCoalesceExpression                                = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameCoalesceExpressionHead                            = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'H', 'e', 'a', 'd', ':', ' '}
 )
 
 func (f *AdditiveExpression) printType(w io.Writer, v bool) {
@@ -653,12 +655,44 @@ func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *CoalesceExpression) printType(w io.Writer, v bool) {
+	w.Write(nameCoalesceExpression[1:19])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.CoalesceExpressionHead != nil {
+		pp.Write(nameCoalesceExpressionHead)
+		f.CoalesceExpressionHead.printType(&pp, v)
+	} else if v {
+		pp.Write(nameCoalesceExpressionHead)
+		pp.Write(nilStr)
+	}
+	pp.Write(nameBitwiseORExpression)
+	f.BitwiseORExpression.printType(w, v)
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 	w.Write(nameConditionalExpression[1:22])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	pp.Write(nameLogicalORExpression)
-	f.LogicalORExpression.printType(&pp, v)
+	if f.LogicalORExpression != nil {
+		pp.Write(nameLogicalORExpression)
+		f.LogicalORExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameLogicalORExpression)
+		pp.Write(nilStr)
+	}
+	if f.CoalesceExpression != nil {
+		pp.Write(nameCoalesceExpression)
+		f.CoalesceExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameCoalesceExpression)
+		pp.Write(nilStr)
+	}
 	if f.True != nil {
 		pp.Write(nameTrue)
 		f.True.printType(&pp, v)
