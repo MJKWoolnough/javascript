@@ -201,17 +201,19 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	g.AcceptRunWhitespace()
 	if g.Peek() == (parser.Token{TokenPunctuator, "?."}) {
 		if lhs.CallExpression != nil {
+			g = j.NewGoal()
 			j.AcceptRunWhitespace()
 			lhs.OptionalExpression = new(OptionalExpression)
 			if err := lhs.OptionalExpression.parse(j, yield, await, nil, lhs.CallExpression); err != nil {
-				return j.Error("LeftHandSideExpression", err)
+				return g.Error("LeftHandSideExpression", err)
 			}
 			lhs.CallExpression = nil
 		} else if lhs.NewExpression.News == 0 {
+			g = j.NewGoal()
 			j.AcceptRunWhitespace()
 			lhs.OptionalExpression = new(OptionalExpression)
 			if err := lhs.OptionalExpression.parse(j, yield, await, &lhs.NewExpression.MemberExpression, nil); err != nil {
-				return j.Error("LeftHandSideExpression", err)
+				return g.Error("LeftHandSideExpression", err)
 			}
 			lhs.NewExpression = nil
 		}
