@@ -2792,6 +2792,101 @@ func TestOptionalChain(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{"?.(.)", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[2]),
+					Parsing: "Arguments",
+					Token:   tk[2],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[1],
+			}
+		}},
+		{"?.[]", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[2]),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[2],
+			}
+		}},
+		{"?.[1 1]", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "OptionalChain",
+				Token:   tk[4],
+			}
+		}},
+		{"?.`${}`", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[2]),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "TemplateLiteral",
+					Token:   tk[2],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[1],
+			}
+		}},
+		{"?.a(.)", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[3]),
+					Parsing: "Arguments",
+					Token:   tk[3],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[2],
+			}
+		}},
+		{"?.a[]", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err:     assignmentError(tk[3]),
+					Parsing: "Expression",
+					Token:   tk[3],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[3],
+			}
+		}},
+		{"?.a[1 1]", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "OptionalChain",
+				Token:   tk[5],
+			}
+		}},
+		{"?.a.", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "OptionalChain",
+				Token:   tk[3],
+			}
+		}},
+		{"?.a`${}`", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     assignmentError(tk[3]),
+						Parsing: "Expression",
+						Token:   tk[3],
+					},
+					Parsing: "TemplateLiteral",
+					Token:   tk[3],
+				},
+				Parsing: "OptionalChain",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var oc OptionalChain
 		err := oc.parse(&t.Tokens, t.Yield, t.Await)
