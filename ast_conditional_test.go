@@ -975,6 +975,77 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"a\n??\n!", func(t *test, tk Tokens) { // 76
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err:     ErrNoIdentifier,
+																				Parsing: "PrimaryExpression",
+																				Token:   tk[5],
+																			},
+																			Parsing: "MemberExpression",
+																			Token:   tk[5],
+																		},
+																		Parsing: "NewExpression",
+																		Token:   tk[5],
+																	},
+																	Parsing: "LeftHandSideExpression",
+																	Token:   tk[5],
+																},
+																Parsing: "UpdateExpression",
+																Token:   tk[5],
+															},
+															Parsing: "UnaryExpression",
+															Token:   tk[5],
+														},
+														Parsing: "ExponentiationExpression",
+														Token:   tk[4],
+													},
+													Parsing: "MultiplicativeExpression",
+													Token:   tk[4],
+												},
+												Parsing: "AdditiveExpression",
+												Token:   tk[4],
+											},
+											Parsing: "ShiftExpression",
+											Token:   tk[4],
+										},
+										Parsing: "RelationalExpression",
+										Token:   tk[4],
+									},
+									Parsing: "EqualityExpression",
+									Token:   tk[4],
+								},
+								Parsing: "BitwiseANDExpression",
+								Token:   tk[4],
+							},
+							Parsing: "BitwiseXORExpression",
+							Token:   tk[4],
+						},
+						Parsing: "BitwiseORExpression",
+						Token:   tk[4],
+					},
+					Parsing: "CoalesceExpression",
+					Token:   tk[4],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
