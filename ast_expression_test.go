@@ -403,6 +403,36 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
+		{"a()?.", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidOptionalChain,
+						Parsing: "OptionalChain",
+						Token:   tk[4],
+					},
+					Parsing: "OptionalExpression",
+					Token:   tk[3],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[3],
+			}
+		}},
+		{"a?.", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidOptionalChain,
+						Parsing: "OptionalChain",
+						Token:   tk[2],
+					},
+					Parsing: "OptionalExpression",
+					Token:   tk[1],
+				},
+				Parsing: "LeftHandSideExpression",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var lhs LeftHandSideExpression
 		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
