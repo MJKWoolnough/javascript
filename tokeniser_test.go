@@ -976,6 +976,30 @@ func TestTokeniser(t *testing.T) {
 				{TokenIdentifier, "b"},
 			},
 		},
+		{ // 115
+			"0.",
+			[]parser.Token{
+				{parser.TokenError, "invalid number: 0."},
+			},
+		},
+		{ // 116
+			"0.1e",
+			[]parser.Token{
+				{parser.TokenError, "invalid number: 0.1e"},
+			},
+		},
+		{ // 117
+			"1.",
+			[]parser.Token{
+				{parser.TokenError, "invalid number: 1."},
+			},
+		},
+		{ // 118
+			"1.1e",
+			[]parser.Token{
+				{parser.TokenError, "invalid number: 1.1e"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
