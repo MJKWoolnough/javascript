@@ -1314,7 +1314,37 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`super`, func(t *test, tk Tokens) { // 6
+		{`import(a).then(b)`, func(t *test, tk Tokens) { // 6
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 7)
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					CallExpression: &CallExpression{
+						CallExpression: &CallExpression{
+							ImportCall: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+							Tokens: tk[0:4],
+						},
+						IdentifierName: &tk[5],
+						Tokens:         tk[0:6],
+					},
+					Arguments: &Arguments{
+						ArgumentList: []AssignmentExpression{
+							{
+								ConditionalExpression: &litB,
+								Tokens:                tk[7:8],
+							},
+						},
+						Tokens: tk[6:9],
+					},
+					Tokens: tk[0:9],
+				},
+				Tokens: tk[0:9],
+			}
+		}},
+		{`super`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1329,7 +1359,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`import`, func(t *test, tk Tokens) { // 7
+		{`import`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1348,7 +1378,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{",", func(t *test, tk Tokens) { // 8
+		{",", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1367,7 +1397,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"a", func(t *test, tk Tokens) { // 9
+		{"a", func(t *test, tk Tokens) { // 10
 			t.Output = LeftHandSideExpression{
 				NewExpression: &NewExpression{
 					MemberExpression: MemberExpression{
@@ -1382,7 +1412,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{"a\n()", func(t *test, tk Tokens) { // 10
+		{"a\n()", func(t *test, tk Tokens) { // 11
 			t.Output = LeftHandSideExpression{
 				CallExpression: &CallExpression{
 					MemberExpression: &MemberExpression{
@@ -1400,7 +1430,7 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{"a\n(,)", func(t *test, tk Tokens) { // 11
+		{"a\n(,)", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{

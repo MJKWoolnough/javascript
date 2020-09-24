@@ -1000,6 +1000,15 @@ func TestTokeniser(t *testing.T) {
 				{parser.TokenError, "invalid number: 1.1e"},
 			},
 		},
+		{ // 119
+			"import(a)",
+			[]parser.Token{
+				{TokenKeyword, "import"},
+				{TokenPunctuator, "("},
+				{TokenIdentifier, "a"},
+				{TokenPunctuator, ")"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)

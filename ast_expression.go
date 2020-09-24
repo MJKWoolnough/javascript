@@ -798,6 +798,7 @@ type CallExpression struct {
 }
 
 func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await bool) error {
+	skip := false
 	if me == nil {
 		if j.AcceptToken(parser.Token{TokenKeyword, "super"}) {
 			ce.SuperCall = true
@@ -817,24 +818,25 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
 				return j.Error("CallExpression", ErrMissingClosingParenthesis)
 			}
-			ce.Tokens = j.ToTokens()
-			return nil
+			skip = true
 		} else {
 			return j.Error("CallExpression", ErrInvalidCallExpression)
 		}
 	} else {
 		ce.MemberExpression = me
 	}
-	j.AcceptRunWhitespace()
-	g := j.NewGoal()
-	ce.Arguments = new(Arguments)
-	if err := ce.Arguments.parse(&g, yield, await); err != nil {
-		return j.Error("CallExpression", err)
+	if !skip {
+		j.AcceptRunWhitespace()
+		g := j.NewGoal()
+		ce.Arguments = new(Arguments)
+		if err := ce.Arguments.parse(&g, yield, await); err != nil {
+			return j.Error("CallExpression", err)
+		}
+		j.Score(g)
 	}
-	j.Score(g)
 	for {
 		ce.Tokens = j.ToTokens()
-		g = j.NewGoal()
+		g := j.NewGoal()
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
 		var (
