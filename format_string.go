@@ -1477,8 +1477,11 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 	if f.SuperProperty || v {
 		pp.Printf("\nSuperProperty: %v", f.SuperProperty)
 	}
-	if f.MetaProperty || v {
-		pp.Printf("\nMetaProperty: %v", f.MetaProperty)
+	if f.NewTarget || v {
+		pp.Printf("\nNewTarget: %v", f.NewTarget)
+	}
+	if f.ImportMeta || v {
+		pp.Printf("\nImportMeta: %v", f.ImportMeta)
 	}
 	if f.Arguments != nil {
 		pp.Write(nameArguments)

@@ -241,8 +241,8 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 			t.Output = LeftHandSideExpression{
 				NewExpression: &NewExpression{
 					MemberExpression: MemberExpression{
-						MetaProperty: true,
-						Tokens:       tk[:3],
+						NewTarget: true,
+						Tokens:    tk[:3],
 					},
 					Tokens: tk[:3],
 				},
@@ -1742,8 +1742,8 @@ func TestMemberExpression(t *testing.T) {
 		}},
 		{"new\n.\ntarget", func(t *test, tk Tokens) { // 11
 			t.Output = MemberExpression{
-				MetaProperty: true,
-				Tokens:       tk[:5],
+				NewTarget: true,
+				Tokens:    tk[:5],
 			}
 		}},
 		{"new\n,", func(t *test, tk Tokens) { // 12
@@ -1966,6 +1966,12 @@ func TestMemberExpression(t *testing.T) {
 					Tokens:                 tk[12:13],
 				},
 				Tokens: tk[:13],
+			}
+		}},
+		{"import . meta", func(t *test, tk Tokens) { // 27
+			t.Output = MemberExpression{
+				ImportMeta: true,
+				Tokens:     tk[:5],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {

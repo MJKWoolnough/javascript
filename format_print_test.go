@@ -1509,10 +1509,15 @@ func TestPrintingModule(t *testing.T) {
 			"import {a as b} from 'c';",
 			"import {a as b} from 'c';",
 		},
-		{ // 21
+		{ // 22
 			"export{a\nas\nb}",
 			"export {a as b};",
 			"export {a as b};",
+		},
+		{ // 23
+			"import . meta",
+			"import.meta;",
+			"import.meta;",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {

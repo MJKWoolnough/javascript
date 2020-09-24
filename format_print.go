@@ -1,6 +1,8 @@
 package javascript
 
-import "io"
+import (
+	"io"
+)
 
 var (
 	blockOpen                    = []byte{'{'}
@@ -80,6 +82,7 @@ var (
 	colonSep                     = []byte{':', ' '}
 	logicalOR                    = []byte{' ', '|', '|', ' '}
 	newTarget                    = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
+	importMeta                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '.', 'm', 'e', 't', 'a'}
 	dot                          = ellipsis[:1]
 	logicalAND                   = []byte{' ', '&', '&', ' '}
 	this                         = []byte{'t', 'h', 'i', 's'}
@@ -1050,8 +1053,10 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 			w.Write(dot)
 			io.WriteString(w, m.IdentifierName.Data)
 		}
-	} else if m.MetaProperty {
+	} else if m.NewTarget {
 		w.Write(newTarget)
+	} else if m.ImportMeta {
+		w.Write(importMeta)
 	}
 }
 

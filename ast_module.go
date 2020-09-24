@@ -54,16 +54,23 @@ type ModuleItem struct {
 func (ml *ModuleItem) parse(j *jsParser) error {
 	g := j.NewGoal()
 	switch g.Peek() {
-	case parser.Token{TokenKeyword, "import"}:
-		ml.ImportDeclaration = new(ImportDeclaration)
-		if err := ml.ImportDeclaration.parse(&g); err != nil {
-			return j.Error("ModuleItem", err)
-		}
 	case parser.Token{TokenKeyword, "export"}:
 		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleItem", err)
 		}
+	case parser.Token{TokenKeyword, "import"}:
+		h := g.NewGoal()
+		h.Skip()
+		h.AcceptRunWhitespace()
+		if !h.AcceptToken(parser.Token{TokenPunctuator, "."}) {
+			ml.ImportDeclaration = new(ImportDeclaration)
+			if err := ml.ImportDeclaration.parse(&g); err != nil {
+				return j.Error("ModuleItem", err)
+			}
+			break
+		}
+		fallthrough
 	default:
 		ml.StatementListItem = new(StatementListItem)
 		if err := ml.StatementListItem.parse(&g, false, false, false); err != nil {

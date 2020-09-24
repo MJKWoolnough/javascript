@@ -456,13 +456,15 @@ type MemberExpression struct {
 	IdentifierName    *Token
 	TemplateLiteral   *TemplateLiteral
 	SuperProperty     bool
-	MetaProperty      bool
+	NewTarget         bool
+	ImportMeta        bool
 	Arguments         *Arguments
 	Tokens            Tokens
 }
 
 func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
+	e := false
 	if g.AcceptToken(parser.Token{TokenKeyword, "super"}) {
 		g.AcceptRunWhitespace()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "["}) {
@@ -487,15 +489,27 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			return g.Error("MemberExpression", ErrInvalidSuperProperty)
 		}
 		me.SuperProperty = true
-	} else if g.AcceptToken(parser.Token{TokenKeyword, "new"}) {
+	} else if g.Peek() == (parser.Token{TokenKeyword, "new"}) || g.Peek() == (parser.Token{TokenKeyword, "import"}) {
+		var isNew bool
+		if g.Peek().Data == "new" {
+			isNew = true
+		}
+		g.Skip()
 		g.AcceptRunWhitespace()
 		if g.AcceptToken(parser.Token{TokenPunctuator, "."}) {
 			g.AcceptRunWhitespace()
-			if !g.AcceptToken(parser.Token{TokenIdentifier, "target"}) {
+			var id string
+			if isNew {
+				id = "target"
+				me.NewTarget = true
+			} else {
+				id = "meta"
+				me.ImportMeta = true
+			}
+			if !g.AcceptToken(parser.Token{TokenIdentifier, id}) {
 				return j.Error("MemberExpression", ErrInvalidMetaProperty)
 			}
-			me.MetaProperty = true
-		} else {
+		} else if isNew {
 			h := g.NewGoal()
 			me.MemberExpression = new(MemberExpression)
 			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
@@ -516,8 +530,14 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			}
 			h.Score(i)
 			g.Score(h)
+		} else {
+			g = j.NewGoal()
+			e = true
 		}
 	} else {
+		e = true
+	}
+	if e {
 		me.PrimaryExpression = new(PrimaryExpression)
 		if err := me.PrimaryExpression.parse(&g, yield, await); err != nil {
 			return j.Error("MemberExpression", err)
