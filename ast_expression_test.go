@@ -2469,6 +2469,29 @@ func TestArguments(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"(async function(){})", func(t *test, tk Tokens) { // 11
+			t.Output = Arguments{
+				ArgumentList: []AssignmentExpression{
+					{
+						ConditionalExpression: WrapConditional(PrimaryExpression{
+							FunctionExpression: &FunctionDeclaration{
+								Type: FunctionAsync,
+								FormalParameters: FormalParameters{
+									Tokens: tk[4:6],
+								},
+								FunctionBody: Block{
+									Tokens: tk[6:8],
+								},
+								Tokens: tk[1:8],
+							},
+							Tokens: tk[1:8],
+						}),
+						Tokens: tk[1:8],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var a Arguments
 		err := a.parse(&t.Tokens, t.Yield, t.Await)
