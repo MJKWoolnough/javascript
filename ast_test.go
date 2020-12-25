@@ -40,6 +40,10 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (interface{}, error)
 }
 
 func assignmentError(tk Token) Error {
+	return assignmentCustomError(tk, ErrNoIdentifier)
+}
+
+func assignmentCustomError(tk Token, err error) Error {
 	return Error{
 		Err: Error{
 			Err: Error{
@@ -59,7 +63,7 @@ func assignmentError(tk Token) Error {
 																	Err: Error{
 																		Err: Error{
 																			Err: Error{
-																				Err:     ErrNoIdentifier,
+																				Err:     err,
 																				Parsing: "PrimaryExpression",
 																				Token:   tk,
 																			},
