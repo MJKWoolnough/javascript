@@ -89,6 +89,7 @@ type AssignmentExpression struct {
 }
 
 func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error {
+	done := false
 	if yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
 		ae.Yield = true
 		j.AcceptRunWhitespace()
@@ -102,14 +103,22 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			return j.Error("AssignmentExpression", err)
 		}
 		j.Score(g)
+		done = true
 	} else if j.Peek() == (parser.Token{TokenIdentifier, "async"}) { // TODO: Combine with next branch
 		g := j.NewGoal()
-		ae.ArrowFunction = new(ArrowFunction)
-		if err := ae.ArrowFunction.parse(&g, nil, in, yield, await); err != nil {
-			return j.Error("AssignmentExpression", err)
+		g.Skip()
+		g.AcceptRunWhitespaceNoNewLine()
+		if t := g.Peek().Type; t == TokenPunctuator || t == TokenIdentifier {
+			g := j.NewGoal()
+			ae.ArrowFunction = new(ArrowFunction)
+			if err := ae.ArrowFunction.parse(&g, nil, in, yield, await); err != nil {
+				return j.Error("AssignmentExpression", err)
+			}
+			j.Score(g)
+			done = true
 		}
-		j.Score(g)
-	} else {
+	}
+	if !done {
 		g := j.NewGoal()
 		ae.ConditionalExpression = new(ConditionalExpression)
 		if err := ae.ConditionalExpression.parse(&g, in, yield, await); err != nil {
