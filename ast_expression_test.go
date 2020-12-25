@@ -1104,15 +1104,11 @@ func TestAssignmentExpression(t *testing.T) {
 			}
 		}},
 		{"async", func(t *test, tk Tokens) { // 9
-			t.Err = Error{
-				Err: Error{
-					Err:     ErrNoIdentifier,
-					Parsing: "ArrowFunction",
-					Token:   tk[1],
-				},
-				Parsing: "AssignmentExpression",
-				Token:   tk[0],
-			}
+			t.Err = assignmentCustomError(tk[0], Error{
+				Err:     ErrInvalidFunction,
+				Parsing: "FunctionDeclaration",
+				Token:   tk[1],
+			})
 		}},
 		{"async a => {}", func(t *test, tk Tokens) { // 10
 			t.Output = AssignmentExpression{

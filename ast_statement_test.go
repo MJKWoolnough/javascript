@@ -2361,15 +2361,11 @@ func TestStatementListItem(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrNoIdentifier,
-								Parsing: "ArrowFunction",
-								Token:   tk[1],
-							},
-							Parsing: "AssignmentExpression",
-							Token:   tk[0],
-						},
+						Err: assignmentCustomError(tk[0], Error{
+							Err:     ErrInvalidFunction,
+							Parsing: "FunctionDeclaration",
+							Token:   tk[1],
+						}),
 						Parsing: "Expression",
 						Token:   tk[0],
 					},
@@ -2433,15 +2429,11 @@ func TestStatementListItem(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrNoIdentifier,
-								Parsing: "ArrowFunction",
-								Token:   tk[1],
-							},
-							Parsing: "AssignmentExpression",
-							Token:   tk[0],
-						},
+						Err: assignmentCustomError(tk[0], Error{
+							Err:     ErrInvalidFunction,
+							Parsing: "FunctionDeclaration",
+							Token:   tk[1],
+						}),
 						Parsing: "Expression",
 						Token:   tk[0],
 					},
