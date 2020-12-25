@@ -104,7 +104,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		}
 		j.Score(g)
 		done = true
-	} else if j.Peek() == (parser.Token{TokenIdentifier, "async"}) { // TODO: Combine with next branch
+	} else if j.Peek() == (parser.Token{TokenIdentifier, "async"}) {
 		g := j.NewGoal()
 		g.Skip()
 		g.AcceptRunWhitespaceNoNewLine()
