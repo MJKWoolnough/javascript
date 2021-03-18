@@ -403,7 +403,7 @@ func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) er
 	}
 	j.AcceptRunWhitespace()
 	g := j.NewGoal()
-	if err := is.Expression.parse(&g, true, await, ret); err != nil {
+	if err := is.Expression.parse(&g, true, yield, await); err != nil {
 		return j.Error("IterationStatementWhile", err)
 	}
 	j.Score(g)
