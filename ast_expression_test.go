@@ -1054,7 +1054,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{"yield\n,", func(t *test, tk Tokens) { // 4
+		{"yield ,", func(t *test, tk Tokens) { // 4
 			t.Yield = true
 			t.Err = Error{
 				Err:     assignmentError(tk[2]),
@@ -1062,7 +1062,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"yield\n1", func(t *test, tk Tokens) { // 5
+		{"yield 1", func(t *test, tk Tokens) { // 5
 			lit1 := makeConditionLiteral(tk, 2)
 			t.Yield = true
 			t.Output = AssignmentExpression{
@@ -1074,7 +1074,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"yield\n*\n", func(t *test, tk Tokens) { // 6
+		{"yield *\n", func(t *test, tk Tokens) { // 6
 			t.Yield = true
 			t.Err = Error{
 				Err:     assignmentError(tk[4]),
@@ -1082,7 +1082,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"yield\n*\n*", func(t *test, tk Tokens) { // 7
+		{"yield *\n*", func(t *test, tk Tokens) { // 7
 			t.Yield = true
 			t.Err = Error{
 				Err:     assignmentError(tk[4]),
@@ -1090,7 +1090,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"yield\n*\n1", func(t *test, tk Tokens) { // 8
+		{"yield *\n1", func(t *test, tk Tokens) { // 8
 			lit1 := makeConditionLiteral(tk, 4)
 			t.Yield = true
 			t.Output = AssignmentExpression{
