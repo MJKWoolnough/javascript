@@ -92,7 +92,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 	done := false
 	if yield && j.AcceptToken(parser.Token{TokenKeyword, "yield"}) {
 		ae.Yield = true
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoNewLine()
 		if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
 			ae.Delegate = true
 			j.AcceptRunWhitespace()
