@@ -3624,6 +3624,32 @@ func TestIterationStatementWhile(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"while(yield a){}", func(t *test, tk Tokens) { // 7
+			t.Yield = true
+			litA := makeConditionLiteral(tk, 4)
+			t.Output = IterationStatementWhile{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							Yield: true,
+							AssignmentExpression: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[4:5],
+							},
+							Tokens: tk[2:5],
+						},
+					},
+					Tokens: tk[2:5],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[6:8],
+					},
+					Tokens: tk[6:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var is IterationStatementWhile
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
