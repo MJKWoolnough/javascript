@@ -17,6 +17,13 @@ type Scope struct {
 	Bindings     map[string]Binding
 }
 
+func (s *Scope) getFunctionScope() *Scope {
+	for s.IsBlockScope && s.Parent != nil {
+		s = s.Parent
+	}
+	return s
+}
+
 // NewScope returns a init'd Scope type
 func NewScope() *Scope {
 	return &Scope{
