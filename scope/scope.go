@@ -14,9 +14,15 @@ type Scope struct {
 	Bindings     map[string]Binding
 }
 
+func NewScope() *Scope {
+	return &Scope{
+		Bindings: make(map[string]Binding),
+	}
+}
+
 func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 	if global == nil {
-		global = new(Scope)
+		global = NewScope()
 	}
 	for _, i := range m.ModuleListItems {
 		if i.ImportDeclaration != nil {
@@ -32,7 +38,7 @@ func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 
 func ScriptScope(s *javascript.Script, global *Scope) *Scope {
 	if global == nil {
-		global = new(Scope)
+		global = NewScope()
 	}
 	for _, i := range s.StatementList {
 		processStatementListItem(i, global)
