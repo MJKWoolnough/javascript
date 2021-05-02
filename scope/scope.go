@@ -31,6 +31,16 @@ func NewScope() *Scope {
 	}
 }
 
+func newFunctionScope(parent *Scope) *Scope {
+	return &Scope{
+		Parent: &parent,
+		Bindings: map[string]Binding{
+			"this":      Binding{},
+			"arguments": Binding{},
+		},
+	}
+}
+
 // ModuleScope parses out the scope tree for a javascript Module
 func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 	if global == nil {
