@@ -14,7 +14,7 @@ type Scope struct {
 	IsLexicalScope bool
 	Parent         *Scope
 	Scopes         []Scope
-	Bindings       map[string]Binding
+	Bindings       map[string][]Binding
 }
 
 func (s *Scope) getFunctionScope() *Scope {
@@ -35,8 +35,8 @@ func newFunctionScope(parent *Scope) *Scope {
 	return &Scope{
 		Parent: &parent,
 		Bindings: map[string]Binding{
-			"this":      Binding{},
-			"arguments": Binding{},
+			"this":      []Binding{},
+			"arguments": []Binding{},
 		},
 	}
 }
