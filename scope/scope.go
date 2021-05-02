@@ -1,12 +1,15 @@
-package scope
+// Package scope parses out a scope tree for a javascript module or script
+package scope // import "vimagination.zapto.org/javascript/scope"
 
 import "vimagination.zapto.org/javascript"
 
+// Binding represents a single instance of a bound name
 type Binding struct {
 	*Scope
 	*Token
 }
 
+// Scope represents a single level of variable scope
 type Scope struct {
 	IsBlockScope bool
 	Parent       *Scope
@@ -14,12 +17,14 @@ type Scope struct {
 	Bindings     map[string]Binding
 }
 
+// NewScope returns a init'd Scope type
 func NewScope() *Scope {
 	return &Scope{
 		Bindings: make(map[string]Binding),
 	}
 }
 
+// ModuleScope parses out the scope tree for a javascript Module
 func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 	if global == nil {
 		global = NewScope()
@@ -36,6 +41,7 @@ func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 	return global
 }
 
+// ScriptScope parses out the scope tree for a javascript script
 func ScriptScope(s *javascript.Script, global *Scope) *Scope {
 	if global == nil {
 		global = NewScope()
