@@ -11,14 +11,14 @@ type Binding struct {
 
 // Scope represents a single level of variable scope
 type Scope struct {
-	IsBlockScope bool
-	Parent       *Scope
-	Scopes       []Scope
-	Bindings     map[string]Binding
+	IsLexicalScope bool
+	Parent         *Scope
+	Scopes         []Scope
+	Bindings       map[string]Binding
 }
 
 func (s *Scope) getFunctionScope() *Scope {
-	for s.IsBlockScope && s.Parent != nil {
+	for s.IsLexicalScope && s.Parent != nil {
 		s = s.Parent
 	}
 	return s
