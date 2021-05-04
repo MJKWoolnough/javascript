@@ -1,7 +1,11 @@
 // Package scope parses out a scope tree for a javascript module or script
 package scope // import "vimagination.zapto.org/javascript/scope"
 
-import "vimagination.zapto.org/javascript"
+import (
+	"errors"
+
+	"vimagination.zapto.org/javascript"
+)
 
 // Binding represents a single instance of a bound name
 type Binding struct {
@@ -24,19 +28,22 @@ func (s *Scope) getFunctionScope() *Scope {
 	return s
 }
 
-func (s *Scope) setBinding(name string, binding Binding) {
+func (s *Scope) setBinding(name string, binding Binding) error {
+	if _, ok := s.Bindings[name]; ok {
+		return ErrDuplicateBinding
+	}
 	s.Bindings[name] = []Binding{binding}
+	return nil
 }
 
-func (s *Scope) addBinding(name string, binding Binding) {
+func (s *Scope) addBinding(name string, binding Binding) error {
 	for {
 		if bs, ok := s.Bindings[name]; ok {
 			s.Bindings = append(bs, binding)
-			return
+			return nil
 		}
 		if s.Parent == nil {
-			s.setBinding(name, binding)
-			return
+			return s.setBinding(name, binding)
 		}
 		s = s.Parent
 	}
@@ -60,7 +67,7 @@ func newFunctionScope(parent *Scope) *Scope {
 }
 
 // ModuleScope parses out the scope tree for a javascript Module
-func ModuleScope(m *javascript.Module, global *Scope) *Scope {
+func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
@@ -68,37 +75,47 @@ func ModuleScope(m *javascript.Module, global *Scope) *Scope {
 		if i.ImportDeclaration != nil {
 
 		} else if i.StatementListItem != nil {
-			processStatementListItem(i.StatementListItem, global)
+			if err := processStatementListItem(i.StatementListItem, global); err != nil {
+				return nil, err
+			}
 		} else if i.ExportDeclaration != nil {
 
 		}
 	}
-	return global
+	return global, nil
 }
 
 // ScriptScope parses out the scope tree for a javascript script
-func ScriptScope(s *javascript.Script, global *Scope) *Scope {
+func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
 	for _, i := range s.StatementList {
-		processStatementListItem(i, global)
+		if err := processStatementListItem(i, global); err != nil {
+			return nil, err
+		}
 	}
-	return global
+	return global, nil
 }
 
-func processStatementListItem(s *javascript.StatementListItem, scope *Scope) {
+func processStatementListItem(s *javascript.StatementListItem, scope *Scope) error {
 	if s.Statement != nil {
-		processStatement(s.Statement, scope)
+		return processStatement(s.Statement, scope)
 	} else if s.Declaration != nil {
-		processDeclaration(s.Declaration, scope)
+		return processDeclaration(s.Declaration, scope)
 	}
+	return nil
 }
 
-func processStatement(s *javascript.Statement, scope *Scope) {
-
+func processStatement(s *javascript.Statement, scope *Scope) error {
+	return nil
 }
 
-func processDeclaration(d *javascript.Declaration, scope *Scope) {
-
+func processDeclaration(d *javascript.Declaration, scope *Scope) error {
+	return nil
 }
+
+// Errors
+var (
+	ErrDuplicateBinding = errors.New("duplicate binding")
+)
