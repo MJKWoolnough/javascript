@@ -10,7 +10,7 @@ import (
 // Binding represents a single instance of a bound name
 type Binding struct {
 	*Scope
-	*Token
+	*javascript.Token
 }
 
 // Scope represents a single level of variable scope
@@ -39,7 +39,7 @@ func (s *Scope) setBinding(name string, binding Binding) error {
 func (s *Scope) addBinding(name string, binding Binding) error {
 	for {
 		if bs, ok := s.Bindings[name]; ok {
-			s.Bindings = append(bs, binding)
+			s.Bindings[name] = append(bs, binding)
 			return nil
 		}
 		if s.Parent == nil {
@@ -52,14 +52,14 @@ func (s *Scope) addBinding(name string, binding Binding) error {
 // NewScope returns a init'd Scope type
 func NewScope() *Scope {
 	return &Scope{
-		Bindings: make(map[string]Binding),
+		Bindings: make(map[string][]Binding),
 	}
 }
 
 func newFunctionScope(parent *Scope) *Scope {
 	return &Scope{
-		Parent: &parent,
-		Bindings: map[string]Binding{
+		Parent: parent,
+		Bindings: map[string][]Binding{
 			"this":      []Binding{},
 			"arguments": []Binding{},
 		},
@@ -91,7 +91,7 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 		global = NewScope()
 	}
 	for _, i := range s.StatementList {
-		if err := processStatementListItem(i, global); err != nil {
+		if err := processStatementListItem(&i, global); err != nil {
 			return nil, err
 		}
 	}
