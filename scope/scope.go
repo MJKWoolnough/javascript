@@ -169,6 +169,19 @@ func processStatement(s *javascript.Statement, scope *Scope) error {
 }
 
 func processDeclaration(d *javascript.Declaration, scope *Scope) error {
+	if d.ClassDeclaration != nil {
+		if err := processClassDeclaration(d.ClassDeclaration, scope*Scope); err != nil {
+			return err
+		}
+	} else if d.FunctionDeclaration != nil {
+		if err := processFunctionDeclaration(d.FunctionDeclaration, scope*Scope); err != nil {
+			return err
+		}
+	} else if d.LexicalDeclaration != nil {
+		if err := processLexicalDeclaration(d.LexicalDeclaration, scope*Scope); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -213,6 +226,14 @@ func processFunctionDeclaration(d *javascript.FunctionDeclaration, scope *Scope)
 }
 
 func processTryStatement(d *javascript.TryStatement, scope *Scope) error {
+	return nil
+}
+
+func processClassDeclaration(d *javascript.ClassDeclaration, scope *Scope) error {
+	return nil
+}
+
+func processLexicalDeclaration(d *javascript.LexicalDeclaration, scope *Scope) error {
 	return nil
 }
 
