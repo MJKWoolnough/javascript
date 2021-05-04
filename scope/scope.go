@@ -131,10 +131,81 @@ func processStatementListItem(s *javascript.StatementListItem, scope *Scope) err
 }
 
 func processStatement(s *javascript.Statement, scope *Scope) error {
+	if s.BlockStatement != nil {
+		return processBlockStatement(s.BlockStatement, scope)
+	} else if s.VariableStatement != nil {
+		return processVariableStatement(s.VariableStatement, scope)
+	} else if s.ExpressionStatement != nil {
+		return processExpressionStatement(s.ExpressionStatement, scope)
+	} else if s.IfStatement != nil {
+		return processIfStatement(s.IfStatement, scope)
+	} else if s.IterationStatementDo != nil {
+		return processIterationStatementDo(s.IterationStatementDo, scope)
+	} else if s.IterationStatementWhile != nil {
+		return processIterationStatementWhile(s.IterationStatementWhile, scope)
+	} else if s.IterationStatementFor != nil {
+		return processIterationStatementFor(s.IterationStatementFor, scope)
+	} else if s.SwitchStatement != nil {
+		return processSwitchStatement(s.SwitchStatement, scope)
+	} else if s.WithStatement != nil {
+		return processWithStatement(s.WithStatement, scope)
+	} else if s.LabelIdentifier != nil {
+		if s.LabelledItemFunction != nil {
+			return processFunctionDeclaration(s.LabelledItemFunction, scope)
+		} else if s.LabelledItemStatement != nil {
+			return processStatement(s.LabelledItemStatement, scope)
+		}
+	} else if s.TryStatement != nil {
+		return processTryStatement(s.TryStatement, scope)
+	}
 	return nil
 }
 
 func processDeclaration(d *javascript.Declaration, scope *Scope) error {
+	return nil
+}
+
+func processBlockStatement(d *javascript.Block, scope *Scope) error {
+	return nil
+}
+
+func processVariableStatement(d *javascript.VariableStatement, scope *Scope) error {
+	return nil
+}
+
+func processExpressionStatement(d *javascript.Expression, scope *Scope) error {
+	return nil
+}
+
+func processIfStatement(d *javascript.IfStatement, scope *Scope) error {
+	return nil
+}
+
+func processIterationStatementDo(d *javascript.IterationStatementDo, scope *Scope) error {
+	return nil
+}
+
+func processIterationStatementWhile(d *javascript.IterationStatementWhile, scope *Scope) error {
+	return nil
+}
+
+func processIterationStatementFor(d *javascript.IterationStatementFor, scope *Scope) error {
+	return nil
+}
+
+func processSwitchStatement(d *javascript.SwitchStatement, scope *Scope) error {
+	return nil
+}
+
+func processWithStatement(d *javascript.WithStatement, scope *Scope) error {
+	return nil
+}
+
+func processFunctionDeclaration(d *javascript.FunctionDeclaration, scope *Scope) error {
+	return nil
+}
+
+func processTryStatement(d *javascript.TryStatement, scope *Scope) error {
 	return nil
 }
 
