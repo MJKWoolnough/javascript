@@ -24,6 +24,24 @@ func (s *Scope) getFunctionScope() *Scope {
 	return s
 }
 
+func (s *Scope) setBinding(name string, binding Binding) {
+	s.Bindings[name] = []Binding{binding}
+}
+
+func (s *Scope) addBinding(name string, binding Binding) {
+	for {
+		if bs, ok := s.Bindings[name]; ok {
+			s.Bindings = append(bs, binding)
+			return
+		}
+		if s.Parent == nil {
+			s.setBinding(name, binding)
+			return
+		}
+		s = s.Parent
+	}
+}
+
 // NewScope returns a init'd Scope type
 func NewScope() *Scope {
 	return &Scope{
