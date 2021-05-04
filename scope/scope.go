@@ -66,6 +66,13 @@ func newFunctionScope(parent *Scope) *Scope {
 	}
 }
 
+func newArrowFunctionScope(parent *Scope) *Scope {
+	return &Scope{
+		Parent:   parent,
+		Bindings: make(map[string][]Binding),
+	}
+}
+
 func newLexicalScope(parent *Scope) *Scope {
 	return &Scope{
 		IsLexicalScope: true,
