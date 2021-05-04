@@ -193,7 +193,11 @@ func processDeclaration(d *javascript.Declaration, scope *Scope) error {
 	return nil
 }
 
-func processBlockStatement(d *javascript.Block, scope *Scope) error {
+func processBlockStatement(b *javascript.Block, scope *Scope) error {
+	scope = newLexicalScope(scope)
+	for _, sli := range b.StatementList {
+		processStatementListItem(&sli, scope)
+	}
 	return nil
 }
 
