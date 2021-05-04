@@ -72,8 +72,31 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 		global = NewScope()
 	}
 	for _, i := range m.ModuleListItems {
-		if i.ImportDeclaration != nil {
-
+		if i.ImportDeclaration != nil && i.ImportDeclaration.ImportClause != nil {
+			if i.ImportDeclaration.ImportedDefaultBinding != nil {
+				if err := global.setBinding(i.ImportDeclaration.ImportedDefaultBinding.Data, Binding{Token: i.ImportDeclaration.ImportedDefaultBinding, Scope: global}); err != nil {
+					return nil, err
+				}
+			}
+			if i.ImportDeclaration.NameSpaceImport != nil {
+				if err := global.setBinding(i.ImportDeclaration.NameSpaceImport.Data, Binding{Token: i.ImportDeclaration.NameSpaceImport, Scope: global}); err != nil {
+					return nil, err
+				}
+			}
+			if i.ImportDeclaration.NamedImports != nil {
+				for _, is := range i.ImportDeclaration.NamedImports.ImportList {
+					if is.IdentifierName == nil {
+						return nil, ErrInvalidImport
+					}
+					name := is.IdentifierName.Data
+					if is.ImportedBinding != nil {
+						name = is.ImportedBinding.Data
+					}
+					if err := global.setBinding(name, Binding{Token: is.IdentifierName, Scope: global}); err != nil {
+						return nil, err
+					}
+				}
+			}
 		} else if i.StatementListItem != nil {
 			if err := processStatementListItem(i.StatementListItem, global); err != nil {
 				return nil, err
@@ -118,4 +141,5 @@ func processDeclaration(d *javascript.Declaration, scope *Scope) error {
 // Errors
 var (
 	ErrDuplicateBinding = errors.New("duplicate binding")
+	ErrInvalidImport    = errors.New("invalid import")
 )
