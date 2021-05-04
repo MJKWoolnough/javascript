@@ -66,6 +66,13 @@ func newFunctionScope(parent *Scope) *Scope {
 	}
 }
 
+func newLexicalScope(parent *Scope) *Scope {
+	return &Scope{
+		IsLexicalScope: true,
+		Bindings:       make(map[string][]Binding),
+	}
+}
+
 // ModuleScope parses out the scope tree for a javascript Module
 func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	if global == nil {
