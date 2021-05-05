@@ -246,7 +246,13 @@ func processIterationStatementDo(d *javascript.IterationStatementDo, scope *Scop
 	return nil
 }
 
-func processIterationStatementWhile(d *javascript.IterationStatementWhile, scope *Scope) error {
+func processIterationStatementWhile(w *javascript.IterationStatementWhile, scope *Scope) error {
+	if err := processExpression(&w.Expression, scope); err != nil {
+		return err
+	}
+	if err := processStatement(&w.Statement, scope); err != nil {
+		return err
+	}
 	return nil
 }
 
