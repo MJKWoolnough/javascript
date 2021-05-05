@@ -147,7 +147,7 @@ func processStatementListItem(s *javascript.StatementListItem, scope *Scope) err
 
 func processStatement(s *javascript.Statement, scope *Scope) error {
 	if s.BlockStatement != nil {
-		return processBlockStatement(s.BlockStatement, scope)
+		return processBlockStatement(s.BlockStatement, newLexicalScope(scope))
 	} else if s.VariableStatement != nil {
 		return processVariableStatement(s.VariableStatement, scope)
 	} else if s.ExpressionStatement != nil {
@@ -194,7 +194,6 @@ func processDeclaration(d *javascript.Declaration, scope *Scope) error {
 }
 
 func processBlockStatement(b *javascript.Block, scope *Scope) error {
-	scope = newLexicalScope(scope)
 	for _, sli := range b.StatementList {
 		if err := processStatementListItem(&sli, scope); err != nil {
 			return nil
