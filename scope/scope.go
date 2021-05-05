@@ -237,6 +237,12 @@ func processIfStatement(i *javascript.IfStatement, scope *Scope) error {
 }
 
 func processIterationStatementDo(d *javascript.IterationStatementDo, scope *Scope) error {
+	if err := processStatement(&d.Statement, scope); err != nil {
+		return err
+	}
+	if err := processExpression(&d.Expression, scope); err != nil {
+		return err
+	}
 	return nil
 }
 
