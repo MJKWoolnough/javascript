@@ -221,7 +221,18 @@ func processExpression(e *javascript.Expression, scope *Scope) error {
 	return nil
 }
 
-func processIfStatement(d *javascript.IfStatement, scope *Scope) error {
+func processIfStatement(i *javascript.IfStatement, scope *Scope) error {
+	if err := processExpression(&i.Expression, scope); err != nil {
+		return err
+	}
+	if err := processStatement(&i.Statement, scope); err != nil {
+		return err
+	}
+	if i.ElseStatement != nil {
+		if err := processStatement(i.ElseStatement, scope); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
