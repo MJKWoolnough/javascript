@@ -256,7 +256,77 @@ func processIterationStatementWhile(w *javascript.IterationStatementWhile, scope
 	return nil
 }
 
-func processIterationStatementFor(d *javascript.IterationStatementFor, scope *Scope) error {
+func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Scope) error {
+	switch f.Type {
+	case javascript.ForNormal:
+	case javascript.ForNormalVar:
+		for _, v := range f.InitVar {
+			if err := processVariableDeclaration(v, scope); err != nil {
+				return err
+			}
+		}
+	case javascript.ForNormalLexicalDeclaration:
+		if f.InitLexical != nil {
+			scope = newLexicalScope(scope)
+			if err := processLexicalDeclaration(f.InitLexical, scope); err != nil {
+				return err
+			}
+		}
+	case javascript.ForNormalExpression:
+		if f.InitExpression != nil {
+			if err := processExpression(f.InitExpression, scope); err != nil {
+				return err
+			}
+		}
+	case javascript.ForInLeftHandSide, javascript.ForOfLeftHandSide, javascript.ForAwaitOfLeftHandSide:
+		if f.LeftHandSideExpression != nil {
+			if err := processLeftHandSideExpression(f.LeftHandSideExpression, scope); err != nil {
+				return err
+			}
+		}
+	default:
+		if f.ForBindingIdentifier != nil {
+			if err := scope.Parent.addBinding(f.ForBindingIdentifier.Data, Binding{Token: f.ForBindingIdentifier, Scope: scope}); err != nil {
+				return err
+			}
+		} else if f.ForBindingPatternObject != nil {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope); err != nil {
+				return err
+			}
+		} else if f.ForBindingPatternArray != nil {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope); err != nil {
+				return err
+			}
+		}
+	}
+	switch f.Type {
+	case javascript.ForNormal, javascript.ForNormalVar, javascript.ForNormalLexicalDeclaration, javascript.ForNormalExpression:
+		if f.Conditional != nil {
+			if err := processExpression(f.Conditional, scope); err != nil {
+				return err
+			}
+		}
+		if f.Afterthought != nil {
+			if err := processExpression(f.Afterthought, scope); err != nil {
+				return err
+			}
+		}
+	case javascript.ForInLeftHandSide, javascript.ForInVar, javascript.ForInLet, javascript.ForInConst:
+		if f.In != nil {
+			if err := processExpression(f.In, scope); err != nil {
+				return err
+			}
+		}
+	case javascript.ForOfLeftHandSide, javascript.ForOfVar, javascript.ForOfLet, javascript.ForOfConst, javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
+		if f.Of != nil {
+			if err := processAssignmentExpression(f.Of, scope); err != nil {
+				return err
+			}
+		}
+	}
+	if err := processStatement(&f.Statement, scope); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -289,6 +359,18 @@ func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope) 
 }
 
 func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scope) error {
+	return nil
+}
+
+func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *Scope) error {
+	return nil
+}
+
+func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope) error {
+	return nil
+}
+
+func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope) error {
 	return nil
 }
 
