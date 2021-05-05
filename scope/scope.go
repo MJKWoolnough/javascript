@@ -363,7 +363,9 @@ func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope) error {
 	return nil
 }
 
-func processWithStatement(d *javascript.WithStatement, scope *Scope) error {
+func processWithStatement(w *javascript.WithStatement, scope *Scope) error {
+	processExpression(&w.Expression, scope)
+	processStatement(&w.Statement, scope)
 	return nil
 }
 
