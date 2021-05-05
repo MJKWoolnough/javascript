@@ -203,7 +203,12 @@ func processBlockStatement(b *javascript.Block, scope *Scope) error {
 	return nil
 }
 
-func processVariableStatement(d *javascript.VariableStatement, scope *Scope) error {
+func processVariableStatement(v *javascript.VariableStatement, scope *Scope) error {
+	for _, vs := range v.VariableDeclarationList {
+		if err := processVariableDeclaration(vs, scope); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -248,6 +253,10 @@ func processClassDeclaration(d *javascript.ClassDeclaration, scope *Scope) error
 }
 
 func processLexicalDeclaration(d *javascript.LexicalDeclaration, scope *Scope) error {
+	return nil
+}
+
+func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope) error {
 	return nil
 }
 
