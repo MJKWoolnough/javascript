@@ -151,7 +151,7 @@ func processStatement(s *javascript.Statement, scope *Scope) error {
 	} else if s.VariableStatement != nil {
 		return processVariableStatement(s.VariableStatement, scope)
 	} else if s.ExpressionStatement != nil {
-		return processExpressionStatement(s.ExpressionStatement, scope)
+		return processExpression(s.ExpressionStatement, scope)
 	} else if s.IfStatement != nil {
 		return processIfStatement(s.IfStatement, scope)
 	} else if s.IterationStatementDo != nil {
@@ -212,7 +212,12 @@ func processVariableStatement(v *javascript.VariableStatement, scope *Scope) err
 	return nil
 }
 
-func processExpressionStatement(d *javascript.Expression, scope *Scope) error {
+func processExpression(e *javascript.Expression, scope *Scope) error {
+	for _, ae := range e.Expressions {
+		if err := processAssignmentExpression(&ae, scope); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -257,6 +262,10 @@ func processLexicalDeclaration(d *javascript.LexicalDeclaration, scope *Scope) e
 }
 
 func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope) error {
+	return nil
+}
+
+func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scope) error {
 	return nil
 }
 
