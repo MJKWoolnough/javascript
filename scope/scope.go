@@ -330,7 +330,36 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 	return nil
 }
 
-func processSwitchStatement(d *javascript.SwitchStatement, scope *Scope) error {
+func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope) error {
+	if err := processExpression(&s.Expression, scope); err != nil {
+		return err
+	}
+	scope = newLexicalScope(scope)
+	for _, c := range s.CaseClauses {
+		if err := processExpression(&c.Expression, scope); err != nil {
+			return err
+		}
+		for _, sli := range c.StatementList {
+			if err := processStatementListItem(&sli, scope); err != nil {
+				return err
+			}
+		}
+	}
+	for _, sli := range s.DefaultClause {
+		if err := processStatementListItem(&sli, scope); err != nil {
+			return err
+		}
+	}
+	for _, c := range s.PostDefaultCaseClauses {
+		if err := processExpression(&c.Expression, scope); err != nil {
+			return err
+		}
+		for _, sli := range c.StatementList {
+			if err := processStatementListItem(&sli, scope); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
