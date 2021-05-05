@@ -369,7 +369,19 @@ func processWithStatement(w *javascript.WithStatement, scope *Scope) error {
 	return nil
 }
 
-func processFunctionDeclaration(d *javascript.FunctionDeclaration, scope *Scope) error {
+func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope) error {
+	if f.BindingIdentifier != nil {
+		if err := scope.getFunctionScope().setBinding(f.BindingIdentifier.Data, Binding{Token: f.BindingIdentifier, Scope: scope}); err != nil {
+			return err
+		}
+	}
+	scope = newFunctionScope(scope)
+	if err := processFormalParameters(&f.FormalParameters, scope); err != nil {
+		return err
+	}
+	if err := processBlockStatement(&f.FunctionBody, scope); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -402,6 +414,10 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 }
 
 func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope) error {
+	return nil
+}
+
+func processFormalParameters(f *javascript.FormalParameters, scope *Scope) error {
 	return nil
 }
 
