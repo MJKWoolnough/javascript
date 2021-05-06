@@ -384,7 +384,20 @@ func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope)
 	return nil
 }
 
-func processTryStatement(d *javascript.TryStatement, scope *Scope) error {
+func processTryStatement(t *javascript.TryStatement, scope *Scope) error {
+	if err := processBlockStatement(&t.TryBlock, newLexicalScope(scope)); err != nil {
+		return err
+	}
+	if t.CatchBlock != nil {
+		if err := processBlockStatement(t.CatchBlock, newLexicalScope(scope)); err != nil {
+			return err
+		}
+	}
+	if t.FinallyBlock != nil {
+		if err := processBlockStatement(t.FinallyBlock, newLexicalScope(scope)); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
