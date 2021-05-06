@@ -537,6 +537,18 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 }
 
 func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set, hoist, bare bool) error {
+	for _, bp := range o.BindingPropertyList {
+		if err := processBindingProperty(bp, scope, set, hoist, bare); err != nil {
+			return err
+		}
+	}
+	if o.BindingRestProperty != nil && set {
+		if bare {
+			scope.addBinding(o.BindingRestProperty)
+		} else {
+			scope.setBinding(o.BindingRestProperty, hoist)
+		}
+	}
 	return nil
 }
 
@@ -573,6 +585,10 @@ func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool)
 }
 
 func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processBindingProperty(b javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
 	return nil
 }
 
