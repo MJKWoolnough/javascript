@@ -333,11 +333,11 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 				scope.Parent.addBinding(f.ForBindingIdentifier)
 			}
 		} else if f.ForBindingPatternObject != nil {
-			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set); err != nil {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, false, true); err != nil {
 				return err
 			}
 		} else if f.ForBindingPatternArray != nil {
-			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set); err != nil {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, false, true); err != nil {
 				return err
 			}
 		}
@@ -474,6 +474,26 @@ func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, s
 }
 
 func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope, set bool) error {
+	if set {
+		if v.BindingIdentifier != nil {
+			if err := scope.setBinding(v.BindingIdentifier, true); err != nil {
+				return err
+			}
+		} else if v.ArrayBindingPattern != nil {
+			if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, true, true, false); err != nil {
+				return err
+			}
+		} else if v.ObjectBindingPattern != nil {
+			if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, true, true, false); err != nil {
+				return err
+			}
+		}
+	}
+	if v.Initializer != nil {
+		if err := processAssignmentExpression(v.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -485,11 +505,11 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 	return nil
 }
 
-func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set bool) error {
+func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set, hoist, bare bool) error {
 	return nil
 }
 
-func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set bool) error {
+func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set, hoist, bare bool) error {
 	return nil
 }
 
