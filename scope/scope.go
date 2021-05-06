@@ -464,7 +464,12 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set b
 	return nil
 }
 
-func processLexicalDeclaration(d *javascript.LexicalDeclaration, scope *Scope, set bool) error {
+func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, set bool) error {
+	for _, lb := range l.BindingList {
+		if err := processLexicalBinding(lb, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -493,6 +498,10 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 }
 
 func processMethodDefinition(m javascript.MethodDefinition, scope *Scope, set bool) error {
+	return nil
+}
+
+func processLexicalBinding(l javascript.LexicalBinding, scope *Scope, set bool) error {
 	return nil
 }
 
