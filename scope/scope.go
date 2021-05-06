@@ -332,12 +332,12 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			if !set {
 				scope.Parent.addBinding(f.ForBindingIdentifier)
 			}
-		} else if f.ForBindingPatternObject != nil {
-			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, false, true); err != nil {
+		} else if f.ForBindingPatternObject != nil && set {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, false, true); err != nil {
 				return err
 			}
-		} else if f.ForBindingPatternArray != nil {
-			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, false, true); err != nil {
+		} else if f.ForBindingPatternArray != nil && set {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, false, true); err != nil {
 				return err
 			}
 		}
@@ -480,11 +480,11 @@ func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope, 
 				return err
 			}
 		} else if v.ArrayBindingPattern != nil {
-			if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, true, true, false); err != nil {
+			if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, true, false); err != nil {
 				return err
 			}
 		} else if v.ObjectBindingPattern != nil {
-			if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, true, true, false); err != nil {
+			if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, true, false); err != nil {
 				return err
 			}
 		}
@@ -536,13 +536,13 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 	return nil
 }
 
-func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set, hoist, bare bool) error {
+func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, hoist, bare bool) error {
 	for _, bp := range o.BindingPropertyList {
-		if err := processBindingProperty(bp, scope, set, hoist, bare); err != nil {
+		if err := processBindingProperty(bp, scope, hoist, bare); err != nil {
 			return err
 		}
 	}
-	if o.BindingRestProperty != nil && set {
+	if o.BindingRestProperty != nil {
 		if bare {
 			scope.addBinding(o.BindingRestProperty)
 		} else {
@@ -552,14 +552,14 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 	return nil
 }
 
-func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set, hoist, bare bool) error {
+func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, hoist, bare bool) error {
 	for _, be := range a.BindingElementList {
-		if err := processBindingElement(&be, scope, set, hoist, bare); err != nil {
+		if err := processBindingElement(&be, scope, hoist, bare); err != nil {
 			return err
 		}
 	}
-	if a.BindingRestElement != nil && set {
-		if err := processBindingElement(a.BindingRestElement, scope, set, hoist, bare); err != nil {
+	if a.BindingRestElement != nil {
+		if err := processBindingElement(a.BindingRestElement, scope, hoist, bare); err != nil {
 			return err
 		}
 	}
@@ -598,11 +598,11 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 	return nil
 }
 
-func processBindingProperty(b javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
+func processBindingProperty(b javascript.BindingProperty, scope *Scope, hoist, bare bool) error {
 	return nil
 }
 
-func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hoist, bare bool) error {
+func processBindingElement(b *javascript.BindingElement, scope *Scope, hoist, bare bool) error {
 	return nil
 }
 
