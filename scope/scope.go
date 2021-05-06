@@ -520,6 +520,19 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 }
 
 func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *Scope, set bool) error {
+	if l.NewExpression != nil {
+		if err := processNewExpression(l.NewExpression, scope, set); err != nil {
+			return err
+		}
+	} else if l.CallExpression != nil {
+		if err := processCallExpression(l.CallExpression, scope, set); err != nil {
+			return err
+		}
+	} else if l.OptionalExpression != nil {
+		if err := processOptionalExpression(l.OptionalExpression, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -548,6 +561,18 @@ func processConditionalExpression(c *javascript.ConditionalExpression, scope *Sc
 }
 
 func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) error {
+	return nil
+}
+
+func processNewExpression(n *javascript.NewExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, set bool) error {
 	return nil
 }
 
