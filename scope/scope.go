@@ -401,7 +401,22 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope) error {
 	return nil
 }
 
-func processClassDeclaration(d *javascript.ClassDeclaration, scope *Scope) error {
+func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope) error {
+	if c.BindingIdentifier != nil {
+		if err := scope.setBinding(c.BindingIdentifier.Data, Binding{Token: c.BindingIdentifier, Scope: scope}); err != nil {
+			return err
+		}
+	}
+	if c.ClassHeritage != nil {
+		if err := processLeftHandSideExpression(c.ClassHeritage, scope); err != nil {
+			return err
+		}
+	}
+	for _, md := range c.ClassBody {
+		if err := processMethodDefinition(md, scope); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -430,6 +445,10 @@ func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope)
 }
 
 func processFormalParameters(f *javascript.FormalParameters, scope *Scope) error {
+	return nil
+}
+
+func processMethodDefinition(m javascript.MethodDefinition, scope *Scope) error {
 	return nil
 }
 
