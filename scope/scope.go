@@ -28,22 +28,33 @@ func (s *Scope) getFunctionScope() *Scope {
 	return s
 }
 
-func (s *Scope) setBinding(name string, binding Binding) error {
+func (s *Scope) setBinding(t *javascript.Token, hoist bool) error {
+	name := t.Data
 	if _, ok := s.Bindings[name]; ok {
 		return ErrDuplicateBinding
 	}
+	binding := Binding{Token: t, Scope: s}
 	s.Bindings[name] = []Binding{binding}
+	if hoist && s.IsLexicalScope {
+		s = s.getFunctionScope()
+		if _, ok := s.Bindings[name]; ok {
+			return ErrDuplicateBinding
+		}
+		s.Bindings[name] = []Binding{binding}
+	}
 	return nil
 }
 
-func (s *Scope) addBinding(name string, binding Binding) error {
+func (s *Scope) addBinding(t *javascript.Token) error {
+	name := t.Data
+	binding := Binding{Token: t, Scope: s}
 	for {
 		if bs, ok := s.Bindings[name]; ok {
 			s.Bindings[name] = append(bs, binding)
 			return nil
 		}
 		if s.Parent == nil {
-			return s.setBinding(name, binding)
+			s.Bindings[name] = []Binding{binding}
 		}
 		s = s.Parent
 	}
@@ -89,12 +100,12 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	for _, i := range m.ModuleListItems {
 		if i.ImportDeclaration != nil && i.ImportDeclaration.ImportClause != nil {
 			if i.ImportDeclaration.ImportedDefaultBinding != nil {
-				if err := global.setBinding(i.ImportDeclaration.ImportedDefaultBinding.Data, Binding{Token: i.ImportDeclaration.ImportedDefaultBinding, Scope: global}); err != nil {
+				if err := global.setBinding(i.ImportDeclaration.ImportedDefaultBinding, false); err != nil {
 					return nil, err
 				}
 			}
 			if i.ImportDeclaration.NameSpaceImport != nil {
-				if err := global.setBinding(i.ImportDeclaration.NameSpaceImport.Data, Binding{Token: i.ImportDeclaration.NameSpaceImport, Scope: global}); err != nil {
+				if err := global.setBinding(i.ImportDeclaration.NameSpaceImport, false); err != nil {
 					return nil, err
 				}
 			}
@@ -103,11 +114,11 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 					if is.IdentifierName == nil {
 						return nil, ErrInvalidImport
 					}
-					name := is.IdentifierName.Data
+					var tk = is.IdentifierName
 					if is.ImportedBinding != nil {
-						name = is.ImportedBinding.Data
+						tk = is.ImportedBinding
 					}
-					if err := global.setBinding(name, Binding{Token: is.IdentifierName, Scope: global}); err != nil {
+					if err := global.setBinding(tk, false); err != nil {
 						return nil, err
 					}
 				}
@@ -285,7 +296,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		}
 	default:
 		if f.ForBindingIdentifier != nil {
-			if err := scope.Parent.addBinding(f.ForBindingIdentifier.Data, Binding{Token: f.ForBindingIdentifier, Scope: scope}); err != nil {
+			if err := scope.Parent.addBinding(f.ForBindingIdentifier); err != nil {
 				return err
 			}
 		} else if f.ForBindingPatternObject != nil {
@@ -370,7 +381,7 @@ func processWithStatement(w *javascript.WithStatement, scope *Scope) error {
 
 func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope) error {
 	if f.BindingIdentifier != nil {
-		if err := scope.getFunctionScope().setBinding(f.BindingIdentifier.Data, Binding{Token: f.BindingIdentifier, Scope: scope}); err != nil {
+		if err := scope.getFunctionScope().setBinding(f.BindingIdentifier, true); err != nil {
 			return err
 		}
 	}
@@ -403,7 +414,7 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope) error {
 
 func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope) error {
 	if c.BindingIdentifier != nil {
-		if err := scope.setBinding(c.BindingIdentifier.Data, Binding{Token: c.BindingIdentifier, Scope: scope}); err != nil {
+		if err := scope.setBinding(c.BindingIdentifier, false); err != nil {
 			return err
 		}
 	}
