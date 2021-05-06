@@ -498,6 +498,24 @@ func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope, 
 }
 
 func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scope, set bool) error {
+	if a.ConditionalExpression != nil {
+		if err := processConditionalExpression(a.ConditionalExpression, scope, set); err != nil {
+			return err
+		}
+	} else if a.ArrowFunction != nil {
+		if err := processArrowFunction(a.ArrowFunction, scope, set); err != nil {
+			return err
+		}
+	} else if a.LeftHandSideExpression != nil {
+		if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if a.AssignmentExpression != nil {
+		if err := processAssignmentExpression(a.AssignmentExpression, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -522,6 +540,14 @@ func processMethodDefinition(m javascript.MethodDefinition, scope *Scope, set bo
 }
 
 func processLexicalBinding(l javascript.LexicalBinding, scope *Scope, set bool) error {
+	return nil
+}
+
+func processConditionalExpression(c *javascript.ConditionalExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) error {
 	return nil
 }
 
