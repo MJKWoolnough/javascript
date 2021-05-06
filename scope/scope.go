@@ -553,6 +553,16 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 }
 
 func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set, hoist, bare bool) error {
+	for _, be := range a.BindingElementList {
+		if err := processBindingElement(&be, scope, set, hoist, bare); err != nil {
+			return err
+		}
+	}
+	if a.BindingRestElement != nil && set {
+		if err := processBindingElement(a.BindingRestElement, scope, set, hoist, bare); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -589,6 +599,10 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 }
 
 func processBindingProperty(b javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
+	return nil
+}
+
+func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hoist, bare bool) error {
 	return nil
 }
 
