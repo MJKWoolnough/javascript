@@ -562,6 +562,16 @@ func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope,
 }
 
 func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set bool) error {
+	for _, fp := range f.FormalParameterList {
+		if err := processBindingElement(&fp, scope, false, false); err != nil {
+			return err
+		}
+	}
+	if f.FunctionRestParameter != nil {
+		if err := processFunctionRestParameter(f.FunctionRestParameter, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -598,6 +608,10 @@ func processBindingProperty(b javascript.BindingProperty, scope *Scope, hoist, b
 }
 
 func processBindingElement(b *javascript.BindingElement, scope *Scope, hoist, bare bool) error {
+	return nil
+}
+
+func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Scope, set bool) error {
 	return nil
 }
 
