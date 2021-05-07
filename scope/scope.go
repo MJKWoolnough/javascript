@@ -124,13 +124,13 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
-	for _, i := range s.StatementList {
-		if err := processStatementListItem(&i, global, true); err != nil {
+	for n := range s.StatementList {
+		if err := processStatementListItem(&s.StatementList[n], global, true); err != nil {
 			return nil, err
 		}
 	}
-	for _, i := range s.StatementList {
-		processStatementListItem(&i, global, false)
+	for n := range s.StatementList {
+		processStatementListItem(&s.StatementList[n], global, false)
 	}
 	return global, nil
 }
@@ -233,8 +233,8 @@ func processDeclaration(d *javascript.Declaration, scope *Scope, set bool) error
 }
 
 func processBlockStatement(b *javascript.Block, scope *Scope, set bool) error {
-	for _, sli := range b.StatementList {
-		if err := processStatementListItem(&sli, scope, set); err != nil {
+	for n := range b.StatementList {
+		if err := processStatementListItem(&b.StatementList[n], scope, set); err != nil {
 			return nil
 		}
 	}
@@ -242,8 +242,8 @@ func processBlockStatement(b *javascript.Block, scope *Scope, set bool) error {
 }
 
 func processVariableStatement(v *javascript.VariableStatement, scope *Scope, set bool) error {
-	for _, vs := range v.VariableDeclarationList {
-		if err := processVariableDeclaration(vs, scope, set); err != nil {
+	for n := range v.VariableDeclarationList {
+		if err := processVariableDeclaration(&v.VariableDeclarationList[n], scope, set); err != nil {
 			return err
 		}
 	}
@@ -251,8 +251,8 @@ func processVariableStatement(v *javascript.VariableStatement, scope *Scope, set
 }
 
 func processExpression(e *javascript.Expression, scope *Scope, set bool) error {
-	for _, ae := range e.Expressions {
-		if err := processAssignmentExpression(&ae, scope, set); err != nil {
+	for n := range e.Expressions {
+		if err := processAssignmentExpression(&e.Expressions[n], scope, set); err != nil {
 			return err
 		}
 	}
@@ -298,8 +298,8 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 	switch f.Type {
 	case javascript.ForNormal:
 	case javascript.ForNormalVar:
-		for _, v := range f.InitVar {
-			if err := processVariableDeclaration(v, scope, set); err != nil {
+		for n := range f.InitVar {
+			if err := processVariableDeclaration(&f.InitVar[n], scope, set); err != nil {
 				return err
 			}
 		}
@@ -375,27 +375,29 @@ func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope, set boo
 		return err
 	}
 	scope = scope.newLexicalScope(s)
-	for _, c := range s.CaseClauses {
+	for n := range s.CaseClauses {
+		c := &s.CaseClauses[n]
 		if err := processExpression(&c.Expression, scope, set); err != nil {
 			return err
 		}
-		for _, sli := range c.StatementList {
-			if err := processStatementListItem(&sli, scope, set); err != nil {
+		for m := range c.StatementList {
+			if err := processStatementListItem(&c.StatementList[m], scope, set); err != nil {
 				return err
 			}
 		}
 	}
-	for _, sli := range s.DefaultClause {
-		if err := processStatementListItem(&sli, scope, set); err != nil {
+	for n := range s.DefaultClause {
+		if err := processStatementListItem(&s.DefaultClause[n], scope, set); err != nil {
 			return err
 		}
 	}
-	for _, c := range s.PostDefaultCaseClauses {
+	for n := range s.PostDefaultCaseClauses {
+		c := &s.CaseClauses[n]
 		if err := processExpression(&c.Expression, scope, set); err != nil {
 			return err
 		}
-		for _, sli := range c.StatementList {
-			if err := processStatementListItem(&sli, scope, set); err != nil {
+		for m := range c.StatementList {
+			if err := processStatementListItem(&c.StatementList[m], scope, set); err != nil {
 				return err
 			}
 		}
@@ -453,8 +455,8 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set b
 			return err
 		}
 	}
-	for _, md := range c.ClassBody {
-		if err := processMethodDefinition(md, scope, set); err != nil {
+	for n := range c.ClassBody {
+		if err := processMethodDefinition(&c.ClassBody[n], scope, set); err != nil {
 			return err
 		}
 	}
@@ -462,15 +464,15 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set b
 }
 
 func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, set bool) error {
-	for _, lb := range l.BindingList {
-		if err := processLexicalBinding(lb, scope, set); err != nil {
+	for n := range l.BindingList {
+		if err := processLexicalBinding(&l.BindingList[n], scope, set); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func processVariableDeclaration(v javascript.VariableDeclaration, scope *Scope, set bool) error {
+func processVariableDeclaration(v *javascript.VariableDeclaration, scope *Scope, set bool) error {
 	if set {
 		if v.BindingIdentifier != nil {
 			if err := scope.setBinding(v.BindingIdentifier, true); err != nil {
@@ -534,8 +536,8 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 }
 
 func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set, hoist, bare bool) error {
-	for _, bp := range o.BindingPropertyList {
-		if err := processBindingProperty(bp, scope, set, hoist, bare); err != nil {
+	for n := range o.BindingPropertyList {
+		if err := processBindingProperty(&o.BindingPropertyList[n], scope, set, hoist, bare); err != nil {
 			return err
 		}
 	}
@@ -550,8 +552,8 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 }
 
 func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set, hoist, bare bool) error {
-	for _, be := range a.BindingElementList {
-		if err := processBindingElement(&be, scope, set, hoist, bare); err != nil {
+	for n := range a.BindingElementList {
+		if err := processBindingElement(&a.BindingElementList[n], scope, set, hoist, bare); err != nil {
 			return err
 		}
 	}
@@ -564,8 +566,8 @@ func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope,
 }
 
 func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set bool) error {
-	for _, fp := range f.FormalParameterList {
-		if err := processBindingElement(&fp, scope, set, false, false); err != nil {
+	for n := range f.FormalParameterList {
+		if err := processBindingElement(&f.FormalParameterList[n], scope, set, false, false); err != nil {
 			return err
 		}
 	}
@@ -577,8 +579,8 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 	return nil
 }
 
-func processMethodDefinition(m javascript.MethodDefinition, scope *Scope, set bool) error {
-	if err := processPropertyName(m.PropertyName, scope, set); err != nil {
+func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set bool) error {
+	if err := processPropertyName(&m.PropertyName, scope, set); err != nil {
 		return err
 	}
 	scope = scope.Parent.newFunctionScope(m)
@@ -591,7 +593,7 @@ func processMethodDefinition(m javascript.MethodDefinition, scope *Scope, set bo
 	return nil
 }
 
-func processLexicalBinding(l javascript.LexicalBinding, scope *Scope, set bool) error {
+func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool) error {
 	return nil
 }
 
@@ -615,7 +617,7 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 	return nil
 }
 
-func processBindingProperty(b javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
+func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
 	return nil
 }
 
@@ -627,7 +629,7 @@ func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Sc
 	return nil
 }
 
-func processPropertyName(p javascript.PropertyName, scope *Scope, set bool) error {
+func processPropertyName(p *javascript.PropertyName, scope *Scope, set bool) error {
 	return nil
 }
 
