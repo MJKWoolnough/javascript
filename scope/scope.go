@@ -414,7 +414,7 @@ func processWithStatement(w *javascript.WithStatement, scope *Scope, set bool) e
 
 func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope, set bool) error {
 	if f.BindingIdentifier != nil && set {
-		if err := scope.getFunctionScope().setBinding(f.BindingIdentifier, true); err != nil {
+		if err := scope.setBinding(f.BindingIdentifier, true); err != nil {
 			return err
 		}
 	}
