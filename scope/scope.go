@@ -22,13 +22,6 @@ type Scope struct {
 	Bindings       map[string][]Binding
 }
 
-func (s *Scope) getFunctionScope() *Scope {
-	for s.IsLexicalScope && s.Parent != nil {
-		s = s.Parent
-	}
-	return s
-}
-
 func (s *Scope) setBinding(t *javascript.Token, hoist bool) error {
 	name := t.Data
 	if _, ok := s.Bindings[name]; ok {
@@ -37,7 +30,9 @@ func (s *Scope) setBinding(t *javascript.Token, hoist bool) error {
 	binding := Binding{Token: t, Scope: s}
 	s.Bindings[name] = []Binding{binding}
 	if hoist && s.IsLexicalScope {
-		s = s.getFunctionScope()
+		for s.IsLexicalScope && s.Parent != nil {
+			s = s.Parent
+		}
 		if _, ok := s.Bindings[name]; ok {
 			return ErrDuplicateBinding
 		}
