@@ -578,6 +578,16 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 }
 
 func processMethodDefinition(m javascript.MethodDefinition, scope *Scope, set bool) error {
+	if err := processPropertyName(m.PropertyName, scope, set); err != nil {
+		return err
+	}
+	scope = scope.Parent.newFunctionScope(m)
+	if err := processFormalParameters(&m.Params, scope, set); err != nil {
+		return err
+	}
+	if err := processBlockStatement(&m.FunctionBody, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -614,6 +624,10 @@ func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hois
 }
 
 func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Scope, set bool) error {
+	return nil
+}
+
+func processPropertyName(p javascript.PropertyName, scope *Scope, set bool) error {
 	return nil
 }
 
