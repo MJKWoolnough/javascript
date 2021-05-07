@@ -40,7 +40,7 @@ func (m *Module) parse(j *jsParser) error {
 }
 
 // ModuleItem as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ModuleItem
+// https://262.ecma-international.org/11.0/#prod-ModuleItem
 //
 // Only one of ImportDeclaration, StatementListItem, or ExportDeclaration must
 // be non-nil.
@@ -83,7 +83,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 }
 
 // ImportDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ImportDeclaration
+// https://262.ecma-international.org/11.0/#prod-ImportDeclaration
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
@@ -120,7 +120,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 }
 
 // ImportClause as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ImportClause
+// https://262.ecma-international.org/11.0/#prod-ImportClause
 //
 // At least one of ImportedDefaultBinding, NameSpaceImport, and NamedImports
 // must be non-nil.
@@ -174,7 +174,7 @@ func (ic *ImportClause) parse(j *jsParser) error {
 }
 
 // FromClause as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-FromClause
+// https://262.ecma-international.org/11.0/#prod-FromClause
 //
 // ModuleSpecifier must be non-nil.
 type FromClause struct {
@@ -196,7 +196,7 @@ func (fc *FromClause) parse(j *jsParser) error {
 }
 
 // NamedImports as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-NamedImports
+// https://262.ecma-international.org/11.0/#prod-NamedImports
 type NamedImports struct {
 	ImportList []ImportSpecifier
 	Tokens     Tokens
@@ -230,7 +230,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 }
 
 // ImportSpecifier as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
+// https://262.ecma-international.org/11.0/#prod-ImportSpecifier
 //
 // ImportedBinding must be non-nil.
 type ImportSpecifier struct {
@@ -261,7 +261,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 }
 
 // ExportDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
+// https://262.ecma-international.org/11.0/#prod-ExportDeclaration
 //
 // It is only valid for one of ExportClause, VariableStatement, Declaration,
 // DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
@@ -362,7 +362,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 }
 
 // ExportClause as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ExportClause
+// https://262.ecma-international.org/11.0/#prod-ExportClause
 type ExportClause struct {
 	ExportList []ExportSpecifier
 	Tokens     Tokens
@@ -396,7 +396,7 @@ func (ec *ExportClause) parse(j *jsParser) error {
 }
 
 // ExportSpecifier as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
+// https://262.ecma-international.org/11.0/#prod-ExportSpecifier
 //
 // IdentifierName must be non-nil
 type ExportSpecifier struct {

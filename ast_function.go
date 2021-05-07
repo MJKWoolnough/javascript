@@ -18,7 +18,7 @@ const (
 )
 
 // FunctionDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
+// https://262.ecma-international.org/11.0/#prod-FunctionDeclaration
 //
 // Also parses FunctionExpression, for when BindingIdentifier is nil.
 //
@@ -73,7 +73,7 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 }
 
 // FormalParameters as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-FormalParameters
+// https://262.ecma-international.org/11.0/#prod-FormalParameters
 type FormalParameters struct {
 	FormalParameterList   []BindingElement
 	FunctionRestParameter *FunctionRestParameter
@@ -125,7 +125,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 }
 
 // BindingElement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-BindingElement
+// https://262.ecma-international.org/11.0/#prod-BindingElement
 //
 // Only one of SingleNameBinding, ArrayBindingPattern, or ObjectBindingPattern
 // must be non-nil.
@@ -172,7 +172,7 @@ func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
 }
 
 // FunctionRestParameter as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
+// https://262.ecma-international.org/11.0/#prod-FunctionRestParameter
 //
 // Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern
 // must be non-nil.

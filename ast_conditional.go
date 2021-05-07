@@ -93,7 +93,7 @@ func (ce *CoalesceExpression) parse(j *jsParser, in, yield, await bool, be Bitwi
 }
 
 // LogicalORExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-LogicalORExpression
+// https://262.ecma-international.org/11.0/#prod-LogicalORExpression
 type LogicalORExpression struct {
 	LogicalORExpression  *LogicalORExpression
 	LogicalANDExpression LogicalANDExpression
@@ -124,7 +124,7 @@ func (lo *LogicalORExpression) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // LogicalANDExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-LogicalANDExpression
+// https://262.ecma-international.org/11.0/#prod-LogicalANDExpression
 type LogicalANDExpression struct {
 	LogicalANDExpression *LogicalANDExpression
 	BitwiseORExpression  BitwiseORExpression
@@ -155,7 +155,7 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 }
 
 // BitwiseORExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-BitwiseORExpression
+// https://262.ecma-international.org/11.0/#prod-BitwiseORExpression
 type BitwiseORExpression struct {
 	BitwiseORExpression  *BitwiseORExpression
 	BitwiseXORExpression BitwiseXORExpression
@@ -186,7 +186,7 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // BitwiseXORExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-BitwiseXORExpression
+// https://262.ecma-international.org/11.0/#prod-BitwiseXORExpression
 type BitwiseXORExpression struct {
 	BitwiseXORExpression *BitwiseXORExpression
 	BitwiseANDExpression BitwiseANDExpression
@@ -217,7 +217,7 @@ func (bx *BitwiseXORExpression) parse(j *jsParser, in, yield, await bool) error 
 }
 
 // BitwiseANDExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-BitwiseANDExpression
+// https://262.ecma-international.org/11.0/#prod-BitwiseANDExpression
 type BitwiseANDExpression struct {
 	BitwiseANDExpression *BitwiseANDExpression
 	EqualityExpression   EqualityExpression
@@ -260,7 +260,7 @@ const (
 )
 
 // EqualityExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
+// https://262.ecma-international.org/11.0/#prod-EqualityExpression
 //
 // If EqualityOperator is not EqualityNone, then EqualityExpression must be
 // non-nil, and vice-versa.
@@ -321,7 +321,7 @@ const (
 )
 
 // RelationalExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
+// https://262.ecma-international.org/11.0/#prod-RelationalExpression
 //
 // If RelationshipOperator is not RelationshipNone then RelationalExpression
 // must be non-nil, and vice-verse.
@@ -386,7 +386,7 @@ const (
 )
 
 // ShiftExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
+// https://262.ecma-international.org/11.0/#prod-ShiftExpression
 //
 // If ShiftOperator is not ShiftNone then ShiftExpression must be non-nil, and
 // vice-versa.
@@ -441,7 +441,7 @@ const (
 )
 
 // AdditiveExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
+// https://262.ecma-international.org/11.0/#prod-AdditiveExpression
 //
 // If AdditiveOperator is not AdditiveNone then AdditiveExpression must be
 // non-nil, and vice-versa.
@@ -495,7 +495,7 @@ const (
 )
 
 // MultiplicativeExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
+// https://262.ecma-international.org/11.0/#prod-MultiplicativeExpression
 //
 // If MultiplicativeOperator is not MultiplicativeNone then
 // MultiplicativeExpression must be non-nil, and vice-versa.
@@ -540,7 +540,7 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 }
 
 // ExponentiationExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ExponentiationExpression
+// https://262.ecma-international.org/11.0/#prod-ExponentiationExpression
 type ExponentiationExpression struct {
 	ExponentiationExpression *ExponentiationExpression
 	UnaryExpression          UnaryExpression
@@ -590,7 +590,7 @@ const (
 )
 
 // UnaryExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-UnaryExpression
+// https://262.ecma-international.org/11.0/#prod-UnaryExpression
 type UnaryExpression struct {
 	UnaryOperators   []UnaryOperator
 	UpdateExpression UpdateExpression
@@ -648,7 +648,7 @@ const (
 )
 
 // UpdateExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
+// https://262.ecma-international.org/11.0/#prod-UpdateExpression
 //
 // If UpdateOperator is UpdatePreIncrement or UpdatePreDecrement
 // UnaryExpression must be non-nil, and vice-versa. In all other cases,

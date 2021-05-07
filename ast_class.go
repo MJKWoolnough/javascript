@@ -7,7 +7,7 @@ import (
 )
 
 // ClassDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
+// https://262.ecma-international.org/11.0/#prod-ClassDeclaration
 //
 // Also covers ClassExpression when BindingIdentifier is nil.
 type ClassDeclaration struct {
@@ -81,7 +81,7 @@ const (
 )
 
 // MethodDefinition as specified in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-MethodDefinition
+// https://262.ecma-international.org/11.0/#prod-MethodDefinition
 //
 // Static methods from ClassElement are parsed here with the `static` prefix
 type MethodDefinition struct {
@@ -219,7 +219,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 }
 
 // PropertyName as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-PropertyName
+// https://262.ecma-international.org/11.0/#prod-PropertyName
 //
 // Only one of LiteralPropertyName or ComputedPropertyName must be non-nil.
 type PropertyName struct {

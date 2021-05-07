@@ -63,7 +63,7 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 }
 
 // AssignmentExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
+// https://262.ecma-international.org/11.0/#prod-AssignmentExpression
 //
 // It is only valid for one of ConditionalExpression, ArrowFunction,
 // LeftHandSideExpression to be non-nil.
@@ -161,7 +161,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 }
 
 // LeftHandSideExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
+// https://262.ecma-international.org/11.0/#prod-LeftHandSideExpression
 //
 // It is only valid for one of NewExpression, CallExpression or
 // OptionalExpression to be non-nil.
@@ -386,7 +386,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 }
 
 // Expression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-Expression
+// https://262.ecma-international.org/11.0/#prod-Expression
 //
 // Expressions must have a length of at least one to be valid.
 type Expression struct {
@@ -416,7 +416,7 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // NewExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-NewExpression
+// https://262.ecma-international.org/11.0/#prod-NewExpression
 //
 // The News field is a count of the number of 'new' keywords that proceed the
 // MemberExpression
@@ -448,7 +448,7 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 }
 
 // MemberExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-MemberExpression
+// https://262.ecma-international.org/11.0/#prod-MemberExpression
 //
 // If PrimaryExpression is nil, SuperProperty is true, or MetaProperty = is,
 // Expression, IdentifierName, TemplateLiteral, and Arguments must be nil.
@@ -611,7 +611,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 }
 
 // PrimaryExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
+// https://262.ecma-international.org/11.0/#prod-PrimaryExpression
 //
 // It is only valid is one IdentifierReference, Literal, ArrayLiteral,
 // ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
@@ -688,7 +688,7 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 }
 
 // CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
+// https://262.ecma-international.org/11.0/#prod-CoverParenthesizedExpressionAndArrowParameterList
 //
 // It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
 // ObjectBindingPattern to be non-nil
@@ -751,7 +751,7 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 }
 
 // Arguments as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-Arguments
+// https://262.ecma-international.org/11.0/#prod-Arguments
 type Arguments struct {
 	ArgumentList   []AssignmentExpression
 	SpreadArgument *AssignmentExpression
@@ -801,7 +801,7 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 }
 
 // CallExpression as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-CallExpression
+// https://262.ecma-international.org/11.0/#prod-CallExpression
 //
 // Includes the TC39 proposal for the dynamic import function call
 // https://github.com/tc39/proposal-dynamic-import/#import

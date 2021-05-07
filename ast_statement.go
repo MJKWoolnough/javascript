@@ -7,7 +7,7 @@ import (
 )
 
 // Block as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-Block
+// https://262.ecma-international.org/11.0/#prod-Block
 type Block struct {
 	StatementList []StatementListItem
 	Tokens        Tokens
@@ -36,7 +36,7 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // StatementListItem as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-StatementListItem
+// https://262.ecma-international.org/11.0/#prod-StatementListItem
 // Only one of Statement, or Declaration must be non-nil.
 type StatementListItem struct {
 	Statement   *Statement
@@ -104,7 +104,7 @@ const (
 )
 
 // Statement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-Statement
+// https://262.ecma-international.org/11.0/#prod-Statement
 //
 // It is only valid for one of the pointer type to be non-nil.
 //
@@ -291,7 +291,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // IfStatement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-IfStatement
+// https://262.ecma-international.org/11.0/#prod-IfStatement
 type IfStatement struct {
 	Expression    Expression
 	Statement     Statement
@@ -341,7 +341,7 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 
 // IterationStatementDo is the do-while part of IterationStatement as defined
 // in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+// https://262.ecma-international.org/11.0/#prod-IterationStatement
 type IterationStatementDo struct {
 	Statement  Statement
 	Expression Expression
@@ -386,7 +386,7 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 
 // IterationStatementWhile is the while part of IterationStatement as defined
 // in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+// https://262.ecma-international.org/11.0/#prod-IterationStatement
 type IterationStatementWhile struct {
 	Expression Expression
 	Statement  Statement
@@ -446,7 +446,7 @@ const (
 
 // IterationStatementFor is the for part of IterationStatement as defined
 // in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+// https://262.ecma-international.org/11.0/#prod-IterationStatement
 //
 // Includes TC39 proposal for for-await-of
 // https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
@@ -712,7 +712,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 }
 
 // SwitchStatement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-SwitchStatement
+// https://262.ecma-international.org/11.0/#prod-SwitchStatement
 type SwitchStatement struct {
 	Expression             Expression
 	CaseClauses            []CaseClause
@@ -791,7 +791,7 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // CaseClause as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-CaseClauses
+// https://262.ecma-international.org/11.0/#prod-CaseClauses
 type CaseClause struct {
 	Expression    Expression
 	StatementList []StatementListItem
@@ -832,7 +832,7 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // WithStatement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-WithStatement
+// https://262.ecma-international.org/11.0/#prod-WithStatement
 type WithStatement struct {
 	Expression Expression
 	Statement  Statement
@@ -868,7 +868,7 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // TryStatement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-TryStatement
+// https://262.ecma-international.org/11.0/#prod-TryStatement
 //
 // Only one of CatchParameterBindingIdentifier,
 // CatchParameterObjectBindingPattern, and CatchParameterArrayBindingPattern can
@@ -953,7 +953,7 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 }
 
 // VariableStatement as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-VariableStatement
+// https://262.ecma-international.org/11.0/#prod-VariableStatement
 //
 // VariableDeclarationList must have a length or at least one.
 type VariableStatement struct {

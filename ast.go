@@ -66,7 +66,7 @@ func (j *jsParser) parseSemicolon() bool {
 }
 
 // Declaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-Declaration
+// https://262.ecma-international.org/11.0/#prod-Declaration
 //
 // Only one of ClassDeclaration, FunctionDeclaration or LexicalDeclaration must
 // be non-nil
@@ -112,7 +112,7 @@ const (
 )
 
 // LexicalDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-LexicalDeclaration
+// https://262.ecma-international.org/11.0/#prod-LexicalDeclaration
 type LexicalDeclaration struct {
 	LetOrConst
 	BindingList []LexicalBinding
@@ -150,7 +150,7 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // LexicalBinding as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
+// https://262.ecma-international.org/11.0/#prod-LexicalBinding
 //
 // Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern
 // must be non-nil. The Initializer is optional only for a BindingIdentifier.
@@ -197,7 +197,7 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // ArrayBindingPattern as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ArrayBindingPattern
+// https://262.ecma-international.org/11.0/#prod-ArrayBindingPattern
 type ArrayBindingPattern struct {
 	BindingElementList []BindingElement
 	BindingRestElement *BindingElement
@@ -250,7 +250,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 }
 
 // ObjectBindingPattern as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ObjectBindingPattern
+// https://262.ecma-international.org/11.0/#prod-ObjectBindingPattern
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
 	BindingRestProperty *Token
@@ -296,7 +296,7 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 }
 
 // BindingProperty as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-BindingProperty
+// https://262.ecma-international.org/11.0/#prod-BindingProperty
 //
 // It is only valid for either SingleNameBinding, with an optional Initializer,
 // or PropertyName and BindingElement (PropertyName: BindingElement) to be
@@ -352,7 +352,7 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 }
 
 // VariableDeclaration as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-VariableDeclaration
+// https://262.ecma-international.org/11.0/#prod-VariableDeclaration
 type VariableDeclaration LexicalBinding
 
 func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
@@ -365,7 +365,7 @@ func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
 }
 
 // ArrayLiteral as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ArrayLiteral
+// https://262.ecma-international.org/11.0/#prod-ArrayLiteral
 type ArrayLiteral struct {
 	ElementList   []AssignmentExpression
 	SpreadElement *AssignmentExpression
@@ -417,7 +417,7 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 }
 
 // ObjectLiteral as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ObjectLiteral
+// https://262.ecma-international.org/11.0/#prod-ObjectLiteral
 type ObjectLiteral struct {
 	PropertyDefinitionList []PropertyDefinition
 	Tokens                 Tokens
@@ -451,7 +451,7 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 }
 
 // PropertyDefinition as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
+// https://262.ecma-international.org/11.0/#prod-PropertyDefinition
 //
 // It is only valid for either IdentifierReference, IdentifierReference and
 // AssignmentExpression (CoverInitializedName), PropertyName and
@@ -548,7 +548,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 }
 
 // TemplateLiteral as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
+// https://262.ecma-international.org/11.0/#prod-TemplateLiteral
 //
 // If NoSubstitutionTemplate is non-nil it is only valid for TemplateHead,
 // Expressions, TemplateMiddleList, and TemplateTail to be nil.
@@ -596,7 +596,7 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 }
 
 // ArrowFunction as defined in ECMA-262
-// https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
+// https://262.ecma-international.org/11.0/#prod-ArrowFunction
 //
 // Also includes AsyncArrowFunction.
 //
