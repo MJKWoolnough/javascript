@@ -195,7 +195,7 @@ type AdditiveExpression struct {
 ```
 
 AdditiveExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-AdditiveExpression
+https://262.ecma-international.org/11.0/#prod-AdditiveExpression
 
 If AdditiveOperator is not AdditiveNone then AdditiveExpression must be non-nil,
 and vice-versa.
@@ -242,7 +242,7 @@ type Arguments struct {
 ```
 
 Arguments as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-Arguments
+https://262.ecma-international.org/11.0/#prod-Arguments
 
 #### func (Arguments) Format
 
@@ -262,7 +262,7 @@ type ArrayBindingPattern struct {
 ```
 
 ArrayBindingPattern as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ArrayBindingPattern
+https://262.ecma-international.org/11.0/#prod-ArrayBindingPattern
 
 #### func (ArrayBindingPattern) Format
 
@@ -282,7 +282,7 @@ type ArrayLiteral struct {
 ```
 
 ArrayLiteral as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ArrayLiteral
+https://262.ecma-international.org/11.0/#prod-ArrayLiteral
 
 #### func (ArrayLiteral) Format
 
@@ -306,7 +306,7 @@ type ArrowFunction struct {
 ```
 
 ArrowFunction as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ArrowFunction
+https://262.ecma-international.org/11.0/#prod-ArrowFunction
 
 Also includes AsyncArrowFunction.
 
@@ -339,7 +339,7 @@ type AssignmentExpression struct {
 ```
 
 AssignmentExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-AssignmentExpression
+https://262.ecma-international.org/11.0/#prod-AssignmentExpression
 
 It is only valid for one of ConditionalExpression, ArrowFunction,
 LeftHandSideExpression to be non-nil.
@@ -409,7 +409,7 @@ type BindingElement struct {
 ```
 
 BindingElement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-BindingElement
+https://262.ecma-international.org/11.0/#prod-BindingElement
 
 Only one of SingleNameBinding, ArrayBindingPattern, or ObjectBindingPattern must
 be non-nil.
@@ -436,7 +436,7 @@ type BindingProperty struct {
 ```
 
 BindingProperty as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-BindingProperty
+https://262.ecma-international.org/11.0/#prod-BindingProperty
 
 It is only valid for either SingleNameBinding, with an optional Initializer, or
 PropertyName and BindingElement (PropertyName: BindingElement) to be non-nil.
@@ -459,7 +459,7 @@ type BitwiseANDExpression struct {
 ```
 
 BitwiseANDExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-BitwiseANDExpression
+https://262.ecma-international.org/11.0/#prod-BitwiseANDExpression
 
 #### func (BitwiseANDExpression) Format
 
@@ -479,7 +479,7 @@ type BitwiseORExpression struct {
 ```
 
 BitwiseORExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-BitwiseORExpression
+https://262.ecma-international.org/11.0/#prod-BitwiseORExpression
 
 #### func (BitwiseORExpression) Format
 
@@ -499,7 +499,7 @@ type BitwiseXORExpression struct {
 ```
 
 BitwiseXORExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-BitwiseXORExpression
+https://262.ecma-international.org/11.0/#prod-BitwiseXORExpression
 
 #### func (BitwiseXORExpression) Format
 
@@ -517,8 +517,7 @@ type Block struct {
 }
 ```
 
-Block as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-Block
+Block as defined in ECMA-262 https://262.ecma-international.org/11.0/#prod-Block
 
 #### func (Block) Format
 
@@ -544,7 +543,7 @@ type CallExpression struct {
 ```
 
 CallExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-CallExpression
+https://262.ecma-international.org/11.0/#prod-CallExpression
 
 Includes the TC39 proposal for the dynamic import function call
 https://github.com/tc39/proposal-dynamic-import/#import
@@ -575,7 +574,7 @@ type CaseClause struct {
 ```
 
 CaseClause as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-CaseClauses
+https://262.ecma-international.org/11.0/#prod-CaseClauses
 
 #### func (CaseClause) Format
 
@@ -596,7 +595,7 @@ type ClassDeclaration struct {
 ```
 
 ClassDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ClassDeclaration
+https://262.ecma-international.org/11.0/#prod-ClassDeclaration
 
 Also covers ClassExpression when BindingIdentifier is nil.
 
@@ -697,7 +696,7 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 ```
 
 CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-CoverParenthesizedExpressionAndArrowParameterList
+https://262.ecma-international.org/11.0/#prod-CoverParenthesizedExpressionAndArrowParameterList
 
 It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
 ObjectBindingPattern to be non-nil
@@ -721,7 +720,7 @@ type Declaration struct {
 ```
 
 Declaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-Declaration
+https://262.ecma-international.org/11.0/#prod-Declaration
 
 Only one of ClassDeclaration, FunctionDeclaration or LexicalDeclaration must be
 non-nil
@@ -745,7 +744,7 @@ type EqualityExpression struct {
 ```
 
 EqualityExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-EqualityExpression
+https://262.ecma-international.org/11.0/#prod-EqualityExpression
 
 If EqualityOperator is not EqualityNone, then EqualityExpression must be
 non-nil, and vice-versa.
@@ -820,7 +819,7 @@ type ExponentiationExpression struct {
 ```
 
 ExponentiationExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ExponentiationExpression
+https://262.ecma-international.org/11.0/#prod-ExponentiationExpression
 
 #### func (ExponentiationExpression) Format
 
@@ -839,7 +838,7 @@ type ExportClause struct {
 ```
 
 ExportClause as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ExportClause
+https://262.ecma-international.org/11.0/#prod-ExportClause
 
 #### func (ExportClause) Format
 
@@ -864,7 +863,7 @@ type ExportDeclaration struct {
 ```
 
 ExportDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ExportDeclaration
+https://262.ecma-international.org/11.0/#prod-ExportDeclaration
 
 It is only valid for one of ExportClause, VariableStatement, Declaration,
 DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
@@ -888,7 +887,7 @@ type ExportSpecifier struct {
 ```
 
 ExportSpecifier as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ExportSpecifier
+https://262.ecma-international.org/11.0/#prod-ExportSpecifier
 
 IdentifierName must be non-nil
 
@@ -909,7 +908,7 @@ type Expression struct {
 ```
 
 Expression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-Expression
+https://262.ecma-international.org/11.0/#prod-Expression
 
 Expressions must have a length of at least one to be valid.
 
@@ -968,7 +967,7 @@ type FormalParameters struct {
 ```
 
 FormalParameters as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-FormalParameters
+https://262.ecma-international.org/11.0/#prod-FormalParameters
 
 #### func (FormalParameters) Format
 
@@ -987,7 +986,7 @@ type FromClause struct {
 ```
 
 FromClause as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-FromClause
+https://262.ecma-international.org/11.0/#prod-FromClause
 
 ModuleSpecifier must be non-nil.
 
@@ -1011,7 +1010,7 @@ type FunctionDeclaration struct {
 ```
 
 FunctionDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-FunctionDeclaration
+https://262.ecma-international.org/11.0/#prod-FunctionDeclaration
 
 Also parses FunctionExpression, for when BindingIdentifier is nil.
 
@@ -1037,7 +1036,7 @@ type FunctionRestParameter struct {
 ```
 
 FunctionRestParameter as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-FunctionRestParameter
+https://262.ecma-international.org/11.0/#prod-FunctionRestParameter
 
 Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern must
 be non-nil.
@@ -1087,7 +1086,7 @@ type IfStatement struct {
 ```
 
 IfStatement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-IfStatement
+https://262.ecma-international.org/11.0/#prod-IfStatement
 
 #### func (IfStatement) Format
 
@@ -1108,7 +1107,7 @@ type ImportClause struct {
 ```
 
 ImportClause as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ImportClause
+https://262.ecma-international.org/11.0/#prod-ImportClause
 
 At least one of ImportedDefaultBinding, NameSpaceImport, and NamedImports must
 be non-nil.
@@ -1133,7 +1132,7 @@ type ImportDeclaration struct {
 ```
 
 ImportDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ImportDeclaration
+https://262.ecma-international.org/11.0/#prod-ImportDeclaration
 
 #### func (ImportDeclaration) Format
 
@@ -1153,7 +1152,7 @@ type ImportSpecifier struct {
 ```
 
 ImportSpecifier as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ImportSpecifier
+https://262.ecma-international.org/11.0/#prod-ImportSpecifier
 
 ImportedBinding must be non-nil.
 
@@ -1175,7 +1174,7 @@ type IterationStatementDo struct {
 ```
 
 IterationStatementDo is the do-while part of IterationStatement as defined in
-ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+ECMA-262 https://262.ecma-international.org/11.0/#prod-IterationStatement
 
 #### func (IterationStatementDo) Format
 
@@ -1209,7 +1208,7 @@ type IterationStatementFor struct {
 ```
 
 IterationStatementFor is the for part of IterationStatement as defined in
-ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+ECMA-262 https://262.ecma-international.org/11.0/#prod-IterationStatement
 
 Includes TC39 proposal for for-await-of
 https://github.com/tc39/proposal-async-iteration#the-async-iteration-statement-for-await-of
@@ -1239,7 +1238,7 @@ type IterationStatementWhile struct {
 ```
 
 IterationStatementWhile is the while part of IterationStatement as defined in
-ECMA-262 https://www.ecma-international.org/ecma-262/#prod-IterationStatement
+ECMA-262 https://262.ecma-international.org/11.0/#prod-IterationStatement
 
 #### func (IterationStatementWhile) Format
 
@@ -1260,7 +1259,7 @@ type LeftHandSideExpression struct {
 ```
 
 LeftHandSideExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-LeftHandSideExpression
+https://262.ecma-international.org/11.0/#prod-LeftHandSideExpression
 
 It is only valid for one of NewExpression, CallExpression or OptionalExpression
 to be non-nil.
@@ -1310,10 +1309,10 @@ type LexicalBinding struct {
 ```
 
 LexicalBinding as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-LexicalBinding
+https://262.ecma-international.org/11.0/#prod-LexicalBinding
 
 Only one of BindingIdentifier, ArrayBindingPattern or ObjectBindingPattern must
-be non-nil. The Initializer is optional ony for a BindingIdentifier.
+be non-nil. The Initializer is optional only for a BindingIdentifier.
 
 #### func (LexicalBinding) Format
 
@@ -1333,7 +1332,7 @@ type LexicalDeclaration struct {
 ```
 
 LexicalDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-LexicalDeclaration
+https://262.ecma-international.org/11.0/#prod-LexicalDeclaration
 
 #### func (LexicalDeclaration) Format
 
@@ -1353,7 +1352,7 @@ type LogicalANDExpression struct {
 ```
 
 LogicalANDExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-LogicalANDExpression
+https://262.ecma-international.org/11.0/#prod-LogicalANDExpression
 
 #### func (LogicalANDExpression) Format
 
@@ -1373,7 +1372,7 @@ type LogicalORExpression struct {
 ```
 
 LogicalORExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-LogicalORExpression
+https://262.ecma-international.org/11.0/#prod-LogicalORExpression
 
 #### func (LogicalORExpression) Format
 
@@ -1392,14 +1391,15 @@ type MemberExpression struct {
 	IdentifierName    *Token
 	TemplateLiteral   *TemplateLiteral
 	SuperProperty     bool
-	MetaProperty      bool
+	NewTarget         bool
+	ImportMeta        bool
 	Arguments         *Arguments
 	Tokens            Tokens
 }
 ```
 
 MemberExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-MemberExpression
+https://262.ecma-international.org/11.0/#prod-MemberExpression
 
 If PrimaryExpression is nil, SuperProperty is true, or MetaProperty = is,
 Expression, IdentifierName, TemplateLiteral, and Arguments must be nil.
@@ -1430,7 +1430,7 @@ type MethodDefinition struct {
 ```
 
 MethodDefinition as specified in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-MethodDefinition
+https://262.ecma-international.org/11.0/#prod-MethodDefinition
 
 Static methods from ClassElement are parsed here with the `static` prefix
 
@@ -1511,7 +1511,7 @@ type ModuleItem struct {
 ```
 
 ModuleItem as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ModuleItem
+https://262.ecma-international.org/11.0/#prod-ModuleItem
 
 Only one of ImportDeclaration, StatementListItem, or ExportDeclaration must be
 non-nil.
@@ -1535,7 +1535,7 @@ type MultiplicativeExpression struct {
 ```
 
 MultiplicativeExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-MultiplicativeExpression
+https://262.ecma-international.org/11.0/#prod-MultiplicativeExpression
 
 If MultiplicativeOperator is not MultiplicativeNone then
 MultiplicativeExpression must be non-nil, and vice-versa.
@@ -1583,7 +1583,7 @@ type NamedImports struct {
 ```
 
 NamedImports as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-NamedImports
+https://262.ecma-international.org/11.0/#prod-NamedImports
 
 #### func (NamedImports) Format
 
@@ -1603,7 +1603,7 @@ type NewExpression struct {
 ```
 
 NewExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-NewExpression
+https://262.ecma-international.org/11.0/#prod-NewExpression
 
 The News field is a count of the number of 'new' keywords that proceed the
 MemberExpression
@@ -1626,7 +1626,7 @@ type ObjectBindingPattern struct {
 ```
 
 ObjectBindingPattern as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ObjectBindingPattern
+https://262.ecma-international.org/11.0/#prod-ObjectBindingPattern
 
 #### func (ObjectBindingPattern) Format
 
@@ -1645,7 +1645,7 @@ type ObjectLiteral struct {
 ```
 
 ObjectLiteral as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ObjectLiteral
+https://262.ecma-international.org/11.0/#prod-ObjectLiteral
 
 #### func (ObjectLiteral) Format
 
@@ -1723,7 +1723,7 @@ type PrimaryExpression struct {
 ```
 
 PrimaryExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-PrimaryExpression
+https://262.ecma-international.org/11.0/#prod-PrimaryExpression
 
 It is only valid is one IdentifierReference, Literal, ArrayLiteral,
 ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
@@ -1749,7 +1749,7 @@ type PropertyDefinition struct {
 ```
 
 PropertyDefinition as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-PropertyDefinition
+https://262.ecma-international.org/11.0/#prod-PropertyDefinition
 
 It is only valid for either IdentifierReference, IdentifierReference and
 AssignmentExpression (CoverInitializedName), PropertyName and
@@ -1774,7 +1774,7 @@ type PropertyName struct {
 ```
 
 PropertyName as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-PropertyName
+https://262.ecma-international.org/11.0/#prod-PropertyName
 
 Only one of LiteralPropertyName or ComputedPropertyName must be non-nil.
 
@@ -1797,7 +1797,7 @@ type RelationalExpression struct {
 ```
 
 RelationalExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-RelationalExpression
+https://262.ecma-international.org/11.0/#prod-RelationalExpression
 
 If RelationshipOperator is not RelationshipNone then RelationalExpression must
 be non-nil, and vice-verse.
@@ -1876,7 +1876,7 @@ type ShiftExpression struct {
 ```
 
 ShiftExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-ShiftExpression
+https://262.ecma-international.org/11.0/#prod-ShiftExpression
 
 If ShiftOperator is not ShiftNone then ShiftExpression must be non-nil, and
 vice-versa.
@@ -1936,7 +1936,7 @@ type Statement struct {
 ```
 
 Statement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-Statement
+https://262.ecma-international.org/11.0/#prod-Statement
 
 It is only valid for one of the pointer type to be non-nil.
 
@@ -1964,7 +1964,7 @@ type StatementListItem struct {
 ```
 
 StatementListItem as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-StatementListItem Only one of
+https://262.ecma-international.org/11.0/#prod-StatementListItem Only one of
 Statement, or Declaration must be non-nil.
 
 #### func (StatementListItem) Format
@@ -2014,7 +2014,7 @@ type SwitchStatement struct {
 ```
 
 SwitchStatement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-SwitchStatement
+https://262.ecma-international.org/11.0/#prod-SwitchStatement
 
 #### func (SwitchStatement) Format
 
@@ -2037,7 +2037,7 @@ type TemplateLiteral struct {
 ```
 
 TemplateLiteral as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-TemplateLiteral
+https://262.ecma-international.org/11.0/#prod-TemplateLiteral
 
 If NoSubstitutionTemplate is non-nil it is only valid for TemplateHead,
 Expressions, TemplateMiddleList, and TemplateTail to be nil.
@@ -2101,7 +2101,7 @@ type TryStatement struct {
 ```
 
 TryStatement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-TryStatement
+https://262.ecma-international.org/11.0/#prod-TryStatement
 
 Only one of CatchParameterBindingIdentifier, CatchParameterObjectBindingPattern,
 and CatchParameterArrayBindingPattern can be non-nil, and must be so if
@@ -2128,7 +2128,7 @@ type UnaryExpression struct {
 ```
 
 UnaryExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-UnaryExpression
+https://262.ecma-international.org/11.0/#prod-UnaryExpression
 
 #### func (UnaryExpression) Format
 
@@ -2179,7 +2179,7 @@ type UpdateExpression struct {
 ```
 
 UpdateExpression as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-UpdateExpression
+https://262.ecma-international.org/11.0/#prod-UpdateExpression
 
 If UpdateOperator is UpdatePreIncrement or UpdatePreDecrement UnaryExpression
 must be non-nil, and vice-versa. In all other cases, LeftHandSideExpression must
@@ -2225,7 +2225,7 @@ type VariableDeclaration LexicalBinding
 ```
 
 VariableDeclaration as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-VariableDeclaration
+https://262.ecma-international.org/11.0/#prod-VariableDeclaration
 
 #### func (VariableDeclaration) Format
 
@@ -2244,7 +2244,7 @@ type VariableStatement struct {
 ```
 
 VariableStatement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-VariableStatement
+https://262.ecma-international.org/11.0/#prod-VariableStatement
 
 VariableDeclarationList must have a length or at least one.
 
@@ -2266,7 +2266,7 @@ type WithStatement struct {
 ```
 
 WithStatement as defined in ECMA-262
-https://www.ecma-international.org/ecma-262/#prod-WithStatement
+https://262.ecma-international.org/11.0/#prod-WithStatement
 
 #### func (WithStatement) Format
 
