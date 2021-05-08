@@ -708,6 +708,22 @@ func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool)
 }
 
 func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, set bool) error {
+	if o.MemberExpression != nil {
+		if err := processMemberExpression(o.MemberExpression, scope, set); err != nil {
+			return err
+		}
+	} else if o.CallExpression != nil {
+		if err := processCallExpression(o.CallExpression, scope, set); err != nil {
+			return err
+		}
+	} else if o.OptionalExpression != nil {
+		if err := processOptionalExpression(o.OptionalExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processOptionalChain(&o.OptionalChain, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -748,6 +764,10 @@ func processArguments(a *javascript.Arguments, scope *Scope, set bool) error {
 }
 
 func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set bool) error {
+	return nil
+}
+
+func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) error {
 	return nil
 }
 
