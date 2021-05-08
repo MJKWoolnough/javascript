@@ -618,6 +618,25 @@ func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool)
 }
 
 func processConditionalExpression(c *javascript.ConditionalExpression, scope *Scope, set bool) error {
+	if c.LogicalORExpression != nil {
+		if err := processLogicalORExpression(c.LogicalORExpression, scope, set); err != nil {
+			return err
+		}
+	} else if c.CoalesceExpression != nil {
+		if err := processCoalesceExpression(c.CoalesceExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if c.True != nil {
+		if err := processAssignmentExpression(c.True, scope, set); err != nil {
+			return err
+		}
+	}
+	if c.False != nil {
+		if err := processAssignmentExpression(c.False, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -650,6 +669,14 @@ func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Sc
 }
 
 func processPropertyName(p *javascript.PropertyName, scope *Scope, set bool) error {
+	return nil
+}
+
+func processLogicalORExpression(l *javascript.LogicalORExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, set bool) error {
 	return nil
 }
 
