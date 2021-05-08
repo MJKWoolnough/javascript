@@ -594,6 +594,26 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 }
 
 func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool) error {
+	if set {
+		if l.BindingIdentifier != nil {
+			if err := scope.setBinding(l.BindingIdentifier, false); err != nil {
+				return err
+			}
+		} else if l.ArrayBindingPattern != nil {
+			if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, false, false); err != nil {
+				return err
+			}
+		} else if l.ObjectBindingPattern != nil {
+			if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, false, false); err != nil {
+				return err
+			}
+		}
+	}
+	if l.Initializer != nil {
+		if err := processAssignmentExpression(l.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
