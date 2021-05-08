@@ -676,6 +676,34 @@ func processNewExpression(n *javascript.NewExpression, scope *Scope, set bool) e
 }
 
 func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool) error {
+	if c.MemberExpression != nil {
+		if err := processMemberExpression(c.MemberExpression, scope, set); err != nil {
+			return err
+		}
+	} else if c.ImportCall != nil {
+		if err := processAssignmentExpression(c.ImportCall, scope, set); err != nil {
+			return err
+		}
+	} else if c.CallExpression != nil {
+		if err := processCallExpression(c.CallExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if c.Arguments != nil {
+		if err := processArguments(c.Arguments, scope, set); err != nil {
+			return err
+		}
+	} else if c.Expression != nil {
+		if err := processExpression(c.Expression, scope, set); err != nil {
+			return err
+		}
+	} else if c.TemplateLiteral != nil {
+		if err := processTemplateLiteral(c.TemplateLiteral, scope, set); err != nil {
+			return err
+		}
+	} else if c.IdentifierName != nil && !set {
+		scope.addBinding(c.IdentifierName)
+	}
 	return nil
 }
 
@@ -712,6 +740,14 @@ func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.Cove
 }
 
 func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processArguments(a *javascript.Arguments, scope *Scope, set bool) error {
+	return nil
+}
+
+func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set bool) error {
 	return nil
 }
 
