@@ -641,6 +641,30 @@ func processConditionalExpression(c *javascript.ConditionalExpression, scope *Sc
 }
 
 func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) error {
+	scope = scope.newArrowFunctionScope(a)
+	if a.BindingIdentifier != nil && set {
+		if err := scope.setBinding(a.BindingIdentifier, false); err != nil {
+			return err
+		}
+
+	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		if err := processCoverParenthesizedExpressionAndArrowParameterList(a.CoverParenthesizedExpressionAndArrowParameterList, scope, set); err != nil {
+			return err
+		}
+	} else if a.FormalParameters != nil {
+		if err := processFormalParameters(a.FormalParameters, scope, set); err != nil {
+			return err
+		}
+	}
+	if a.AssignmentExpression != nil {
+		if err := processAssignmentExpression(a.AssignmentExpression, scope, set); err != nil {
+			return err
+		}
+	} else if a.FunctionBody != nil {
+		if err := processBlockStatement(a.FunctionBody, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -677,6 +701,10 @@ func processLogicalORExpression(l *javascript.LogicalORExpression, scope *Scope,
 }
 
 func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.CoverParenthesizedExpressionAndArrowParameterList, scope *Scope, set bool) error {
 	return nil
 }
 
