@@ -669,6 +669,9 @@ func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) e
 }
 
 func processNewExpression(n *javascript.NewExpression, scope *Scope, set bool) error {
+	if err := processMemberExpression(&n.MemberExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -705,6 +708,10 @@ func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, s
 }
 
 func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.CoverParenthesizedExpressionAndArrowParameterList, scope *Scope, set bool) error {
+	return nil
+}
+
+func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set bool) error {
 	return nil
 }
 
