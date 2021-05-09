@@ -678,8 +678,15 @@ func TestAssignmentExpressionOld(t *testing.T) {
 						ObjectBindingPattern: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &tk[6],
-									Tokens:            tk[6:7],
+									PropertyName: PropertyName{
+										LiteralPropertyName: &tk[6],
+										Tokens:              tk[6:7],
+									},
+									BindingElement: BindingElement{
+										SingleNameBinding: &tk[6],
+										Tokens:            tk[6:7],
+									},
+									Tokens: tk[6:7],
 								},
 							},
 							Tokens: tk[5:8],

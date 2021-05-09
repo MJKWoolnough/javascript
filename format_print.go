@@ -949,9 +949,9 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 }
 
 func (b BindingProperty) printSource(w io.Writer, v bool) {
-	if b.SingleNameBinding != nil {
-		io.WriteString(w, b.SingleNameBinding.Data)
-	} else if b.PropertyName != nil && b.BindingElement != nil {
+	if !v && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
+		b.BindingElement.printSource(w, v)
+	} else {
 		b.PropertyName.printSource(w, v)
 		w.Write(colonSep)
 		b.BindingElement.printSource(w, v)

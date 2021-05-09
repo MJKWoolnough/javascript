@@ -599,12 +599,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 116
 			"let {a}=1",
 			"let {a} = 1;",
-			"let {a} = 1;",
+			"let {a: a} = 1;",
 		},
 		{ // 117
 			"const\n{\na\n}\n=\n1",
 			"const {a} = 1;",
-			"const {a} = 1;",
+			"const {a: a} = 1;",
 		},
 		{ // 118
 			"function* a() {yield a}",
@@ -694,12 +694,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 135
 			"var {a} = 1",
 			"var {a} = 1;",
-			"var {a} = 1;",
+			"var {a: a} = 1;",
 		},
 		{ // 136
 			"var { a , b, ...c } = 1",
 			"var {a, b, ...c} = 1;",
-			"var {a, b, ...c} = 1;",
+			"var {a: a, b: b, ...c} = 1;",
 		},
 		{ // 137
 			"var [a] = 1",
@@ -919,7 +919,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 180
 			"var{a}=b",
 			"var {a} = b;",
-			"var {a} = b;",
+			"var {a: a} = b;",
 		},
 		{ // 181
 			"var\n{\na\n:\nb\n}\n=\nc\n",
@@ -1319,7 +1319,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 260
 			"for(var{a}in b){}",
 			"for (var {a} in b) {}",
-			"for (var {a} in b) {}",
+			"for (var {a: a} in b) {}",
 		},
 		{ // 261
 			"for(var[a]in b){}",
@@ -1349,7 +1349,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 266
 			"var[{a}]=b",
 			"var [{a}] = b;",
-			"var [{a}] = b;",
+			"var [{a: a}] = b;",
 		},
 		{ // 272
 			"super\n.\na\n",

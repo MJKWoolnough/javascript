@@ -1594,8 +1594,15 @@ func TestObjectBindingPattern(t *testing.T) {
 			t.Output = ObjectBindingPattern{
 				BindingPropertyList: []BindingProperty{
 					{
-						SingleNameBinding: &tk[2],
-						Tokens:            tk[2:3],
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[2],
+							Tokens:            tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 				},
 				Tokens: tk[:5],
@@ -1612,12 +1619,26 @@ func TestObjectBindingPattern(t *testing.T) {
 			t.Output = ObjectBindingPattern{
 				BindingPropertyList: []BindingProperty{
 					{
-						SingleNameBinding: &tk[2],
-						Tokens:            tk[2:3],
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[2],
+							Tokens:            tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					{
-						SingleNameBinding: &tk[5],
-						Tokens:            tk[5:6],
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[5],
+							Tokens:              tk[5:6],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[5],
+							Tokens:            tk[5:6],
+						},
+						Tokens: tk[5:6],
 					},
 				},
 				Tokens: tk[:8],
@@ -1627,8 +1648,15 @@ func TestObjectBindingPattern(t *testing.T) {
 			t.Output = ObjectBindingPattern{
 				BindingPropertyList: []BindingProperty{
 					{
-						SingleNameBinding: &tk[2],
-						Tokens:            tk[2:3],
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[2],
+							Tokens:            tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 				},
 				BindingRestProperty: &tk[7],
@@ -1668,24 +1696,42 @@ func TestBindingProperty(t *testing.T) {
 		}},
 		{`a`, func(t *test, tk Tokens) { // 3
 			t.Output = BindingProperty{
-				SingleNameBinding: &tk[0],
-				Tokens:            tk[:1],
+				PropertyName: PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				BindingElement: BindingElement{
+					SingleNameBinding: &tk[0],
+					Tokens:            tk[:1],
+				},
+				Tokens: tk[:1],
 			}
 		}},
 		{"a\n=\n", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
-				Err:     assignmentError(tk[4]),
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "BindingElement",
+					Token:   tk[4],
+				},
 				Parsing: "BindingProperty",
-				Token:   tk[4],
+				Token:   tk[0],
 			}
 		}},
 		{"a\n=\n1", func(t *test, tk Tokens) { // 5
 			lit1 := makeConditionLiteral(tk, 4)
 			t.Output = BindingProperty{
-				SingleNameBinding: &tk[0],
-				Initializer: &AssignmentExpression{
-					ConditionalExpression: &lit1,
-					Tokens:                tk[4:5],
+				PropertyName: PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				BindingElement: BindingElement{
+					SingleNameBinding: &tk[0],
+					Initializer: &AssignmentExpression{
+						ConditionalExpression: &lit1,
+						Tokens:                tk[4:5],
+					},
+					Tokens: tk[:5],
 				},
 				Tokens: tk[:5],
 			}
@@ -1721,11 +1767,11 @@ func TestBindingProperty(t *testing.T) {
 		}},
 		{"a\n:\nb", func(t *test, tk Tokens) { // 9
 			t.Output = BindingProperty{
-				PropertyName: &PropertyName{
+				PropertyName: PropertyName{
 					LiteralPropertyName: &tk[0],
 					Tokens:              tk[:1],
 				},
-				BindingElement: &BindingElement{
+				BindingElement: BindingElement{
 					SingleNameBinding: &tk[4],
 					Tokens:            tk[4:5],
 				},

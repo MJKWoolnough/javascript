@@ -106,7 +106,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			h := g.NewGoal()
 			be := len(fp.FormalParameterList)
 			fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
-			if err := fp.FormalParameterList[be].parse(&h, yield, await); err != nil {
+			if err := fp.FormalParameterList[be].parse(&h, nil, yield, await); err != nil {
 				return g.Error("FormalParameters", err)
 			}
 			g.Score(h)
@@ -139,9 +139,11 @@ type BindingElement struct {
 	Tokens               Tokens
 }
 
-func (be *BindingElement) parse(j *jsParser, yield, await bool) error {
+func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, await bool) error {
 	g := j.NewGoal()
-	if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
+	if singleNameBinding != nil {
+		be.SingleNameBinding = singleNameBinding
+	} else if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)

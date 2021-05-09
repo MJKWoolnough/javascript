@@ -409,34 +409,10 @@ func (f *BindingProperty) printType(w io.Writer, v bool) {
 	w.Write(nameBindingProperty[1:16])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if f.SingleNameBinding != nil {
-		pp.Write(nameSingleNameBinding)
-		f.SingleNameBinding.printType(&pp, v)
-	} else if v {
-		pp.Write(nameSingleNameBinding)
-		pp.Write(nilStr)
-	}
-	if f.Initializer != nil {
-		pp.Write(nameInitializer)
-		f.Initializer.printType(&pp, v)
-	} else if v {
-		pp.Write(nameInitializer)
-		pp.Write(nilStr)
-	}
-	if f.PropertyName != nil {
-		pp.Write(namePropertyName)
-		f.PropertyName.printType(&pp, v)
-	} else if v {
-		pp.Write(namePropertyName)
-		pp.Write(nilStr)
-	}
-	if f.BindingElement != nil {
-		pp.Write(nameBindingElement)
-		f.BindingElement.printType(&pp, v)
-	} else if v {
-		pp.Write(nameBindingElement)
-		pp.Write(nilStr)
-	}
+	pp.Write(namePropertyName)
+	f.PropertyName.printType(&pp, v)
+	pp.Write(nameBindingElement)
+	f.BindingElement.printType(&pp, v)
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)

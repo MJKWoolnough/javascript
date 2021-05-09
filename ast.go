@@ -221,7 +221,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 			g.AcceptRunWhitespace()
 			h := g.NewGoal()
 			ab.BindingRestElement = new(BindingElement)
-			if err := ab.BindingRestElement.parse(&h, yield, await); err != nil {
+			if err := ab.BindingRestElement.parse(&h, nil, yield, await); err != nil {
 				return g.Error("ArrayBindingPattern", err)
 			}
 			g.Score(h)
@@ -234,7 +234,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 		}
 		be := len(ab.BindingElementList)
 		ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
-		if err := ab.BindingElementList[be].parse(&g, yield, await); err != nil {
+		if err := ab.BindingElementList[be].parse(&g, nil, yield, await); err != nil {
 			return j.Error("ArrayBindingPattern", err)
 		}
 		j.Score(g)
@@ -298,53 +298,38 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 // BindingProperty as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingProperty
 //
-// It is only valid for either SingleNameBinding, with an optional Initializer,
-// or PropertyName and BindingElement (PropertyName: BindingElement) to be
-// non-nil.
+// A SingleNameBinding, with or without an initializer, is cloned into the
+// Property Name and Binding Element. This allows the Binding Element
+// Identifier to be modified while keeping the correct Property Name
 type BindingProperty struct {
-	SingleNameBinding *Token
-	Initializer       *AssignmentExpression
-	PropertyName      *PropertyName
-	BindingElement    *BindingElement
-	Tokens            Tokens
+	PropertyName   PropertyName
+	BindingElement BindingElement
+	Tokens         Tokens
 }
 
 func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if i := g.parseIdentifier(yield, await); i != nil {
-		h := g.NewGoal()
-		h.AcceptRunWhitespace()
-		if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
-			g.Score(h)
-			g.AcceptRunWhitespace()
-			h = g.NewGoal()
-			bp.Initializer = new(AssignmentExpression)
-			if err := bp.Initializer.parse(&h, true, yield, await); err != nil {
-				return g.Error("BindingProperty", err)
-			}
-			g.Score(h)
-			bp.SingleNameBinding = i
-		} else if !h.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-			bp.SingleNameBinding = i
-		}
+	if err := bp.PropertyName.parse(&g, yield, await); err != nil {
+		return j.Error("BindingProperty", err)
 	}
-	if bp.SingleNameBinding == nil {
-		g = j.NewGoal()
-		bp.PropertyName = new(PropertyName)
-		if err := bp.PropertyName.parse(&g, yield, await); err != nil {
-			return j.Error("BindingProperty", err)
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	var snb *Token
+	if !h.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
+		i := j.NewGoal()
+		if bp.PropertyName.LiteralPropertyName == nil || i.parseIdentifier(yield, await) == nil {
+			return h.Error("BindingProperty", ErrMissingColon)
 		}
+		lpn := *bp.PropertyName.LiteralPropertyName
+		snb = &lpn
+	} else {
+		h.AcceptRunWhitespace()
+		g.Score(h)
 		j.Score(g)
-		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, ":"}) {
-			return j.Error("BindingProperty", ErrMissingColon)
-		}
-		j.AcceptRunWhitespace()
 		g = j.NewGoal()
-		bp.BindingElement = new(BindingElement)
-		if err := bp.BindingElement.parse(&g, yield, await); err != nil {
-			return j.Error("BindingProperty", err)
-		}
+	}
+	if err := bp.BindingElement.parse(&g, snb, yield, await); err != nil {
+		return j.Error("BindingProperty", err)
 	}
 	j.Score(g)
 	bp.Tokens = j.ToTokens()

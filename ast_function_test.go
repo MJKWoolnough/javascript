@@ -663,7 +663,7 @@ func TestBindingElement(t *testing.T) {
 		}},
 	}, func(t *test) (interface{}, error) {
 		var be BindingElement
-		err := be.parse(&t.Tokens, t.Yield, t.Await)
+		err := be.parse(&t.Tokens, nil, t.Yield, t.Await)
 		return be, err
 	})
 }

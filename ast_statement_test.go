@@ -239,12 +239,26 @@ func TestStatementOld(t *testing.T) {
 								ObjectBindingPattern: &ObjectBindingPattern{
 									BindingPropertyList: []BindingProperty{
 										{
-											SingleNameBinding: &tk[3],
-											Tokens:            tk[3:4],
+											PropertyName: PropertyName{
+												LiteralPropertyName: &tk[3],
+												Tokens:              tk[3:4],
+											},
+											BindingElement: BindingElement{
+												SingleNameBinding: &tk[3],
+												Tokens:            tk[3:4],
+											},
+											Tokens: tk[3:4],
 										},
 										{
-											SingleNameBinding: &tk[6],
-											Tokens:            tk[6:7],
+											PropertyName: PropertyName{
+												LiteralPropertyName: &tk[6],
+												Tokens:              tk[6:7],
+											},
+											BindingElement: BindingElement{
+												SingleNameBinding: &tk[6],
+												Tokens:            tk[6:7],
+											},
+											Tokens: tk[6:7],
 										},
 									},
 									Tokens: tk[2:8],
@@ -766,8 +780,15 @@ func TestStatementOld(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &tk[5],
-									Tokens:            tk[5:6],
+									PropertyName: PropertyName{
+										LiteralPropertyName: &tk[5],
+										Tokens:              tk[5:6],
+									},
+									BindingElement: BindingElement{
+										SingleNameBinding: &tk[5],
+										Tokens:            tk[5:6],
+									},
+									Tokens: tk[5:6],
 								},
 							},
 							Tokens: tk[4:7],
@@ -900,8 +921,15 @@ func TestStatementOld(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &tk[5],
-									Tokens:            tk[5:6],
+									PropertyName: PropertyName{
+										LiteralPropertyName: &tk[5],
+										Tokens:              tk[5:6],
+									},
+									BindingElement: BindingElement{
+										SingleNameBinding: &tk[5],
+										Tokens:            tk[5:6],
+									},
+									Tokens: tk[5:6],
 								},
 							},
 							Tokens: tk[4:7],
@@ -1537,8 +1565,15 @@ func TestStatementOld(t *testing.T) {
 						CatchParameterObjectBindingPattern: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &tk[8],
-									Tokens:            tk[8:9],
+									PropertyName: PropertyName{
+										LiteralPropertyName: &tk[8],
+										Tokens:              tk[8:9],
+									},
+									BindingElement: BindingElement{
+										SingleNameBinding: &tk[8],
+										Tokens:            tk[8:9],
+									},
+									Tokens: tk[8:9],
 								},
 							},
 							Tokens: tk[7:10],
@@ -1969,8 +2004,15 @@ func TestStatementOld(t *testing.T) {
 						ForBindingPatternObject: &ObjectBindingPattern{
 							BindingPropertyList: []BindingProperty{
 								{
-									SingleNameBinding: &tk[7],
-									Tokens:            tk[7:8],
+									PropertyName: PropertyName{
+										LiteralPropertyName: &tk[7],
+										Tokens:              tk[7:8],
+									},
+									BindingElement: BindingElement{
+										SingleNameBinding: &tk[7],
+										Tokens:            tk[7:8],
+									},
+									Tokens: tk[7:8],
 								},
 							},
 							Tokens: tk[6:9],
