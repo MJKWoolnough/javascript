@@ -427,19 +427,18 @@ Format implements the fmt.Formatter interface
 
 ```go
 type BindingProperty struct {
-	SingleNameBinding *Token
-	Initializer       *AssignmentExpression
-	PropertyName      *PropertyName
-	BindingElement    *BindingElement
-	Tokens            Tokens
+	PropertyName   PropertyName
+	BindingElement BindingElement
+	Tokens         Tokens
 }
 ```
 
 BindingProperty as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-BindingProperty
 
-It is only valid for either SingleNameBinding, with an optional Initializer, or
-PropertyName and BindingElement (PropertyName: BindingElement) to be non-nil.
+A SingleNameBinding, with or without an initializer, is cloned into the Property
+Name and Binding Element. This allows the Binding Element Identifier to be
+modified while keeping the correct Property Name
 
 #### func (BindingProperty) Format
 
