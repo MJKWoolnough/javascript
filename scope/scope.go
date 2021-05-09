@@ -544,8 +544,10 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 	if o.BindingRestProperty != nil {
 		if bare {
 			scope.addBinding(o.BindingRestProperty)
-		} else {
-			scope.setBinding(o.BindingRestProperty, hoist)
+		} else if set {
+			if err := scope.setBinding(o.BindingRestProperty, hoist); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
