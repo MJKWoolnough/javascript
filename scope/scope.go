@@ -774,6 +774,11 @@ func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Sc
 }
 
 func processPropertyName(p *javascript.PropertyName, scope *Scope, set bool) error {
+	if p.ComputedPropertyName != nil {
+		if err := processAssignmentExpression(p.ComputedPropertyName, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
