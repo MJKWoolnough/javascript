@@ -738,6 +738,28 @@ func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set, ho
 }
 
 func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hoist, bare bool) error {
+	if b.SingleNameBinding != nil {
+		if bare {
+			scope.addBinding(b.SingleNameBinding)
+		} else if set {
+			if err := scope.setBinding(b.SingleNameBinding, hoist); err != nil {
+				return err
+			}
+		}
+	} else if b.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(b.ArrayBindingPattern, scope, set, hoist, bare); err != nil {
+			return err
+		}
+	} else if b.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(b.ObjectBindingPattern, scope, set, hoist, bare); err != nil {
+			return err
+		}
+	}
+	if b.Initializer != nil {
+		if err := processAssignmentExpression(b.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
