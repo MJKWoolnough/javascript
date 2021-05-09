@@ -323,20 +323,16 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			}
 		}
 	default:
-		if f.ForBindingIdentifier != nil {
-			if !set {
-				scope.Parent.addBinding(f.ForBindingIdentifier)
+		if f.ForBindingPatternObject != nil {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, false, true); err != nil {
+				return err
 			}
-		} else if set {
-			if f.ForBindingPatternObject != nil {
-				if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, true, false, true); err != nil {
-					return err
-				}
-			} else if f.ForBindingPatternArray != nil {
-				if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, true, false, true); err != nil {
-					return err
-				}
+		} else if f.ForBindingPatternArray != nil {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, false, true); err != nil {
+				return err
 			}
+		} else if f.ForBindingIdentifier != nil && !set {
+			scope.Parent.addBinding(f.ForBindingIdentifier)
 		}
 	}
 	switch f.Type {
@@ -473,19 +469,17 @@ func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, s
 }
 
 func processVariableDeclaration(v *javascript.VariableDeclaration, scope *Scope, set bool) error {
-	if set {
-		if v.BindingIdentifier != nil {
-			if err := scope.setBinding(v.BindingIdentifier, true); err != nil {
-				return err
-			}
-		} else if v.ArrayBindingPattern != nil {
-			if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, true, true, false); err != nil {
-				return err
-			}
-		} else if v.ObjectBindingPattern != nil {
-			if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, true, true, false); err != nil {
-				return err
-			}
+	if v.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, set, true, false); err != nil {
+			return err
+		}
+	} else if v.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, set, true, false); err != nil {
+			return err
+		}
+	} else if v.BindingIdentifier != nil && set {
+		if err := scope.setBinding(v.BindingIdentifier, true); err != nil {
+			return err
 		}
 	}
 	if v.Initializer != nil {
@@ -596,19 +590,17 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 }
 
 func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool) error {
-	if set {
-		if l.BindingIdentifier != nil {
-			if err := scope.setBinding(l.BindingIdentifier, false); err != nil {
-				return err
-			}
-		} else if l.ArrayBindingPattern != nil {
-			if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, false, false); err != nil {
-				return err
-			}
-		} else if l.ObjectBindingPattern != nil {
-			if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, false, false); err != nil {
-				return err
-			}
+	if l.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if l.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if l.BindingIdentifier != nil && set {
+		if err := scope.setBinding(l.BindingIdentifier, false); err != nil {
+			return err
 		}
 	}
 	if l.Initializer != nil {
@@ -644,17 +636,16 @@ func processConditionalExpression(c *javascript.ConditionalExpression, scope *Sc
 
 func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) error {
 	scope = scope.newArrowFunctionScope(a)
-	if a.BindingIdentifier != nil && set {
-		if err := scope.setBinding(a.BindingIdentifier, false); err != nil {
-			return err
-		}
-
-	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
+	if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		if err := processCoverParenthesizedExpressionAndArrowParameterList(a.CoverParenthesizedExpressionAndArrowParameterList, scope, set); err != nil {
 			return err
 		}
 	} else if a.FormalParameters != nil {
 		if err := processFormalParameters(a.FormalParameters, scope, set); err != nil {
+			return err
+		}
+	} else if a.BindingIdentifier != nil && set {
+		if err := scope.setBinding(a.BindingIdentifier, false); err != nil {
 			return err
 		}
 	}
