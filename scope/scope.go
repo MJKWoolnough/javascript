@@ -783,6 +783,14 @@ func processPropertyName(p *javascript.PropertyName, scope *Scope, set bool) err
 }
 
 func processLogicalORExpression(l *javascript.LogicalORExpression, scope *Scope, set bool) error {
+	if l.LogicalORExpression != nil {
+		if err := processLogicalORExpression(l.LogicalORExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processLogicalANDExpression(&l.LogicalANDExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -807,6 +815,10 @@ func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set boo
 }
 
 func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) error {
+	return nil
+}
+
+func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scope, set bool) error {
 	return nil
 }
 
