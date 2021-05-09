@@ -795,6 +795,14 @@ func processLogicalORExpression(l *javascript.LogicalORExpression, scope *Scope,
 }
 
 func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, set bool) error {
+	if c.CoalesceExpressionHead != nil {
+		if err := processCoalesceExpression(c.CoalesceExpressionHead, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processBitwiseORExpression(&c.BitwiseORExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -819,6 +827,10 @@ func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) e
 }
 
 func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processBitwiseORExpression(l *javascript.BitwiseORExpression, scope *Scope, set bool) error {
 	return nil
 }
 
