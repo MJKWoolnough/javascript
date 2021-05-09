@@ -728,6 +728,12 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 }
 
 func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
+	if err := processPropertyName(&b.PropertyName, scope, set); err != nil {
+		return err
+	}
+	if err := processBindingElement(&b.BindingElement, scope, set, hoist, bare); err != nil {
+		return err
+	}
 	return nil
 }
 
