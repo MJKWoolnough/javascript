@@ -757,6 +757,19 @@ func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hois
 }
 
 func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Scope, set bool) error {
+	if f.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if f.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(f.ObjectBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if f.BindingIdentifier != nil && set {
+		if err := scope.setBinding(f.BindingIdentifier, false); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
