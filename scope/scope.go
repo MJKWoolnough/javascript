@@ -867,6 +867,11 @@ func processArguments(a *javascript.Arguments, scope *Scope, set bool) error {
 }
 
 func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set bool) error {
+	for n := range t.Expressions {
+		if err := processExpression(&t.Expressions[n], scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
