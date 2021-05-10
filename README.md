@@ -1670,8 +1670,8 @@ type OptionalChain struct {
 OptionalChain as defined in TC39
 https://tc39.es/ecma262/#prod-OptionalExpression
 
-It is only valid for one of OptionalChain, Arguments, Expression,
-IdentifierName, or TemplateLiteral to be non-nil.
+It is only valid for one of Arguments, Expression, IdentifierName, or
+TemplateLiteral to be non-nil.
 
 #### func (OptionalChain) Format
 
