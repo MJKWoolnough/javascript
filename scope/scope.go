@@ -876,6 +876,24 @@ func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set boo
 }
 
 func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) error {
+	if o.OptionalChain != nil {
+		if err := processOptionalChain(o.OptionalChain, scope, set); err != nil {
+			return err
+		}
+	}
+	if o.Arguments != nil {
+		if err := processArguments(o.Arguments, scope, set); err != nil {
+			return err
+		}
+	} else if o.Expression != nil {
+		if err := processExpression(o.Expression, scope, set); err != nil {
+			return err
+		}
+	} else if o.TemplateLiteral != nil {
+		if err := processTemplateLiteral(o.TemplateLiteral, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
