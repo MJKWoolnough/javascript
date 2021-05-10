@@ -807,6 +807,24 @@ func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, s
 }
 
 func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.CoverParenthesizedExpressionAndArrowParameterList, scope *Scope, set bool) error {
+	for n := range c.Expressions {
+		if err := processAssignmentExpression(&c.Expressions[n], scope, set); err != nil {
+			return err
+		}
+	}
+	if c.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(c.ArrayBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if c.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(c.ObjectBindingPattern, scope, set, false, false); err != nil {
+			return err
+		}
+	} else if c.BindingIdentifier != nil && set {
+		if err := scope.setBinding(c.BindingIdentifier, false); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
