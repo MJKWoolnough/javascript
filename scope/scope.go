@@ -694,8 +694,6 @@ func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool)
 		if err := processTemplateLiteral(c.TemplateLiteral, scope, set); err != nil {
 			return err
 		}
-	} else if c.IdentifierName != nil && !set {
-		scope.addBinding(c.IdentifierName)
 	}
 	return nil
 }
