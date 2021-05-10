@@ -829,6 +829,28 @@ func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.Cove
 }
 
 func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set bool) error {
+	if m.PrimaryExpression != nil {
+		if err := processPrimaryExpression(m.PrimaryExpression, scope, set); err != nil {
+			return err
+		}
+	} else if m.MemberExpression != nil {
+		if err := processMemberExpression(m.MemberExpression, scope, set); err != nil {
+			return err
+		}
+		if m.Expression != nil {
+			if err := processExpression(m.Expression, scope, set); err != nil {
+				return err
+			}
+		} else if m.TemplateLiteral != nil {
+			if err := processTemplateLiteral(m.TemplateLiteral, scope, set); err != nil {
+				return err
+			}
+		} else if m.Arguments != nil {
+			if err := processArguments(m.Arguments, scope, set); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -849,6 +871,10 @@ func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scop
 }
 
 func processBitwiseORExpression(l *javascript.BitwiseORExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set bool) error {
 	return nil
 }
 
