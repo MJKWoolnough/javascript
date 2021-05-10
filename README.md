@@ -1400,8 +1400,9 @@ type MemberExpression struct {
 MemberExpression as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-MemberExpression
 
-If PrimaryExpression is nil, SuperProperty is true, or MetaProperty = is,
-Expression, IdentifierName, TemplateLiteral, and Arguments must be nil.
+If PrimaryExpression is nil, SuperProperty is true, NewTarget is true, or
+ImportMeta is true, Expression, IdentifierName, TemplateLiteral, and Arguments
+must be nil.
 
 If Expression, IdentifierName, TemplateLiteral, or Arguments is non-nil, then
 MemberExpression must be non-nil.
