@@ -979,10 +979,19 @@ func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) err
 }
 
 func processObjectLiteral(o *javascript.ObjectLiteral, scope *Scope, set bool) error {
+	for n := range o.PropertyDefinitionList {
+		if err := processPropertyDefinition(&o.PropertyDefinitionList[n], scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func processBitwiseANDExpression(b *javascript.BitwiseANDExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processPropertyDefinition(p *javascript.PropertyDefinition, scope *Scope, set bool) error {
 	return nil
 }
 
