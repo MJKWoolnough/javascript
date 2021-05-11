@@ -1740,21 +1740,23 @@ Format implements the fmt.Formatter interface
 
 ```go
 type PropertyDefinition struct {
-	IdentifierReference  *Token
-	PropertyName         *PropertyName
-	AssignmentExpression *AssignmentExpression
-	MethodDefinition     *MethodDefinition
-	Tokens               Tokens
+	IsCoverInitializedName bool
+	PropertyName           *PropertyName
+	AssignmentExpression   *AssignmentExpression
+	MethodDefinition       *MethodDefinition
+	Tokens                 Tokens
 }
 ```
 
 PropertyDefinition as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-PropertyDefinition
 
-It is only valid for either IdentifierReference, IdentifierReference and
-AssignmentExpression (CoverInitializedName), PropertyName and
-AssignmentExpression (PropertyName: AssignmentExpression), MethodDefinition, or
-AssignmentExpression (...AssignmentExpression) to be non-nil.
+One, and only one, of AssignmentExpression or MethodDefinition must be non-nil.
+
+It is only valid for PropertyName to be non-nil when AssignmentExpression is
+also non-nil.
+
+The IdentifierReference is stored within PropertyName.
 
 #### func (PropertyDefinition) Format
 
