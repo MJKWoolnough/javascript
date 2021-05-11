@@ -988,10 +988,22 @@ func processObjectLiteral(o *javascript.ObjectLiteral, scope *Scope, set bool) e
 }
 
 func processBitwiseANDExpression(b *javascript.BitwiseANDExpression, scope *Scope, set bool) error {
+	if b.BitwiseANDExpression != nil {
+		if err := processBitwiseANDExpression(b.BitwiseANDExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processEqualityExpression(&b.EqualityExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
 func processPropertyDefinition(p *javascript.PropertyDefinition, scope *Scope, set bool) error {
+	return nil
+}
+
+func processEqualityExpression(e *javascript.EqualityExpression, scope *Scope, set bool) error {
 	return nil
 }
 
