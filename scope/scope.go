@@ -965,6 +965,16 @@ func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scop
 }
 
 func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) error {
+	for n := range a.ElementList {
+		if err := processAssignmentExpression(&a.ElementList[n], scope, set); err != nil {
+			return err
+		}
+	}
+	if a.SpreadElement != nil {
+		if err := processAssignmentExpression(a.SpreadElement, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
