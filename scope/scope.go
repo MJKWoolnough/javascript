@@ -205,7 +205,7 @@ func processStatement(s *javascript.Statement, scope *Scope, set bool) error {
 		return processWithStatement(s.WithStatement, scope, set)
 	} else if s.LabelIdentifier != nil {
 		if s.LabelledItemFunction != nil {
-			return processFunctionDeclaration(s.LabelledItemFunction, scope, set)
+			return processFunctionDeclaration(s.LabelledItemFunction, scope, set, false)
 		} else if s.LabelledItemStatement != nil {
 			return processStatement(s.LabelledItemStatement, scope, set)
 		}
@@ -217,11 +217,11 @@ func processStatement(s *javascript.Statement, scope *Scope, set bool) error {
 
 func processDeclaration(d *javascript.Declaration, scope *Scope, set bool) error {
 	if d.ClassDeclaration != nil {
-		if err := processClassDeclaration(d.ClassDeclaration, scope, set); err != nil {
+		if err := processClassDeclaration(d.ClassDeclaration, scope, set, false); err != nil {
 			return err
 		}
 	} else if d.FunctionDeclaration != nil {
-		if err := processFunctionDeclaration(d.FunctionDeclaration, scope, set); err != nil {
+		if err := processFunctionDeclaration(d.FunctionDeclaration, scope, set, false); err != nil {
 			return err
 		}
 	} else if d.LexicalDeclaration != nil {
@@ -407,8 +407,8 @@ func processWithStatement(w *javascript.WithStatement, scope *Scope, set bool) e
 	return nil
 }
 
-func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope, set bool) error {
-	if f.BindingIdentifier != nil && set {
+func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope, set, expression bool) error {
+	if f.BindingIdentifier != nil && set && !expression {
 		if err := scope.setBinding(f.BindingIdentifier, true); err != nil {
 			return err
 		}
@@ -440,8 +440,8 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 	return nil
 }
 
-func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set bool) error {
-	if c.BindingIdentifier != nil && set {
+func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set, expression bool) error {
+	if c.BindingIdentifier != nil && set && !expression {
 		if err := scope.setBinding(c.BindingIdentifier, false); err != nil {
 			return err
 		}
@@ -922,10 +922,45 @@ func processBitwiseORExpression(b *javascript.BitwiseORExpression, scope *Scope,
 }
 
 func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set bool) error {
+	if p.ArrayLiteral != nil {
+		if err := processArrayLiteral(p.ArrayLiteral, scope, set); err != nil {
+			return err
+		}
+	} else if p.ObjectLiteral != nil {
+		if err := processObjectLiteral(p.ObjectLiteral, scope, set); err != nil {
+			return err
+		}
+	} else if p.FunctionExpression != nil {
+		if err := processFunctionDeclaration(p.FunctionExpression, scope, set, true); err != nil {
+			return err
+		}
+	} else if p.ClassExpression != nil {
+		if err := processClassDeclaration(p.ClassExpression, scope, set, true); err != nil {
+			return err
+		}
+	} else if p.TemplateLiteral != nil {
+		if err := processTemplateLiteral(p.TemplateLiteral, scope, set); err != nil {
+			return err
+		}
+	} else if p.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		if err := processCoverParenthesizedExpressionAndArrowParameterList(p.CoverParenthesizedExpressionAndArrowParameterList, scope, set); err != nil {
+			return err
+		}
+	} else if p.IdentifierReference != nil && !set {
+		scope.addBinding(p.IdentifierReference)
+	}
 	return nil
 }
 
 func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) error {
+	return nil
+}
+
+func processObjectLiteral(o *javascript.ObjectLiteral, scope *Scope, set bool) error {
 	return nil
 }
 
