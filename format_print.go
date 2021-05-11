@@ -1197,17 +1197,24 @@ func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
 }
 
 func (p PropertyDefinition) printSource(w io.Writer, v bool) {
-	if p.IdentifierReference != nil {
-		io.WriteString(w, p.IdentifierReference.Data)
-		if p.AssignmentExpression != nil {
-			w.Write(assignment)
-			p.AssignmentExpression.printSource(w, v)
-		}
-	} else if p.AssignmentExpression != nil {
+	if p.AssignmentExpression != nil {
 		if p.PropertyName != nil {
 			p.PropertyName.printSource(w, v)
-			w.Write(colonSep)
-			p.AssignmentExpression.printSource(w, v)
+			done := false
+			if !v && !p.IsCoverInitializedName && p.PropertyName.LiteralPropertyName != nil && p.AssignmentExpression.ConditionalExpression != nil {
+				c := UnwrapConditional(p.AssignmentExpression.ConditionalExpression)
+				if pe, ok := c.(*PrimaryExpression); ok && pe.IdentifierReference != nil {
+					done = pe.IdentifierReference.Type == p.PropertyName.LiteralPropertyName.Type && pe.IdentifierReference.Data == p.PropertyName.LiteralPropertyName.Data
+				}
+			}
+			if !done {
+				if p.IsCoverInitializedName {
+					w.Write(assignment)
+				} else {
+					w.Write(colonSep)
+				}
+				p.AssignmentExpression.printSource(w, v)
+			}
 		} else {
 			w.Write(ellipsis)
 			p.AssignmentExpression.printSource(w, v)

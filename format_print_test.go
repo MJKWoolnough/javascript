@@ -939,7 +939,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 184
 			"var[a={b}] = c",
 			"var [a = {b}] = c;",
-			"var [a = {b}] = c;",
+			"var [a = {b: b}] = c;",
 		},
 		{ // 185
 			"var a={[\"b\"]:c}",
@@ -1129,7 +1129,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 222
 			"var a\n=\n{\nb\n:\nc\n,\nd\n,\ne\n=\nf\n,\ng\n(\n)\n{\n}\n,\n...\nh\n}\n",
 			"var a = {b: c, d, e = f, g() {}, ...h};",
-			"var a = {\n	b: c,\n	d,\n	e = f,\n	g() {},\n	...h\n};",
+			"var a = {\n	b: c,\n	d: d,\n	e = f,\n	g() {},\n	...h\n};",
 		},
 		{ // 223
 			"a&b",

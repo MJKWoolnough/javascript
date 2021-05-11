@@ -1817,12 +1817,8 @@ func (f *PropertyDefinition) printType(w io.Writer, v bool) {
 	w.Write(namePropertyDefinition[1:19])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if f.IdentifierReference != nil {
-		pp.Write(nameIdentifierReference)
-		f.IdentifierReference.printType(&pp, v)
-	} else if v {
-		pp.Write(nameIdentifierReference)
-		pp.Write(nilStr)
+	if f.IsCoverInitializedName || v {
+		pp.Printf("\nIsCoverInitializedName: %v", f.IsCoverInitializedName)
 	}
 	if f.PropertyName != nil {
 		pp.Write(namePropertyName)

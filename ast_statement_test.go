@@ -203,6 +203,8 @@ func TestStatementOld(t *testing.T) {
 			}
 		}},
 		{`var {a, b} = {c, d};`, func(t *test, tk Tokens) { // 8
+			litC := makeConditionLiteral(tk, 12)
+			litD := makeConditionLiteral(tk, 15)
 			obj := wrapConditional(UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
 					NewExpression: &NewExpression{
@@ -211,12 +213,26 @@ func TestStatementOld(t *testing.T) {
 								ObjectLiteral: &ObjectLiteral{
 									PropertyDefinitionList: []PropertyDefinition{
 										{
-											IdentifierReference: &tk[12],
-											Tokens:              tk[12:13],
+											PropertyName: &PropertyName{
+												LiteralPropertyName: &tk[12],
+												Tokens:              tk[12:13],
+											},
+											AssignmentExpression: &AssignmentExpression{
+												ConditionalExpression: &litC,
+												Tokens:                tk[12:13],
+											},
+											Tokens: tk[12:13],
 										},
 										{
-											IdentifierReference: &tk[15],
-											Tokens:              tk[15:16],
+											PropertyName: &PropertyName{
+												LiteralPropertyName: &tk[15],
+												Tokens:              tk[15:16],
+											},
+											AssignmentExpression: &AssignmentExpression{
+												ConditionalExpression: &litD,
+												Tokens:                tk[15:16],
+											},
+											Tokens: tk[15:16],
 										},
 									},
 									Tokens: tk[11:17],

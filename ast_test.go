@@ -1958,11 +1958,19 @@ func TestObjectLiteral(t *testing.T) {
 			}
 		}},
 		{"{\na\n}", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 2)
 			t.Output = ObjectLiteral{
 				PropertyDefinitionList: []PropertyDefinition{
 					{
-						IdentifierReference: &tk[2],
-						Tokens:              tk[2:3],
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 				},
 				Tokens: tk[:5],
@@ -1976,15 +1984,31 @@ func TestObjectLiteral(t *testing.T) {
 			}
 		}},
 		{"{\na\n,\nb\n}", func(t *test, tk Tokens) { // 7
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 6)
 			t.Output = ObjectLiteral{
 				PropertyDefinitionList: []PropertyDefinition{
 					{
-						IdentifierReference: &tk[2],
-						Tokens:              tk[2:3],
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					{
-						IdentifierReference: &tk[6],
-						Tokens:              tk[6:7],
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[6:7],
+						},
+						Tokens: tk[6:7],
 					},
 				},
 				Tokens: tk[:9],
@@ -2028,15 +2052,31 @@ func TestPropertyDefinition(t *testing.T) {
 			}
 		}},
 		{"a\n,", func(t *test, tk Tokens) { // 4
+			litA := makeConditionLiteral(tk, 0)
 			t.Output = PropertyDefinition{
-				IdentifierReference: &tk[0],
-				Tokens:              tk[:1],
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[:1],
+				},
+				Tokens: tk[:1],
 			}
 		}},
 		{"{\na\n}", func(t *test, tk Tokens) { // 5
+			litA := makeConditionLiteral(tk, 2)
 			t.Output = PropertyDefinition{
-				IdentifierReference: &tk[2],
-				Tokens:              tk[2:3],
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[2],
+					Tokens:              tk[2:3],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litA,
+					Tokens:                tk[2:3],
+				},
+				Tokens: tk[2:3],
 			}
 			t.Tokens = jsParser(tk[2:2])
 		}},
@@ -2050,7 +2090,11 @@ func TestPropertyDefinition(t *testing.T) {
 		{"a\n=\nb", func(t *test, tk Tokens) { // 7
 			litB := makeConditionLiteral(tk, 4)
 			t.Output = PropertyDefinition{
-				IdentifierReference: &tk[0],
+				IsCoverInitializedName: true,
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[0],
+					Tokens:              tk[:1],
+				},
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: &litB,
 					Tokens:                tk[4:5],

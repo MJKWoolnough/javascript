@@ -438,16 +438,19 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 // PropertyDefinition as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-PropertyDefinition
 //
-// It is only valid for either IdentifierReference, IdentifierReference and
-// AssignmentExpression (CoverInitializedName), PropertyName and
-// AssignmentExpression (PropertyName: AssignmentExpression), MethodDefinition,
-// or AssignmentExpression (...AssignmentExpression) to be non-nil.
+// One, and only one, of AssignmentExpression or MethodDefinition must be
+// non-nil.
+//
+// It is only valid for PropertyName to be non-nil when AssignmentExpression is
+// also non-nil.
+//
+// The IdentifierReference is stored within PropertyName.
 type PropertyDefinition struct {
-	IdentifierReference  *Token
-	PropertyName         *PropertyName
-	AssignmentExpression *AssignmentExpression
-	MethodDefinition     *MethodDefinition
-	Tokens               Tokens
+	IsCoverInitializedName bool
+	PropertyName           *PropertyName
+	AssignmentExpression   *AssignmentExpression
+	MethodDefinition       *MethodDefinition
+	Tokens                 Tokens
 }
 
 func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
@@ -465,20 +468,34 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 			h := g.NewGoal()
 			h.AcceptRunWhitespace()
 			if h.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+				pd.PropertyName = &PropertyName{
+					LiteralPropertyName: i,
+					Tokens:              g.ToTokens(),
+				}
 				g.Score(h)
 				g.AcceptRunWhitespace()
-				pd.IdentifierReference = i
 				h = g.NewGoal()
 				pd.AssignmentExpression = new(AssignmentExpression)
 				if err := pd.AssignmentExpression.parse(&h, true, yield, await); err != nil {
 					return g.Error("PropertyDefinition", err)
 				}
 				g.Score(h)
+				pd.IsCoverInitializedName = true
 			} else if t := h.Peek(); t.Type == TokenRightBracePunctuator || t == (parser.Token{TokenPunctuator, ","}) {
-				pd.IdentifierReference = i
+				pd.PropertyName = &PropertyName{
+					LiteralPropertyName: i,
+					Tokens:              g.ToTokens(),
+				}
+				pd.AssignmentExpression = &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: i,
+						Tokens:              pd.PropertyName.Tokens,
+					}),
+					Tokens: pd.PropertyName.Tokens,
+				}
 			}
 		}
-		if pd.IdentifierReference == nil {
+		if pd.PropertyName == nil {
 			g = j.NewGoal()
 			propertyName := true
 			switch g.Peek() {
