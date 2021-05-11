@@ -909,11 +909,23 @@ func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scop
 	return nil
 }
 
-func processBitwiseORExpression(l *javascript.BitwiseORExpression, scope *Scope, set bool) error {
+func processBitwiseORExpression(b *javascript.BitwiseORExpression, scope *Scope, set bool) error {
+	if b.BitwiseORExpression != nil {
+		if err := processBitwiseORExpression(b.BitwiseORExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processBitwiseXORExpression(&b.BitwiseXORExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
 func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set bool) error {
+	return nil
+}
+
+func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scope, set bool) error {
 	return nil
 }
 
