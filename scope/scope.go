@@ -898,6 +898,14 @@ func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) e
 }
 
 func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scope, set bool) error {
+	if l.LogicalANDExpression != nil {
+		if err := processLogicalANDExpression(l.LogicalANDExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processBitwiseORExpression(&l.BitwiseORExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
