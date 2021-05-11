@@ -953,6 +953,14 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 }
 
 func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scope, set bool) error {
+	if b.BitwiseXORExpression != nil {
+		if err := processBitwiseXORExpression(b.BitwiseXORExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processBitwiseANDExpression(&b.BitwiseANDExpression, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -961,6 +969,10 @@ func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) err
 }
 
 func processObjectLiteral(o *javascript.ObjectLiteral, scope *Scope, set bool) error {
+	return nil
+}
+
+func processBitwiseANDExpression(b *javascript.BitwiseANDExpression, scope *Scope, set bool) error {
 	return nil
 }
 
