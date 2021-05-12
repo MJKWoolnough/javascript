@@ -1019,6 +1019,18 @@ func processPropertyDefinition(p *javascript.PropertyDefinition, scope *Scope, s
 }
 
 func processEqualityExpression(e *javascript.EqualityExpression, scope *Scope, set bool) error {
+	if e.EqualityExpression != nil {
+		if err := processEqualityExpression(e.EqualityExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processRelationalExpression(&e.RelationalExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processRelationalExpression(r *javascript.RelationalExpression, scope *Scope, set bool) error {
 	return nil
 }
 
