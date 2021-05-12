@@ -1043,6 +1043,18 @@ func processRelationalExpression(r *javascript.RelationalExpression, scope *Scop
 }
 
 func processShiftExpression(s *javascript.ShiftExpression, scope *Scope, set bool) error {
+	if s.ShiftExpression != nil {
+		if err := processShiftExpression(s.ShiftExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processAdditiveExpression(&s.AdditiveExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processAdditiveExpression(a *javascript.AdditiveExpression, scope *Scope, set bool) error {
 	return nil
 }
 
