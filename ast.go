@@ -488,8 +488,13 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				}
 				pd.AssignmentExpression = &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						IdentifierReference: i,
-						Tokens:              pd.PropertyName.Tokens,
+						IdentifierReference: &Token{
+							Token:   i.Token,
+							Pos:     i.Pos,
+							Line:    i.Line,
+							LinePos: i.LinePos,
+						},
+						Tokens: pd.PropertyName.Tokens,
 					}),
 					Tokens: pd.PropertyName.Tokens,
 				}
