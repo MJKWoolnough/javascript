@@ -1031,6 +1031,18 @@ func processEqualityExpression(e *javascript.EqualityExpression, scope *Scope, s
 }
 
 func processRelationalExpression(r *javascript.RelationalExpression, scope *Scope, set bool) error {
+	if r.RelationalExpression != nil {
+		if err := processRelationalExpression(r.RelationalExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processShiftExpression(&r.ShiftExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processShiftExpression(s *javascript.ShiftExpression, scope *Scope, set bool) error {
 	return nil
 }
 
