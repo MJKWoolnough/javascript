@@ -1055,6 +1055,18 @@ func processShiftExpression(s *javascript.ShiftExpression, scope *Scope, set boo
 }
 
 func processAdditiveExpression(a *javascript.AdditiveExpression, scope *Scope, set bool) error {
+	if a.AdditiveExpression != nil {
+		if err := processAdditiveExpression(a.AdditiveExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processMultiplicativeExpression(&a.MultiplicativeExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processMultiplicativeExpression(m *javascript.MultiplicativeExpression, scope *Scope, set bool) error {
 	return nil
 }
 
