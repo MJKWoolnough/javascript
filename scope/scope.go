@@ -1079,6 +1079,18 @@ func processMultiplicativeExpression(m *javascript.MultiplicativeExpression, sco
 }
 
 func processExponentiationExpression(e *javascript.ExponentiationExpression, scope *Scope, set bool) error {
+	if e.ExponentiationExpression != nil {
+		if err := processExponentiationExpression(e.ExponentiationExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processUnaryExpression(&e.UnaryExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processUnaryExpression(u *javascript.UnaryExpression, scope *Scope, set bool) error {
 	return nil
 }
 
