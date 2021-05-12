@@ -1098,6 +1098,16 @@ func processUnaryExpression(u *javascript.UnaryExpression, scope *Scope, set boo
 }
 
 func processUpdateExpression(u *javascript.UpdateExpression, scope *Scope, set bool) error {
+	if u.LeftHandSideExpression != nil {
+		if err := processLeftHandSideExpression(u.LeftHandSideExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if u.UnaryExpression != nil {
+		if err := processUnaryExpression(u.UnaryExpression, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
