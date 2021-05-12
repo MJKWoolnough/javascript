@@ -1000,6 +1000,21 @@ func processBitwiseANDExpression(b *javascript.BitwiseANDExpression, scope *Scop
 }
 
 func processPropertyDefinition(p *javascript.PropertyDefinition, scope *Scope, set bool) error {
+	if p.PropertyName != nil {
+		if err := processPropertyName(p.PropertyName, scope, set); err != nil {
+			return err
+		}
+	}
+	if p.AssignmentExpression != nil {
+		if err := processAssignmentExpression(p.AssignmentExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if p.MethodDefinition != nil {
+		if err := processMethodDefinition(p.MethodDefinition, scope, set); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
