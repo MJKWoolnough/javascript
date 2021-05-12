@@ -1067,6 +1067,18 @@ func processAdditiveExpression(a *javascript.AdditiveExpression, scope *Scope, s
 }
 
 func processMultiplicativeExpression(m *javascript.MultiplicativeExpression, scope *Scope, set bool) error {
+	if m.MultiplicativeExpression != nil {
+		if err := processMultiplicativeExpression(m.MultiplicativeExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if err := processExponentiationExpression(&m.ExponentiationExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processExponentiationExpression(e *javascript.ExponentiationExpression, scope *Scope, set bool) error {
 	return nil
 }
 
