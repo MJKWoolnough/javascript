@@ -1091,6 +1091,13 @@ func processExponentiationExpression(e *javascript.ExponentiationExpression, sco
 }
 
 func processUnaryExpression(u *javascript.UnaryExpression, scope *Scope, set bool) error {
+	if err := processUpdateExpression(&u.UpdateExpression, scope, set); err != nil {
+		return err
+	}
+	return nil
+}
+
+func processUpdateExpression(u *javascript.UpdateExpression, scope *Scope, set bool) error {
 	return nil
 }
 
