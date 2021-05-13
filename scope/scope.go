@@ -115,7 +115,7 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	if err := processModule(m, global, true); err != nil {
 		return nil, err
 	}
-	processModule(m, global, false)
+	_ = processModule(m, global, false)
 	return global, nil
 }
 
@@ -130,7 +130,7 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 		}
 	}
 	for n := range s.StatementList {
-		processStatementListItem(&s.StatementList[n], global, false)
+		_ = processStatementListItem(&s.StatementList[n], global, false)
 	}
 	return global, nil
 }
@@ -174,15 +174,15 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 					return err
 				}
 			} else if i.ExportDeclaration.Declaration != nil {
-				if err := processDeclaration(i.ExportDeclaration.Declaration, scope, set); err != nil {
+				if err := processDeclaration(i.ExportDeclaration.Declaration, global, set); err != nil {
 					return err
 				}
 			} else if i.ExportDeclaration.DefaultFunction != nil {
-				if err := processFunctionDeclaration(i.ExportDeclaration.DefaultFunction, scope, set, false); err != nil {
+				if err := processFunctionDeclaration(i.ExportDeclaration.DefaultFunction, global, set, false); err != nil {
 					return err
 				}
 			} else if i.ExportDeclaration.DefaultClass != nil {
-				if err := processClassDeclaration(i.ExportDeclaration.DefaultClass, scope, set, false); err != nil {
+				if err := processClassDeclaration(i.ExportDeclaration.DefaultClass, global, set, false); err != nil {
 					return err
 				}
 			} else if i.ExportDeclaration.DefaultAssignmentExpression != nil {
@@ -428,8 +428,12 @@ func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope, set boo
 }
 
 func processWithStatement(w *javascript.WithStatement, scope *Scope, set bool) error {
-	processExpression(&w.Expression, scope, set)
-	processStatement(&w.Statement, scope, set)
+	if err := processExpression(&w.Expression, scope, set); err != nil {
+		return err
+	}
+	if err := processStatement(&w.Statement, scope, set); err != nil {
+		return err
+	}
 	return nil
 }
 
