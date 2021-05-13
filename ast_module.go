@@ -54,16 +54,16 @@ type ModuleItem struct {
 func (ml *ModuleItem) parse(j *jsParser) error {
 	g := j.NewGoal()
 	switch g.Peek() {
-	case parser.Token{TokenKeyword, "export"}:
+	case parser.Token{Type: TokenKeyword, Data: "export"}:
 		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleItem", err)
 		}
-	case parser.Token{TokenKeyword, "import"}:
+	case parser.Token{Type: TokenKeyword, Data: "import"}:
 		h := g.NewGoal()
 		h.Skip()
 		h.AcceptRunWhitespace()
-		if !h.AcceptToken(parser.Token{TokenPunctuator, "."}) {
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
 			ml.ImportDeclaration = new(ImportDeclaration)
 			if err := ml.ImportDeclaration.parse(&g); err != nil {
 				return j.Error("ModuleItem", err)
@@ -91,7 +91,7 @@ type ImportDeclaration struct {
 }
 
 func (id *ImportDeclaration) parse(j *jsParser) error {
-	if !j.AcceptToken(parser.Token{TokenKeyword, "import"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) {
 		return j.Error("ImportDeclaration", ErrInvalidImport)
 	}
 	j.AcceptRunWhitespace()
@@ -142,24 +142,24 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			ic.Tokens = j.ToTokens()
 			return nil
 		}
 		g.AcceptRunWhitespace()
 		j.Score(g)
 	}
-	if j.Peek() == (parser.Token{TokenPunctuator, "*"}) {
+	if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "*"}) {
 		j.Skip()
 		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+		if !j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
 			return j.Error("ImportClause", ErrInvalidNameSpaceImport)
 		}
 		j.AcceptRunWhitespace()
 		if ic.NameSpaceImport = j.parseIdentifier(false, false); ic.NameSpaceImport == nil {
 			return j.Error("ImportClause", ErrNoIdentifier)
 		}
-	} else if j.Peek() == (parser.Token{TokenPunctuator, "{"}) {
+	} else if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		g := j.NewGoal()
 		ic.NamedImports = new(NamedImports)
 		if err := ic.NamedImports.parse(&g); err != nil {
@@ -183,7 +183,7 @@ type FromClause struct {
 }
 
 func (fc *FromClause) parse(j *jsParser) error {
-	if !j.AcceptToken(parser.Token{TokenIdentifier, "from"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "from"}) {
 		return j.Error("FromClause", ErrMissingFrom)
 	}
 	j.AcceptRunWhitespace()
@@ -203,7 +203,7 @@ type NamedImports struct {
 }
 
 func (ni *NamedImports) parse(j *jsParser) error {
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("NamedImports", ErrInvalidNamedImport)
 	}
 	for {
@@ -221,7 +221,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			return j.Error("NamedImports", ErrInvalidNamedImport)
 		}
 	}
@@ -247,7 +247,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 	if is.ImportedBinding.Type == TokenIdentifier || is.ImportedBinding.Data == "yield" || is.ImportedBinding.Data == "await" {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
-		if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
 			is.IdentifierName = is.ImportedBinding
 			g.AcceptRunWhitespace()
 			if is.ImportedBinding = g.parseIdentifier(false, false); is.ImportedBinding == nil {
@@ -287,11 +287,11 @@ type ExportDeclaration struct {
 }
 
 func (ed *ExportDeclaration) parse(j *jsParser) error {
-	if !j.AcceptToken(parser.Token{TokenKeyword, "export"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "export"}) {
 		return j.Error("ExportDeclaration", ErrInvalidExportDeclaration)
 	}
 	j.AcceptRunWhitespace()
-	if j.AcceptToken(parser.Token{TokenKeyword, "default"}) {
+	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
 		j.AcceptRunWhitespace()
 		tk := j.Peek()
 		g := j.NewGoal()
@@ -318,7 +318,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 				return j.Error("ExportDeclaration", ErrMissingSemiColon)
 			}
 		}
-	} else if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		ed.FromClause = new(FromClause)
@@ -329,13 +329,13 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		if !j.parseSemicolon() {
 			return j.Error("ExportDeclaration", ErrMissingSemiColon)
 		}
-	} else if g := j.NewGoal(); g.Peek() == (parser.Token{TokenKeyword, "var"}) {
+	} else if g := j.NewGoal(); g.Peek() == (parser.Token{Type: TokenKeyword, Data: "var"}) {
 		ed.VariableStatement = new(VariableStatement)
 		if err := ed.VariableStatement.parse(&g, false, false); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
 		j.Score(g)
-	} else if g.Peek() == (parser.Token{TokenPunctuator, "{"}) {
+	} else if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		ed.ExportClause = new(ExportClause)
 		if err := ed.ExportClause.parse(&g); err != nil {
 			return j.Error("ExportDeclaration", err)
@@ -343,7 +343,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
-		if g.Peek() == (parser.Token{TokenIdentifier, "from"}) {
+		if g.Peek() == (parser.Token{Type: TokenIdentifier, Data: "from"}) {
 			h := g.NewGoal()
 			h.Skip()
 			h.AcceptRunWhitespace()
@@ -377,7 +377,7 @@ type ExportClause struct {
 }
 
 func (ec *ExportClause) parse(j *jsParser) error {
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("ExportClause", ErrInvalidExportClause)
 	}
 	for {
@@ -395,7 +395,7 @@ func (ec *ExportClause) parse(j *jsParser) error {
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			return j.Error("ExportClause", ErrInvalidExportClause)
 		}
 	}
@@ -419,7 +419,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	es.IdentifierName = j.GetLastToken()
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
-	if g.AcceptToken(parser.Token{TokenIdentifier, "as"}) {
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if !j.Accept(TokenIdentifier, TokenKeyword) {

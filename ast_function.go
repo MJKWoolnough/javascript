@@ -33,15 +33,15 @@ type FunctionDeclaration struct {
 }
 
 func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error {
-	if j.AcceptToken(parser.Token{TokenIdentifier, "async"}) {
+	if j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		fd.Type = FunctionAsync
 		j.AcceptRunWhitespaceNoNewLine()
 	}
-	if !j.AcceptToken(parser.Token{TokenKeyword, "function"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
 		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
 	j.AcceptRunWhitespace()
-	if j.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 		if fd.Type == FunctionAsync {
 			fd.Type = FunctionAsyncGenerator
 		} else {
@@ -81,14 +81,14 @@ type FormalParameters struct {
 }
 
 func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
-	if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
-			if g.AcceptToken(parser.Token{TokenPunctuator, "..."}) {
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
 				g.AcceptRunWhitespace()
 				h := g.NewGoal()
 				fp.FunctionRestParameter = new(FunctionRestParameter)
@@ -98,7 +98,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 				g.Score(h)
 				j.Score(g)
 				j.AcceptRunWhitespace()
-				if !j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 					return j.Error("FormalParameters", ErrMissingClosingParenthesis)
 				}
 				break
@@ -112,9 +112,9 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			g.Score(h)
 			j.Score(g)
 			j.AcceptRunWhitespace()
-			if j.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
-			} else if !j.AcceptToken(parser.Token{TokenPunctuator, ","}) {
+			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				return j.Error("FormalParameters", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
@@ -143,12 +143,12 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	g := j.NewGoal()
 	if singleNameBinding != nil {
 		be.SingleNameBinding = singleNameBinding
-	} else if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
+	} else if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
-	} else if t == (parser.Token{TokenPunctuator, "{"}) {
+	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
@@ -159,7 +159,7 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	j.Score(g)
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
-	if g.AcceptToken(parser.Token{TokenPunctuator, "="}) {
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		g.AcceptRunWhitespace()
 		j.Score(g)
 		g = j.NewGoal()
@@ -187,12 +187,12 @@ type FunctionRestParameter struct {
 
 func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if t := g.Peek(); t == (parser.Token{TokenPunctuator, "["}) {
+	if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 		fr.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := fr.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)
 		}
-	} else if t == (parser.Token{TokenPunctuator, "{"}) {
+	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		fr.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("FunctionRestParameter", err)

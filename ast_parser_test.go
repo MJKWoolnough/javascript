@@ -19,51 +19,51 @@ func TestNewJSParser(t *testing.T) {
 			"\"use strict\";\n\nvar hello = `World\n!`;",
 			jsParser{
 				{
-					parser.Token{TokenStringLiteral, "\"use strict\""},
+					parser.Token{Type: TokenStringLiteral, Data: "\"use strict\""},
 					0, 0, 0,
 				},
 				{
-					parser.Token{TokenPunctuator, ";"},
+					parser.Token{Type: TokenPunctuator, Data: ";"},
 					12, 0, 12,
 				},
 				{
-					parser.Token{TokenLineTerminator, "\n\n"},
+					parser.Token{Type: TokenLineTerminator, Data: "\n\n"},
 					13, 0, 13,
 				},
 				{
-					parser.Token{TokenKeyword, "var"},
+					parser.Token{Type: TokenKeyword, Data: "var"},
 					15, 2, 0,
 				},
 				{
-					parser.Token{TokenWhitespace, " "},
+					parser.Token{Type: TokenWhitespace, Data: " "},
 					18, 2, 3,
 				},
 				{
-					parser.Token{TokenIdentifier, "hello"},
+					parser.Token{Type: TokenIdentifier, Data: "hello"},
 					19, 2, 4,
 				},
 				{
-					parser.Token{TokenWhitespace, " "},
+					parser.Token{Type: TokenWhitespace, Data: " "},
 					24, 2, 9,
 				},
 				{
-					parser.Token{TokenPunctuator, "="},
+					parser.Token{Type: TokenPunctuator, Data: "="},
 					25, 2, 10,
 				},
 				{
-					parser.Token{TokenWhitespace, " "},
+					parser.Token{Type: TokenWhitespace, Data: " "},
 					26, 2, 11,
 				},
 				{
-					parser.Token{TokenNoSubstitutionTemplate, "`World\n!`"},
+					parser.Token{Type: TokenNoSubstitutionTemplate, Data: "`World\n!`"},
 					27, 2, 12,
 				},
 				{
-					parser.Token{TokenPunctuator, ";"},
+					parser.Token{Type: TokenPunctuator, Data: ";"},
 					36, 3, 2,
 				},
 				{
-					parser.Token{parser.TokenDone, ""},
+					parser.Token{Type: parser.TokenDone, Data: ""},
 					37, 3, 3,
 				},
 			},
@@ -73,7 +73,7 @@ func TestNewJSParser(t *testing.T) {
 			"@",
 			jsParser{
 				{
-					parser.Token{parser.TokenError, "invalid character: @"},
+					parser.Token{Type: parser.TokenError, Data: "invalid character: @"},
 					0, 0, 0,
 				},
 			},
@@ -81,7 +81,7 @@ func TestNewJSParser(t *testing.T) {
 				Err:     fmt.Errorf("%w: %s", ErrInvalidCharacter, "@"),
 				Parsing: "Tokens",
 				Token: Token{
-					parser.Token{parser.TokenError, "invalid character: @"},
+					parser.Token{Type: parser.TokenError, Data: "invalid character: @"},
 					0, 0, 0,
 				},
 			},

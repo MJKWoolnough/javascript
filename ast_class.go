@@ -18,7 +18,7 @@ type ClassDeclaration struct {
 }
 
 func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
-	if !j.AcceptToken(parser.Token{TokenKeyword, "class"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"}) {
 		return j.Error("ClassDeclaration", ErrInvalidClassDeclaration)
 	}
 	j.AcceptRunWhitespace()
@@ -29,7 +29,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	} else {
 		j.AcceptRunWhitespace()
 	}
-	if j.AcceptToken(parser.Token{TokenKeyword, "extends"}) {
+	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		cd.ClassHeritage = new(LeftHandSideExpression)
@@ -39,12 +39,12 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
-	if !j.AcceptToken(parser.Token{TokenPunctuator, "{"}) {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("ClassDeclaration", ErrMissingOpeningBrace)
 	}
 	for {
 		j.AcceptRunWhitespace()
-		if j.AcceptToken(parser.Token{TokenPunctuator, ";"}) {
+		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 			continue
 		} else if j.Accept(TokenRightBracePunctuator) {
 			break
@@ -95,12 +95,12 @@ type MethodDefinition struct {
 func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bool) error {
 	var prev MethodType
 	g := j.NewGoal()
-	if g.AcceptToken(parser.Token{TokenIdentifier, "static"}) {
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"}) {
 		md.Type = MethodStatic
 		g.AcceptRunWhitespace()
 	}
 	switch g.Peek() {
-	case parser.Token{TokenIdentifier, "get"}:
+	case parser.Token{Type: TokenIdentifier, Data: "get"}:
 		j.Score(g)
 		g = j.NewGoal()
 		g.Skip()
@@ -112,7 +112,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		case MethodStatic:
 			md.Type = MethodStaticGetter
 		}
-	case parser.Token{TokenIdentifier, "set"}:
+	case parser.Token{Type: TokenIdentifier, Data: "set"}:
 		j.Score(g)
 		g = j.NewGoal()
 		g.Skip()
@@ -124,7 +124,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		case MethodStatic:
 			md.Type = MethodStaticSetter
 		}
-	case parser.Token{TokenIdentifier, "async"}:
+	case parser.Token{Type: TokenIdentifier, Data: "async"}:
 		j.Score(g)
 		g = j.NewGoal()
 		g.Skip()
@@ -141,7 +141,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		}
 		fallthrough
 	default:
-		if g.AcceptToken(parser.Token{TokenPunctuator, "*"}) {
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			g = j.NewGoal()
@@ -158,7 +158,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 			prev = md.Type
 		}
 	}
-	if g.Peek() == (parser.Token{TokenPunctuator, "("}) {
+	if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 		md.Type = prev
 	} else {
 		j.Score(g)
@@ -174,18 +174,18 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 	switch md.Type {
 	case MethodGetter, MethodStaticGetter:
 		g := j.NewGoal()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 			return g.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
 		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 			return g.Error("MethodDefinition", ErrMissingClosingParenthesis)
 		}
 		md.Params.Tokens = g.ToTokens()
 		j.Score(g)
 	case MethodSetter, MethodStaticSetter:
 		g := j.NewGoal()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, "("}) {
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 			return g.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
 		g.AcceptRunWhitespace()
@@ -196,7 +196,7 @@ func (md *MethodDefinition) parse(j *jsParser, pn *PropertyName, yield, await bo
 		}
 		g.Score(h)
 		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{TokenPunctuator, ")"}) {
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 			return g.Error("MethodDefinition", ErrMissingClosingParenthesis)
 		}
 		md.Params.Tokens = g.ToTokens()
@@ -229,7 +229,7 @@ type PropertyName struct {
 }
 
 func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
-	if j.AcceptToken(parser.Token{TokenPunctuator, "["}) {
+	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
 		pn.ComputedPropertyName = new(AssignmentExpression)
@@ -238,7 +238,7 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		if !j.AcceptToken(parser.Token{TokenPunctuator, "]"}) {
+		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 			return j.Error("PropertyName", ErrMissingClosingBracket)
 		}
 	} else if j.Accept(TokenIdentifier, TokenKeyword, TokenStringLiteral, TokenNumericLiteral) {
