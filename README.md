@@ -138,6 +138,7 @@ var (
 	ErrInvalidQuoted = errors.New("invalid quoted string")
 )
 ```
+Error
 
 #### func  SetTokeniser
 
