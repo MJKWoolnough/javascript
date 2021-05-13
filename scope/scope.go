@@ -169,7 +169,33 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 				return err
 			}
 		} else if i.ExportDeclaration != nil {
-
+			if i.ExportDeclaration.VariableStatement != nil {
+				if err := processVariableStatement(i.ExportDeclaration.VariableStatement, global, set); err != nil {
+					return err
+				}
+			} else if i.ExportDeclaration.Declaration != nil {
+				if err := processDeclaration(i.ExportDeclaration.Declaration, scope, set); err != nil {
+					return err
+				}
+			} else if i.ExportDeclaration.DefaultFunction != nil {
+				if err := processFunctionDeclaration(i.ExportDeclaration.DefaultFunction, scope, set, false); err != nil {
+					return err
+				}
+			} else if i.ExportDeclaration.DefaultClass != nil {
+				if err := processClassDeclaration(i.ExportDeclaration.DefaultClass, scope, set, false); err != nil {
+					return err
+				}
+			} else if i.ExportDeclaration.DefaultAssignmentExpression != nil {
+				if err := processAssignmentExpression(i.ExportDeclaration.DefaultAssignmentExpression, global, set); err != nil {
+					return err
+				}
+			} else if i.ExportDeclaration.ExportClause != nil && !set {
+				for _, es := range i.ExportDeclaration.ExportClause.ExportList {
+					if es.IdentifierName != nil {
+						global.addBinding(es.IdentifierName)
+					}
+				}
+			}
 		}
 	}
 	return nil
