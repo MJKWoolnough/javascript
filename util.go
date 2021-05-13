@@ -360,6 +360,7 @@ func UnwrapConditional(c *ConditionalExpression) interface{} {
 	}
 }
 
+// Error
 var (
 	ErrInvalidQuoted = errors.New("invalid quoted string")
 )
