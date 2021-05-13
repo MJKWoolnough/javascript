@@ -1432,12 +1432,12 @@ func TestPrintingModule(t *testing.T) {
 		{ // 6
 			"export\n{\na\n}\nfrom\n'b'",
 			"export {a} from 'b';",
-			"export {a} from 'b';",
+			"export {a as a} from 'b';",
 		},
 		{ // 7
 			"export\n{a}",
 			"export {a};",
-			"export {a};",
+			"export {a as a};",
 		},
 		{ // 8
 			"export\nvar\na",
@@ -1497,12 +1497,12 @@ func TestPrintingModule(t *testing.T) {
 		{ // 19
 			"export{a}",
 			"export {a};",
-			"export {a};",
+			"export {a as a};",
 		},
 		{ // 20
 			"export{a,b}",
 			"export {a, b};",
-			"export {a, b};",
+			"export {a as a, b as b};",
 		},
 		{ // 21
 			"import{a\nas\nb}from'c'",

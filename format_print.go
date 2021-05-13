@@ -1513,7 +1513,7 @@ func (e ExportSpecifier) printSource(w io.Writer, v bool) {
 		return
 	}
 	io.WriteString(w, e.IdentifierName.Data)
-	if e.EIdentifierName != nil {
+	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v) {
 		w.Write(as)
 		io.WriteString(w, e.EIdentifierName.Data)
 	}

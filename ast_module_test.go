@@ -235,8 +235,9 @@ func TestModuleOld(t *testing.T) {
 							ExportClause: &ExportClause{
 								ExportList: []ExportSpecifier{
 									{
-										IdentifierName: &tk[3],
-										Tokens:         tk[3:4],
+										IdentifierName:  &tk[3],
+										EIdentifierName: &tk[3],
+										Tokens:          tk[3:4],
 									},
 								},
 								Tokens: tk[2:5],
@@ -290,12 +291,14 @@ func TestModuleOld(t *testing.T) {
 										Tokens:          tk[10:15],
 									},
 									{
-										IdentifierName: &tk[17],
-										Tokens:         tk[17:18],
+										IdentifierName:  &tk[17],
+										EIdentifierName: &tk[17],
+										Tokens:          tk[17:18],
 									},
 									{
-										IdentifierName: &tk[20],
-										Tokens:         tk[20:21],
+										IdentifierName:  &tk[20],
+										EIdentifierName: &tk[20],
+										Tokens:          tk[20:21],
 									},
 								},
 								Tokens: tk[2:22],
@@ -353,8 +356,9 @@ func TestModuleOld(t *testing.T) {
 							ExportClause: &ExportClause{
 								ExportList: []ExportSpecifier{
 									{
-										IdentifierName: &tk[3],
-										Tokens:         tk[3:4],
+										IdentifierName:  &tk[3],
+										EIdentifierName: &tk[3],
+										Tokens:          tk[3:4],
 									},
 								},
 								Tokens: tk[2:5],
@@ -416,12 +420,14 @@ func TestModuleOld(t *testing.T) {
 										Tokens:          tk[10:15],
 									},
 									{
-										IdentifierName: &tk[17],
-										Tokens:         tk[17:18],
+										IdentifierName:  &tk[17],
+										EIdentifierName: &tk[17],
+										Tokens:          tk[17:18],
 									},
 									{
-										IdentifierName: &tk[20],
-										Tokens:         tk[20:21],
+										IdentifierName:  &tk[20],
+										EIdentifierName: &tk[20],
+										Tokens:          tk[20:21],
 									},
 								},
 								Tokens: tk[2:22],
@@ -1418,8 +1424,9 @@ func TestExportClause(t *testing.T) {
 			t.Output = ExportClause{
 				ExportList: []ExportSpecifier{
 					{
-						IdentifierName: &tk[2],
-						Tokens:         tk[2:3],
+						IdentifierName:  &tk[2],
+						EIdentifierName: &tk[2],
+						Tokens:          tk[2:3],
 					},
 				},
 				Tokens: tk[:5],
@@ -1436,8 +1443,9 @@ func TestExportClause(t *testing.T) {
 			t.Output = ExportClause{
 				ExportList: []ExportSpecifier{
 					{
-						IdentifierName: &tk[2],
-						Tokens:         tk[2:3],
+						IdentifierName:  &tk[2],
+						EIdentifierName: &tk[2],
+						Tokens:          tk[2:3],
 					},
 				},
 				Tokens: tk[:7],
@@ -1447,12 +1455,14 @@ func TestExportClause(t *testing.T) {
 			t.Output = ExportClause{
 				ExportList: []ExportSpecifier{
 					{
-						IdentifierName: &tk[2],
-						Tokens:         tk[2:3],
+						IdentifierName:  &tk[2],
+						EIdentifierName: &tk[2],
+						Tokens:          tk[2:3],
 					},
 					{
-						IdentifierName: &tk[6],
-						Tokens:         tk[6:7],
+						IdentifierName:  &tk[6],
+						EIdentifierName: &tk[6],
+						Tokens:          tk[6:7],
 					},
 				},
 				Tokens: tk[:9],
@@ -1483,14 +1493,16 @@ func TestExportSpecifier(t *testing.T) {
 		}},
 		{"a", func(t *test, tk Tokens) { // 3
 			t.Output = ExportSpecifier{
-				IdentifierName: &tk[0],
-				Tokens:         tk[:1],
+				IdentifierName:  &tk[0],
+				EIdentifierName: &tk[0],
+				Tokens:          tk[:1],
 			}
 		}},
 		{"for", func(t *test, tk Tokens) { // 4
 			t.Output = ExportSpecifier{
-				IdentifierName: &tk[0],
-				Tokens:         tk[:1],
+				IdentifierName:  &tk[0],
+				EIdentifierName: &tk[0],
+				Tokens:          tk[:1],
 			}
 		}},
 		{"a\nas", func(t *test, tk Tokens) { // 5

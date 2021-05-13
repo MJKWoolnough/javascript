@@ -406,7 +406,7 @@ func (ec *ExportClause) parse(j *jsParser) error {
 // ExportSpecifier as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExportSpecifier
 //
-// IdentifierName must be non-nil
+// IdentifierName must be non-nil, EIdentifierName should be non-nil.
 type ExportSpecifier struct {
 	IdentifierName, EIdentifierName *Token
 	Tokens                          Tokens
@@ -426,6 +426,13 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 			return j.Error("ExportSpecifier", ErrNoIdentifier)
 		}
 		es.EIdentifierName = j.GetLastToken()
+	} else {
+		es.EIdentifierName = &Token{
+			Token:   es.IdentifierName.Token,
+			Pos:     es.IdentifierName.Pos,
+			Line:    es.IdentifierName.Line,
+			LinePos: es.IdentifierName.LinePos,
+		}
 	}
 	es.Tokens = j.ToTokens()
 	return nil
