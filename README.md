@@ -1153,7 +1153,7 @@ type ImportSpecifier struct {
 ImportSpecifier as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-ImportSpecifier
 
-ImportedBinding must be non-nil.
+ImportedBinding must be non-nil, and IdentifierName should be non-nil.
 
 #### func (ImportSpecifier) Format
 
