@@ -1523,7 +1523,7 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 	if i.ImportedBinding == nil {
 		return
 	}
-	if i.IdentifierName != nil {
+	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
 		io.WriteString(w, i.IdentifierName.Data)
 		w.Write(as)
 	}

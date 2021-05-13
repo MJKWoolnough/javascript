@@ -232,7 +232,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 // ImportSpecifier as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ImportSpecifier
 //
-// ImportedBinding must be non-nil.
+// ImportedBinding must be non-nil, and IdentifierName should be non-nil.
 type ImportSpecifier struct {
 	IdentifierName  *Token
 	ImportedBinding *Token
@@ -254,6 +254,14 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 				return g.Error("ImportSpecifier", ErrNoIdentifier)
 			}
 			j.Score(g)
+		}
+	}
+	if is.IdentifierName == nil {
+		is.IdentifierName = &Token{
+			Token:   is.ImportedBinding.Token,
+			Pos:     is.ImportedBinding.Pos,
+			Line:    is.ImportedBinding.Line,
+			LinePos: is.ImportedBinding.LinePos,
 		}
 	}
 	is.Tokens = j.ToTokens()

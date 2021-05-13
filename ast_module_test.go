@@ -72,6 +72,7 @@ func TestModuleOld(t *testing.T) {
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
+											IdentifierName:  &tk[3],
 											ImportedBinding: &tk[3],
 											Tokens:          tk[3:4],
 										},
@@ -136,6 +137,7 @@ func TestModuleOld(t *testing.T) {
 											Tokens:          tk[3:8],
 										},
 										{
+											IdentifierName:  &tk[10],
 											ImportedBinding: &tk[10],
 											Tokens:          tk[10:11],
 										},
@@ -188,6 +190,7 @@ func TestModuleOld(t *testing.T) {
 								NamedImports: &NamedImports{
 									ImportList: []ImportSpecifier{
 										{
+											IdentifierName:  &tk[6],
 											ImportedBinding: &tk[6],
 											Tokens:          tk[6:7],
 										},
@@ -1045,6 +1048,7 @@ func TestNamedImports(t *testing.T) {
 			t.Output = NamedImports{
 				ImportList: []ImportSpecifier{
 					{
+						IdentifierName:  &tk[2],
 						ImportedBinding: &tk[2],
 						Tokens:          tk[2:3],
 					},
@@ -1056,6 +1060,7 @@ func TestNamedImports(t *testing.T) {
 			t.Output = NamedImports{
 				ImportList: []ImportSpecifier{
 					{
+						IdentifierName:  &tk[2],
 						ImportedBinding: &tk[2],
 						Tokens:          tk[2:3],
 					},
@@ -1074,10 +1079,12 @@ func TestNamedImports(t *testing.T) {
 			t.Output = NamedImports{
 				ImportList: []ImportSpecifier{
 					{
+						IdentifierName:  &tk[2],
 						ImportedBinding: &tk[2],
 						Tokens:          tk[2:3],
 					},
 					{
+						IdentifierName:  &tk[6],
 						ImportedBinding: &tk[6],
 						Tokens:          tk[6:7],
 					},
@@ -1110,18 +1117,21 @@ func TestImportSpecifier(t *testing.T) {
 		}},
 		{"a", func(t *test, tk Tokens) { // 3
 			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[0],
 				ImportedBinding: &tk[0],
 				Tokens:          tk[:1],
 			}
 		}},
 		{"for", func(t *test, tk Tokens) { // 4
 			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[0],
 				ImportedBinding: &tk[0],
 				Tokens:          tk[:1],
 			}
 		}},
 		{"for\nas", func(t *test, tk Tokens) { // 5
 			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[0],
 				ImportedBinding: &tk[0],
 				Tokens:          tk[:1],
 			}

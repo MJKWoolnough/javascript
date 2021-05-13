@@ -1487,7 +1487,7 @@ func TestPrintingModule(t *testing.T) {
 		{ // 17
 			"import\na,{b,c}from'd'",
 			"import a, {b, c} from 'd';",
-			"import a, {b, c} from 'd';",
+			"import a, {b as b, c as c} from 'd';",
 		},
 		{ // 18
 			"export{}",
