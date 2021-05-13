@@ -888,7 +888,7 @@ type ExportSpecifier struct {
 ExportSpecifier as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-ExportSpecifier
 
-IdentifierName must be non-nil
+IdentifierName must be non-nil, EIdentifierName should be non-nil.
 
 #### func (ExportSpecifier) Format
 
