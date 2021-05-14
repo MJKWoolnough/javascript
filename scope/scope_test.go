@@ -26,6 +26,14 @@ func TestScriptScope(t *testing.T) {
 				return NewScope(), nil
 			},
 		},
+		{ // 3
+			`{}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.newLexicalScope(s.StatementList[0].Statement.BlockStatement)
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
