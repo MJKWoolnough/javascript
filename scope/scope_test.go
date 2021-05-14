@@ -34,6 +34,14 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 4
+			`a`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.addBinding(javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference)
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
