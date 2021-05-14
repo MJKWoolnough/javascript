@@ -42,6 +42,17 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 5
+			`function a(){}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				if err := scope.setBinding(s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier, true); err != nil {
+					return nil, err
+				}
+				scope.newFunctionScope(s.StatementList[0].Declaration.FunctionDeclaration)
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
