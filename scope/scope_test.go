@@ -82,6 +82,71 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 8
+			`{}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Bindings: make(map[string][]Binding),
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Statement.BlockStatement: &Scope{
+						IsLexicalScope: true,
+						Parent:         scope,
+						Scopes:         make(map[fmt.Formatter]*Scope),
+						Bindings:       make(map[string][]Binding),
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 9
+			`function a(){}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				fScope := &Scope{
+					Parent: scope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+					Bindings: map[string][]Binding{
+						"this":      []Binding{},
+						"arguments": []Binding{},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration: fScope,
+				}
+				return scope, nil
+			},
+		},
+		{ // 10
+			`const a = () => true`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: {
+						Parent:   scope,
+						Scopes:   make(map[fmt.Formatter]*Scope),
+						Bindings: make(map[string][]Binding),
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
