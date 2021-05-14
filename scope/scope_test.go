@@ -13,7 +13,14 @@ func TestScriptScope(t *testing.T) {
 	for n, test := range [...]struct {
 		Input  string
 		Output func(*javascript.Script) (*Scope, error)
-	}{} {
+	}{
+		{ // 1
+			``,
+			func(s *javascript.Script) (*Scope, error) {
+				return NewScope(), nil
+			},
+		},
+	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
