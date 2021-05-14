@@ -51,6 +51,7 @@ func (s *Scope) addBinding(t *javascript.Token) {
 		}
 		if s.Parent == nil {
 			s.Bindings[name] = []Binding{binding}
+			return
 		}
 		s = s.Parent
 	}
