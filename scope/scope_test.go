@@ -2,6 +2,7 @@ package scope
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -61,6 +62,23 @@ func TestScriptScope(t *testing.T) {
 					return nil, err
 				}
 				scope.newArrowFunctionScope(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction)
+				return scope, nil
+			},
+		},
+		{ // 7
+			`a`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							Scope: scope,
+							Token: javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
 				return scope, nil
 			},
 		},
