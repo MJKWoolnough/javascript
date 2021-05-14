@@ -20,6 +20,12 @@ func TestScriptScope(t *testing.T) {
 				return NewScope(), nil
 			},
 		},
+		{ // 2
+			`if(true) false;`,
+			func(s *javascript.Script) (*Scope, error) {
+				return NewScope(), nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
