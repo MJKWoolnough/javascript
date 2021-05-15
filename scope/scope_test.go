@@ -814,6 +814,43 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 28
+			`const a = b => b`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				ascope := &Scope{
+					Parent: scope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				ascope.Bindings = map[string][]Binding{
+					"b": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       ascope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       ascope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
