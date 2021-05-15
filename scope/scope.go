@@ -33,10 +33,9 @@ func (s *Scope) setBinding(t *javascript.Token, hoist bool) error {
 		for s.IsLexicalScope && s.Parent != nil {
 			s = s.Parent
 		}
-		if _, ok := s.Bindings[name]; ok {
-			return ErrDuplicateBinding
+		if _, ok := s.Bindings[name]; !ok {
+			s.Bindings[name] = []Binding{binding}
 		}
-		s.Bindings[name] = []Binding{binding}
 	}
 	return nil
 }
