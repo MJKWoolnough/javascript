@@ -229,6 +229,69 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 15
+			`{function a(){}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+				}
+				abind := []Binding{{Scope: bscope, Token: s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier}}
+				bscope.Bindings = map[string][]Binding{"a": abind}
+				bscope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: &Scope{
+						Parent: bscope,
+						Scopes: make(map[fmt.Formatter]*Scope),
+						Bindings: map[string][]Binding{
+							"this":      []Binding{},
+							"arguments": []Binding{},
+						},
+					},
+				}
+				scope.Bindings = map[string][]Binding{"a": abind}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Statement.BlockStatement: bscope}
+				return scope, nil
+			},
+		},
+		{ // 16
+			`let a;{function a(){}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+				}
+				bscope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: bscope,
+							Token: s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				bscope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: &Scope{
+						Parent: bscope,
+						Scopes: make(map[fmt.Formatter]*Scope),
+						Bindings: map[string][]Binding{
+							"this":      []Binding{},
+							"arguments": []Binding{},
+						},
+					},
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
