@@ -761,6 +761,59 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 27
+			`function a(b, c, ...d) {b}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				fscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+					"b": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"c": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[1].SingleNameBinding,
+						},
+					},
+					"d": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FunctionRestParameter.BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
