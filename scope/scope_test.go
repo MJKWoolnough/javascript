@@ -128,7 +128,7 @@ func TestScriptScope(t *testing.T) {
 		{ // 10
 			`const a = () => true`,
 			func(s *javascript.Script) (*Scope, error) {
-				scope := &Scope{}
+				scope := new(Scope)
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
@@ -151,6 +151,82 @@ func TestScriptScope(t *testing.T) {
 			`let a, a`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateBinding
+			},
+		},
+		{ // 12
+			`let a;a`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							Scope: scope,
+							Token: javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 13
+			`let a;{a}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         make(map[fmt.Formatter]*Scope),
+					Bindings:       make(map[string][]Binding),
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							Scope: bscope,
+							Token: javascript.UnwrapConditional(s.StatementList[1].Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 14
+			`let a;{let a}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         make(map[fmt.Formatter]*Scope),
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: scope,
+							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				bscope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							Scope: bscope,
+							Token: s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
 			},
 		},
 	} {
