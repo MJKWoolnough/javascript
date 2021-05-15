@@ -8,8 +8,23 @@ import (
 	"vimagination.zapto.org/javascript"
 )
 
+// BindingType indicates where the binding came from
+type BindingType uint8
+
+// Binding Types
+const (
+	BindingRef BindingType = iota
+	BindingBare
+	BindingVar
+	BindingHoistable
+	BindingLexical
+	BindingImport
+	BindingFunctionParam
+)
+
 // Binding represents a single instance of a bound name
 type Binding struct {
+	BindingType
 	*Scope
 	*javascript.Token
 }
@@ -22,27 +37,42 @@ type Scope struct {
 	Bindings       map[string][]Binding
 }
 
-func (s *Scope) setBinding(t *javascript.Token, hoist bool) error {
+func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	name := t.Data
-	if _, ok := s.Bindings[name]; ok {
-		return ErrDuplicateBinding
+	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
+	if b, ok := s.Bindings[name]; ok {
+		if len(b) > 0 && b[0].BindingType == BindingVar && bindingType == BindingVar {
+			s.Bindings[name] = append(b, binding)
+		} else {
+			return ErrDuplicateBinding
+		}
 	}
-	binding := Binding{Token: t, Scope: s}
-	s.Bindings[name] = []Binding{binding}
-	if hoist && s.IsLexicalScope {
+	if bindingType != BindingBare {
+		s.Bindings[name] = []Binding{binding}
+	}
+	if s.IsLexicalScope && (bindingType == BindingHoistable || bindingType == BindingVar) {
 		for s.IsLexicalScope && s.Parent != nil {
 			s = s.Parent
+			if bindingType == BindingVar {
+				if b, ok := s.Bindings[name]; ok {
+					if b[0].BindingType != BindingVar {
+						return ErrDuplicateBinding
+					}
+				}
+			}
 		}
-		if _, ok := s.Bindings[name]; !ok {
+		if b, ok := s.Bindings[name]; !ok {
 			s.Bindings[name] = []Binding{binding}
+		} else if bindingType == BindingVar {
+			s.Bindings[name] = append(b, binding)
 		}
 	}
 	return nil
 }
 
-func (s *Scope) addBinding(t *javascript.Token) {
+func (s *Scope) addBinding(t *javascript.Token, bindingType BindingType) {
 	name := t.Data
-	binding := Binding{Token: t, Scope: s}
+	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
 	for {
 		if bs, ok := s.Bindings[name]; ok {
 			s.Bindings[name] = append(bs, binding)
@@ -140,12 +170,12 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 		if i.ImportDeclaration != nil && i.ImportDeclaration.ImportClause != nil {
 			if set {
 				if i.ImportDeclaration.ImportedDefaultBinding != nil {
-					if err := global.setBinding(i.ImportDeclaration.ImportedDefaultBinding, false); err != nil {
+					if err := global.setBinding(i.ImportDeclaration.ImportedDefaultBinding, BindingImport); err != nil {
 						return err
 					}
 				}
 				if i.ImportDeclaration.NameSpaceImport != nil {
-					if err := global.setBinding(i.ImportDeclaration.NameSpaceImport, false); err != nil {
+					if err := global.setBinding(i.ImportDeclaration.NameSpaceImport, BindingImport); err != nil {
 						return err
 					}
 				}
@@ -158,7 +188,7 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 						if is.ImportedBinding != nil {
 							tk = is.ImportedBinding
 						}
-						if err := global.setBinding(tk, false); err != nil {
+						if err := global.setBinding(tk, BindingImport); err != nil {
 							return err
 						}
 					}
@@ -192,7 +222,7 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 			} else if i.ExportDeclaration.ExportClause != nil && !set {
 				for _, es := range i.ExportDeclaration.ExportClause.ExportList {
 					if es.IdentifierName != nil {
-						global.addBinding(es.IdentifierName)
+						global.addBinding(es.IdentifierName, BindingRef)
 					}
 				}
 			}
@@ -350,15 +380,15 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		}
 	default:
 		if f.ForBindingPatternObject != nil {
-			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, false, true); err != nil {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, BindingBare); err != nil {
 				return err
 			}
 		} else if f.ForBindingPatternArray != nil {
-			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, false, true); err != nil {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, BindingBare); err != nil {
 				return err
 			}
 		} else if f.ForBindingIdentifier != nil && !set {
-			scope.Parent.addBinding(f.ForBindingIdentifier)
+			scope.Parent.addBinding(f.ForBindingIdentifier, BindingBare)
 		}
 	}
 	switch f.Type {
@@ -439,7 +469,7 @@ func processWithStatement(w *javascript.WithStatement, scope *Scope, set bool) e
 
 func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope, set, expression bool) error {
 	if f.BindingIdentifier != nil && set && !expression {
-		if err := scope.setBinding(f.BindingIdentifier, true); err != nil {
+		if err := scope.setBinding(f.BindingIdentifier, BindingHoistable); err != nil {
 			return err
 		}
 	}
@@ -472,7 +502,7 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 
 func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set, expression bool) error {
 	if c.BindingIdentifier != nil && set && !expression {
-		if err := scope.setBinding(c.BindingIdentifier, false); err != nil {
+		if err := scope.setBinding(c.BindingIdentifier, BindingHoistable); err != nil {
 			return err
 		}
 	}
@@ -500,15 +530,15 @@ func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, s
 
 func processVariableDeclaration(v *javascript.VariableDeclaration, scope *Scope, set bool) error {
 	if v.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, set, true, false); err != nil {
+		if err := processArrayBindingPattern(v.ArrayBindingPattern, scope, set, BindingVar); err != nil {
 			return err
 		}
 	} else if v.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, set, true, false); err != nil {
+		if err := processObjectBindingPattern(v.ObjectBindingPattern, scope, set, BindingVar); err != nil {
 			return err
 		}
 	} else if v.BindingIdentifier != nil && set {
-		if err := scope.setBinding(v.BindingIdentifier, true); err != nil {
+		if err := scope.setBinding(v.BindingIdentifier, BindingVar); err != nil {
 			return err
 		}
 	}
@@ -559,17 +589,17 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 	return nil
 }
 
-func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set, hoist, bare bool) error {
+func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scope, set bool, bindingType BindingType) error {
 	for n := range o.BindingPropertyList {
-		if err := processBindingProperty(&o.BindingPropertyList[n], scope, set, hoist, bare); err != nil {
+		if err := processBindingProperty(&o.BindingPropertyList[n], scope, set, bindingType); err != nil {
 			return err
 		}
 	}
 	if o.BindingRestProperty != nil {
-		if bare {
-			scope.addBinding(o.BindingRestProperty)
+		if bindingType == BindingBare {
+			scope.addBinding(o.BindingRestProperty, BindingBare)
 		} else if set {
-			if err := scope.setBinding(o.BindingRestProperty, hoist); err != nil {
+			if err := scope.setBinding(o.BindingRestProperty, bindingType); err != nil {
 				return err
 			}
 		}
@@ -577,14 +607,14 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 	return nil
 }
 
-func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set, hoist, bare bool) error {
+func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope, set bool, bindingType BindingType) error {
 	for n := range a.BindingElementList {
-		if err := processBindingElement(&a.BindingElementList[n], scope, set, hoist, bare); err != nil {
+		if err := processBindingElement(&a.BindingElementList[n], scope, set, bindingType); err != nil {
 			return err
 		}
 	}
 	if a.BindingRestElement != nil {
-		if err := processBindingElement(a.BindingRestElement, scope, set, hoist, bare); err != nil {
+		if err := processBindingElement(a.BindingRestElement, scope, set, bindingType); err != nil {
 			return err
 		}
 	}
@@ -593,7 +623,7 @@ func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope,
 
 func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set bool) error {
 	for n := range f.FormalParameterList {
-		if err := processBindingElement(&f.FormalParameterList[n], scope, set, false, false); err != nil {
+		if err := processBindingElement(&f.FormalParameterList[n], scope, set, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
@@ -621,15 +651,15 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 
 func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool) error {
 	if l.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, false, false); err != nil {
+		if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, BindingLexical); err != nil {
 			return err
 		}
 	} else if l.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, false, false); err != nil {
+		if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, BindingLexical); err != nil {
 			return err
 		}
 	} else if l.BindingIdentifier != nil && set {
-		if err := scope.setBinding(l.BindingIdentifier, false); err != nil {
+		if err := scope.setBinding(l.BindingIdentifier, BindingLexical); err != nil {
 			return err
 		}
 	}
@@ -675,7 +705,7 @@ func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) e
 			return err
 		}
 	} else if a.BindingIdentifier != nil && set {
-		if err := scope.setBinding(a.BindingIdentifier, false); err != nil {
+		if err := scope.setBinding(a.BindingIdentifier, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
@@ -748,31 +778,31 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 	return nil
 }
 
-func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set, hoist, bare bool) error {
+func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set bool, bindingType BindingType) error {
 	if err := processPropertyName(&b.PropertyName, scope, set); err != nil {
 		return err
 	}
-	if err := processBindingElement(&b.BindingElement, scope, set, hoist, bare); err != nil {
+	if err := processBindingElement(&b.BindingElement, scope, set, bindingType); err != nil {
 		return err
 	}
 	return nil
 }
 
-func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hoist, bare bool) error {
+func processBindingElement(b *javascript.BindingElement, scope *Scope, set bool, bindingType BindingType) error {
 	if b.SingleNameBinding != nil {
-		if bare {
-			scope.addBinding(b.SingleNameBinding)
+		if bindingType == BindingBare {
+			scope.addBinding(b.SingleNameBinding, bindingType)
 		} else if set {
-			if err := scope.setBinding(b.SingleNameBinding, hoist); err != nil {
+			if err := scope.setBinding(b.SingleNameBinding, bindingType); err != nil {
 				return err
 			}
 		}
 	} else if b.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(b.ArrayBindingPattern, scope, set, hoist, bare); err != nil {
+		if err := processArrayBindingPattern(b.ArrayBindingPattern, scope, set, bindingType); err != nil {
 			return err
 		}
 	} else if b.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(b.ObjectBindingPattern, scope, set, hoist, bare); err != nil {
+		if err := processObjectBindingPattern(b.ObjectBindingPattern, scope, set, bindingType); err != nil {
 			return err
 		}
 	}
@@ -786,15 +816,15 @@ func processBindingElement(b *javascript.BindingElement, scope *Scope, set, hois
 
 func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Scope, set bool) error {
 	if f.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, false, false); err != nil {
+		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
 			return err
 		}
 	} else if f.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(f.ObjectBindingPattern, scope, set, false, false); err != nil {
+		if err := processObjectBindingPattern(f.ObjectBindingPattern, scope, set, BindingFunctionParam); err != nil {
 			return err
 		}
 	} else if f.BindingIdentifier != nil && set {
-		if err := scope.setBinding(f.BindingIdentifier, false); err != nil {
+		if err := scope.setBinding(f.BindingIdentifier, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
@@ -841,15 +871,15 @@ func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.Cove
 		}
 	}
 	if c.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(c.ArrayBindingPattern, scope, set, false, false); err != nil {
+		if err := processArrayBindingPattern(c.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
 			return err
 		}
 	} else if c.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(c.ObjectBindingPattern, scope, set, false, false); err != nil {
+		if err := processObjectBindingPattern(c.ObjectBindingPattern, scope, set, BindingFunctionParam); err != nil {
 			return err
 		}
 	} else if c.BindingIdentifier != nil && set {
-		if err := scope.setBinding(c.BindingIdentifier, false); err != nil {
+		if err := scope.setBinding(c.BindingIdentifier, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
@@ -977,7 +1007,7 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 			return err
 		}
 	} else if p.IdentifierReference != nil && !set {
-		scope.addBinding(p.IdentifierReference)
+		scope.addBinding(p.IdentifierReference, BindingRef)
 	}
 	return nil
 }

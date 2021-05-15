@@ -39,7 +39,7 @@ func TestScriptScope(t *testing.T) {
 			`a`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
-				scope.addBinding(javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference)
+				scope.addBinding(javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference, BindingRef)
 				return scope, nil
 			},
 		},
@@ -47,7 +47,7 @@ func TestScriptScope(t *testing.T) {
 			`function a(){}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
-				if err := scope.setBinding(s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier, true); err != nil {
+				if err := scope.setBinding(s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier, BindingHoistable); err != nil {
 					return nil, err
 				}
 				scope.newFunctionScope(s.StatementList[0].Declaration.FunctionDeclaration)
@@ -58,7 +58,7 @@ func TestScriptScope(t *testing.T) {
 			`const a = () => true`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
-				if err := scope.setBinding(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier, false); err != nil {
+				if err := scope.setBinding(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier, BindingLexical); err != nil {
 					return nil, err
 				}
 				scope.newArrowFunctionScope(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction)
@@ -74,8 +74,9 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": {
 						{
-							Scope: scope,
-							Token: javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
@@ -106,8 +107,9 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
 						},
 					},
 				}
@@ -132,8 +134,9 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 					},
 				}
@@ -162,12 +165,14 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 						{
-							Scope: scope,
-							Token: javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
@@ -188,12 +193,14 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 						{
-							Scope: bscope,
-							Token: javascript.UnwrapConditional(s.StatementList[1].Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							BindingType: BindingRef,
+							Scope:       bscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
@@ -213,16 +220,18 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 					},
 				}
 				bscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: bscope,
-							Token: s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       bscope,
+							Token:       s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 					},
 				}
@@ -237,7 +246,13 @@ func TestScriptScope(t *testing.T) {
 					IsLexicalScope: true,
 					Parent:         scope,
 				}
-				abind := []Binding{{Scope: bscope, Token: s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier}}
+				abind := []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       bscope,
+						Token:       s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
 				bscope.Bindings = map[string][]Binding{"a": abind}
 				bscope.Scopes = map[fmt.Formatter]*Scope{
 					s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: &Scope{
@@ -265,8 +280,9 @@ func TestScriptScope(t *testing.T) {
 				bscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: bscope,
-							Token: s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+							BindingType: BindingHoistable,
+							Scope:       bscope,
+							Token:       s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
 						},
 					},
 				}
@@ -283,8 +299,9 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							Scope: scope,
-							Token: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 					},
 				}
