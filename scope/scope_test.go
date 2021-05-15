@@ -147,6 +147,12 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 11
+			`let a, a`,
+			func(s *javascript.Script) (*Scope, error) {
+				return nil, ErrDuplicateBinding
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
