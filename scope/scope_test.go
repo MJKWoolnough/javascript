@@ -3,12 +3,103 @@ package scope
 import (
 	"errors"
 	"fmt"
+	"io"
 	"reflect"
 	"testing"
 
 	"vimagination.zapto.org/javascript"
 	"vimagination.zapto.org/parser"
 )
+
+type indentPrinter struct {
+	io.Writer
+}
+
+var indent = []byte{'	'}
+
+func (i *indentPrinter) Write(p []byte) (int, error) {
+	var (
+		total int
+		last  int
+	)
+	for n, c := range p {
+		if c == '\n' {
+			m, err := i.Writer.Write(p[last : n+1])
+			total += m
+			if err != nil {
+				return total, err
+			}
+			_, err = i.Writer.Write(indent)
+			if err != nil {
+				return total, err
+			}
+			last = n + 1
+		}
+	}
+	if last != len(p) {
+		m, err := i.Writer.Write(p[last:])
+		total += m
+		if err != nil {
+			return total, err
+		}
+	}
+	return total, nil
+}
+
+func (i *indentPrinter) Print(args ...interface{}) {
+	fmt.Fprint(i, args...)
+}
+
+func (i *indentPrinter) Printf(format string, args ...interface{}) {
+	fmt.Fprintf(i, format, args...)
+}
+
+func (i *indentPrinter) WriteString(s string) (int, error) {
+	return i.Write([]byte(s))
+}
+
+func (s *Scope) Format(st fmt.State, _ rune) { s.printScope(&indentPrinter{st}) }
+
+func (s *Scope) printScope(w *indentPrinter) {
+	if s.IsLexicalScope {
+		w.WriteString("LexicalScope {")
+	} else {
+		w.WriteString("Scope {")
+	}
+	pp := &indentPrinter{w}
+	qq := &indentPrinter{pp}
+	rr := &indentPrinter{qq}
+	pp.WriteString("\nParent: ")
+	if s.Parent == nil {
+		pp.WriteString("nil")
+	} else {
+		pp.Printf("%p", s.Parent)
+	}
+	pp.WriteString("\nScopes: [")
+	for t, scope := range s.Scopes {
+		qq.WriteString("\n")
+		qq.Printf("%p", t)
+		qq.WriteString(": ")
+		scope.printScope(qq)
+	}
+	pp.WriteString("\n]\nBindings: [")
+	for ref, bindings := range s.Bindings {
+		qq.WriteString("\n")
+		qq.WriteString(ref)
+		qq.WriteString(": [")
+		for _, binding := range bindings {
+			rr.WriteString("\nBindingType: ")
+			rr.Print(binding.BindingType)
+			rr.WriteString("\nScope: ")
+			rr.Printf("%p", binding.Scope)
+			rr.WriteString("\nToken: ")
+			rr.Print(binding.Token)
+		}
+		qq.WriteString("\n]")
+	}
+	pp.WriteString("\n]")
+	w.WriteString("\n}")
+}
 
 func TestScriptScope(t *testing.T) {
 	for n, test := range [...]struct {
@@ -467,6 +558,8 @@ func TestScriptScope(t *testing.T) {
 				t.Errorf("test %d: receieved error when expecting none: %s", n+1, err)
 			} else if !reflect.DeepEqual(scope, tscope) {
 				t.Errorf("test %d: result did not match expected", n+1)
+				t.Errorf("expecting: %s", scope)
+				t.Errorf("got: %s", tscope)
 			}
 		}
 	}
