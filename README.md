@@ -1710,7 +1710,7 @@ Format implements the fmt.Formatter interface
 
 ```go
 type PrimaryExpression struct {
-	This                                              bool
+	This                                              *Token
 	IdentifierReference                               *Token
 	Literal                                           *Token
 	ArrayLiteral                                      *ArrayLiteral
