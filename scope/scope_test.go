@@ -956,6 +956,95 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 31
+			`function a(b) {let c = b => [b, d], d = 1;[d, b] = c(b)}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+				}
+				ascope := &Scope{
+					Parent: fscope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				ascope.Bindings = map[string][]Binding{
+					"b": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       ascope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       ascope,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).ArrayLiteral.ElementList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope}
+				fscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+					"b": []Binding{
+						{
+							BindingType: BindingFunctionParam,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral.ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).Arguments.ArgumentList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"c": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+					"d": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       ascope,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).ArrayLiteral.ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral.ElementList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
