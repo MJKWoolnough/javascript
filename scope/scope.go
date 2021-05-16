@@ -70,7 +70,7 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 			s = s.Parent
 			if bindingType == BindingVar {
 				if b, ok := s.Bindings[name]; ok {
-					if b[0].BindingType != BindingVar {
+					if len(b) > 0 && b[0].BindingType != BindingVar {
 						return ErrDuplicateDeclaration{
 							Declaration: b[0].Token,
 							Duplicate:   t,
