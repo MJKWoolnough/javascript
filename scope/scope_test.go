@@ -1047,6 +1047,37 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 31
+			`function a() {return this}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				fscope.Bindings = map[string][]Binding{
+					"this": []Binding{
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).This,
+						},
+					},
+					"arguments": []Binding{},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
