@@ -1023,6 +1023,8 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 		if err := processCoverParenthesizedExpressionAndArrowParameterList(p.CoverParenthesizedExpressionAndArrowParameterList, scope, set); err != nil {
 			return err
 		}
+	} else if p.This != nil && !set {
+		scope.addBinding(p.This, BindingRef)
 	} else if p.IdentifierReference != nil && !set {
 		scope.addBinding(p.IdentifierReference, BindingRef)
 	}
