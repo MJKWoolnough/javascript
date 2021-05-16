@@ -88,12 +88,14 @@ func (s *Scope) printScope(w *indentPrinter) {
 		qq.WriteString(ref)
 		qq.WriteString(": [")
 		for _, binding := range bindings {
-			rr.WriteString("\nBindingType: ")
+			rr.WriteString("\n[")
+			rr.WriteString("\n	BindingType: ")
 			rr.Print(binding.BindingType)
-			rr.WriteString("\nScope: ")
+			rr.WriteString("\n	Scope: ")
 			rr.Printf("%p", binding.Scope)
-			rr.WriteString("\nToken: ")
+			rr.WriteString("\n	Token: ")
 			rr.Print(binding.Token)
+			rr.WriteString("\n]")
 		}
 		qq.WriteString("\n]")
 	}
