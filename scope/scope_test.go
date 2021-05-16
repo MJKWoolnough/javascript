@@ -244,7 +244,10 @@ func TestScriptScope(t *testing.T) {
 		{ // 11
 			`let a, a`,
 			func(s *javascript.Script) (*Scope, error) {
-				return nil, ErrDuplicateBinding
+				return nil, ErrDuplicateDeclaration{
+					Declaration: s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   s.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
 			},
 		},
 		{ // 12

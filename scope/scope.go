@@ -2,11 +2,19 @@
 package scope // import "vimagination.zapto.org/javascript/scope"
 
 import (
-	"errors"
 	"fmt"
 
 	"vimagination.zapto.org/javascript"
 )
+
+// ErrDuplicateDeclaration is an error when a binding is declared more than once with a scope
+type ErrDuplicateDeclaration struct {
+	Declaration, Duplicate *javascript.Token
+}
+
+func (ErrDuplicateDeclaration) Error() string {
+	return "duplicate declaration"
+}
 
 // BindingType indicates where the binding came from
 type BindingType uint8
@@ -44,7 +52,14 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 		if len(b) > 0 && b[0].BindingType == BindingVar && bindingType == BindingVar {
 			s.Bindings[name] = append(b, binding)
 		} else {
-			return ErrDuplicateBinding
+			var bd *javascript.Token
+			if len(b) > 0 {
+				bd = b[0].Token
+			}
+			return ErrDuplicateDeclaration{
+				Declaration: bd,
+				Duplicate:   t,
+			}
 		}
 	}
 	if bindingType != BindingBare {
@@ -56,7 +71,10 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 			if bindingType == BindingVar {
 				if b, ok := s.Bindings[name]; ok {
 					if b[0].BindingType != BindingVar {
-						return ErrDuplicateBinding
+						return ErrDuplicateDeclaration{
+							Declaration: b[0].Token,
+							Duplicate:   t,
+						}
 					}
 				}
 			}
@@ -181,15 +199,14 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 				}
 				if i.ImportDeclaration.NamedImports != nil {
 					for _, is := range i.ImportDeclaration.NamedImports.ImportList {
-						if is.IdentifierName == nil {
-							return ErrInvalidImport
-						}
-						var tk = is.IdentifierName
-						if is.ImportedBinding != nil {
-							tk = is.ImportedBinding
-						}
-						if err := global.setBinding(tk, BindingImport); err != nil {
-							return err
+						if is.IdentifierName != nil {
+							var tk = is.IdentifierName
+							if is.ImportedBinding != nil {
+								tk = is.ImportedBinding
+							}
+							if err := global.setBinding(tk, BindingImport); err != nil {
+								return err
+							}
 						}
 					}
 				}
@@ -1170,9 +1187,3 @@ func processUpdateExpression(u *javascript.UpdateExpression, scope *Scope, set b
 	}
 	return nil
 }
-
-// Errors
-var (
-	ErrDuplicateBinding = errors.New("duplicate binding")
-	ErrInvalidImport    = errors.New("invalid import")
-)
