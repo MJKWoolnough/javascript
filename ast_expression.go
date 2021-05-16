@@ -618,7 +618,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 // ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
 // CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
 type PrimaryExpression struct {
-	This                                              bool
+	This                                              *Token
 	IdentifierReference                               *Token
 	Literal                                           *Token
 	ArrayLiteral                                      *ArrayLiteral
@@ -632,7 +632,7 @@ type PrimaryExpression struct {
 
 func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
-		pe.This = true
+		pe.This = j.GetLastToken()
 	} else if j.Accept(TokenNullLiteral, TokenBooleanLiteral, TokenNumericLiteral, TokenStringLiteral, TokenRegularExpressionLiteral) {
 		pe.Literal = j.GetLastToken()
 	} else if t := j.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {

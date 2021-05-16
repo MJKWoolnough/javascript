@@ -1102,7 +1102,7 @@ func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
 }
 
 func (p PrimaryExpression) printSource(w io.Writer, v bool) {
-	if p.This {
+	if p.This != nil {
 		w.Write(this)
 	} else if p.IdentifierReference != nil {
 		io.WriteString(w, p.IdentifierReference.Data)

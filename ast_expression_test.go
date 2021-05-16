@@ -9,7 +9,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 				NewExpression: &NewExpression{
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							This:   true,
+							This:   &tk[0],
 							Tokens: tk[:1],
 						},
 						Tokens: tk[:1],
@@ -218,7 +218,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 							MemberExpression: &MemberExpression{
 								MemberExpression: &MemberExpression{
 									PrimaryExpression: &PrimaryExpression{
-										This:   true,
+										This:   &tk[0],
 										Tokens: tk[:1],
 									},
 									Tokens: tk[:1],
@@ -1995,7 +1995,7 @@ func TestPrimaryExpression(t *testing.T) {
 		}},
 		{`this`, func(t *test, tk Tokens) { // 2
 			t.Output = PrimaryExpression{
-				This:   true,
+				This:   &tk[0],
 				Tokens: tk[:1],
 			}
 		}},

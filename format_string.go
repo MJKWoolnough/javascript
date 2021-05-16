@@ -1747,7 +1747,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 	w.Write(namePrimaryExpression[1:18])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if f.This || v {
+	if f.This != nil || v {
 		pp.Printf("\nThis: %v", f.This)
 	}
 	if f.IdentifierReference != nil {
