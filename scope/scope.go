@@ -308,7 +308,7 @@ func processDeclaration(d *javascript.Declaration, scope *Scope, set bool) error
 func processBlockStatement(b *javascript.Block, scope *Scope, set bool) error {
 	for n := range b.StatementList {
 		if err := processStatementListItem(&b.StatementList[n], scope, set); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
