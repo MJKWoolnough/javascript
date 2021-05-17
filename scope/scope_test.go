@@ -1213,6 +1213,15 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 36
+			`var c;{let c;{var c}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   s.StatementList[1].Statement.BlockStatement.StatementList[1].Statement.BlockStatement.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
