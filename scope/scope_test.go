@@ -1146,6 +1146,38 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 34
+			`const {a: b, c, ...d} = {}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"b": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+						},
+					},
+					"c": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
+						},
+					},
+					"d": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingRestProperty,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
