@@ -1258,6 +1258,60 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 39
+			`function a() {for (let a = 0; a < 2; a++){}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{Parent: scope}
+				iscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         fscope,
+				}
+				iscope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: &Scope{
+						IsLexicalScope: true,
+						Parent:         iscope,
+						Scopes:         make(map[fmt.Formatter]*Scope),
+						Bindings:       make(map[string][]Binding),
+					},
+				}
+				iscope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       iscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.InitLexical.BindingList[0].BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       iscope,
+							Token:       javascript.UnwrapConditional(javascript.WrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Conditional.Expressions[0].ConditionalExpression).(*javascript.RelationalExpression).RelationalExpression)).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       iscope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Afterthought.Expressions[0].ConditionalExpression).(*javascript.UpdateExpression).LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
+				fscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
