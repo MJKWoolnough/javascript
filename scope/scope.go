@@ -378,7 +378,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		}
 	case javascript.ForNormalLexicalDeclaration:
 		if f.InitLexical != nil {
-			scope = scope.newLexicalScope(f.InitLexical)
+			scope = scope.newLexicalScope(f)
 			if err := processLexicalDeclaration(f.InitLexical, scope, set); err != nil {
 				return err
 			}
