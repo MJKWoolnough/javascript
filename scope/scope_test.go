@@ -1240,6 +1240,24 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 38
+			`var [{a}] = []`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingVar,
+							Scope:       scope,
+							Token:       s.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].ArrayBindingPattern.BindingElementList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
