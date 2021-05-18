@@ -1438,9 +1438,7 @@ func TestScriptScope(t *testing.T) {
 			} else if err != nil {
 				t.Errorf("test %d: receieved error when expecting none: %s", n+1, err)
 			} else if !reflect.DeepEqual(scope, tscope) {
-				t.Errorf("test %d: result did not match expected", n+1)
-				t.Errorf("expecting: %s", scope)
-				t.Errorf("got: %s", tscope)
+				t.Errorf("test %d: result did not match expected\nexpecting: %s\ngot: %s", n+1, tscope, scope)
 			}
 		}
 	}
