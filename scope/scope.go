@@ -398,16 +398,30 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			}
 		}
 	default:
+		bindingType := BindingBare
+		switch f.Type {
+		case javascript.ForInLet, javascript.ForOfLet, javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
+			bindingType = BindingLexical
+		case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar:
+			bindingType = BindingVar
+		}
 		if f.ForBindingPatternObject != nil {
-			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, BindingBare); err != nil {
+			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, bindingType); err != nil {
 				return err
 			}
 		} else if f.ForBindingPatternArray != nil {
-			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, BindingBare); err != nil {
+			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, bindingType); err != nil {
 				return err
 			}
-		} else if f.ForBindingIdentifier != nil && !set {
-			scope.Parent.addBinding(f.ForBindingIdentifier, BindingBare)
+		} else if f.ForBindingIdentifier != nil {
+			if bindingType == BindingBare && !set {
+				scope.addBinding(f.ForBindingIdentifier, BindingBare)
+			}
+			if bindingType != BindingBare && set {
+				if err := scope.setBinding(f.ForBindingIdentifier, bindingType); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	switch f.Type {
