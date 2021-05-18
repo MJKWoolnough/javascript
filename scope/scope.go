@@ -505,7 +505,21 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 		return err
 	}
 	if t.CatchBlock != nil {
-		if err := processBlockStatement(t.CatchBlock, scope.newLexicalScope(t.CatchBlock), set); err != nil {
+		scope = scope.newLexicalScope(t.CatchBlock)
+		if t.CatchParameterArrayBindingPattern != nil {
+			if err := processArrayBindingPattern(t.CatchParameterArrayBindingPattern, scope, set, BindingLexical); err != nil {
+				return err
+			}
+		} else if t.CatchParameterObjectBindingPattern != nil {
+			if err := processObjectBindingPattern(t.CatchParameterObjectBindingPattern, scope, set, BindingLexical); err != nil {
+				return err
+			}
+		} else if t.CatchParameterBindingIdentifier != nil && set {
+			if err := scope.setBinding(t.CatchParameterBindingIdentifier, BindingLexical); err != nil {
+				return err
+			}
+		}
+		if err := processBlockStatement(t.CatchBlock, scope, set); err != nil {
 			return err
 		}
 	}
