@@ -368,6 +368,7 @@ func processIterationStatementWhile(w *javascript.IterationStatementWhile, scope
 }
 
 func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Scope, set bool) error {
+	scope = scope.newLexicalScope(f)
 	switch f.Type {
 	case javascript.ForNormal:
 	case javascript.ForNormalVar:
@@ -378,7 +379,6 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		}
 	case javascript.ForNormalLexicalDeclaration:
 		if f.InitLexical != nil {
-			scope = scope.newLexicalScope(f)
 			if err := processLexicalDeclaration(f.InitLexical, scope, set); err != nil {
 				return err
 			}
