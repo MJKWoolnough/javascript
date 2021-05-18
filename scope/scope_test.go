@@ -1047,7 +1047,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 31
+		{ // 32
 			`function a() {return this}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1078,7 +1078,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 32
+		{ // 33
 			`function a() {return arguments}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1109,7 +1109,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 33
+		{ // 34
 			`let a;function b() {return a}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1146,7 +1146,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 34
+		{ // 35
 			`const {a: b, c, ...d} = {}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1178,7 +1178,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 35
+		{ // 36
 			`let {a, b} = {};({a, b} = {})`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1213,7 +1213,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 36
+		{ // 37
 			`var c;{let c;{var c}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -1222,7 +1222,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 37
+		{ // 38
 			`const {a: [b]} = {}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1240,7 +1240,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 38
+		{ // 39
 			`var [{a}] = []`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1258,7 +1258,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 39
+		{ // 40
 			`function a() {for (let a = 0; a < 2; a++){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
