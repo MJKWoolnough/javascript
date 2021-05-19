@@ -1721,6 +1721,15 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 49
+			`function a() {var a;try{}catch(a){let a}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchParameterBindingIdentifier,
+					Duplicate:   s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
