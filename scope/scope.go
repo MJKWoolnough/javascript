@@ -28,6 +28,7 @@ const (
 	BindingLexical
 	BindingImport
 	BindingFunctionParam
+	BindingCatch
 )
 
 // Binding represents a single instance of a bound name
@@ -49,8 +50,11 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	name := t.Data
 	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
 	if b, ok := s.Bindings[name]; ok {
-		if len(b) > 0 && b[0].BindingType == BindingVar && bindingType == BindingVar {
+		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch) {
 			s.Bindings[name] = append(b, binding)
+			if b[0].BindingType == BindingCatch && bindingType == BindingVar {
+				return nil
+			}
 		} else {
 			var bd *javascript.Token
 			if len(b) > 0 {
@@ -64,11 +68,16 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	}
 	s.Bindings[name] = []Binding{binding}
 	if s.IsLexicalScope && (bindingType == BindingHoistable || bindingType == BindingVar) {
+	Loop:
 		for s.IsLexicalScope && s.Parent != nil {
 			s = s.Parent
 			if bindingType == BindingVar {
-				if b, ok := s.Bindings[name]; ok {
-					if len(b) > 0 && b[0].BindingType != BindingVar {
+				if b, ok := s.Bindings[name]; ok && len(b) > 0 {
+					switch b[0].BindingType {
+					case BindingCatch:
+						break Loop
+					case BindingVar, BindingBare:
+					default:
 						return ErrDuplicateDeclaration{
 							Declaration: b[0].Token,
 							Duplicate:   t,
@@ -521,15 +530,15 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 	if t.CatchBlock != nil {
 		scope = scope.newLexicalScope(t.CatchBlock)
 		if t.CatchParameterArrayBindingPattern != nil {
-			if err := processArrayBindingPattern(t.CatchParameterArrayBindingPattern, scope, set, BindingLexical); err != nil {
+			if err := processArrayBindingPattern(t.CatchParameterArrayBindingPattern, scope, set, BindingCatch); err != nil {
 				return err
 			}
 		} else if t.CatchParameterObjectBindingPattern != nil {
-			if err := processObjectBindingPattern(t.CatchParameterObjectBindingPattern, scope, set, BindingLexical); err != nil {
+			if err := processObjectBindingPattern(t.CatchParameterObjectBindingPattern, scope, set, BindingCatch); err != nil {
 				return err
 			}
 		} else if t.CatchParameterBindingIdentifier != nil && set {
-			if err := scope.setBinding(t.CatchParameterBindingIdentifier, BindingLexical); err != nil {
+			if err := scope.setBinding(t.CatchParameterBindingIdentifier, BindingCatch); err != nil {
 				return err
 			}
 		}
