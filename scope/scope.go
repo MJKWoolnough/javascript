@@ -524,7 +524,7 @@ func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope,
 }
 
 func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) error {
-	if err := processBlockStatement(&t.TryBlock, scope.newLexicalScope(t.TryBlock), set); err != nil {
+	if err := processBlockStatement(&t.TryBlock, scope.newLexicalScope(&t.TryBlock), set); err != nil {
 		return err
 	}
 	if t.CatchBlock != nil {
