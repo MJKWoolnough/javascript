@@ -62,9 +62,7 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 			}
 		}
 	}
-	if bindingType != BindingBare {
-		s.Bindings[name] = []Binding{binding}
-	}
+	s.Bindings[name] = []Binding{binding}
 	if s.IsLexicalScope && (bindingType == BindingHoistable || bindingType == BindingVar) {
 		for s.IsLexicalScope && s.Parent != nil {
 			s = s.Parent
