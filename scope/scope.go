@@ -65,8 +65,9 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 				Duplicate:   t,
 			}
 		}
+	} else {
+		s.Bindings[name] = []Binding{binding}
 	}
-	s.Bindings[name] = []Binding{binding}
 	if s.IsLexicalScope && (bindingType == BindingHoistable || bindingType == BindingVar) {
 	Loop:
 		for s.IsLexicalScope && s.Parent != nil {
