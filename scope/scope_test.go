@@ -1794,6 +1794,74 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 51
+			`function a() {var a;try{}catch(a){{let a}}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+				}
+				tscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         fscope,
+				}
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         tscope,
+					Scopes:         make(map[fmt.Formatter]*Scope),
+				}
+				bscope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       bscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				tscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement: bscope}
+				tscope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingCatch,
+							Scope:       tscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchParameterBindingIdentifier,
+						},
+					},
+				}
+				fscope.Scopes = map[fmt.Formatter]*Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: &Scope{
+						IsLexicalScope: true,
+						Parent:         fscope,
+						Scopes:         make(map[fmt.Formatter]*Scope),
+						Bindings:       make(map[string][]Binding),
+					},
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock: tscope,
+				}
+				fscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+					"a": []Binding{
+						{
+							BindingType: BindingVar,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
