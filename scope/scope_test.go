@@ -2000,13 +2000,7 @@ func TestScriptScope(t *testing.T) {
 				fscope.Bindings = map[string][]Binding{
 					"this":      []Binding{},
 					"arguments": []Binding{},
-					"a": []Binding{
-						{
-							BindingType: BindingVar,
-							Scope:       tscope,
-							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
-						},
-					},
+					"a":         tscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
