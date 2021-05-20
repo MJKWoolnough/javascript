@@ -1862,7 +1862,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 51
+		{ // 52
 			`function a() {var a;try{a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1913,7 +1913,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 52
+		{ // 53
 			`function a() {var a;try{let a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1967,7 +1967,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 53
+		{ // 54
 			`function a() {try{var a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2021,7 +2021,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 54
+		{ // 55
 			`function a() {try{}catch(b){var a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
