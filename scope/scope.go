@@ -485,7 +485,7 @@ func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope, set boo
 		}
 	}
 	for n := range s.PostDefaultCaseClauses {
-		c := &s.CaseClauses[n]
+		c := &s.PostDefaultCaseClauses[n]
 		if err := processExpression(&c.Expression, scope, set); err != nil {
 			return err
 		}
