@@ -2417,6 +2417,70 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 65
+			`function a() {switch(0){case 1:{let a};case 2:{let a}}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+				}
+				sscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         fscope,
+					Bindings:       make(map[string][]Binding),
+				}
+				bscopea := &Scope{
+					IsLexicalScope: true,
+					Parent:         sscope,
+					Scopes:         make(map[fmt.Formatter]*Scope),
+				}
+				bscopeb := &Scope{
+					IsLexicalScope: true,
+					Parent:         sscope,
+					Scopes:         make(map[fmt.Formatter]*Scope),
+				}
+				bscopea.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       bscopea,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[0].StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				bscopeb.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       bscopeb,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[1].StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				sscope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[0].StatementList[0].Statement.BlockStatement: bscopea,
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[1].StatementList[0].Statement.BlockStatement: bscopeb,
+				}
+				fscope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement: sscope,
+				}
+				fscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
