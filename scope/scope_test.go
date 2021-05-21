@@ -2381,6 +2381,15 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 61
+			`function a() {let a;switch(a){case 1:let a;break;default:break;case 2:let a}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement.CaseClauses[0].StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement.PostDefaultCaseClauses[0].StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
