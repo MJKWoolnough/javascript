@@ -2786,19 +2786,12 @@ func TestOptionalChain(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"?.\n()\n``", func(t *test, tk Tokens) { // 8
+		{"?.\n()", func(t *test, tk Tokens) { // 8
 			t.Output = OptionalChain{
-				OptionalChain: &OptionalChain{
-					Arguments: &Arguments{
-						Tokens: tk[2:4],
-					},
-					Tokens: tk[:4],
+				Arguments: &Arguments{
+					Tokens: tk[2:4],
 				},
-				TemplateLiteral: &TemplateLiteral{
-					NoSubstitutionTemplate: &tk[5],
-					Tokens:                 tk[5:6],
-				},
-				Tokens: tk[:6],
+				Tokens: tk[:4],
 			}
 		}},
 		{"?.\n``\n[\na\n]", func(t *test, tk Tokens) { // 9
@@ -2935,16 +2928,9 @@ func TestOptionalChain(t *testing.T) {
 			}
 		}},
 		{"?.a`${}`", func(t *test, tk Tokens) { // 20
+			t.Err = Error{}
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err:     assignmentError(tk[3]),
-						Parsing: "Expression",
-						Token:   tk[3],
-					},
-					Parsing: "TemplateLiteral",
-					Token:   tk[3],
-				},
+				Err:     ErrOptionalChainTemplate,
 				Parsing: "OptionalChain",
 				Token:   tk[2],
 			}

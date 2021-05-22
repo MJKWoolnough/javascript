@@ -1362,16 +1362,11 @@ func TestPrintingScript(t *testing.T) {
 			"a?.b;",
 		},
 		{ // 269
-			"a\n()\n.b\n?.\nc\n``",
-			"a().b?.c``;",
-			"a()\n.b?.c``;",
-		},
-		{ // 270
 			"a\n??\nb",
 			"a ?? b;",
 			"a ?? b;",
 		},
-		{ // 271
+		{ // 270
 			"a\n??\nb\n??\nc",
 			"a ?? b ?? c;",
 			"a ?? b ?? c;",
