@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -205,6 +206,22 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 						}
 					}
 					if tk.Type == TokenIdentifier {
+						if tk.Data[0] == '\\' {
+							code := ""
+							if tk.Data[2] == '{' {
+								var n = 3
+								for ; tk.Data[n] != '}'; n++ {
+								}
+								code = tk.Data[3:n]
+							} else {
+								code = tk.Data[2:6]
+							}
+							r, err := strconv.ParseInt(code, 16, 64)
+							if err != nil || r == 92 || !isIDStart(rune(r)) {
+								t.Err = fmt.Errorf("%w: %s", ErrInvalidUnicode, tk.Data)
+								return t.Error()
+							}
+						}
 						j.divisionAllowed = true
 					}
 				}
