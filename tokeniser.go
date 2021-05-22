@@ -383,7 +383,7 @@ Loop:
 		}
 	}
 	for {
-		if c := t.Peek(); !isIDContinue(c) {
+		if c := t.Peek(); !isIDContinue(c) || c == '\\' {
 			break
 		}
 		t.Except("")
