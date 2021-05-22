@@ -322,6 +322,9 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
 		return j.Error("IfStatement", err)
 	}
+	if is.Statement.LabelledItemFunction != nil {
+		return j.Error("IfStatement", ErrLabelledFunction)
+	}
 	j.Score(g)
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
@@ -331,6 +334,9 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 		is.ElseStatement = new(Statement)
 		if err := is.ElseStatement.parse(&h, yield, await, ret); err != nil {
 			return g.Error("IfStatement", err)
+		}
+		if is.ElseStatement.LabelledItemFunction != nil {
+			return g.Error("IfStatement", ErrLabelledFunction)
 		}
 		g.Score(h)
 		j.Score(g)
@@ -1001,4 +1007,5 @@ var (
 	ErrInvalidWithStatement           = errors.New("invalid with statement")
 	ErrInvalidTryStatement            = errors.New("invalid try statement")
 	ErrInvalidVariableStatement       = errors.New("invalid variabl statement")
+	ErrLabelledFunction               = errors.New("LabelledItemFunction not allowed here")
 )
