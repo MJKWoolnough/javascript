@@ -3444,6 +3444,20 @@ func TestIfStatement(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{"if (a) b: function c(){}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "IfStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"if (a){b}else c: function d(){}", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "IfStatement",
+				Token:   tk[10],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var is IfStatement
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
