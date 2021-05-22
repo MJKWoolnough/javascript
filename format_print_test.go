@@ -1351,27 +1351,27 @@ func TestPrintingScript(t *testing.T) {
 			"var [{a}] = b;",
 			"var [{a: a}] = b;",
 		},
-		{ // 272
+		{ // 267
 			"super\n.\na\n",
 			"super.a;",
 			"super.a;",
 		},
-		{ // 273
+		{ // 268
 			"a\n?.\nb",
 			"a?.b;",
 			"a?.b;",
 		},
-		{ // 274
+		{ // 269
 			"a\n()\n.b\n?.\nc\n``",
 			"a().b?.c``;",
 			"a()\n.b?.c``;",
 		},
-		{ // 275
+		{ // 270
 			"a\n??\nb",
 			"a ?? b;",
 			"a ?? b;",
 		},
-		{ // 276
+		{ // 271
 			"a\n??\nb\n??\nc",
 			"a ?? b ?? c;",
 			"a ?? b ?? c;",
