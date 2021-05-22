@@ -1060,6 +1060,15 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenRegularExpressionLiteral, Data: "/a/"},
 			},
 		},
+		{ // 128
+			"a`b${f}c`",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenTemplateHead, Data: "`b${"},
+				{Type: TokenIdentifier, Data: "f"},
+				{Type: TokenTemplateTail, Data: "}c`"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
