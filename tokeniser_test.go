@@ -1048,6 +1048,18 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid unicode escape sequence: \\u005C"},
 			},
 		},
+		{ // 126
+			"/a/g",
+			[]parser.Token{
+				{Type: TokenRegularExpressionLiteral, Data: "/a/g"},
+			},
+		},
+		{ // 127
+			"/a/\\u000A",
+			[]parser.Token{
+				{Type: TokenRegularExpressionLiteral, Data: "/a/"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
