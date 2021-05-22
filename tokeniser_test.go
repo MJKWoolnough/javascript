@@ -634,9 +634,9 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 63
-			"\\u0060",
+			"\\u0061",
 			[]parser.Token{
-				{Type: TokenIdentifier, Data: "\\u0060"},
+				{Type: TokenIdentifier, Data: "\\u0061"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
@@ -1007,6 +1007,45 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenPunctuator, Data: "("},
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: ")"},
+			},
+		},
+		{ // 120
+			"\\u0060",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid unicode escape sequence: \\u0060"},
+			},
+		},
+		{ // 121
+			"\\u0024",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "\\u0024"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 122
+			"\\u{5f}",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "\\u{5f}"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 123
+			"\\u{41}",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "\\u{41}"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 124
+			"\\u{0}",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid unicode escape sequence: \\u{0}"},
+			},
+		},
+		{ // 125
+			"\\u005C",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid unicode escape sequence: \\u005C"},
 			},
 		},
 	} {
