@@ -724,7 +724,7 @@ func TestConditional(t *testing.T) {
 				Tokens:           tk[:5],
 			})
 		}},
-		{`1++`, func(t *test, tk Tokens) { // 62
+		{`a++`, func(t *test, tk Tokens) { // 62
 			litA := makeConditionLiteral(tk, 0)
 			t.Output = wrapConditional(UpdateExpression{
 				LeftHandSideExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression,
@@ -732,7 +732,7 @@ func TestConditional(t *testing.T) {
 				Tokens:                 tk[:2],
 			})
 		}},
-		{`1--`, func(t *test, tk Tokens) { // 63
+		{`a--`, func(t *test, tk Tokens) { // 63
 			litA := makeConditionLiteral(tk, 0)
 			t.Output = wrapConditional(UpdateExpression{
 				LeftHandSideExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression,
@@ -740,7 +740,7 @@ func TestConditional(t *testing.T) {
 				Tokens:                 tk[:2],
 			})
 		}},
-		{`++1`, func(t *test, tk Tokens) { // 64
+		{`++a`, func(t *test, tk Tokens) { // 64
 			litA := makeConditionLiteral(tk, 1)
 			t.Output = wrapConditional(UpdateExpression{
 				UpdateOperator:  UpdatePreIncrement,
@@ -748,7 +748,7 @@ func TestConditional(t *testing.T) {
 				Tokens:          tk[:2],
 			})
 		}},
-		{`--1`, func(t *test, tk Tokens) { // 65
+		{`--a`, func(t *test, tk Tokens) { // 65
 			litA := makeConditionLiteral(tk, 1)
 			t.Output = wrapConditional(UpdateExpression{
 				UpdateOperator:  UpdatePreDecrement,
@@ -756,7 +756,7 @@ func TestConditional(t *testing.T) {
 				Tokens:          tk[:2],
 			})
 		}},
-		{`++!1`, func(t *test, tk Tokens) { // 66
+		{`++!a`, func(t *test, tk Tokens) { // 66
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = wrapConditional(UpdateExpression{
 				UpdateOperator: UpdatePreIncrement,
@@ -768,7 +768,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:3],
 			})
 		}},
-		{`--!1`, func(t *test, tk Tokens) { // 67
+		{`--!a`, func(t *test, tk Tokens) { // 67
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = wrapConditional(UpdateExpression{
 				UpdateOperator: UpdatePreDecrement,

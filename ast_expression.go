@@ -362,7 +362,12 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			}
 			identifierName = g.GetLastToken()
 		} else if t := g.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
-			return g.Error("OptionalChain", ErrOptionalChainTemplate)
+			h := g.NewGoal()
+			templateLiteral = new(TemplateLiteral)
+			if err := templateLiteral.parse(&h, yield, await); err != nil {
+				return g.Error("OptionalChain", err)
+			}
+			g.Score(h)
 		} else {
 			break
 		}
@@ -928,5 +933,4 @@ var (
 	ErrInvalidCallExpression = errors.New("invalid CallExpression")
 	ErrMissingOptional       = errors.New("missing optional chain punctuator")
 	ErrInvalidOptionalChain  = errors.New("invalid OptionalChain")
-	ErrOptionalChainTemplate = errors.New("optional chain cannot be part of a tagged template")
 )
