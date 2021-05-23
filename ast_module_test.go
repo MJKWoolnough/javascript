@@ -1098,6 +1098,34 @@ func TestNamedImports(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"{\na\n,\na\n}", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[6],
+			}
+		}},
+		{"{\na\n,\nb as a\n}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[6],
+			}
+		}},
+		{"{\na as b\n,\nb\n}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[10],
+			}
+		}},
+		{"{\na as c\n,\nb as c\n}", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidNamedImport,
+				Parsing: "NamedImports",
+				Token:   tk[10],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ni NamedImports
 		err := ni.parse(&t.Tokens)
