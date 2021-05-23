@@ -6377,6 +6377,13 @@ func TestWithStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"with (b) a: function b(){}", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "WithStatement",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var ws WithStatement
 		err := ws.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
