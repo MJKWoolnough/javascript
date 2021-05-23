@@ -3729,6 +3729,13 @@ func TestIterationStatementWhile(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
+		{"while (true) a:function b(){}", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "IterationStatementWhile",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var is IterationStatementWhile
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
