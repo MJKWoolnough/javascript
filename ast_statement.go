@@ -877,6 +877,9 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	if err := ws.Statement.parse(&g, yield, await, ret); err != nil {
 		return j.Error("WithStatement", err)
 	}
+	if ws.Statement.LabelledItemFunction != nil {
+		return j.Error("WithStatement", ErrLabelledFunction)
+	}
 	j.Score(g)
 	ws.Tokens = j.ToTokens()
 	return nil
