@@ -3612,6 +3612,13 @@ func TestIterationStatementDo(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"do\na:function b(){}\nwhile\n(\ntrue\n)", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "IterationStatementDo",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var is IterationStatementDo
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
