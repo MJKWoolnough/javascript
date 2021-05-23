@@ -217,6 +217,12 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		if err := ni.ImportList[is].parse(&g); err != nil {
 			return j.Error("NamedImports", err)
 		}
+		name := ni.ImportList[is].ImportedBinding.Data
+		for _, im := range ni.ImportList[:is] {
+			if im.ImportedBinding.Data == name {
+				return j.Error("NamedImports", ErrInvalidNamedImport)
+			}
+		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
