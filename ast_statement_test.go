@@ -3729,7 +3729,7 @@ func TestIterationStatementWhile(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"while (true) a:function b(){}", func(t *test, tk Tokens) { // 11
+		{"while (true) a:function b(){}", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrLabelledFunction,
 				Parsing: "IterationStatementWhile",
@@ -5677,6 +5677,13 @@ func TestIterationStatementFor(t *testing.T) {
 				Err:     ErrMissingSemiColon,
 				Parsing: "IterationStatementFor",
 				Token:   tk[7],
+			}
+		}},
+		{"for (c in d) a: function b(){}", func(t *test, tk Tokens) { // 112
+			t.Err = Error{
+				Err:     ErrLabelledFunction,
+				Parsing: "IterationStatementFor",
+				Token:   tk[10],
 			}
 		}},
 	}, func(t *test) (interface{}, error) {
