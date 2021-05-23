@@ -363,6 +363,9 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
 		return j.Error("IterationStatementDo", err)
 	}
+	if is.Statement.LabelledItemFunction != nil {
+		return j.Error("IterationStatementDo", ErrLabelledFunction)
+	}
 	j.Score(g)
 	g = j.NewGoal()
 	j.AcceptRunWhitespace()
