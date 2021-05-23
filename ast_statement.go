@@ -718,6 +718,9 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	if err := is.Statement.parse(&g, yield, await, ret); err != nil {
 		return j.Error("IterationStatementFor", err)
 	}
+	if is.Statement.LabelledItemFunction != nil {
+		return j.Error("IterationStatementFor", ErrLabelledFunction)
+	}
 	j.Score(g)
 	is.Tokens = j.ToTokens()
 	return nil
