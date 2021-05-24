@@ -694,7 +694,7 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 	if err := processPropertyName(&m.PropertyName, scope, set); err != nil {
 		return err
 	}
-	scope = scope.Parent.newFunctionScope(m)
+	scope = scope.newFunctionScope(m)
 	if err := processFormalParameters(&m.Params, scope, set); err != nil {
 		return err
 	}
