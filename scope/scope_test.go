@@ -2585,6 +2585,36 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 71
+			`class a{}class b extends a{}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       s.StatementList[1].Declaration.ClassDeclaration.ClassHeritage.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+					"b": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[1].Declaration.ClassDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
