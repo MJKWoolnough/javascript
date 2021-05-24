@@ -2678,6 +2678,47 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 74
+			`class a{b(){var a;let b}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				mscope := &Scope{
+					Parent: scope,
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				mscope.Bindings = map[string][]Binding{
+					"this":      []Binding{},
+					"arguments": []Binding{},
+					"a": []Binding{
+						{
+							BindingType: BindingVar,
+							Scope:       mscope,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+						},
+					},
+					"b": []Binding{
+						{
+							BindingType: BindingLexical,
+							Scope:       mscope,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].FunctionBody.StatementList[1].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					&s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0]: mscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
