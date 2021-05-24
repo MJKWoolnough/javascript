@@ -2172,7 +2172,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 56
+		{ // 58
 			`function a() {try{}finally{let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2219,7 +2219,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 57
+		{ // 59
 			`function a() {let a;switch(a){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2264,7 +2264,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 58
+		{ // 60
 			`function a() {let a;switch(a){case a:}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2314,7 +2314,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 59
+		{ // 61
 			`function a() {let a;switch(a){case a:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2372,7 +2372,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 60
+		{ // 62
 			`function a() {let a;switch(a){case 1:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2381,7 +2381,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 61
+		{ // 63
 			`function a() {let a;switch(a){case 1:let a;break;default:break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2390,7 +2390,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 62
+		{ // 64
 			`function a() {let a;switch(a){default:break;case 1:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2399,7 +2399,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 63
+		{ // 65
 			`function a() {let a;switch(a){default:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2408,7 +2408,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 64
+		{ // 66
 			`function a() {let a;switch(a){case 1:let a;break;default:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2417,7 +2417,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 65
+		{ // 67
 			`function a() {switch(0){case 1:{let a};case 2:{let a}}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2481,7 +2481,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 66
+		{ // 68
 			`function a() {const a = () => this}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
