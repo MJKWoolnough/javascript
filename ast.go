@@ -1,8 +1,6 @@
 package javascript // import "vimagination.zapto.org/javascript"
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -671,33 +669,3 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 	af.Tokens = j.ToTokens()
 	return nil
 }
-
-// Errors
-var (
-	ErrReservedIdentifier        = errors.New("reserved identifier")
-	ErrNoIdentifier              = errors.New("missing identifier")
-	ErrMissingFunction           = errors.New("missing function")
-	ErrMissingOpeningParenthesis = errors.New("missing opening parenthesis")
-	ErrMissingClosingParenthesis = errors.New("missing closing parenthesis")
-	ErrMissingOpeningBrace       = errors.New("missing opening brace")
-	ErrMissingClosingBrace       = errors.New("missing closing brace")
-	ErrMissingOpeningBracket     = errors.New("missing opening bracket")
-	ErrMissingClosingBracket     = errors.New("missing closing bracket")
-	ErrMissingComma              = errors.New("missing comma")
-	ErrMissingArrow              = errors.New("missing arrow")
-	ErrMissingCaseClause         = errors.New("missing case clause")
-	ErrMissingExpression         = errors.New("missing expression")
-	ErrMissingCatchFinally       = errors.New("missing catch/finally block")
-	ErrMissingSemiColon          = errors.New("missing semi-colon")
-	ErrMissingColon              = errors.New("missing colon")
-	ErrMissingInitializer        = errors.New("missing initializer")
-	ErrInvalidStatementList      = errors.New("invalid statement list")
-	ErrInvalidStatement          = errors.New("invalid statement")
-	ErrInvalidDeclaration        = errors.New("invalid declaration")
-	ErrInvalidLexicalDeclaration = errors.New("invalid lexical declaration")
-	ErrInvalidAssignment         = errors.New("invalid assignment operator")
-	ErrInvalidSuperProperty      = errors.New("invalid super property")
-	ErrInvalidMetaProperty       = errors.New("invalid meta property")
-	ErrInvalidTemplate           = errors.New("invalid template")
-	ErrInvalidAsyncArrowFunction = errors.New("invalid async arrow function")
-)

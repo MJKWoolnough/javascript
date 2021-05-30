@@ -1,8 +1,6 @@
 package javascript
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -1005,19 +1003,3 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	vs.Tokens = j.ToTokens()
 	return nil
 }
-
-// Errors
-var (
-	ErrDuplicateDefaultClause         = errors.New("duplicate default clause")
-	ErrInvalidIterationStatementDo    = errors.New("invalid do interation statement")
-	ErrInvalidIterationStatementWhile = errors.New("invalid while interation statement")
-	ErrInvalidIterationStatementFor   = errors.New("invalid for interation statement")
-	ErrInvalidForLoop                 = errors.New("invalid for loop")
-	ErrInvalidForAwaitLoop            = errors.New("invalid for await loop")
-	ErrInvalidIfStatement             = errors.New("invalid if statement")
-	ErrInvalidSwitchStatement         = errors.New("invalid switch statement")
-	ErrInvalidWithStatement           = errors.New("invalid with statement")
-	ErrInvalidTryStatement            = errors.New("invalid try statement")
-	ErrInvalidVariableStatement       = errors.New("invalid variabl statement")
-	ErrLabelledFunction               = errors.New("LabelledItemFunction not allowed here")
-)

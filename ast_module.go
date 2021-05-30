@@ -1,8 +1,6 @@
 package javascript
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -443,15 +441,3 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	es.Tokens = j.ToTokens()
 	return nil
 }
-
-// Errors
-var (
-	ErrInvalidImport            = errors.New("invalid import statement")
-	ErrInvalidExportDeclaration = errors.New("invalid export declaration")
-	ErrInvalidNameSpaceImport   = errors.New("invalid namespace import")
-	ErrMissingFrom              = errors.New("missing from")
-	ErrMissingModuleSpecifier   = errors.New("missing module specifier")
-	ErrInvalidNamedImport       = errors.New("invalid named import list")
-	ErrInvalidImportSpecifier   = errors.New("invalid import specifier")
-	ErrInvalidExportClause      = errors.New("invalid export clause")
-)

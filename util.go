@@ -1,7 +1,6 @@
 package javascript
 
 import (
-	"errors"
 	"strconv"
 
 	"vimagination.zapto.org/parser"
@@ -359,8 +358,3 @@ func UnwrapConditional(c *ConditionalExpression) interface{} {
 		return lhs.NewExpression.MemberExpression.PrimaryExpression
 	}
 }
-
-// Error
-var (
-	ErrInvalidQuoted = errors.New("invalid quoted string")
-)

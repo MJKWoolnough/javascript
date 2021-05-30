@@ -1,7 +1,6 @@
 package javascript
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -631,16 +630,3 @@ Loop:
 		Data: v,
 	}, j.inputElement
 }
-
-// Errors
-var (
-	ErrInvalidCharacter         = errors.New("invalid character")
-	ErrInvalidSequence          = errors.New("invalid character sequence")
-	ErrInvalidRegexpCharacter   = errors.New("invalid regexp character")
-	ErrInvalidRegexpSequence    = errors.New("invalid regexp sequence")
-	ErrInvalidNumber            = errors.New("invalid number")
-	ErrUnexpectedBackslash      = errors.New("unexpected backslash")
-	ErrInvalidUnicode           = errors.New("invalid unicode escape sequence")
-	ErrInvalidEscapeSequence    = errors.New("invalid escape sequence")
-	ErrUnexpectedLineTerminator = errors.New("line terminator in string")
-)

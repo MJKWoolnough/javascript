@@ -1,8 +1,6 @@
 package javascript
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -204,8 +202,3 @@ func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
 	fr.Tokens = j.ToTokens()
 	return nil
 }
-
-// Errors
-var (
-	ErrInvalidFunction = errors.New("invalid function")
-)

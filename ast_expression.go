@@ -1,8 +1,6 @@
 package javascript
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -927,10 +925,3 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		j.Score(g)
 	}
 }
-
-// Errors
-var (
-	ErrInvalidCallExpression = errors.New("invalid CallExpression")
-	ErrMissingOptional       = errors.New("missing optional chain punctuator")
-	ErrInvalidOptionalChain  = errors.New("invalid OptionalChain")
-)

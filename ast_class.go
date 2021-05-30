@@ -1,8 +1,6 @@
 package javascript
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -249,10 +247,3 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 	pn.Tokens = j.ToTokens()
 	return nil
 }
-
-// Errors
-var (
-	ErrInvalidMethodName       = errors.New("invalid method name")
-	ErrInvalidPropertyName     = errors.New("invalid property name")
-	ErrInvalidClassDeclaration = errors.New("invalid class declaration")
-)
