@@ -71,7 +71,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 		fallthrough
 	default:
 		ml.StatementListItem = new(StatementListItem)
-		if err := ml.StatementListItem.parse(&g, false, false, false); err != nil {
+		if err := ml.StatementListItem.parse(&g, false, true, false); err != nil {
 			return j.Error("ModuleItem", err)
 		}
 	}
