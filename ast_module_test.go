@@ -633,6 +633,52 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
+		{`await a`, func(t *test, tk Tokens) { // 4
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(UnaryExpression{
+												UnaryOperators: []UnaryOperator{
+													UnaryAwait,
+												},
+												UpdateExpression: UpdateExpression{
+													LeftHandSideExpression: &LeftHandSideExpression{
+														NewExpression: &NewExpression{
+															MemberExpression: MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	IdentifierReference: &tk[2],
+																	Tokens:              tk[2:3],
+																},
+																Tokens: tk[2:3],
+															},
+															Tokens: tk[2:3],
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[:3],
+											}),
+											Tokens: tk[:3],
+										},
+									},
+									Tokens: tk[:3],
+								},
+								Tokens: tk[:3],
+							},
+							Tokens: tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var m Module
 		err := m.parse(&t.Tokens)
