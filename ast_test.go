@@ -898,6 +898,17 @@ for(
 				Tokens: tk[:21],
 			}
 		}},
+		{"await a", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingSemiColon,
+					Parsing: "Statement",
+					Token:   tk[1],
+				},
+				Parsing: "StatementListItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
