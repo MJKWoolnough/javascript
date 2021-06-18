@@ -2710,6 +2710,37 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
+		{"([a]) => a", func(t *test, tk Tokens) { //24
+			litAa := makeConditionLiteral(tk, 2)
+			litAb := makeConditionLiteral(tk, 8)
+			t.Output = ArrowFunction{
+				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								ArrayLiteral: &ArrayLiteral{
+									ElementList: []AssignmentExpression{
+										{
+											ConditionalExpression: &litAa,
+											Tokens:                tk[2:3],
+										},
+									},
+									Tokens: tk[1:4],
+								},
+								Tokens: tk[1:4],
+							}),
+							Tokens: tk[1:4],
+						},
+					},
+					Tokens: tk[0:5],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litAb,
+					Tokens:                tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (interface{}, error) {
 		var (
 			pe  PrimaryExpression
