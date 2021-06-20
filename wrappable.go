@@ -41,3 +41,15 @@ func (NewExpression) conditionalWrapabble() {}
 func (MemberExpression) conditionalWrapabble() {}
 
 func (PrimaryExpression) conditionalWrapabble() {}
+
+func (ArrayLiteral) conditionalWrapabble() {}
+
+func (ObjectLiteral) conditionalWrapabble() {}
+
+func (FunctionDeclaration) conditionalWrapabble() {}
+
+func (ClassDeclaration) conditionalWrapabble() {}
+
+func (TemplateLiteral) conditionalWrapabble() {}
+
+func (CoverParenthesizedExpressionAndArrowParameterList) conditionalWrapabble() {}
