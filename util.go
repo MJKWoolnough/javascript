@@ -378,6 +378,12 @@ logicalORExpression:
 //    *NewExpression
 //    *MemberExpression
 //    *PrimaryExpression
+//    *ArrayLiteral
+//    *ObjectLiteral
+//    *FunctionDeclaration (FunctionExpression)
+//    *ClassDeclaration (ClassExpression)
+//    *TemplateLiteral
+//    *CoverParenthesizedExpressionAndArrowParameterList
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c.True != nil || c.LogicalORExpression == nil {
 		return c
@@ -414,6 +420,20 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	} else if lhs.NewExpression.MemberExpression.PrimaryExpression == nil {
 		return &lhs.NewExpression.MemberExpression
 	} else {
-		return lhs.NewExpression.MemberExpression.PrimaryExpression
+		pe := lhs.NewExpression.MemberExpression.PrimaryExpression
+		if pe.ArrayLiteral != nil {
+			return pe.ArrayLiteral
+		} else if pe.ObjectLiteral != nil {
+			return pe.ObjectLiteral
+		} else if pe.FunctionExpression != nil {
+			return pe.FunctionExpression
+		} else if pe.ClassExpression != nil {
+			return pe.ClassExpression
+		} else if pe.TemplateLiteral != nil {
+			return pe.TemplateLiteral
+		} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
+			return pe.CoverParenthesizedExpressionAndArrowParameterList
+		}
+		return pe
 	}
 }
