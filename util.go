@@ -117,6 +117,12 @@ Loop:
 //    NewExpression
 //    MemberExpression
 //    PrimaryExpression
+//    ArrayLiteral
+//    ObjectLiteral
+//    FunctionDeclaration (FunctionExpression)
+//    ClassDeclaration (ClassExpression)
+//    TemplateLiteral
+//    CoverParenthesizedExpressionAndArrowParameterList
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -267,6 +273,56 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 				Tokens: p.Tokens,
 			},
 			Tokens: p.Tokens,
+		}
+	default:
+		pe := new(PrimaryExpression)
+		switch p := p.(type) {
+		case *ArrayLiteral:
+			pe.ArrayLiteral = p
+			pe.Tokens = p.Tokens
+		case ArrayLiteral:
+			pe.ArrayLiteral = &p
+			pe.Tokens = p.Tokens
+		case *ObjectLiteral:
+			pe.ObjectLiteral = p
+			pe.Tokens = p.Tokens
+		case ObjectLiteral:
+			pe.ObjectLiteral = &p
+			pe.Tokens = p.Tokens
+		case *FunctionDeclaration:
+			pe.FunctionExpression = p
+			pe.Tokens = p.Tokens
+		case FunctionDeclaration:
+			pe.FunctionExpression = &p
+			pe.Tokens = p.Tokens
+		case *ClassDeclaration:
+			pe.ClassExpression = p
+			pe.Tokens = p.Tokens
+		case ClassDeclaration:
+			pe.ClassExpression = &p
+			pe.Tokens = p.Tokens
+		case *TemplateLiteral:
+			pe.TemplateLiteral = p
+			pe.Tokens = p.Tokens
+		case TemplateLiteral:
+			pe.TemplateLiteral = &p
+			pe.Tokens = p.Tokens
+		case *CoverParenthesizedExpressionAndArrowParameterList:
+			pe.CoverParenthesizedExpressionAndArrowParameterList = p
+			pe.Tokens = p.Tokens
+		case CoverParenthesizedExpressionAndArrowParameterList:
+			pe.CoverParenthesizedExpressionAndArrowParameterList = &p
+			pe.Tokens = p.Tokens
+		}
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			NewExpression: &NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: pe,
+					Tokens:            pe.Tokens,
+				},
+				Tokens: pe.Tokens,
+			},
+			Tokens: pe.Tokens,
 		}
 	}
 	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.Tokens
