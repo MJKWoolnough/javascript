@@ -979,7 +979,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).ArrayLiteral.ElementList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
@@ -1025,7 +1025,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).ArrayLiteral.ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 						{
 							BindingType: BindingRef,
@@ -1194,7 +1194,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       scope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).CoverParenthesizedExpressionAndArrowParameterList.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral.PropertyDefinitionList[0].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CoverParenthesizedExpressionAndArrowParameterList).Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral.PropertyDefinitionList[0].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 					"b": []Binding{
@@ -1206,7 +1206,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       scope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).CoverParenthesizedExpressionAndArrowParameterList.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral.PropertyDefinitionList[1].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CoverParenthesizedExpressionAndArrowParameterList).Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral.PropertyDefinitionList[1].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
