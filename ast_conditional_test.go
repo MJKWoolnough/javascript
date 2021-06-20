@@ -14,7 +14,7 @@ func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
 	return *WrapConditional(&p)
 }
 
-func wrapConditional(i interface{}) ConditionalExpression {
+func wrapConditional(i ConditionalWrappable) ConditionalExpression {
 	return *WrapConditional(i)
 }
 

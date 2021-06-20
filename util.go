@@ -98,6 +98,7 @@ Loop:
 // *ConditionalExpression.
 //
 // The accepted types/pointers are as follows:
+//    ConditionalExpression
 //    LogicalORExpression
 //    LogicalANDExpression
 //    BitwiseORExpression
@@ -118,7 +119,13 @@ Loop:
 //    PrimaryExpression
 //
 // Any other type will result in a panic.
-func WrapConditional(p interface{}) *ConditionalExpression {
+func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
+	if c, ok := p.(*ConditionalExpression); ok {
+		return c
+	}
+	if c, ok := p.(ConditionalExpression); ok {
+		return &c
+	}
 	c := &ConditionalExpression{
 		LogicalORExpression: new(LogicalORExpression),
 	}
@@ -319,7 +326,7 @@ logicalORExpression:
 //    *NewExpression
 //    *MemberExpression
 //    *PrimaryExpression
-func UnwrapConditional(c *ConditionalExpression) interface{} {
+func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c.True != nil || c.LogicalORExpression == nil {
 		return c
 	} else if c.LogicalORExpression.LogicalORExpression != nil {
