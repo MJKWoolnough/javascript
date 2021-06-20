@@ -117,8 +117,6 @@ Loop:
 //    NewExpression
 //    MemberExpression
 //    PrimaryExpression
-//
-// Any other type will result in a panic.
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -270,8 +268,6 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 			},
 			Tokens: p.Tokens,
 		}
-	default:
-		panic("invalid conditional type")
 	}
 	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.Tokens
 updateExpression:
