@@ -312,62 +312,152 @@ func walkPropertyName(t *javascript.PropertyName, fn func(javascript.Type) error
 }
 
 func walkConditionalExpression(t *javascript.ConditionalExpression, fn func(javascript.Type) error) error {
+	if t.LogicalORExpression != nil {
+		if err := fn(t.LogicalORExpression); err != nil {
+			return err
+		}
+	}
+	if t.CoalesceExpression != nil {
+		if err := fn(t.CoalesceExpression); err != nil {
+			return nil
+		}
+	}
+	if t.True != nil {
+		if err := fn(t.True); err != nil {
+			return err
+		}
+	}
+	if t.False != nil {
+		if err := fn(t.False); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkCoalesceExpression(t *javascript.CoalesceExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.CoalesceExpressionHead != nil {
+		if err := fn(t.CoalesceExpressionHead); err != nil {
+			return err
+		}
+	}
+	return fn(&t.BitwiseORExpression)
 }
 
 func walkLogicalORExpression(t *javascript.LogicalORExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.LogicalORExpression != nil {
+		if err := fn(t.LogicalORExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.LogicalANDExpression)
 }
 
 func walkLogicalANDExpression(t *javascript.LogicalANDExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.LogicalANDExpression != nil {
+		if err := fn(t.LogicalANDExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.BitwiseORExpression)
 }
 
 func walkBitwiseORExpression(t *javascript.BitwiseORExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.BitwiseORExpression != nil {
+		if err := fn(t.BitwiseORExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.BitwiseXORExpression)
 }
 
 func walkBitwiseXORExpression(t *javascript.BitwiseXORExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.BitwiseXORExpression != nil {
+		if err := fn(t.BitwiseXORExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.BitwiseANDExpression)
 }
 
 func walkBitwiseANDExpression(t *javascript.BitwiseANDExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.BitwiseANDExpression != nil {
+		if err := fn(t.BitwiseANDExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.EqualityExpression)
 }
 
 func walkEqualityExpression(t *javascript.EqualityExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.EqualityExpression != nil {
+		if err := fn(t.EqualityExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.RelationalExpression)
 }
 
 func walkRelationalExpression(t *javascript.RelationalExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.RelationalExpression != nil {
+		if err := fn(t.RelationalExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.ShiftExpression)
 }
 
 func walkShiftExpression(t *javascript.ShiftExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.ShiftExpression != nil {
+		if err := fn(t.ShiftExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.AdditiveExpression)
 }
 
 func walkAdditiveExpression(t *javascript.AdditiveExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.AdditiveExpression != nil {
+		if err := fn(t.AdditiveExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.MultiplicativeExpression)
 }
 
 func walkMultiplicativeExpression(t *javascript.MultiplicativeExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.MultiplicativeExpression != nil {
+		if err := fn(t.MultiplicativeExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.ExponentiationExpression)
 }
 
 func walkExponentiationExpression(t *javascript.ExponentiationExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.ExponentiationExpression != nil {
+		if err := fn(t.ExponentiationExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.UnaryExpression)
 }
 
 func walkUnaryExpression(t *javascript.UnaryExpression, fn func(javascript.Type) error) error {
-	return nil
+	return fn(&t.UpdateExpression)
 }
 
 func walkUpdateExpression(t *javascript.UpdateExpression, fn func(javascript.Type) error) error {
+	if t.LeftHandSideExpression != nil {
+		if err := fn(t.LeftHandSideExpression); err != nil {
+			return err
+		}
+	}
+	if t.UnaryExpression != nil {
+		if err := fn(t.UnaryExpression); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
