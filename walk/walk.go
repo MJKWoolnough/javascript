@@ -1030,49 +1030,249 @@ func walkExportSpecifier(t *javascript.ExportSpecifier, fn func(javascript.Type)
 }
 
 func walkBlock(t *javascript.Block, fn func(javascript.Type) error) error {
+	for n := range t.StatementList {
+		if err := fn(&t.StatementList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkStatementListItem(t *javascript.StatementListItem, fn func(javascript.Type) error) error {
+	if t.Statement != nil {
+		if err := fn(t.Statement); err != nil {
+			return err
+		}
+	}
+	if t.Declaration != nil {
+		if err := fn(t.Declaration); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkStatement(t *javascript.Statement, fn func(javascript.Type) error) error {
+
+	if t.BlockStatement != nil {
+		if err := fn(t.BlockStatement); err != nil {
+			return err
+		}
+	}
+	if t.VariableStatement != nil {
+		if err := fn(t.VariableStatement); err != nil {
+			return err
+		}
+	}
+	if t.ExpressionStatement != nil {
+		if err := fn(t.ExpressionStatement); err != nil {
+			return err
+		}
+	}
+	if t.IfStatement != nil {
+		if err := fn(t.IfStatement); err != nil {
+			return err
+		}
+	}
+	if t.IterationStatementDo != nil {
+		if err := fn(t.IterationStatementDo); err != nil {
+			return err
+		}
+	}
+	if t.IterationStatementWhile != nil {
+		if err := fn(t.IterationStatementWhile); err != nil {
+			return err
+		}
+	}
+	if t.IterationStatementFor != nil {
+		if err := fn(t.IterationStatementFor); err != nil {
+			return err
+		}
+	}
+	if t.SwitchStatement != nil {
+		if err := fn(t.SwitchStatement); err != nil {
+			return err
+		}
+	}
+	if t.WithStatement != nil {
+		if err := fn(t.WithStatement); err != nil {
+			return err
+		}
+	}
+	if t.LabelledItemFunction != nil {
+		if err := fn(t.LabelledItemFunction); err != nil {
+			return err
+		}
+	}
+	if t.LabelledItemStatement != nil {
+		if err := fn(t.LabelledItemStatement); err != nil {
+			return err
+		}
+	}
+	if t.TryStatement != nil {
+		if err := fn(t.TryStatement); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkIfStatement(t *javascript.IfStatement, fn func(javascript.Type) error) error {
+	if err := fn(&t.Expression); err != nil {
+		return err
+	}
+	if err := fn(&t.Statement); err != nil {
+		return err
+	}
+	if t.ElseStatement != nil {
+		if err := fn(t.ElseStatement); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkIterationStatementDo(t *javascript.IterationStatementDo, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.Statement); err != nil {
+		return err
+	}
+	return fn(&t.Expression)
 }
 
 func walkIterationStatementWhile(t *javascript.IterationStatementWhile, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.Expression); err != nil {
+		return err
+	}
+	return fn(&t.Statement)
 }
 
 func walkIterationStatementFor(t *javascript.IterationStatementFor, fn func(javascript.Type) error) error {
-	return nil
+	if t.InitExpression != nil {
+		if err := fn(t.InitExpression); err != nil {
+			return err
+		}
+	}
+	for n := range t.InitVar {
+		if err := fn(&t.InitVar[n]); err != nil {
+			return err
+		}
+	}
+	if t.InitLexical != nil {
+		if err := fn(t.InitLexical); err != nil {
+			return err
+		}
+	}
+	if t.Conditional != nil {
+		if err := fn(t.Conditional); err != nil {
+			return err
+		}
+	}
+	if t.Afterthought != nil {
+		if err := fn(t.Afterthought); err != nil {
+			return err
+		}
+	}
+	if t.LeftHandSideExpression != nil {
+		if err := fn(t.LeftHandSideExpression); err != nil {
+			return err
+		}
+	}
+	if t.ForBindingPatternObject != nil {
+		if err := fn(t.ForBindingPatternObject); err != nil {
+			return err
+		}
+	}
+	if t.ForBindingPatternArray != nil {
+		if err := fn(t.ForBindingPatternArray); err != nil {
+			return err
+		}
+	}
+	if t.In != nil {
+		if err := fn(t.In); err != nil {
+			return err
+		}
+	}
+	if t.Of != nil {
+		if err := fn(t.Of); err != nil {
+			return err
+		}
+	}
+	return fn(&t.Statement)
 }
 
 func walkSwitchStatement(t *javascript.SwitchStatement, fn func(javascript.Type) error) error {
+	if err := fn(&t.Expression); err != nil {
+		return err
+	}
+	for n := range t.CaseClauses {
+		if err := fn(&t.CaseClauses[n]); err != nil {
+			return err
+		}
+	}
+	for n := range t.DefaultClause {
+		if err := fn(&t.DefaultClause[n]); err != nil {
+			return err
+		}
+	}
+	for n := range t.PostDefaultCaseClauses {
+		if err := fn(&t.PostDefaultCaseClauses[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkCaseClause(t *javascript.CaseClause, fn func(javascript.Type) error) error {
+	if err := fn(&t.Expression); err != nil {
+		return err
+	}
+	for n := range t.StatementList {
+		if err := fn(&t.StatementList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkWithStatement(t *javascript.WithStatement, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.Expression); err != nil {
+		return err
+	}
+	return fn(&t.Statement)
 }
 
 func walkTryStatement(t *javascript.TryStatement, fn func(javascript.Type) error) error {
+	if err := fn(&t.TryBlock); err != nil {
+		return err
+	}
+	if t.CatchParameterObjectBindingPattern != nil {
+		if err := fn(t.CatchParameterObjectBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.CatchParameterArrayBindingPattern != nil {
+		if err := fn(t.CatchParameterArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.CatchBlock != nil {
+		if err := fn(t.CatchBlock); err != nil {
+			return err
+		}
+	}
+	if t.FinallyBlock != nil {
+		if err := fn(t.FinallyBlock); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkVariableStatement(t *javascript.VariableStatement, fn func(javascript.Type) error) error {
+	for n := range t.VariableDeclarationList {
+		if err := fn(&t.VariableDeclarationList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
