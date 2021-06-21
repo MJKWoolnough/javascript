@@ -915,18 +915,48 @@ func walkArrowFunction(t *javascript.ArrowFunction, fn func(javascript.Type) err
 }
 
 func walkModule(t *javascript.Module, fn func(javascript.Type) error) error {
+	for n := range t.ModuleListItems {
+		if err := fn(&t.ModuleListItems[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkModuleItem(t *javascript.ModuleItem, fn func(javascript.Type) error) error {
+	if t.ImportDeclaration != nil {
+		if err := fn(t.ImportDeclaration); err != nil {
+			return err
+		}
+	}
+	if t.StatementListItem != nil {
+		if err := fn(t.StatementListItem); err != nil {
+			return err
+		}
+	}
+	if t.ExportDeclaration != nil {
+		if err := fn(t.ExportDeclaration); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkImportDeclaration(t *javascript.ImportDeclaration, fn func(javascript.Type) error) error {
-	return nil
+	if t.ImportClause != nil {
+		if err := fn(t.ImportClause); err != nil {
+			return err
+		}
+	}
+	return fn(&t.FromClause)
 }
 
 func walkImportClause(t *javascript.ImportClause, fn func(javascript.Type) error) error {
+	if t.NamedImports != nil {
+		if err := fn(t.NamedImports); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -935,6 +965,11 @@ func walkFromClause(t *javascript.FromClause, fn func(javascript.Type) error) er
 }
 
 func walkNamedImports(t *javascript.NamedImports, fn func(javascript.Type) error) error {
+	for n := range t.ImportList {
+		if err := fn(&t.ImportList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -943,10 +978,50 @@ func walkImportSpecifier(t *javascript.ImportSpecifier, fn func(javascript.Type)
 }
 
 func walkExportDeclaration(t *javascript.ExportDeclaration, fn func(javascript.Type) error) error {
+	if t.ExportClause != nil {
+		if err := fn(t.ExportClause); err != nil {
+			return err
+		}
+	}
+	if t.FromClause != nil {
+		if err := fn(t.FromClause); err != nil {
+			return err
+		}
+	}
+	if t.VariableStatement != nil {
+		if err := fn(t.VariableStatement); err != nil {
+			return err
+		}
+	}
+	if t.Declaration != nil {
+		if err := fn(t.Declaration); err != nil {
+			return err
+		}
+	}
+	if t.DefaultFunction != nil {
+		if err := fn(t.DefaultFunction); err != nil {
+			return err
+		}
+	}
+	if t.DefaultClass != nil {
+		if err := fn(t.DefaultClass); err != nil {
+			return err
+		}
+	}
+	if t.DefaultAssignmentExpression != nil {
+		if err := fn(t.DefaultAssignmentExpression); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkExportClause(t *javascript.ExportClause, fn func(javascript.Type) error) error {
+	for n := range t.ExportList {
+		if err := fn(&t.ExportList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
