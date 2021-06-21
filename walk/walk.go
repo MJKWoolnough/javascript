@@ -462,46 +462,231 @@ func walkUpdateExpression(t *javascript.UpdateExpression, fn func(javascript.Typ
 }
 
 func walkAssignmentExpression(t *javascript.AssignmentExpression, fn func(javascript.Type) error) error {
+	if t.ConditionalExpression != nil {
+		if err := fn(t.ConditionalExpression); err != nil {
+			return err
+		}
+	}
+	if t.ArrowFunction != nil {
+		if err := fn(t.ArrowFunction); err != nil {
+			return err
+		}
+	}
+	if t.LeftHandSideExpression != nil {
+		if err := fn(t.LeftHandSideExpression); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentExpression != nil {
+		if err := fn(t.AssignmentExpression); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkLeftHandSideExpression(t *javascript.LeftHandSideExpression, fn func(javascript.Type) error) error {
+	if t.NewExpression != nil {
+		if err := fn(t.NewExpression); err != nil {
+			return err
+		}
+	}
+	if t.CallExpression != nil {
+		if err := fn(t.CallExpression); err != nil {
+			return err
+		}
+	}
+	if t.OptionalExpression != nil {
+		if err := fn(t.OptionalExpression); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkOptionalExpression(t *javascript.OptionalExpression, fn func(javascript.Type) error) error {
-	return nil
+	if t.MemberExpression != nil {
+		if err := fn(t.MemberExpression); err != nil {
+			return err
+		}
+	}
+	if t.CallExpression != nil {
+		if err := fn(t.CallExpression); err != nil {
+			return err
+		}
+	}
+	if t.OptionalExpression != nil {
+		if err := fn(t.OptionalExpression); err != nil {
+			return err
+		}
+	}
+	return fn(&t.OptionalChain)
 }
 
 func walkOptionalChain(t *javascript.OptionalChain, fn func(javascript.Type) error) error {
+	if t.OptionalChain != nil {
+		if err := fn(t.OptionalChain); err != nil {
+			return err
+		}
+	}
+	if t.Arguments != nil {
+		if err := fn(t.Arguments); err != nil {
+			return err
+		}
+	}
+	if t.Expression != nil {
+		if err := fn(t.Expression); err != nil {
+			return err
+		}
+	}
+	if t.TemplateLiteral != nil {
+		if err := fn(t.TemplateLiteral); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkExpression(t *javascript.Expression, fn func(javascript.Type) error) error {
+	for n := range t.Expressions {
+		if err := fn(&t.Expressions[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkNewExpression(t *javascript.NewExpression, fn func(javascript.Type) error) error {
-	return nil
+	return fn(&t.MemberExpression)
 }
 
 func walkMemberExpression(t *javascript.MemberExpression, fn func(javascript.Type) error) error {
+	if t.MemberExpression != nil {
+		if err := fn(t.MemberExpression); err != nil {
+			return err
+		}
+	}
+	if t.PrimaryExpression != nil {
+		if err := fn(t.PrimaryExpression); err != nil {
+			return err
+		}
+	}
+	if t.Expression != nil {
+		if err := fn(t.Expression); err != nil {
+			return err
+		}
+	}
+	if t.TemplateLiteral != nil {
+		if err := fn(t.TemplateLiteral); err != nil {
+			return err
+		}
+	}
+	if t.Arguments != nil {
+		if err := fn(t.Arguments); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkPrimaryExpression(t *javascript.PrimaryExpression, fn func(javascript.Type) error) error {
+	if t.ArrayLiteral != nil {
+		if err := fn(t.ArrayLiteral); err != nil {
+			return err
+		}
+	}
+	if t.ObjectLiteral != nil {
+		if err := fn(t.ObjectLiteral); err != nil {
+			return err
+		}
+	}
+	if t.FunctionExpression != nil {
+		if err := fn(t.FunctionExpression); err != nil {
+			return err
+		}
+	}
+	if t.ClassExpression != nil {
+		if err := fn(t.ClassExpression); err != nil {
+			return err
+		}
+	}
+	if t.TemplateLiteral != nil {
+		if err := fn(t.TemplateLiteral); err != nil {
+			return err
+		}
+	}
+	if t.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		if err := fn(t.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkCoverParenthesizedExpressionAndArrowParameterList(t *javascript.CoverParenthesizedExpressionAndArrowParameterList, fn func(javascript.Type) error) error {
+	for n := range t.Expressions {
+		if err := fn(&t.Expressions[n]); err != nil {
+			return err
+		}
+	}
+	if t.ArrayBindingPattern != nil {
+		if err := fn(t.ArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectBindingPattern != nil {
+		if err := fn(t.ObjectBindingPattern); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkArguments(t *javascript.Arguments, fn func(javascript.Type) error) error {
+	for n := range t.ArgumentList {
+		if err := fn(&t.ArgumentList[n]); err != nil {
+			return err
+		}
+	}
+	if t.SpreadArgument != nil {
+		if err := fn(t.SpreadArgument); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkCallExpression(t *javascript.CallExpression, fn func(javascript.Type) error) error {
+	if t.MemberExpression != nil {
+		if err := fn(t.MemberExpression); err != nil {
+			return err
+		}
+	}
+	if t.ImportCall != nil {
+		if err := fn(t.ImportCall); err != nil {
+			return err
+		}
+	}
+	if t.CallExpression != nil {
+		if err := fn(t.CallExpression); err != nil {
+			return err
+		}
+	}
+	if t.Arguments != nil {
+		if err := fn(t.Arguments); err != nil {
+			return err
+		}
+	}
+	if t.Expression != nil {
+		if err := fn(t.Expression); err != nil {
+			return err
+		}
+	}
+	if t.TemplateLiteral != nil {
+		if err := fn(t.TemplateLiteral); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
