@@ -212,7 +212,7 @@ func TestClassDeclarationOld(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
 		return cd, err
@@ -499,7 +499,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:25],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
 		return cd, err
@@ -1038,7 +1038,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var md MethodDefinition
 		err := md.parse(&t.Tokens, nil, t.Yield, t.Await)
 		return md, err
@@ -1109,7 +1109,7 @@ func TestPropertyName(t *testing.T) {
 				Tokens:              tk[:1],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var pn PropertyName
 		err := pn.parse(&t.Tokens, t.Yield, t.Await)
 		return pn, err

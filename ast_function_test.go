@@ -189,7 +189,7 @@ func TestParseFunction(t *testing.T) {
 				Tokens: t[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var fd FunctionDeclaration
 		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
 		return fd, err
@@ -431,7 +431,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var fd FunctionDeclaration
 		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
 		return fd, err
@@ -538,7 +538,7 @@ func TestFormalParameters(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var fp FormalParameters
 		err := fp.parse(&t.Tokens, t.Yield, t.Await)
 		return fp, err
@@ -661,7 +661,7 @@ func TestBindingElement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var be BindingElement
 		err := be.parse(&t.Tokens, nil, t.Yield, t.Await)
 		return be, err
@@ -733,7 +733,7 @@ func TestFunctionRestParameter(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var fp FunctionRestParameter
 		err := fp.parse(&t.Tokens, t.Yield, t.Await)
 		return fp, err

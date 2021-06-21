@@ -19,7 +19,7 @@ type test struct {
 	Err                        error
 }
 
-func doTests(t *testing.T, tests []sourceFn, fn func(*test) (interface{}, error)) {
+func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 	t.Helper()
 	var err error
 	for n, tt := range tests {
@@ -162,7 +162,7 @@ func TestIdentifier(t *testing.T) {
 		{`+`, func(t *test, tk Tokens) {
 			t.Output = nil
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		return t.Tokens.parseIdentifier(t.Yield, t.Await), nil
 	})
 }
@@ -909,7 +909,7 @@ for(
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var s Script
 		err := s.parse(&t.Tokens)
 		return s, err
@@ -1041,7 +1041,7 @@ func TestDeclaration(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var d Declaration
 		err := d.parse(&t.Tokens, t.Yield, t.Await)
 		return d, err
@@ -1246,7 +1246,7 @@ func TestLexicalDeclaration(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) { // 13
+	}, func(t *test) (Type, error) { // 13
 		var ld LexicalDeclaration
 		err := ld.parse(&t.Tokens, t.In, t.Yield, t.Await)
 		return ld, err
@@ -1367,7 +1367,7 @@ func TestLexicalBinding(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var lb LexicalBinding
 		err := lb.parse(&t.Tokens, t.In, t.Yield, t.Await)
 		return lb, err
@@ -1538,7 +1538,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ab ArrayBindingPattern
 		err := ab.parse(&t.Tokens, t.Yield, t.Await)
 		return ab, err
@@ -1674,7 +1674,7 @@ func TestObjectBindingPattern(t *testing.T) {
 				Tokens:              tk[:10],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ob ObjectBindingPattern
 		err := ob.parse(&t.Tokens, t.Yield, t.Await)
 		return ob, err
@@ -1789,7 +1789,7 @@ func TestBindingProperty(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var bp BindingProperty
 		err := bp.parse(&t.Tokens, t.Yield, t.Await)
 		return bp, err
@@ -1925,7 +1925,7 @@ func TestArrayLiteral(t *testing.T) {
 				Tokens: tk[:19],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var al ArrayLiteral
 		err := al.parse(&t.Tokens, t.Yield, t.Await)
 		return al, err
@@ -2025,7 +2025,7 @@ func TestObjectLiteral(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ol ObjectLiteral
 		err := ol.parse(&t.Tokens, t.Yield, t.Await)
 		return ol, err
@@ -2342,7 +2342,7 @@ func TestPropertyDefinition(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var pd PropertyDefinition
 		err := pd.parse(&t.Tokens, t.Yield, t.Await)
 		return pd, err
@@ -2476,7 +2476,7 @@ func TestTemplateLiteral(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var tl TemplateLiteral
 		err := tl.parse(&t.Tokens, t.Yield, t.Await)
 		return tl, err
@@ -2741,7 +2741,7 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
 			af  ArrowFunction

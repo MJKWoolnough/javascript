@@ -1046,7 +1046,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
 		return ce, err

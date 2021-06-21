@@ -2210,7 +2210,7 @@ func TestStatementOld(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var sl StatementListItem
 		err := sl.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return sl, err
@@ -2327,7 +2327,7 @@ func TestBlock(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var b Block
 		err := b.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return b, err
@@ -2598,7 +2598,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var si StatementListItem
 		err := si.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return si, err
@@ -3304,7 +3304,7 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var s Statement
 		err := s.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return s, err
@@ -3458,7 +3458,7 @@ func TestIfStatement(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var is IfStatement
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return is, err
@@ -3619,7 +3619,7 @@ func TestIterationStatementDo(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var is IterationStatementDo
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return is, err
@@ -3736,7 +3736,7 @@ func TestIterationStatementWhile(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var is IterationStatementWhile
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return is, err
@@ -5686,7 +5686,7 @@ func TestIterationStatementFor(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var is IterationStatementFor
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return is, err
@@ -6152,7 +6152,7 @@ func TestSwitchStatement(t *testing.T) {
 				Token:   tk[39],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ss SwitchStatement
 		err := ss.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return ss, err
@@ -6303,7 +6303,7 @@ func TestCaseClause(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var cc CaseClause
 		err := cc.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return cc, err
@@ -6384,7 +6384,7 @@ func TestWithStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ws WithStatement
 		err := ws.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return ws, err
@@ -6598,7 +6598,7 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ts TryStatement
 		err := ts.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
 		return ts, err
@@ -6732,7 +6732,7 @@ func TestVariableStatement(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var vs VariableStatement
 		err := vs.parse(&t.Tokens, t.Yield, t.Await)
 		return vs, err

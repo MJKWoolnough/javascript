@@ -579,7 +579,7 @@ func TestModuleOld(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var m Module
 		err := m.parse(&t.Tokens)
 		return m, err
@@ -679,7 +679,7 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var m Module
 		err := m.parse(&t.Tokens)
 		return m, err
@@ -804,7 +804,7 @@ func TestModuleItem(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var mi ModuleItem
 		err := mi.parse(&t.Tokens)
 		return mi, err
@@ -900,7 +900,7 @@ func TestImportDeclaration(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var id ImportDeclaration
 		err := id.parse(&t.Tokens)
 		return id, err
@@ -1035,7 +1035,7 @@ func TestImportClause(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ic ImportClause
 		err := ic.parse(&t.Tokens)
 		return ic, err
@@ -1064,7 +1064,7 @@ func TestFromClause(t *testing.T) {
 				Tokens:          tk[:3],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var fc FromClause
 		err := fc.parse(&t.Tokens)
 		return fc, err
@@ -1172,7 +1172,7 @@ func TestNamedImports(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ni NamedImports
 		err := ni.parse(&t.Tokens)
 		return ni, err
@@ -1230,7 +1230,7 @@ func TestImportSpecifier(t *testing.T) {
 				Tokens:          tk[:5],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var is ImportSpecifier
 		err := is.parse(&t.Tokens)
 		return is, err
@@ -1462,7 +1462,7 @@ func TestExportDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ed ExportDeclaration
 		err := ed.parse(&t.Tokens)
 		return ed, err
@@ -1542,7 +1542,7 @@ func TestExportClause(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var ec ExportClause
 		err := ec.parse(&t.Tokens)
 		return ec, err
@@ -1600,7 +1600,7 @@ func TestExportSpecifier(t *testing.T) {
 				Tokens:          tk[:5],
 			}
 		}},
-	}, func(t *test) (interface{}, error) {
+	}, func(t *test) (Type, error) {
 		var es ExportSpecifier
 		err := es.parse(&t.Tokens)
 		return es, err
