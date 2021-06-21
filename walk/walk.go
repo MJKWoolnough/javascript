@@ -691,18 +691,56 @@ func walkCallExpression(t *javascript.CallExpression, fn func(javascript.Type) e
 }
 
 func walkFunctionDeclaration(t *javascript.FunctionDeclaration, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.FormalParameters); err != nil {
+		return err
+	}
+	return fn(&t.FunctionBody)
 }
 
 func walkFormalParameters(t *javascript.FormalParameters, fn func(javascript.Type) error) error {
+	for n := range t.FormalParameterList {
+		if err := fn(&t.FormalParameterList[n]); err != nil {
+			return err
+		}
+	}
+	if t.FunctionRestParameter != nil {
+		if err := fn(t.FunctionRestParameter); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkBindingElement(t *javascript.BindingElement, fn func(javascript.Type) error) error {
+	if t.ArrayBindingPattern != nil {
+		if err := fn(t.ArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectBindingPattern != nil {
+		if err := fn(t.ObjectBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.Initializer != nil {
+		if err := fn(t.Initializer); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkFunctionRestParameter(t *javascript.FunctionRestParameter, fn func(javascript.Type) error) error {
+	if t.ArrayBindingPattern != nil {
+		if err := fn(t.ArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectBindingPattern != nil {
+		if err := fn(t.ObjectBindingPattern); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
