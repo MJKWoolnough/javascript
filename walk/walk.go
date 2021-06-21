@@ -745,54 +745,172 @@ func walkFunctionRestParameter(t *javascript.FunctionRestParameter, fn func(java
 }
 
 func walkScript(t *javascript.Script, fn func(javascript.Type) error) error {
+	for n := range t.StatementList {
+		if err := fn(&t.StatementList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkDeclaration(t *javascript.Declaration, fn func(javascript.Type) error) error {
+	if t.ClassDeclaration != nil {
+		if err := fn(t.ClassDeclaration); err != nil {
+			return err
+		}
+	}
+	if t.FunctionDeclaration != nil {
+		if err := fn(t.FunctionDeclaration); err != nil {
+			return err
+		}
+	}
+	if t.LexicalDeclaration != nil {
+		if err := fn(t.LexicalDeclaration); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkLexicalDeclaration(t *javascript.LexicalDeclaration, fn func(javascript.Type) error) error {
+	for n := range t.BindingList {
+		if err := fn(&t.BindingList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkLexicalBinding(t *javascript.LexicalBinding, fn func(javascript.Type) error) error {
+	if t.ArrayBindingPattern != nil {
+		if err := fn(t.ArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectBindingPattern != nil {
+		if err := fn(t.ObjectBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.Initializer != nil {
+		if err := fn(t.Initializer); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkArrayBindingPattern(t *javascript.ArrayBindingPattern, fn func(javascript.Type) error) error {
+	for n := range t.BindingElementList {
+		if err := fn(&t.BindingElementList[n]); err != nil {
+			return err
+		}
+	}
+	if t.BindingRestElement != nil {
+		if err := fn(t.BindingRestElement); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkObjectBindingPattern(t *javascript.ObjectBindingPattern, fn func(javascript.Type) error) error {
+	for n := range t.BindingPropertyList {
+		if err := fn(&t.BindingPropertyList[n]); err != nil {
+			return err
+		}
+	}
+	if t.BindingRestProperty != nil {
+		if err := fn(t.BindingRestProperty); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkBindingProperty(t *javascript.BindingProperty, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.PropertyName); err != nil {
+		return err
+	}
+	return fn(&t.BindingElement)
 }
 
 func walkVariableDeclaration(t *javascript.VariableDeclaration, fn func(javascript.Type) error) error {
-	return nil
+	return walkLexicalBinding((*javascript.LexicalBinding)(t), fn)
 }
 
 func walkArrayLiteral(t *javascript.ArrayLiteral, fn func(javascript.Type) error) error {
+	for n := range t.ElementList {
+		if err := fn(&t.ElementList[n]); err != nil {
+			return err
+		}
+	}
+	if t.SpreadElement != nil {
+		if err := fn(t.SpreadElement); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkObjectLiteral(t *javascript.ObjectLiteral, fn func(javascript.Type) error) error {
+	for n := range t.PropertyDefinitionList {
+		if err := fn(&t.PropertyDefinitionList[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkPropertyDefinition(t *javascript.PropertyDefinition, fn func(javascript.Type) error) error {
+	if t.PropertyName != nil {
+		if err := fn(t.PropertyName); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentExpression != nil {
+		if err := fn(t.AssignmentExpression); err != nil {
+			return err
+		}
+	}
+	if t.MethodDefinition != nil {
+		if err := fn(t.MethodDefinition); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkTemplateLiteral(t *javascript.TemplateLiteral, fn func(javascript.Type) error) error {
+	for n := range t.Expressions {
+		if err := fn(&t.Expressions[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkArrowFunction(t *javascript.ArrowFunction, fn func(javascript.Type) error) error {
+	if t.CoverParenthesizedExpressionAndArrowParameterList != nil {
+		if err := fn(t.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
+			return err
+		}
+	}
+	if t.FormalParameters != nil {
+		if err := fn(t.FormalParameters); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentExpression != nil {
+		if err := fn(t.AssignmentExpression); err != nil {
+			return err
+		}
+	}
+	if t.FunctionBody != nil {
+		if err := fn(t.FunctionBody); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
