@@ -281,14 +281,33 @@ func Walk(t javascript.Type, fn func(javascript.Type) error) error {
 }
 
 func walkClassDeclaration(t *javascript.ClassDeclaration, fn func(javascript.Type) error) error {
+	if t.ClassHeritage != nil {
+		if err := fn(t.ClassHeritage); err != nil {
+			return err
+		}
+	}
+	for n := range t.ClassBody {
+		if err := fn(&t.ClassBody[n]); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func walkMethodDefinition(t *javascript.MethodDefinition, fn func(javascript.Type) error) error {
-	return nil
+	if err := fn(&t.PropertyName); err != nil {
+		return err
+	}
+	if err := fn(&t.Params); err != nil {
+		return err
+	}
+	return fn(t.FunctionBody)
 }
 
 func walkPropertyName(t *javascript.PropertyName, fn func(javascript.Type) error) error {
+	if t.ComputedPropertyName != nil {
+		return fn(t.ComputedPropertyName)
+	}
 	return nil
 }
 
