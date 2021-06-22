@@ -1,7 +1,12 @@
 package javascript
 
+import (
+	"fmt"
+)
+
 // Type is an interface satisfied by all javascript structural types
 type Type interface {
+	fmt.Formatter
 	javascriptType()
 }
 
