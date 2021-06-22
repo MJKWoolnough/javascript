@@ -2,11 +2,12 @@ package walk
 
 import "vimagination.zapto.org/javascript"
 
+// Handler is used to process javascript types
 type Handler interface {
 	Handle(javascript.Type) error
 }
 
-// Walk calls the given function on each non-nil, non-Token field of the given javascript type
+// Walk calls the Handle function on the given interface for each non-nil, non-Token field of the given javascript type
 func Walk(t javascript.Type, fn Handler) error {
 	switch t := t.(type) {
 	case javascript.ClassDeclaration:
