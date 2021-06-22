@@ -2,6 +2,7 @@ package walk
 
 import "vimagination.zapto.org/javascript"
 
+// Walk calls the given function on each non-nil, non-Token field of the given javascript type
 func Walk(t javascript.Type, fn func(javascript.Type) error) error {
 	switch t := t.(type) {
 	case javascript.ClassDeclaration:
