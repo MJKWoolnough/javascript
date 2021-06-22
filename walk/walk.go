@@ -7,6 +7,14 @@ type Handler interface {
 	Handle(javascript.Type) error
 }
 
+// HandlerFunc wraps a func to implement Handler interface
+type HandlerFunc func(javascript.Type) error
+
+// Handle implements the Handler interface
+func (h HandlerFunc) Handle(t javascript.Type) error {
+	return h(t)
+}
+
 // Walk calls the Handle function on the given interface for each non-nil, non-Token field of the given javascript type
 func Walk(t javascript.Type, fn Handler) error {
 	switch t := t.(type) {
