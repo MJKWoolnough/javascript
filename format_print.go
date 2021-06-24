@@ -1435,6 +1435,10 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 			e.ExportClause.printSource(w, v)
 		} else {
 			w.Write(exportAll)
+			if e.ExportFromClause != nil {
+				w.Write(as)
+				io.WriteString(w, e.ExportFromClause.Data)
+			}
 		}
 		e.FromClause.printSource(w, v)
 		w.Write(semiColon)
