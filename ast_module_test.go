@@ -1462,6 +1462,16 @@ func TestExportDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"export\n*\nas\na\nfrom\n'';", func(t *test, tk Tokens) { // 23
+			t.Output = ExportDeclaration{
+				ExportFromClause: &tk[6],
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[10],
+					Tokens:          tk[8:11],
+				},
+				Tokens: tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ed ExportDeclaration
 		err := ed.parse(&t.Tokens)
