@@ -281,6 +281,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 // FromClause can be non-nil exclusively or paired with ExportClause.
 type ExportDeclaration struct {
 	ExportClause                *ExportClause
+	ExportFromClause            *Token
 	FromClause                  *FromClause
 	VariableStatement           *VariableStatement
 	Declaration                 *Declaration
@@ -325,6 +326,15 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
+		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+			g.AcceptRunWhitespace()
+			if ed.ExportFromClause = g.parseIdentifier(false, false); ed.ExportFromClause == nil {
+				return g.Error("ExportDeclaration", ErrNoIdentifier)
+			}
+			j.Score(g)
+			j.AcceptRunWhitespace()
+			g = j.NewGoal()
+		}
 		ed.FromClause = new(FromClause)
 		if err := ed.FromClause.parse(&g); err != nil {
 			return j.Error("ExportDeclaration", err)
