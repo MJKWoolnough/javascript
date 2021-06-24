@@ -58,6 +58,7 @@ var (
 	nameExponentiationExpression                          = []byte{'\n', 'E', 'x', 'p', 'o', 'n', 'e', 'n', 't', 'i', 'a', 't', 'i', 'o', 'n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameUnaryExpression                                   = []byte{'\n', 'U', 'n', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameExportClause                                      = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
+	nameExportFromClause                                  = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'F', 'r', 'o', 'm', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
 	nameExportList                                        = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameExportDeclaration                                 = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameFromClause                                        = []byte{'\n', 'F', 'r', 'o', 'm', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
@@ -842,6 +843,13 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		f.ExportClause.printType(&pp, v)
 	} else if v {
 		pp.Write(nameExportClause)
+		pp.Write(nilStr)
+	}
+	if f.ExportFromClause != nil {
+		pp.Write(nameExportFromClause)
+		f.ExportFromClause.printType(&pp, v)
+	} else if v {
+		pp.Write(nameExportFromClause)
 		pp.Write(nilStr)
 	}
 	if f.FromClause != nil {
