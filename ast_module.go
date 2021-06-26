@@ -275,8 +275,9 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 // ExportDeclaration as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExportDeclaration
 //
-// It is only valid for one of ExportClause, VariableStatement, Declaration,
-// DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
+// It is only valid for one of ExportClause, ExportFromClause,
+// VariableStatement, Declaration, DefaultFunction, DefaultClass, or
+// DefaultAssignmentExpression to be non-nil.
 //
 // FromClause can be non-nil exclusively or paired with ExportClause.
 type ExportDeclaration struct {
