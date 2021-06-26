@@ -113,36 +113,6 @@ func Unquote(str string) (string, error)
 ```
 Unquote parses a javascript quoted string and produces the unquoted version
 
-#### func  UnwrapConditional
-
-```go
-func UnwrapConditional(c *ConditionalExpression) interface{}
-```
-UnwrapConditional returns the first value up the ConditionalExpression chain
-that contains all of the information required to rebuild the lower chain.
-
-Possible returns types are as follows:
-
-    *ConditionalExpression
-    *LogicalORExpression
-    *LogicalANDExpression
-    *BitwiseORExpression
-    *BitwiseXORExpression
-    *BitwiseANDExpression
-    *EqualityExpression
-    *RelationalExpression
-    *ShiftExpression
-    *AdditiveExpression
-    *MultiplicativeExpression
-    *ExponentiationExpression
-    *UnaryExpression
-    *UpdateExpression
-    *LeftHandSideExpression
-    *CallExpression
-    *NewExpression
-    *MemberExpression
-    *PrimaryExpression
-
 #### type AdditiveExpression
 
 ```go
@@ -607,13 +577,14 @@ If True is non-nil, False must be non-nil also.
 #### func  WrapConditional
 
 ```go
-func WrapConditional(p interface{}) *ConditionalExpression
+func WrapConditional(p ConditionalWrappable) *ConditionalExpression
 ```
 WrapConditional takes one of many types and wraps it in a
 *ConditionalExpression.
 
 The accepted types/pointers are as follows:
 
+    ConditionalExpression
     LogicalORExpression
     LogicalANDExpression
     BitwiseORExpression
@@ -632,8 +603,12 @@ The accepted types/pointers are as follows:
     NewExpression
     MemberExpression
     PrimaryExpression
-
-Any other type will result in a panic.
+    ArrayLiteral
+    ObjectLiteral
+    FunctionDeclaration (FunctionExpression)
+    ClassDeclaration (ClassExpression)
+    TemplateLiteral
+    CoverParenthesizedExpressionAndArrowParameterList
 
 #### func (ConditionalExpression) Format
 
@@ -641,6 +616,51 @@ Any other type will result in a panic.
 func (f ConditionalExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### type ConditionalWrappable
+
+```go
+type ConditionalWrappable interface {
+	// contains filtered or unexported methods
+}
+```
+
+
+#### func  UnwrapConditional
+
+```go
+func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable
+```
+UnwrapConditional returns the first value up the ConditionalExpression chain
+that contains all of the information required to rebuild the lower chain.
+
+Possible returns types are as follows:
+
+    *ConditionalExpression
+    *LogicalORExpression
+    *LogicalANDExpression
+    *BitwiseORExpression
+    *BitwiseXORExpression
+    *BitwiseANDExpression
+    *EqualityExpression
+    *RelationalExpression
+    *ShiftExpression
+    *AdditiveExpression
+    *MultiplicativeExpression
+    *ExponentiationExpression
+    *UnaryExpression
+    *UpdateExpression
+    *LeftHandSideExpression
+    *CallExpression
+    *NewExpression
+    *MemberExpression
+    *PrimaryExpression
+    *ArrayLiteral
+    *ObjectLiteral
+    *FunctionDeclaration (FunctionExpression)
+    *ClassDeclaration (ClassExpression)
+    *TemplateLiteral
+    *CoverParenthesizedExpressionAndArrowParameterList
 
 #### type CoverParenthesizedExpressionAndArrowParameterList
 
@@ -811,6 +831,7 @@ Format implements the fmt.Formatter interface
 ```go
 type ExportDeclaration struct {
 	ExportClause                *ExportClause
+	ExportFromClause            *Token
 	FromClause                  *FromClause
 	VariableStatement           *VariableStatement
 	Declaration                 *Declaration
@@ -824,8 +845,9 @@ type ExportDeclaration struct {
 ExportDeclaration as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-ExportDeclaration
 
-It is only valid for one of ExportClause, VariableStatement, Declaration,
-DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be non-nil.
+It is only valid for one of ExportClause, ExportFromClause, VariableStatement,
+Declaration, DefaultFunction, DefaultClass, or DefaultAssignmentExpression to be
+non-nil.
 
 FromClause can be non-nil exclusively or paired with ExportClause.
 
@@ -2078,6 +2100,17 @@ CatchParameterArrayBindingPattern is non-nil, then CatchBlock must be non-nil.
 func (f TryStatement) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### type Type
+
+```go
+type Type interface {
+	fmt.Formatter
+	// contains filtered or unexported methods
+}
+```
+
+Type is an interface satisfied by all javascript structural types
 
 #### type UnaryExpression
 
