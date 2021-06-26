@@ -25,7 +25,8 @@ const (
 	BindingBare
 	BindingVar
 	BindingHoistable
-	BindingLexical
+	BindingLexicalLet
+	BindingLexicalConst
 	BindingImport
 	BindingFunctionParam
 	BindingCatch
@@ -408,8 +409,10 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 	default:
 		bindingType := BindingBare
 		switch f.Type {
-		case javascript.ForInLet, javascript.ForOfLet, javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
-			bindingType = BindingLexical
+		case javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet:
+			bindingType = BindingLexicalLet
+		case javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfConst:
+			bindingType = BindingLexicalConst
 		case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar:
 			bindingType = BindingVar
 		}
@@ -575,8 +578,12 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set, 
 }
 
 func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, set bool) error {
+	typ := BindingLexicalLet
+	if l.LetOrConst == javascript.Const {
+		typ = BindingLexicalConst
+	}
 	for n := range l.BindingList {
-		if err := processLexicalBinding(&l.BindingList[n], scope, set); err != nil {
+		if err := processLexicalBinding(&l.BindingList[n], scope, set, typ); err != nil {
 			return err
 		}
 	}
@@ -704,17 +711,17 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 	return nil
 }
 
-func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool) error {
+func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool, typ BindingType) error {
 	if l.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, BindingLexical); err != nil {
+		if err := processArrayBindingPattern(l.ArrayBindingPattern, scope, set, typ); err != nil {
 			return err
 		}
 	} else if l.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, BindingLexical); err != nil {
+		if err := processObjectBindingPattern(l.ObjectBindingPattern, scope, set, typ); err != nil {
 			return err
 		}
 	} else if l.BindingIdentifier != nil && set {
-		if err := scope.setBinding(l.BindingIdentifier, BindingLexical); err != nil {
+		if err := scope.setBinding(l.BindingIdentifier, typ); err != nil {
 			return err
 		}
 	}

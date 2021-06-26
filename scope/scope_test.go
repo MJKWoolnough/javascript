@@ -151,7 +151,7 @@ func TestScriptScope(t *testing.T) {
 			`const a = () => true`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
-				if err := scope.setBinding(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier, BindingLexical); err != nil {
+				if err := scope.setBinding(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier, BindingLexicalConst); err != nil {
 					return nil, err
 				}
 				scope.newArrowFunctionScope(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction)
@@ -227,7 +227,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -261,7 +261,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -289,7 +289,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -316,7 +316,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -325,7 +325,7 @@ func TestScriptScope(t *testing.T) {
 				bscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       bscope,
 							Token:       s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -395,7 +395,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -847,7 +847,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -869,21 +869,21 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
 						},
 					},
 					"c": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingElementList[1].SingleNameBinding,
 						},
 					},
 					"d": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingRestElement.SingleNameBinding,
 						},
@@ -920,21 +920,21 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 					},
 					"c": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 					},
 					"d": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingRestProperty,
 						},
@@ -1006,7 +1006,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"c": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -1018,7 +1018,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"d": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
 						},
@@ -1125,7 +1125,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -1155,21 +1155,21 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 					},
 					"c": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 					},
 					"d": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingRestProperty,
 						},
@@ -1187,7 +1187,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
@@ -1199,7 +1199,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
@@ -1231,7 +1231,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Bindings = map[string][]Binding{
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
 						},
@@ -1278,7 +1278,7 @@ func TestScriptScope(t *testing.T) {
 				iscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.InitLexical.BindingList[0].BindingIdentifier,
 						},
@@ -1443,7 +1443,7 @@ func TestScriptScope(t *testing.T) {
 				iscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor.ForBindingIdentifier,
 						},
@@ -1455,7 +1455,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -1495,7 +1495,7 @@ func TestScriptScope(t *testing.T) {
 				iscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor.ForBindingIdentifier,
 						},
@@ -1507,7 +1507,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -1593,7 +1593,7 @@ func TestScriptScope(t *testing.T) {
 				iscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.ForBindingPatternArray.BindingElementList[0].SingleNameBinding,
 						},
@@ -1638,7 +1638,7 @@ func TestScriptScope(t *testing.T) {
 				iscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.ForBindingPatternObject.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
@@ -1813,7 +1813,7 @@ func TestScriptScope(t *testing.T) {
 				bscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       bscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -1928,7 +1928,7 @@ func TestScriptScope(t *testing.T) {
 				tscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       tscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2092,7 +2092,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       tscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.CatchBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2187,7 +2187,7 @@ func TestScriptScope(t *testing.T) {
 				tscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       tscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.FinallyBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2240,7 +2240,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2285,7 +2285,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2329,7 +2329,7 @@ func TestScriptScope(t *testing.T) {
 				sscope.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       sscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement.CaseClauses[0].StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2348,7 +2348,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2442,7 +2442,7 @@ func TestScriptScope(t *testing.T) {
 				bscopea.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       bscopea,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[0].StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2451,7 +2451,7 @@ func TestScriptScope(t *testing.T) {
 				bscopeb.Bindings = map[string][]Binding{
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       bscopeb,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement.CaseClauses[1].StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2505,7 +2505,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2548,7 +2548,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"a": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalConst,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
@@ -2698,7 +2698,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"b": []Binding{
 						{
-							BindingType: BindingLexical,
+							BindingType: BindingLexicalLet,
 							Scope:       mscope,
 							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].FunctionBody.StatementList[1].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
