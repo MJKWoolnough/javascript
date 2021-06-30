@@ -147,10 +147,6 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkBindingElement(&t, fn)
 	case *javascript.BindingElement:
 		return walkBindingElement(t, fn)
-	case javascript.FunctionRestParameter:
-		return walkFunctionRestParameter(&t, fn)
-	case *javascript.FunctionRestParameter:
-		return walkFunctionRestParameter(t, fn)
 	case javascript.Script:
 		return walkScript(&t, fn)
 	case *javascript.Script:
@@ -718,8 +714,13 @@ func walkFormalParameters(t *javascript.FormalParameters, fn Handler) error {
 			return err
 		}
 	}
-	if t.FunctionRestParameter != nil {
-		if err := fn.Handle(t.FunctionRestParameter); err != nil {
+	if t.ArrayBindingPattern != nil {
+		if err := fn.Handle(t.ArrayBindingPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectBindingPattern != nil {
+		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
 			return err
 		}
 	}
@@ -739,20 +740,6 @@ func walkBindingElement(t *javascript.BindingElement, fn Handler) error {
 	}
 	if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func walkFunctionRestParameter(t *javascript.FunctionRestParameter, fn Handler) error {
-	if t.ArrayBindingPattern != nil {
-		if err := fn.Handle(t.ArrayBindingPattern); err != nil {
-			return err
-		}
-	}
-	if t.ObjectBindingPattern != nil {
-		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
 			return err
 		}
 	}

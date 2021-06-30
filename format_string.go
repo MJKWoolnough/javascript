@@ -69,7 +69,6 @@ var (
 	nameExportSpecifier                                   = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'S', 'p', 'e', 'c', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameEIdentifierName                                   = []byte{'\n', 'E', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', 'N', 'a', 'm', 'e', ':', ' '}
 	nameFormalParameterList                               = []byte{'\n', 'F', 'o', 'r', 'm', 'a', 'l', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 'L', 'i', 's', 't', ':', ' '}
-	nameFunctionRestParameter                             = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'R', 'e', 's', 't', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', ':', ' '}
 	nameModuleSpecifier                                   = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', 'S', 'p', 'e', 'c', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameType                                              = []byte{'\n', 'T', 'y', 'p', 'e', ':', ' '}
 	nameIfStatement                                       = []byte{'\n', 'I', 'f', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', ':', ' '}
@@ -967,11 +966,25 @@ func (f *FormalParameters) printType(w io.Writer, v bool) {
 		pp.Write(nameFormalParameterList)
 		pp.Write(arrayOpenClose)
 	}
-	if f.FunctionRestParameter != nil {
-		pp.Write(nameFunctionRestParameter)
-		f.FunctionRestParameter.printType(&pp, v)
+	if f.BindingIdentifier != nil {
+		pp.Write(nameBindingIdentifier)
+		f.BindingIdentifier.printType(&pp, v)
 	} else if v {
-		pp.Write(nameFunctionRestParameter)
+		pp.Write(nameBindingIdentifier)
+		pp.Write(nilStr)
+	}
+	if f.ArrayBindingPattern != nil {
+		pp.Write(nameArrayBindingPattern)
+		f.ArrayBindingPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameArrayBindingPattern)
+		pp.Write(nilStr)
+	}
+	if f.ObjectBindingPattern != nil {
+		pp.Write(nameObjectBindingPattern)
+		f.ObjectBindingPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameObjectBindingPattern)
 		pp.Write(nilStr)
 	}
 	if v {
@@ -1016,38 +1029,6 @@ func (f *FunctionDeclaration) printType(w io.Writer, v bool) {
 	f.FormalParameters.printType(&pp, v)
 	pp.Write(nameFunctionBody)
 	f.FunctionBody.printType(&pp, v)
-	if v {
-		pp.Write(tokensTo)
-		f.Tokens.printType(&pp, v)
-	}
-	w.Write(objectClose)
-}
-
-func (f *FunctionRestParameter) printType(w io.Writer, v bool) {
-	w.Write(nameFunctionRestParameter[1:22])
-	w.Write(objectOpen)
-	pp := indentPrinter{w}
-	if f.BindingIdentifier != nil {
-		pp.Write(nameBindingIdentifier)
-		f.BindingIdentifier.printType(&pp, v)
-	} else if v {
-		pp.Write(nameBindingIdentifier)
-		pp.Write(nilStr)
-	}
-	if f.ArrayBindingPattern != nil {
-		pp.Write(nameArrayBindingPattern)
-		f.ArrayBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameArrayBindingPattern)
-		pp.Write(nilStr)
-	}
-	if f.ObjectBindingPattern != nil {
-		pp.Write(nameObjectBindingPattern)
-		f.ObjectBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameObjectBindingPattern)
-		pp.Write(nilStr)
-	}
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)

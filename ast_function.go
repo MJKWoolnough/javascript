@@ -73,9 +73,11 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 // FormalParameters as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-FormalParameters
 type FormalParameters struct {
-	FormalParameterList   []BindingElement
-	FunctionRestParameter *FunctionRestParameter
-	Tokens                Tokens
+	FormalParameterList  []BindingElement
+	BindingIdentifier    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               Tokens
 }
 
 func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
@@ -89,9 +91,18 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
 				g.AcceptRunWhitespace()
 				h := g.NewGoal()
-				fp.FunctionRestParameter = new(FunctionRestParameter)
-				if err := fp.FunctionRestParameter.parse(&h, yield, await); err != nil {
-					return j.Error("FormalParameters", err)
+				if t := h.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
+					fp.ArrayBindingPattern = new(ArrayBindingPattern)
+					if err := fp.ArrayBindingPattern.parse(&h, yield, await); err != nil {
+						return g.Error("FormalParameters", err)
+					}
+				} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
+					fp.ObjectBindingPattern = new(ObjectBindingPattern)
+					if err := fp.ObjectBindingPattern.parse(&h, yield, await); err != nil {
+						return g.Error("FormalParameters", err)
+					}
+				} else if fp.BindingIdentifier = h.parseIdentifier(yield, await); fp.BindingIdentifier == nil {
+					return g.Error("FormalParameters", ErrNoIdentifier)
 				}
 				g.Score(h)
 				j.Score(g)
@@ -168,37 +179,5 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 		j.Score(g)
 	}
 	be.Tokens = j.ToTokens()
-	return nil
-}
-
-// FunctionRestParameter as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-FunctionRestParameter
-//
-// Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern
-// must be non-nil.
-type FunctionRestParameter struct {
-	BindingIdentifier    *Token
-	ArrayBindingPattern  *ArrayBindingPattern
-	ObjectBindingPattern *ObjectBindingPattern
-	Tokens               Tokens
-}
-
-func (fr *FunctionRestParameter) parse(j *jsParser, yield, await bool) error {
-	g := j.NewGoal()
-	if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
-		fr.ArrayBindingPattern = new(ArrayBindingPattern)
-		if err := fr.ArrayBindingPattern.parse(&g, yield, await); err != nil {
-			return j.Error("FunctionRestParameter", err)
-		}
-	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		fr.ObjectBindingPattern = new(ObjectBindingPattern)
-		if err := fr.ObjectBindingPattern.parse(&g, yield, await); err != nil {
-			return j.Error("FunctionRestParameter", err)
-		}
-	} else if fr.BindingIdentifier = g.parseIdentifier(yield, await); fr.BindingIdentifier == nil {
-		return j.Error("FunctionRestParameter", ErrNoIdentifier)
-	}
-	j.Score(g)
-	fr.Tokens = j.ToTokens()
 	return nil
 }

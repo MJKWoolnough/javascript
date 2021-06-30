@@ -800,7 +800,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       fscope,
-							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FunctionRestParameter.BindingIdentifier,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.BindingIdentifier,
 						},
 					},
 				}

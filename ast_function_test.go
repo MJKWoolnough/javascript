@@ -161,11 +161,8 @@ func TestParseFunction(t *testing.T) {
 							Tokens:            t[10:11],
 						},
 					},
-					FunctionRestParameter: &FunctionRestParameter{
-						BindingIdentifier: &t[14],
-						Tokens:            t[14:15],
-					},
-					Tokens: t[3:16],
+					BindingIdentifier: &t[14],
+					Tokens:            t[3:16],
 				},
 				FunctionBody: Block{
 					Tokens: t[16:18],
@@ -177,11 +174,8 @@ func TestParseFunction(t *testing.T) {
 			ft.Output = FunctionDeclaration{
 				BindingIdentifier: &t[2],
 				FormalParameters: FormalParameters{
-					FunctionRestParameter: &FunctionRestParameter{
-						BindingIdentifier: &t[5],
-						Tokens:            t[5:6],
-					},
-					Tokens: t[3:7],
+					BindingIdentifier: &t[5],
+					Tokens:            t[3:7],
 				},
 				FunctionBody: Block{
 					Tokens: t[7:9],
@@ -454,22 +448,15 @@ func TestFormalParameters(t *testing.T) {
 		}},
 		{"(\n...\n)", func(t *test, tk Tokens) { // 3
 			t.Err = Error{
-				Err: Error{
-					Err:     ErrNoIdentifier,
-					Parsing: "FunctionRestParameter",
-					Token:   tk[4],
-				},
+				Err:     ErrNoIdentifier,
 				Parsing: "FormalParameters",
-				Token:   tk[2],
+				Token:   tk[4],
 			}
 		}},
 		{"(\n...\na\n)", func(t *test, tk Tokens) { // 4
 			t.Output = FormalParameters{
-				FunctionRestParameter: &FunctionRestParameter{
-					BindingIdentifier: &tk[4],
-					Tokens:            tk[4:5],
-				},
-				Tokens: tk[:7],
+				BindingIdentifier: &tk[4],
+				Tokens:            tk[:7],
 			}
 		}},
 		{"(\n...\na\nb)", func(t *test, tk Tokens) { // 5
@@ -531,11 +518,58 @@ func TestFormalParameters(t *testing.T) {
 						Tokens:            tk[2:3],
 					},
 				},
-				FunctionRestParameter: &FunctionRestParameter{
-					BindingIdentifier: &tk[8],
-					Tokens:            tk[8:9],
+				BindingIdentifier: &tk[8],
+				Tokens:            tk[:11],
+			}
+		}},
+		{"(...[])", func(t *test, tk Tokens) { // 11
+			t.Output = FormalParameters{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[2:4],
 				},
-				Tokens: tk[:11],
+				Tokens: tk[:5],
+			}
+		}},
+		{"(...{})", func(t *test, tk Tokens) { // 12
+			t.Output = FormalParameters{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`(...[!])`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[3],
+					},
+					Parsing: "ArrayBindingPattern",
+					Token:   tk[3],
+				},
+				Parsing: "FormalParameters",
+				Token:   tk[2],
+			}
+		}},
+		{`(...{!})`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[3],
+						},
+						Parsing: "BindingProperty",
+						Token:   tk[3],
+					},
+					Parsing: "ObjectBindingPattern",
+					Token:   tk[3],
+				},
+				Parsing: "FormalParameters",
+				Token:   tk[2],
 			}
 		}},
 	}, func(t *test) (Type, error) {
@@ -665,77 +699,5 @@ func TestBindingElement(t *testing.T) {
 		var be BindingElement
 		err := be.parse(&t.Tokens, nil, t.Yield, t.Await)
 		return be, err
-	})
-}
-
-func TestFunctionRestParameter(t *testing.T) {
-	doTests(t, []sourceFn{
-		{``, func(t *test, tk Tokens) { // 1
-			t.Err = Error{
-				Err:     ErrNoIdentifier,
-				Parsing: "FunctionRestParameter",
-				Token:   tk[0],
-			}
-		}},
-		{`a`, func(t *test, tk Tokens) { // 2
-			t.Output = FunctionRestParameter{
-				BindingIdentifier: &tk[0],
-				Tokens:            tk[:1],
-			}
-		}},
-		{"[]", func(t *test, tk Tokens) { // 3
-			t.Output = FunctionRestParameter{
-				ArrayBindingPattern: &ArrayBindingPattern{
-					Tokens: tk[:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{"{}", func(t *test, tk Tokens) { // 4
-			t.Output = FunctionRestParameter{
-				ObjectBindingPattern: &ObjectBindingPattern{
-					Tokens: tk[:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`[!]`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err:     ErrNoIdentifier,
-						Parsing: "BindingElement",
-						Token:   tk[1],
-					},
-					Parsing: "ArrayBindingPattern",
-					Token:   tk[1],
-				},
-				Parsing: "FunctionRestParameter",
-				Token:   tk[0],
-			}
-		}},
-		{`{!}`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrInvalidPropertyName,
-							Parsing: "PropertyName",
-							Token:   tk[1],
-						},
-						Parsing: "BindingProperty",
-						Token:   tk[1],
-					},
-					Parsing: "ObjectBindingPattern",
-					Token:   tk[1],
-				},
-				Parsing: "FunctionRestParameter",
-				Token:   tk[0],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var fp FunctionRestParameter
-		err := fp.parse(&t.Tokens, t.Yield, t.Await)
-		return fp, err
 	})
 }

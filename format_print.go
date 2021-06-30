@@ -826,12 +826,19 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 			w.Write(commaSep)
 			be.printSource(w, v)
 		}
-		if f.FunctionRestParameter != nil {
+		if f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil {
 			w.Write(commaSep)
 		}
 	}
-	if f.FunctionRestParameter != nil {
-		f.FunctionRestParameter.printSource(w, v)
+	if f.BindingIdentifier != nil {
+		w.Write(ellipsis)
+		io.WriteString(w, f.BindingIdentifier.Data)
+	} else if f.ArrayBindingPattern != nil {
+		w.Write(ellipsis)
+		f.ArrayBindingPattern.printSource(w, v)
+	} else if f.ObjectBindingPattern != nil {
+		w.Write(ellipsis)
+		f.ObjectBindingPattern.printSource(w, v)
 	}
 	w.Write(parenCloseSpace)
 }
@@ -1532,19 +1539,6 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 		w.Write(as)
 	}
 	io.WriteString(w, i.ImportedBinding.Data)
-}
-
-func (f FunctionRestParameter) printSource(w io.Writer, v bool) {
-	if f.BindingIdentifier != nil {
-		w.Write(ellipsis)
-		io.WriteString(w, f.BindingIdentifier.Data)
-	} else if f.ArrayBindingPattern != nil {
-		w.Write(ellipsis)
-		f.ArrayBindingPattern.printSource(w, v)
-	} else if f.ObjectBindingPattern != nil {
-		w.Write(ellipsis)
-		f.ObjectBindingPattern.printSource(w, v)
-	}
 }
 
 func (vd VariableDeclaration) printSource(w io.Writer, v bool) {

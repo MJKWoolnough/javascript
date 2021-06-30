@@ -76,8 +76,6 @@ func (FormalParameters) javascriptType() {}
 
 func (BindingElement) javascriptType() {}
 
-func (FunctionRestParameter) javascriptType() {}
-
 func (Script) javascriptType() {}
 
 func (Declaration) javascriptType() {}

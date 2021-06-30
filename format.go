@@ -244,9 +244,6 @@ func (f FromClause) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f FunctionDeclaration) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
-func (f FunctionRestParameter) Format(s fmt.State, v rune) { format(&f, s, v) }
-
-// Format implements the fmt.Formatter interface
 func (f IfStatement) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface

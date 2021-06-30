@@ -689,8 +689,16 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 			return err
 		}
 	}
-	if f.FunctionRestParameter != nil {
-		if err := processFunctionRestParameter(f.FunctionRestParameter, scope, set); err != nil {
+	if f.ArrayBindingPattern != nil {
+		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
+			return err
+		}
+	} else if f.ObjectBindingPattern != nil {
+		if err := processObjectBindingPattern(f.ObjectBindingPattern, scope, set, BindingFunctionParam); err != nil {
+			return err
+		}
+	} else if f.BindingIdentifier != nil && set {
+		if err := scope.setBinding(f.BindingIdentifier, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
@@ -870,23 +878,6 @@ func processBindingElement(b *javascript.BindingElement, scope *Scope, set bool,
 	}
 	if b.Initializer != nil {
 		if err := processAssignmentExpression(b.Initializer, scope, set); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func processFunctionRestParameter(f *javascript.FunctionRestParameter, scope *Scope, set bool) error {
-	if f.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
-			return err
-		}
-	} else if f.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(f.ObjectBindingPattern, scope, set, BindingFunctionParam); err != nil {
-			return err
-		}
-	} else if f.BindingIdentifier != nil && set {
-		if err := scope.setBinding(f.BindingIdentifier, BindingFunctionParam); err != nil {
 			return err
 		}
 	}
