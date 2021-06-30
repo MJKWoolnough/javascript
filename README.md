@@ -225,13 +225,12 @@ Format implements the fmt.Formatter interface
 
 ```go
 type ArrowFunction struct {
-	Async                                             bool
-	BindingIdentifier                                 *Token
-	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
-	FormalParameters                                  *FormalParameters
-	AssignmentExpression                              *AssignmentExpression
-	FunctionBody                                      *Block
-	Tokens                                            Tokens
+	Async                bool
+	BindingIdentifier    *Token
+	FormalParameters     *FormalParameters
+	AssignmentExpression *AssignmentExpression
+	FunctionBody         *Block
+	Tokens               Tokens
 }
 ```
 
@@ -941,9 +940,11 @@ String implements the fmt.Stringer interface
 
 ```go
 type FormalParameters struct {
-	FormalParameterList   []BindingElement
-	FunctionRestParameter *FunctionRestParameter
-	Tokens                Tokens
+	FormalParameterList  []BindingElement
+	BindingIdentifier    *Token
+	ArrayBindingPattern  *ArrayBindingPattern
+	ObjectBindingPattern *ObjectBindingPattern
+	Tokens               Tokens
 }
 ```
 
@@ -1002,30 +1003,6 @@ https://github.com/tc39/proposal-async-iteration#async-generator-functions
 
 ```go
 func (f FunctionDeclaration) Format(s fmt.State, v rune)
-```
-Format implements the fmt.Formatter interface
-
-#### type FunctionRestParameter
-
-```go
-type FunctionRestParameter struct {
-	BindingIdentifier    *Token
-	ArrayBindingPattern  *ArrayBindingPattern
-	ObjectBindingPattern *ObjectBindingPattern
-	Tokens               Tokens
-}
-```
-
-FunctionRestParameter as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-FunctionRestParameter
-
-Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern must
-be non-nil.
-
-#### func (FunctionRestParameter) Format
-
-```go
-func (f FunctionRestParameter) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 

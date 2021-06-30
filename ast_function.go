@@ -72,6 +72,9 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 
 // FormalParameters as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-FormalParameters
+//
+// Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern
+// can be non-nil.
 type FormalParameters struct {
 	FormalParameterList  []BindingElement
 	BindingIdentifier    *Token
