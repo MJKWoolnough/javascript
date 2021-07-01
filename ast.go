@@ -320,14 +320,18 @@ func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 		}
 		if pd.PropertyName != nil {
 			bp.PropertyName = *pd.PropertyName
-			if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
+			if pd.IsCoverInitializedName {
+				bp.BindingElement.SingleNameBinding = pd.PropertyName.LiteralPropertyName
+				bp.BindingElement.Initializer = pd.AssignmentExpression
+				bp.BindingElement.Tokens = pd.Tokens
+			} else if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
 				return err
 			}
 		} else {
-			if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
-				return err
-			}
-			if bp.BindingElement.SingleNameBinding == nil {
+			if pe, ok := UnwrapConditional(pd.AssignmentExpression.ConditionalExpression).(*PrimaryExpression); ok && pe.IdentifierReference != nil {
+				ob.BindingRestProperty = pe.IdentifierReference
+				break
+			} else {
 				return ErrNoIdentifier
 			}
 		}
