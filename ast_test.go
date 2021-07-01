@@ -2964,6 +2964,34 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:78],
 			}
 		}},
+		{"([, a]) => b", func(t *test, tk Tokens) { // 27
+			litB := makeConditionLiteral(tk, 10)
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							ArrayBindingPattern: &ArrayBindingPattern{
+								BindingElementList: []BindingElement{
+									{},
+									{
+										SingleNameBinding: &tk[4],
+										Tokens:            tk[4:5],
+									},
+								},
+								Tokens: tk[1:6],
+							},
+							Tokens: tk[1:6],
+						},
+					},
+					Tokens: tk[0:7],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litB,
+					Tokens:                tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
