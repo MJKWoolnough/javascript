@@ -649,9 +649,7 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 //
 // Also includes AsyncArrowFunction.
 //
-// It is only valid for one of BindingIdentifier,
-// CoverParenthesizedExpressionAndArrowParameterList (!Async), and
-// FormalParameters (+Async) to be non-nil.
+// Only one of BindingIdentifier or FormalParameters must be non-nil.
 //
 // Only one of AssignmentExpression or FunctionBody must be non-nil.
 type ArrowFunction struct {

@@ -239,9 +239,7 @@ https://262.ecma-international.org/11.0/#prod-ArrowFunction
 
 Also includes AsyncArrowFunction.
 
-It is only valid for one of BindingIdentifier,
-CoverParenthesizedExpressionAndArrowParameterList (!Async), and FormalParameters
-(+Async) to be non-nil.
+Only one of BindingIdentifier or FormalParameters must be non-nil.
 
 Only one of AssignmentExpression or FunctionBody must be non-nil.
 
@@ -950,6 +948,9 @@ type FormalParameters struct {
 
 FormalParameters as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-FormalParameters
+
+Only one of BindingIdentifier, ArrayBindingPattern, or ObjectBindingPattern can
+be non-nil.
 
 #### func (FormalParameters) Format
 
