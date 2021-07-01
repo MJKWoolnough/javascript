@@ -205,24 +205,28 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 }
 
 func (be *BindingElement) from(ae *AssignmentExpression) error {
+	if len(ae.Tokens) == 0 {
+		return nil
+	}
 	var pe *PrimaryExpression
 	switch ae.AssignmentOperator {
 	case AssignmentNone:
-		if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
-			pe = lhs.NewExpression.MemberExpression.PrimaryExpression
-		} else {
-			return ErrNoIdentifier
+		if ae.ConditionalExpression != nil {
+			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+				pe = lhs.NewExpression.MemberExpression.PrimaryExpression
+			}
 		}
 	case AssignmentAssign:
-		if ae.LeftHandSideExpression.NewExpression == nil || ae.LeftHandSideExpression.NewExpression.News != 0 || ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil {
-			return ErrNoIdentifier
+		if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
+			pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
+			be.Initializer = ae.AssignmentExpression
 		}
-		pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
-		be.Initializer = ae.AssignmentExpression
 	default:
 		return ErrNoIdentifier
 	}
-	if pe.IdentifierReference != nil {
+	if pe == nil {
+		return ErrNoIdentifier
+	} else if pe.IdentifierReference != nil {
 		be.SingleNameBinding = pe.IdentifierReference
 	} else if pe.ArrayLiteral != nil {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
