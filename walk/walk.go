@@ -640,16 +640,6 @@ func walkCoverParenthesizedExpressionAndArrowParameterList(t *javascript.CoverPa
 			return err
 		}
 	}
-	if t.ArrayBindingPattern != nil {
-		if err := fn.Handle(t.ArrayBindingPattern); err != nil {
-			return err
-		}
-	}
-	if t.ObjectBindingPattern != nil {
-		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
