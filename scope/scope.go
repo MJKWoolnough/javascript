@@ -919,19 +919,6 @@ func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.Cove
 			return err
 		}
 	}
-	if c.ArrayBindingPattern != nil {
-		if err := processArrayBindingPattern(c.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
-			return err
-		}
-	} else if c.ObjectBindingPattern != nil {
-		if err := processObjectBindingPattern(c.ObjectBindingPattern, scope, set, BindingFunctionParam); err != nil {
-			return err
-		}
-	} else if c.BindingIdentifier != nil && set {
-		if err := scope.setBinding(c.BindingIdentifier, BindingFunctionParam); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
