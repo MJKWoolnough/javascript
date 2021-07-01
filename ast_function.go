@@ -148,9 +148,9 @@ func (fp *FormalParameters) from(ce *CoverParenthesizedExpressionAndArrowParamet
 		}
 		fp.FormalParameterList = append(fp.FormalParameterList, be)
 	}
-	fp.BindingIdentifier = ce.BindingIdentifier
-	fp.ArrayBindingPattern = ce.ArrayBindingPattern
-	fp.ObjectBindingPattern = ce.ObjectBindingPattern
+	fp.BindingIdentifier = ce.bindingIdentifier
+	fp.ArrayBindingPattern = ce.arrayBindingPattern
+	fp.ObjectBindingPattern = ce.objectBindingPattern
 	fp.Tokens = ce.Tokens
 	return nil
 }

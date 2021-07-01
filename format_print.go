@@ -1004,19 +1004,6 @@ func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writ
 			w.Write(commaSep)
 			e.printSource(w, v)
 		}
-		if c.ArrayBindingPattern != nil || c.ObjectBindingPattern != nil || c.BindingIdentifier != nil {
-			w.Write(commaSep)
-		}
-	}
-	if c.ArrayBindingPattern != nil {
-		w.Write(ellipsis)
-		c.ArrayBindingPattern.printSource(w, v)
-	} else if c.ObjectBindingPattern != nil {
-		w.Write(ellipsis)
-		c.ObjectBindingPattern.printSource(w, v)
-	} else if c.BindingIdentifier != nil {
-		w.Write(ellipsis)
-		io.WriteString(w, c.BindingIdentifier.Data)
 	}
 	w.Write(parenClose)
 }

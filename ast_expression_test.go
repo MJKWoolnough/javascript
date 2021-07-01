@@ -2247,7 +2247,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		}},
 		{"(\n...\n[a]\n)", func(t *test, tk Tokens) { // 4
 			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
-				ArrayBindingPattern: &ArrayBindingPattern{
+				arrayBindingPattern: &ArrayBindingPattern{
 					BindingElementList: []BindingElement{
 						{
 							SingleNameBinding: &tk[5],
@@ -2280,7 +2280,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		}},
 		{"(\n...\n{}\n)", func(t *test, tk Tokens) { // 6
 			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
-				ObjectBindingPattern: &ObjectBindingPattern{
+				objectBindingPattern: &ObjectBindingPattern{
 					Tokens: tk[4:6],
 				},
 				Tokens: tk[:8],
@@ -2295,7 +2295,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		}},
 		{"(\n...\na\n)", func(t *test, tk Tokens) { // 8
 			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
-				BindingIdentifier: &tk[4],
+				bindingIdentifier: &tk[4],
 				Tokens:            tk[:7],
 			}
 		}},
@@ -2358,7 +2358,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 						Tokens:                tk[2:3],
 					},
 				},
-				BindingIdentifier: &tk[8],
+				bindingIdentifier: &tk[8],
 				Tokens:            tk[:11],
 			}
 		}},

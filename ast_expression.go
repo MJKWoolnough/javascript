@@ -133,6 +133,8 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						if err := ae.ArrowFunction.parse(&g, lhs.NewExpression.MemberExpression.PrimaryExpression, in, yield, await); err != nil {
 							return j.Error("AssignmentExpression", err)
 						}
+					} else if cpe := lhs.NewExpression.MemberExpression.PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList; cpe != nil && (cpe.bindingIdentifier != nil || cpe.arrayBindingPattern != nil || cpe.objectBindingPattern != nil) {
+						return h.Error("AssignmentExpression", ErrMissingArrow)
 					}
 				}
 				if ae.ConditionalExpression != nil {
@@ -693,9 +695,9 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 // ObjectBindingPattern to be non-nil
 type CoverParenthesizedExpressionAndArrowParameterList struct {
 	Expressions          []AssignmentExpression
-	BindingIdentifier    *Token
-	ArrayBindingPattern  *ArrayBindingPattern
-	ObjectBindingPattern *ObjectBindingPattern
+	bindingIdentifier    *Token
+	arrayBindingPattern  *ArrayBindingPattern
+	objectBindingPattern *ObjectBindingPattern
 	Tokens               Tokens
 }
 
@@ -710,16 +712,16 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 				j.AcceptRunWhitespace()
 				g := j.NewGoal()
 				if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
-					cp.ArrayBindingPattern = new(ArrayBindingPattern)
-					if err := cp.ArrayBindingPattern.parse(&g, yield, await); err != nil {
+					cp.arrayBindingPattern = new(ArrayBindingPattern)
+					if err := cp.arrayBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
 				} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
-					cp.ObjectBindingPattern = new(ObjectBindingPattern)
-					if err := cp.ObjectBindingPattern.parse(&g, yield, await); err != nil {
+					cp.objectBindingPattern = new(ObjectBindingPattern)
+					if err := cp.objectBindingPattern.parse(&g, yield, await); err != nil {
 						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
 					}
-				} else if cp.BindingIdentifier = g.parseIdentifier(yield, await); cp.BindingIdentifier == nil {
+				} else if cp.bindingIdentifier = g.parseIdentifier(yield, await); cp.bindingIdentifier == nil {
 					return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrNoIdentifier)
 				}
 				j.Score(g)

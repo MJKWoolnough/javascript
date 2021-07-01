@@ -700,27 +700,6 @@ func (f *CoverParenthesizedExpressionAndArrowParameterList) printType(w io.Write
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
-	if f.BindingIdentifier != nil {
-		pp.Write(nameBindingIdentifier)
-		f.BindingIdentifier.printType(&pp, v)
-	} else if v {
-		pp.Write(nameBindingIdentifier)
-		pp.Write(nilStr)
-	}
-	if f.ArrayBindingPattern != nil {
-		pp.Write(nameArrayBindingPattern)
-		f.ArrayBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameArrayBindingPattern)
-		pp.Write(nilStr)
-	}
-	if f.ObjectBindingPattern != nil {
-		pp.Write(nameObjectBindingPattern)
-		f.ObjectBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameObjectBindingPattern)
-		pp.Write(nilStr)
-	}
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
