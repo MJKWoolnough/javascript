@@ -2710,7 +2710,7 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"([a]) => a", func(t *test, tk Tokens) { //24
+		{"([a]) => a", func(t *test, tk Tokens) { // 24
 			litAb := makeConditionLiteral(tk, 8)
 			t.Output = ArrowFunction{
 				FormalParameters: &FormalParameters{
@@ -2728,13 +2728,240 @@ func TestArrowFunction(t *testing.T) {
 							Tokens: tk[1:4],
 						},
 					},
-					Tokens: tk[0:5],
+					Tokens: tk[:5],
 				},
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: &litAb,
 					Tokens:                tk[8:9],
 				},
 				Tokens: tk[:9],
+			}
+		}},
+		{"({a}) => a", func(t *test, tk Tokens) { // 25
+			litAb := makeConditionLiteral(tk, 8)
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								BindingPropertyList: []BindingProperty{
+									{
+										PropertyName: PropertyName{
+											LiteralPropertyName: &tk[2],
+											Tokens:              tk[2:3],
+										},
+										BindingElement: BindingElement{
+											SingleNameBinding: &tk[2],
+											Tokens:            tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+								},
+								Tokens: tk[1:4],
+							},
+							Tokens: tk[1:4],
+						},
+					},
+					Tokens: tk[:5],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litAb,
+					Tokens:                tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"([a, {b}, {c: d}, {e, f, ...g}, {h: {i = j}}, ...k], {l: [m, n] = [o, p]}, ...q) => r", func(t *test, tk Tokens) { // 26
+			litJ := makeConditionLiteral(tk, 39)
+			litR := makeConditionLiteral(tk, 77)
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							ArrayBindingPattern: &ArrayBindingPattern{
+								BindingElementList: []BindingElement{
+									{
+										SingleNameBinding: &tk[2],
+										Tokens:            tk[2:3],
+									},
+									{
+										ObjectBindingPattern: &ObjectBindingPattern{
+											BindingPropertyList: []BindingProperty{
+												{
+													PropertyName: PropertyName{
+														LiteralPropertyName: &tk[6],
+														Tokens:              tk[6:7],
+													},
+													BindingElement: BindingElement{
+														SingleNameBinding: &tk[6],
+														Tokens:            tk[6:7],
+													},
+													Tokens: tk[6:7],
+												},
+											},
+											Tokens: tk[5:8],
+										},
+										Tokens: tk[5:8],
+									},
+									{
+										ObjectBindingPattern: &ObjectBindingPattern{
+											BindingPropertyList: []BindingProperty{
+												{
+													PropertyName: PropertyName{
+														LiteralPropertyName: &tk[11],
+														Tokens:              tk[11:12],
+													},
+													BindingElement: BindingElement{
+														SingleNameBinding: &tk[14],
+														Tokens:            tk[14:15],
+													},
+													Tokens: tk[11:15],
+												},
+											},
+											Tokens: tk[10:16],
+										},
+										Tokens: tk[10:16],
+									},
+									{
+										ObjectBindingPattern: &ObjectBindingPattern{
+											BindingPropertyList: []BindingProperty{
+												{
+													PropertyName: PropertyName{
+														LiteralPropertyName: &tk[19],
+														Tokens:              tk[19:20],
+													},
+													BindingElement: BindingElement{
+														SingleNameBinding: &tk[19],
+														Tokens:            tk[19:20],
+													},
+													Tokens: tk[19:20],
+												},
+												{
+													PropertyName: PropertyName{
+														LiteralPropertyName: &tk[22],
+														Tokens:              tk[22:23],
+													},
+													BindingElement: BindingElement{
+														SingleNameBinding: &tk[22],
+														Tokens:            tk[22:23],
+													},
+													Tokens: tk[22:23],
+												},
+											},
+											BindingRestProperty: &tk[26],
+											Tokens:              tk[18:28],
+										},
+										Tokens: tk[18:28],
+									},
+									{
+										ObjectBindingPattern: &ObjectBindingPattern{
+											BindingPropertyList: []BindingProperty{
+												{
+													PropertyName: PropertyName{
+														LiteralPropertyName: &tk[31],
+														Tokens:              tk[31:32],
+													},
+													BindingElement: BindingElement{
+														ObjectBindingPattern: &ObjectBindingPattern{
+															BindingPropertyList: []BindingProperty{
+																{
+																	PropertyName: PropertyName{
+																		LiteralPropertyName: &tk[35],
+																		Tokens:              tk[35:36],
+																	},
+																	BindingElement: BindingElement{
+																		SingleNameBinding: &tk[35],
+																		Initializer: &AssignmentExpression{
+																			ConditionalExpression: &litJ,
+																			Tokens:                tk[39:40],
+																		},
+																		Tokens: tk[35:40],
+																	},
+																	Tokens: tk[35:40],
+																},
+															},
+															Tokens: tk[34:41],
+														},
+														Tokens: tk[34:41],
+													},
+													Tokens: tk[31:41],
+												},
+											},
+											Tokens: tk[30:42],
+										},
+										Tokens: tk[30:42],
+									},
+								},
+								BindingRestElement: &BindingElement{
+									SingleNameBinding: &tk[45],
+									Tokens:            tk[45:46],
+								},
+								Tokens: tk[1:47],
+							},
+							Tokens: tk[1:47],
+						},
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								BindingPropertyList: []BindingProperty{
+									{
+										PropertyName: PropertyName{
+											LiteralPropertyName: &tk[50],
+											Tokens:              tk[50:51],
+										},
+										BindingElement: BindingElement{
+											ArrayBindingPattern: &ArrayBindingPattern{
+												BindingElementList: []BindingElement{
+													{
+														SingleNameBinding: &tk[54],
+														Tokens:            tk[54:55],
+													},
+													{
+														SingleNameBinding: &tk[57],
+														Tokens:            tk[57:58],
+													},
+												},
+												Tokens: tk[53:59],
+											},
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&ArrayLiteral{
+													ElementList: []AssignmentExpression{
+														{
+															ConditionalExpression: WrapConditional(&PrimaryExpression{
+																IdentifierReference: &tk[63],
+																Tokens:              tk[63:64],
+															}),
+															Tokens: tk[63:64],
+														},
+														{
+															ConditionalExpression: WrapConditional(&PrimaryExpression{
+																IdentifierReference: &tk[66],
+																Tokens:              tk[66:67],
+															}),
+															Tokens: tk[66:67],
+														},
+													},
+													Tokens: tk[62:68],
+												}),
+												Tokens: tk[62:68],
+											},
+											Tokens: tk[53:68],
+										},
+										Tokens: tk[50:68],
+									},
+								},
+								Tokens: tk[49:69],
+							},
+							Tokens: tk[49:69],
+						},
+					},
+					BindingIdentifier: &tk[72],
+					Tokens:            tk[:74],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &litR,
+					Tokens:                tk[77:78],
+				},
+				Tokens: tk[:78],
 			}
 		}},
 	}, func(t *test) (Type, error) {
