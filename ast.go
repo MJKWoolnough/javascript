@@ -247,6 +247,23 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (ab *ArrayBindingPattern) from(al *ArrayLiteral) error {
+	ab.BindingElementList = make([]BindingElement, len(al.ElementList))
+	for n := range al.ElementList {
+		if err := ab.BindingElementList[n].from(&al.ElementList[n]); err != nil {
+			return err
+		}
+	}
+	if al.SpreadElement != nil {
+		ab.BindingRestElement = new(BindingElement)
+		if err := ab.BindingRestElement.from(al.SpreadElement); err != nil {
+			return err
+		}
+	}
+	ab.Tokens = al.Tokens
+	return nil
+}
+
 // ObjectBindingPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ObjectBindingPattern
 type ObjectBindingPattern struct {
@@ -290,6 +307,33 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 		}
 	}
 	ob.Tokens = j.ToTokens()
+	return nil
+}
+
+func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
+	for _, pd := range ol.PropertyDefinitionList {
+		if pd.AssignmentExpression == nil {
+			return ErrNoIdentifier
+		}
+		bp := BindingProperty{
+			Tokens: pd.Tokens,
+		}
+		if pd.PropertyName != nil {
+			bp.PropertyName = *pd.PropertyName
+			if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
+				return err
+			}
+		} else {
+			if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
+				return err
+			}
+			if bp.BindingElement.SingleNameBinding == nil {
+				return ErrNoIdentifier
+			}
+		}
+		ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
+	}
+	ob.Tokens = ol.Tokens
 	return nil
 }
 
@@ -611,13 +655,12 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 //
 // Only one of AssignmentExpression or FunctionBody must be non-nil.
 type ArrowFunction struct {
-	Async                                             bool
-	BindingIdentifier                                 *Token
-	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
-	FormalParameters                                  *FormalParameters
-	AssignmentExpression                              *AssignmentExpression
-	FunctionBody                                      *Block
-	Tokens                                            Tokens
+	Async                bool
+	BindingIdentifier    *Token
+	FormalParameters     *FormalParameters
+	AssignmentExpression *AssignmentExpression
+	FunctionBody         *Block
+	Tokens               Tokens
 }
 
 func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, await bool) error {
@@ -642,7 +685,10 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			j.Score(g)
 		}
 	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		af.CoverParenthesizedExpressionAndArrowParameterList = pe.CoverParenthesizedExpressionAndArrowParameterList
+		af.FormalParameters = new(FormalParameters)
+		if err := af.FormalParameters.from(pe.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
+			return err
+		}
 	} else {
 		af.BindingIdentifier = pe.IdentifierReference
 	}

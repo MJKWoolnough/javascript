@@ -893,11 +893,6 @@ func walkTemplateLiteral(t *javascript.TemplateLiteral, fn Handler) error {
 }
 
 func walkArrowFunction(t *javascript.ArrowFunction, fn Handler) error {
-	if t.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		if err := fn.Handle(t.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
-			return err
-		}
-	}
 	if t.FormalParameters != nil {
 		if err := fn.Handle(t.FormalParameters); err != nil {
 			return err

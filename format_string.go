@@ -284,13 +284,6 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
-	if f.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		pp.Write(nameCoverParenthesizedExpressionAndArrowParameterList)
-		f.CoverParenthesizedExpressionAndArrowParameterList.printType(&pp, v)
-	} else if v {
-		pp.Write(nameCoverParenthesizedExpressionAndArrowParameterList)
-		pp.Write(nilStr)
-	}
 	if f.FormalParameters != nil {
 		pp.Write(nameFormalParameters)
 		f.FormalParameters.printType(&pp, v)

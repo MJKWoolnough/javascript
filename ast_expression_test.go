@@ -512,7 +512,7 @@ func TestAssignmentExpressionOld(t *testing.T) {
 		{`() => {}`, func(t *test, tk Tokens) { // 7
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					FormalParameters: &FormalParameters{
 						Tokens: tk[:2],
 					},
 					FunctionBody: &Block{
@@ -524,15 +524,14 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a) => b`, func(t *test, tk Tokens) { // 8
-			litA := makeConditionLiteral(tk, 1)
 			litB := makeConditionLiteral(tk, 6)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 						},
 						Tokens: tk[:3],
@@ -547,20 +546,18 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a, b) => c`, func(t *test, tk Tokens) { // 9
-			litA := makeConditionLiteral(tk, 1)
-			litB := makeConditionLiteral(tk, 4)
 			litC := makeConditionLiteral(tk, 9)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 							{
-								ConditionalExpression: &litB,
-								Tokens:                tk[4:5],
+								SingleNameBinding: &tk[4],
+								Tokens:            tk[4:5],
 							},
 						},
 						Tokens: tk[:6],
@@ -575,25 +572,22 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a, b, c) => d`, func(t *test, tk Tokens) { // 10
-			litA := makeConditionLiteral(tk, 1)
-			litB := makeConditionLiteral(tk, 4)
-			litC := makeConditionLiteral(tk, 7)
 			litD := makeConditionLiteral(tk, 12)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 							{
-								ConditionalExpression: &litB,
-								Tokens:                tk[4:5],
+								SingleNameBinding: &tk[4],
+								Tokens:            tk[4:5],
 							},
 							{
-								ConditionalExpression: &litC,
-								Tokens:                tk[7:8],
+								SingleNameBinding: &tk[7],
+								Tokens:            tk[7:8],
 							},
 						},
 						Tokens: tk[:9],
@@ -608,15 +602,14 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a, ...b) => c`, func(t *test, tk Tokens) { // 11
-			litA := makeConditionLiteral(tk, 1)
 			litC := makeConditionLiteral(tk, 10)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 						},
 						BindingIdentifier: &tk[5],
@@ -632,15 +625,14 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a, ...[b]) => c`, func(t *test, tk Tokens) { // 12
-			litA := makeConditionLiteral(tk, 1)
 			litC := makeConditionLiteral(tk, 12)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 						},
 						ArrayBindingPattern: &ArrayBindingPattern{
@@ -664,15 +656,14 @@ func TestAssignmentExpressionOld(t *testing.T) {
 			}
 		}},
 		{`(a, ...{b}) => c`, func(t *test, tk Tokens) { // 13
-			litA := makeConditionLiteral(tk, 1)
 			litC := makeConditionLiteral(tk, 12)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-						Expressions: []AssignmentExpression{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
 							{
-								ConditionalExpression: &litA,
-								Tokens:                tk[1:2],
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
 							},
 						},
 						ObjectBindingPattern: &ObjectBindingPattern{
@@ -1133,7 +1124,7 @@ func TestAssignmentExpression(t *testing.T) {
 		{"() => {}", func(t *test, tk Tokens) { // 11
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					FormalParameters: &FormalParameters{
 						Tokens: tk[:2],
 					},
 					FunctionBody: &Block{
@@ -1160,7 +1151,7 @@ func TestAssignmentExpression(t *testing.T) {
 			litA := makeConditionLiteral(tk, 5)
 			t.Output = AssignmentExpression{
 				ArrowFunction: &ArrowFunction{
-					CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+					FormalParameters: &FormalParameters{
 						Tokens: tk[:2],
 					},
 					AssignmentExpression: &AssignmentExpression{

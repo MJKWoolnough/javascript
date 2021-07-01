@@ -891,7 +891,7 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 }
 
 func (a ArrowFunction) printSource(w io.Writer, v bool) {
-	if a.FunctionBody == nil && a.AssignmentExpression == nil || (a.BindingIdentifier == nil && a.CoverParenthesizedExpressionAndArrowParameterList == nil && a.FormalParameters == nil) {
+	if a.FunctionBody == nil && a.AssignmentExpression == nil || (a.BindingIdentifier == nil && a.FormalParameters == nil) {
 		return
 	}
 	if a.Async {
@@ -899,9 +899,6 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 	}
 	if a.BindingIdentifier != nil {
 		io.WriteString(w, a.BindingIdentifier.Data)
-		w.Write(space)
-	} else if a.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		a.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
 		w.Write(space)
 	} else if a.FormalParameters != nil {
 		a.FormalParameters.printSource(w, v)

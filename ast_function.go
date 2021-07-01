@@ -136,6 +136,25 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (fp *FormalParameters) from(ce *CoverParenthesizedExpressionAndArrowParameterList) error {
+	for n := range ce.Expressions {
+		ae := &ce.Expressions[n]
+		if ae.Delegate || ae.Yield || ae.ArrowFunction != nil {
+			return ErrNoIdentifier
+		}
+		var be BindingElement
+		if err := be.from(ae); err != nil {
+			return err
+		}
+		fp.FormalParameterList = append(fp.FormalParameterList, be)
+	}
+	fp.BindingIdentifier = ce.BindingIdentifier
+	fp.ArrayBindingPattern = ce.ArrayBindingPattern
+	fp.ObjectBindingPattern = ce.ObjectBindingPattern
+	fp.Tokens = ce.Tokens
+	return nil
+}
+
 // BindingElement as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingElement
 //
@@ -182,5 +201,42 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 		j.Score(g)
 	}
 	be.Tokens = j.ToTokens()
+	return nil
+}
+
+func (be *BindingElement) from(ae *AssignmentExpression) error {
+	var pe *PrimaryExpression
+	switch ae.AssignmentOperator {
+	case AssignmentNone:
+		if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+			pe = lhs.NewExpression.MemberExpression.PrimaryExpression
+		} else {
+			return ErrNoIdentifier
+		}
+	case AssignmentAssign:
+		if ae.LeftHandSideExpression.NewExpression == nil || ae.LeftHandSideExpression.NewExpression.News != 0 || ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil {
+			return ErrNoIdentifier
+		}
+		pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
+		be.Initializer = ae.AssignmentExpression
+	default:
+		return ErrNoIdentifier
+	}
+	if pe.IdentifierReference != nil {
+		be.SingleNameBinding = pe.IdentifierReference
+	} else if pe.ArrayLiteral != nil {
+		be.ArrayBindingPattern = new(ArrayBindingPattern)
+		if err := be.ArrayBindingPattern.from(pe.ArrayLiteral); err != nil {
+			return err
+		}
+	} else if pe.ObjectLiteral != nil {
+		be.ObjectBindingPattern = new(ObjectBindingPattern)
+		if err := be.ObjectBindingPattern.from(pe.ObjectLiteral); err != nil {
+			return err
+		}
+	} else {
+		return ErrNoIdentifier
+	}
+	be.Tokens = ae.Tokens
 	return nil
 }

@@ -2622,7 +2622,7 @@ func TestArrowFunction(t *testing.T) {
 		}},
 		{"() =>\n{}", func(t *test, tk Tokens) { // 16
 			t.Output = ArrowFunction{
-				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+				FormalParameters: &FormalParameters{
 					Tokens: tk[:2],
 				},
 				FunctionBody: &Block{
@@ -2674,7 +2674,7 @@ func TestArrowFunction(t *testing.T) {
 		{"() =>\nb", func(t *test, tk Tokens) { // 21
 			litB := makeConditionLiteral(tk, 5)
 			t.Output = ArrowFunction{
-				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+				FormalParameters: &FormalParameters{
 					Tokens: tk[:2],
 				},
 				AssignmentExpression: &AssignmentExpression{
@@ -2711,24 +2711,20 @@ func TestArrowFunction(t *testing.T) {
 			}
 		}},
 		{"([a]) => a", func(t *test, tk Tokens) { //24
-			litAa := makeConditionLiteral(tk, 2)
 			litAb := makeConditionLiteral(tk, 8)
 			t.Output = ArrowFunction{
-				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
-					Expressions: []AssignmentExpression{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
 						{
-							ConditionalExpression: WrapConditional(&PrimaryExpression{
-								ArrayLiteral: &ArrayLiteral{
-									ElementList: []AssignmentExpression{
-										{
-											ConditionalExpression: &litAa,
-											Tokens:                tk[2:3],
-										},
+							ArrayBindingPattern: &ArrayBindingPattern{
+								BindingElementList: []BindingElement{
+									{
+										SingleNameBinding: &tk[2],
+										Tokens:            tk[2:3],
 									},
-									Tokens: tk[1:4],
 								},
 								Tokens: tk[1:4],
-							}),
+							},
 							Tokens: tk[1:4],
 						},
 					},
