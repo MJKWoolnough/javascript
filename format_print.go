@@ -1553,6 +1553,9 @@ func (oe OptionalChain) printSource(w io.Writer, v bool) {
 		oe.Expression.printSource(w, v)
 		w.Write(bracketClose)
 	} else if oe.IdentifierName != nil {
+		if oe.OptionalChain != nil {
+			w.Write(dot)
+		}
 		io.WriteString(w, oe.IdentifierName.Data)
 	} else if oe.TemplateLiteral != nil {
 		oe.TemplateLiteral.printSource(w, v)
