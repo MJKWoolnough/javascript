@@ -1403,7 +1403,7 @@ func TestScriptScope(t *testing.T) {
 					},
 					"b": []Binding{
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       iscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.InitExpression.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
