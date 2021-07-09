@@ -622,7 +622,19 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 			return err
 		}
 	} else if a.LeftHandSideExpression != nil {
-		if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
+		if a.LeftHandSideExpression.NewExpression != nil && a.LeftHandSideExpression.NewExpression.News == 0 && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil {
+			if set {
+				scope.addBinding(a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference, BindingBare)
+			}
+		} else if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
+			return err
+		}
+	} else if a.LeftHandSideArray != nil {
+		if err := processArrayBindingPattern(a.LeftHandSideArray, scope, set, BindingBare); err != nil {
+			return err
+		}
+	} else if a.LeftHandSideObject != nil {
+		if err := processObjectBindingPattern(a.LeftHandSideObject, scope, set, BindingBare); err != nil {
 			return err
 		}
 	}

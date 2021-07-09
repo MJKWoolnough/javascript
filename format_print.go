@@ -722,6 +722,17 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ArrowFunction != nil {
 		a.ArrowFunction.printSource(w, v)
+	} else if (a.LeftHandSideArray != nil || a.LeftHandSideObject != nil) && a.AssignmentExpression != nil {
+		if a.AssignmentOperator != AssignmentAssign {
+			return
+		}
+		if a.LeftHandSideArray != nil {
+			a.LeftHandSideArray.printSource(w, v)
+		} else {
+			a.LeftHandSideObject.printSource(w, v)
+		}
+		w.Write(assignment)
+		a.AssignmentExpression.printSource(w, v)
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
 		ao := assignment
 		switch a.AssignmentOperator {

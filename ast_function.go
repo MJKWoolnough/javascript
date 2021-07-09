@@ -217,7 +217,13 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 			}
 		}
 	case AssignmentAssign:
-		if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
+		if ae.LeftHandSideArray != nil {
+			be.ArrayBindingPattern = ae.LeftHandSideArray
+			be.Initializer = ae.AssignmentExpression
+		} else if ae.LeftHandSideObject != nil {
+			be.ObjectBindingPattern = ae.LeftHandSideObject
+			be.Initializer = ae.AssignmentExpression
+		} else if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
 			pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
 			be.Initializer = ae.AssignmentExpression
 		}
@@ -225,7 +231,9 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 		return ErrNoIdentifier
 	}
 	if pe == nil {
-		return ErrNoIdentifier
+		if be.ArrayBindingPattern == nil && be.ObjectBindingPattern == nil {
+			return ErrNoIdentifier
+		}
 	} else if pe.IdentifierReference != nil {
 		be.SingleNameBinding = pe.IdentifierReference
 	} else if pe.ArrayLiteral != nil {

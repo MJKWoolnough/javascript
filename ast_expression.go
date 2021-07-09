@@ -79,6 +79,8 @@ type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
 	LeftHandSideExpression *LeftHandSideExpression
+	LeftHandSideArray      *ArrayBindingPattern
+	LeftHandSideObject     *ObjectBindingPattern
 	Yield                  bool
 	Delegate               bool
 	AssignmentOperator     AssignmentOperator
@@ -144,6 +146,21 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						g.AcceptRunWhitespace()
 						ae.ConditionalExpression = nil
 						ae.LeftHandSideExpression = lhs
+						if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil {
+							if lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil {
+								ae.LeftHandSideArray = new(ArrayBindingPattern)
+								if err := ae.LeftHandSideArray.from(lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral); err != nil {
+									return err
+								}
+								ae.LeftHandSideExpression = nil
+							} else if lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil {
+								ae.LeftHandSideObject = new(ObjectBindingPattern)
+								if err := ae.LeftHandSideObject.from(lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral); err != nil {
+									return err
+								}
+								ae.LeftHandSideExpression = nil
+							}
+						}
 						h = g.NewGoal()
 						ae.AssignmentExpression = new(AssignmentExpression)
 						if err := ae.AssignmentExpression.parse(&h, in, yield, await); err != nil {

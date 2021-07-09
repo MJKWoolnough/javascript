@@ -488,6 +488,16 @@ func walkAssignmentExpression(t *javascript.AssignmentExpression, fn Handler) er
 			return err
 		}
 	}
+	if t.LeftHandSideArray != nil {
+		if err := fn.Handle(t.LeftHandSideArray); err != nil {
+			return err
+		}
+	}
+	if t.LeftHandSideObject != nil {
+		if err := fn.Handle(t.LeftHandSideObject); err != nil {
+			return err
+		}
+	}
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
 			return err
