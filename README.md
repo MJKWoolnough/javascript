@@ -257,6 +257,8 @@ type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
 	LeftHandSideExpression *LeftHandSideExpression
+	LeftHandSideArray      *ArrayBindingPattern
+	LeftHandSideObject     *ObjectBindingPattern
 	Yield                  bool
 	Delegate               bool
 	AssignmentOperator     AssignmentOperator
@@ -269,17 +271,21 @@ AssignmentExpression as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-AssignmentExpression
 
 It is only valid for one of ConditionalExpression, ArrowFunction,
-LeftHandSideExpression to be non-nil.
+LeftHandSideExpression, LeftHandSideArray, and LeftHandSideObject to be non-nil.
 
-If LeftHandSideExpression is non-nil, then AssignmentOperator must not be
-AssignmentNone and AssignmentExpression must be non-nil.
+If LeftHandSideExpression, LeftHandSideArray, or LeftHandSideObject are non-nil,
+then AssignmentOperator must not be AssignmentNone and AssignmentExpression must
+be non-nil.
+
+If LeftHandSideArray, or LeftHandSideObject are non-nil, AssignmentOperator must
+be AssignmentAssign.
 
 If Yield is true, AssignmentExpression must be non-nil.
 
 If AssignmentOperator is AssignmentNone LeftHandSideExpression must be nil.
 
-If LeftHandSideExpression is nil and Yield is false, AssignmentExpression must
-be nil.
+If LeftHandSideExpression, LeftHandSideArray, and LeftHandSideObject are nil and
+Yield is false, AssignmentExpression must be nil.
 
 #### func (AssignmentExpression) Format
 
@@ -663,11 +669,9 @@ Possible returns types are as follows:
 
 ```go
 type CoverParenthesizedExpressionAndArrowParameterList struct {
-	Expressions          []AssignmentExpression
-	BindingIdentifier    *Token
-	ArrayBindingPattern  *ArrayBindingPattern
-	ObjectBindingPattern *ObjectBindingPattern
-	Tokens               Tokens
+	Expressions []AssignmentExpression
+
+	Tokens Tokens
 }
 ```
 
