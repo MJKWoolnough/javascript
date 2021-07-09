@@ -1229,6 +1229,53 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{"[a] = 1", func(t *test, tk Tokens) { // 20
+			lit1 := makeConditionLiteral(tk, 6)
+			t.Output = AssignmentExpression{
+				LeftHandSideArray: &ArrayBindingPattern{
+					BindingElementList: []BindingElement{
+						{
+							SingleNameBinding: &tk[1],
+							Tokens:            tk[1:2],
+						},
+					},
+					Tokens: tk[:3],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"{a} = 1", func(t *test, tk Tokens) { // 21
+			lit1 := makeConditionLiteral(tk, 6)
+			t.Output = AssignmentExpression{
+				LeftHandSideObject: &ObjectBindingPattern{
+					BindingPropertyList: []BindingProperty{
+						{
+							PropertyName: PropertyName{
+								LiteralPropertyName: &tk[1],
+								Tokens:              tk[1:2],
+							},
+							BindingElement: BindingElement{
+								SingleNameBinding: &tk[1],
+								Tokens:            tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[:3],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
