@@ -1023,14 +1023,14 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
 						},
 						{
-							BindingType: BindingBare,
-							Scope:       fscope,
-							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].LeftHandSideArray.BindingElementList[0].SingleNameBinding,
-						},
-						{
 							BindingType: BindingRef,
 							Scope:       ascope,
 							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+						{
+							BindingType: BindingBare,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].LeftHandSideArray.BindingElementList[0].SingleNameBinding,
 						},
 					},
 				}

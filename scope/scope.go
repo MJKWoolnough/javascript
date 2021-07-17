@@ -427,8 +427,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		} else if f.ForBindingIdentifier != nil {
 			if bindingType == BindingBare && !set {
 				scope.addBinding(f.ForBindingIdentifier, BindingBare)
-			}
-			if bindingType != BindingBare && set {
+			} else if bindingType != BindingBare && set {
 				if err := scope.setBinding(f.ForBindingIdentifier, bindingType); err != nil {
 					return err
 				}
@@ -623,7 +622,7 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 		}
 	} else if a.LeftHandSideExpression != nil {
 		if a.LeftHandSideExpression.NewExpression != nil && a.LeftHandSideExpression.NewExpression.News == 0 && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil {
-			if set {
+			if !set {
 				scope.addBinding(a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference, BindingBare)
 			}
 		} else if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
@@ -670,9 +669,9 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 		}
 	}
 	if o.BindingRestProperty != nil {
-		if bindingType == BindingBare {
+		if bindingType == BindingBare && !set {
 			scope.addBinding(o.BindingRestProperty, BindingBare)
-		} else if set {
+		} else if bindingType != BindingBare && set {
 			if err := scope.setBinding(o.BindingRestProperty, bindingType); err != nil {
 				return err
 			}
@@ -867,10 +866,10 @@ func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set boo
 }
 
 func processBindingElement(b *javascript.BindingElement, scope *Scope, set bool, bindingType BindingType) error {
-	if b.SingleNameBinding != nil && set {
-		if bindingType == BindingBare {
-			scope.addBinding(b.SingleNameBinding, bindingType)
-		} else {
+	if b.SingleNameBinding != nil {
+		if bindingType == BindingBare && !set {
+			scope.addBinding(b.SingleNameBinding, BindingBare)
+		} else if bindingType != BindingBare && set {
 			if err := scope.setBinding(b.SingleNameBinding, bindingType); err != nil {
 				return err
 			}
