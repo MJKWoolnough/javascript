@@ -2756,6 +2756,45 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 76
+			`function a() {b = 1}let b = 0;`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[fmt.Formatter]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      []Binding{},
+						"arguments": []Binding{},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": []Binding{
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+					"b": []Binding{
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       s.StatementList[1].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							BindingType: BindingBare,
+							Scope:       fscope,
+							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
 		if err != nil {
