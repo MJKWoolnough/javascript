@@ -318,6 +318,9 @@ const (
 	AssignmentBitwiseXOR
 	AssignmentBitwiseOR
 	AssignmentExponentiation
+	AssignmentLogicalAnd
+	AssignmentLogicalOr
+	AssignmentNullish
 )
 ```
 Valid AssignmentOperator's
