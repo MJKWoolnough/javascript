@@ -1276,6 +1276,366 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{"a *= 1", func(t *test, tk Tokens) { // 22
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentMultiply,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a /= 1", func(t *test, tk Tokens) { // 23
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentDivide,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a %= 1", func(t *test, tk Tokens) { // 24
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentRemainder,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a += 1", func(t *test, tk Tokens) { // 25
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentAdd,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a -= 1", func(t *test, tk Tokens) { // 26
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentSubtract,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a <<= 1", func(t *test, tk Tokens) { // 27
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentLeftShift,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a >>= 1", func(t *test, tk Tokens) { // 28
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentSignPropagatinRightShift,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a >>>= 1", func(t *test, tk Tokens) { // 29
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentZeroFillRightShift,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a &= 1", func(t *test, tk Tokens) { // 30
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentBitwiseAND,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a ^= 1", func(t *test, tk Tokens) { // 31
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentBitwiseXOR,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a |= 1", func(t *test, tk Tokens) { // 32
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentBitwiseOR,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a **= 1", func(t *test, tk Tokens) { // 33
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentExponentiation,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a &&= 1", func(t *test, tk Tokens) { // 34
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentLogicalAnd,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a ||= 1", func(t *test, tk Tokens) { // 35
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentLogicalOr,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a ??= 1", func(t *test, tk Tokens) { // 36
+			lit1 := makeConditionLiteral(tk, 4)
+			t.Output = AssignmentExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[0],
+								Tokens:              tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AssignmentOperator: AssignmentNullish,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: &lit1,
+					Tokens:                tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
