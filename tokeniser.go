@@ -232,7 +232,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '{', '(', '[':
 			j.tokenDepth = append(j.tokenDepth, byte(c))
 		case '?':
-			t.Accept("?.")
+			if t.Accept("?") {
+				t.Accept("=")
+			} else {
+				t.Accept(".")
+			}
 		case ';', ',', ':', '~':
 		case ')', ']':
 			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
@@ -287,6 +291,9 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '+', '-', '&', '|':
 			if t.Peek() == c {
 				t.Except("") // ++, --, &&, ||
+				if c == '&' || c == '|' {
+					t.Accept("=")
+				}
 			} else {
 				t.Accept("=") // +=, -=, &=, |=
 			}

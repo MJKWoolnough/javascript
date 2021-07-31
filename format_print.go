@@ -60,6 +60,9 @@ var (
 	assignmentXOR                = []byte{' ', '^', '=', ' '}
 	assignmentOR                 = []byte{' ', '|', '=', ' '}
 	assignmentExponentiation     = []byte{' ', '*', '*', '=', ' '}
+	assignmentLogicalAnd         = []byte{' ', '&', '&', '=', ' '}
+	assignmentLogicalOr          = []byte{' ', '|', '|', '=', ' '}
+	assignmentNullish            = []byte{' ', '?', '?', '=', ' '}
 	yield                        = []byte{'y', 'i', 'e', 'l', 'd', ' '}
 	delegate                     = []byte{'*', ' '}
 	ellipsis                     = []byte{'.', '.', '.'}
@@ -761,6 +764,12 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 			ao = assignmentOR
 		case AssignmentExponentiation:
 			ao = assignmentExponentiation
+		case AssignmentLogicalAnd:
+			ao = assignmentLogicalAnd
+		case AssignmentLogicalOr:
+			ao = assignmentLogicalOr
+		case AssignmentNullish:
+			ao = assignmentNullish
 		default:
 			return
 		}

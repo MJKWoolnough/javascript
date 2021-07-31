@@ -2595,6 +2595,12 @@ func (a AssignmentOperator) String() string {
 		return "|="
 	case AssignmentExponentiation:
 		return "**="
+	case AssignmentLogicalAnd:
+		return "&&="
+	case AssignmentLogicalOr:
+		return "||="
+	case AssignmentNullish:
+		return "??="
 	default:
 		return unknown
 	}

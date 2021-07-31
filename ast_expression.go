@@ -23,6 +23,9 @@ const (
 	AssignmentBitwiseXOR
 	AssignmentBitwiseOR
 	AssignmentExponentiation
+	AssignmentLogicalAnd
+	AssignmentLogicalOr
+	AssignmentNullish
 )
 
 func (ao *AssignmentOperator) parse(j *jsParser) error {
@@ -53,6 +56,12 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 		*ao = AssignmentBitwiseOR
 	case parser.Token{Type: TokenPunctuator, Data: "**="}:
 		*ao = AssignmentExponentiation
+	case parser.Token{Type: TokenPunctuator, Data: "&&="}:
+		*ao = AssignmentLogicalAnd
+	case parser.Token{Type: TokenPunctuator, Data: "||="}:
+		*ao = AssignmentLogicalOr
+	case parser.Token{Type: TokenPunctuator, Data: "??="}:
+		*ao = AssignmentNullish
 	default:
 		return ErrInvalidAssignment
 	}
