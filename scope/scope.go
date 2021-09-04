@@ -210,12 +210,8 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 				}
 				if i.ImportDeclaration.NamedImports != nil {
 					for _, is := range i.ImportDeclaration.NamedImports.ImportList {
-						if is.IdentifierName != nil {
-							var tk = is.ImportedBinding
-							if is.IdentifierName != nil {
-								tk = is.IdentifierName
-							}
-							if err := global.setBinding(tk, BindingImport); err != nil {
+						if is.ImportedBinding != nil {
+							if err := global.setBinding(is.ImportedBinding, BindingImport); err != nil {
 								return err
 							}
 						}
