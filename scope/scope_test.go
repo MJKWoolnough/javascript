@@ -2816,3 +2816,55 @@ func TestScriptScope(t *testing.T) {
 		}
 	}
 }
+
+func TestModuleScope(t *testing.T) {
+	for n, test := range [...]struct {
+		Input  string
+		Output func(*javascript.Module) (*Scope, error)
+	}{
+		{ // 1
+			`import {a as b} from './lib.js';let a = 0`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"b": []Binding{
+						{
+							BindingType: BindingImport,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ImportDeclaration.ImportClause.NamedImports.ImportList[0].ImportedBinding,
+						},
+					},
+					"a": []Binding{
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       m.ModuleListItems[1].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+	} {
+		source, err := javascript.ParseModule(parser.NewStringTokeniser(test.Input))
+		if err != nil {
+			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
+		} else {
+			tscope, terr := test.Output(source)
+			scope, err := ModuleScope(source, nil)
+			if terr != nil && err != nil {
+				if !errors.Is(terr, err) {
+					t.Errorf("test %d: expecting error: %v\ngot: %v", n+1, terr, err)
+				}
+			} else if terr != nil {
+				t.Errorf("test %d: received no error when expecting: %s", n+1, terr)
+			} else if err != nil {
+				t.Errorf("test %d: receieved error when expecting none: %s", n+1, err)
+			} else if !reflect.DeepEqual(scope, tscope) {
+				t.Errorf("test %d: result did not match expected\nexpecting: %s\ngot: %s", n+1, tscope, scope)
+			}
+		}
+	}
+}
