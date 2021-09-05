@@ -140,11 +140,13 @@ func (fp *FormalParameters) from(ce *CoverParenthesizedExpressionAndArrowParamet
 	for n := range ce.Expressions {
 		ae := &ce.Expressions[n]
 		if ae.Delegate || ae.Yield || ae.ArrowFunction != nil {
-			return ErrNoIdentifier
+			z := jsParser(ce.Tokens)
+			return z.Error("FormalParameters", ErrNoIdentifier)
 		}
 		var be BindingElement
 		if err := be.from(ae); err != nil {
-			return err
+			z := jsParser(ce.Tokens)
+			return z.Error("FormalParameters", err)
 		}
 		fp.FormalParameterList = append(fp.FormalParameterList, be)
 	}
@@ -221,13 +223,15 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 			if ae.AssignmentPattern.ArrayAssignmentPattern != nil {
 				be.ArrayBindingPattern = new(ArrayBindingPattern)
 				if err := be.ArrayBindingPattern.fromAP(ae.AssignmentPattern.ArrayAssignmentPattern); err != nil {
-					return err
+					z := jsParser(ae.Tokens)
+					return z.Error("BindingElement", err)
 				}
 				be.Initializer = ae.AssignmentExpression
 			} else {
 				be.ObjectBindingPattern = new(ObjectBindingPattern)
 				if err := be.ObjectBindingPattern.fromAP(ae.AssignmentPattern.ObjectAssignmentPattern); err != nil {
-					return err
+					z := jsParser(ae.Tokens)
+					return z.Error("BindingElement", err)
 				}
 				be.Initializer = ae.AssignmentExpression
 			}
@@ -236,26 +240,31 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 			be.Initializer = ae.AssignmentExpression
 		}
 	default:
-		return ErrNoIdentifier
+		z := jsParser(ae.Tokens)
+		return z.Error("BindingElement", ErrNoIdentifier)
 	}
 	if pe == nil {
 		if be.ArrayBindingPattern == nil && be.ObjectBindingPattern == nil {
-			return ErrNoIdentifier
+			z := jsParser(ae.Tokens)
+			return z.Error("BindingElement", ErrNoIdentifier)
 		}
 	} else if pe.IdentifierReference != nil {
 		be.SingleNameBinding = pe.IdentifierReference
 	} else if pe.ArrayLiteral != nil {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.from(pe.ArrayLiteral); err != nil {
-			return err
+			z := jsParser(ae.Tokens)
+			return z.Error("BindingElement", err)
 		}
 	} else if pe.ObjectLiteral != nil {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := be.ObjectBindingPattern.from(pe.ObjectLiteral); err != nil {
-			return err
+			z := jsParser(ae.Tokens)
+			return z.Error("BindingElement", err)
 		}
 	} else {
-		return ErrNoIdentifier
+		z := jsParser(ae.Tokens)
+		return z.Error("BindingElement", ErrNoIdentifier)
 	}
 	be.Tokens = ae.Tokens
 	return nil
@@ -264,7 +273,8 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPattern) error {
 	if lhs != nil {
 		if lhs.NewExpression == nil || lhs.NewExpression.News != 0 || lhs.NewExpression.MemberExpression.PrimaryExpression == nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-			return ErrNoIdentifier
+			z := jsParser(lhs.Tokens)
+			return z.Error("BindingElement", ErrNoIdentifier)
 		}
 		be.SingleNameBinding = lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 		be.Tokens = lhs.Tokens
@@ -272,12 +282,14 @@ func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPatt
 		if ap.ArrayAssignmentPattern != nil {
 			be.ArrayBindingPattern = new(ArrayBindingPattern)
 			if err := be.ArrayBindingPattern.fromAP(ap.ArrayAssignmentPattern); err != nil {
-				return err
+				z := jsParser(ap.Tokens)
+				return z.Error("BindingElement", err)
 			}
 		} else {
 			be.ObjectBindingPattern = new(ObjectBindingPattern)
 			if err := be.ObjectBindingPattern.fromAP(ap.ObjectAssignmentPattern); err != nil {
-				return err
+				z := jsParser(ap.Tokens)
+				return z.Error("BindingElement", err)
 			}
 		}
 		be.Tokens = ap.Tokens

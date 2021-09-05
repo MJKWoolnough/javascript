@@ -331,7 +331,8 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 	for _, pd := range ol.PropertyDefinitionList {
 		if pd.AssignmentExpression == nil {
-			return ErrNoIdentifier
+			z := jsParser(ol.Tokens)
+			return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 		}
 		bp := BindingProperty{
 			Tokens: pd.Tokens,
@@ -343,14 +344,16 @@ func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 				bp.BindingElement.Initializer = pd.AssignmentExpression
 				bp.BindingElement.Tokens = pd.Tokens
 			} else if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
-				return err
+				z := jsParser(ol.Tokens)
+				return z.Error("ObjectBindingPattern", err)
 			}
 		} else {
 			if pe, ok := UnwrapConditional(pd.AssignmentExpression.ConditionalExpression).(*PrimaryExpression); ok && pe.IdentifierReference != nil {
 				ob.BindingRestProperty = pe.IdentifierReference
 				break
 			} else {
-				return ErrNoIdentifier
+				z := jsParser(ol.Tokens)
+				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 			}
 		}
 		ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
@@ -363,12 +366,14 @@ func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
 	ob.BindingPropertyList = make([]BindingProperty, len(op.AssignmentPropertyList))
 	for n := range op.AssignmentPropertyList {
 		if err := ob.BindingPropertyList[n].fromAP(&op.AssignmentPropertyList[n]); err != nil {
-			return err
+			z := jsParser(op.Tokens)
+			return z.Error("ObjectBindingPattern", err)
 		}
 	}
 	if op.AssignmentRestElement != nil {
 		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || op.AssignmentRestElement.NewExpression.News != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-			return ErrBadRestElement
+			z := jsParser(op.Tokens)
+			return z.Error("ObjectBindingPattern", ErrBadRestElement)
 		}
 		ob.BindingRestProperty = op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 	}
@@ -422,22 +427,26 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil {
 			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-				return ErrNoIdentifier
+				z := jsParser(bp.Tokens)
+				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 			}
 			bp.BindingElement.SingleNameBinding = ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 		} else if ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern != nil {
 			bp.BindingElement.ArrayBindingPattern = new(ArrayBindingPattern)
 			if err := bp.BindingElement.ArrayBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern); err != nil {
-				return err
+				z := jsParser(bp.Tokens)
+				return z.Error("ObjectBindingPattern", err)
 			}
 		} else {
 			bp.BindingElement.ObjectBindingPattern = new(ObjectBindingPattern)
 			if err := bp.BindingElement.ObjectBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ObjectAssignmentPattern); err != nil {
-				return err
+				z := jsParser(bp.Tokens)
+				return z.Error("ObjectBindingPattern", err)
 			}
 		}
 	} else if bp.PropertyName.LiteralPropertyName == nil {
-		return ErrNoIdentifier
+		z := jsParser(bp.Tokens)
+		return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 	} else {
 		bp.BindingElement.SingleNameBinding = bp.PropertyName.LiteralPropertyName
 	}
