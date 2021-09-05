@@ -23,6 +23,8 @@ var (
 	nameFunctionBody                                      = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'B', 'o', 'd', 'y', ':', ' '}
 	nameConditionalExpression                             = []byte{'\n', 'C', 'o', 'n', 'd', 'i', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameLeftHandSideExpression                            = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameLeftHandSideArray                                 = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'A', 'r', 'r', 'a', 'y', ':', ' '}
+	nameLeftHandSideObject                                = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'O', 'b', 'j', 'e', 'c', 't', ':', ' '}
 	nameAssignmentOperator                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameBindingElement                                    = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameSingleNameBinding                                 = []byte{'\n', 'S', 'i', 'n', 'g', 'l', 'e', 'N', 'a', 'm', 'e', 'B', 'i', 'n', 'd', 'i', 'n', 'g', ':', ' '}
@@ -335,6 +337,20 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		f.LeftHandSideExpression.printType(&pp, v)
 	} else if v {
 		pp.Write(nameLeftHandSideExpression)
+		pp.Write(nilStr)
+	}
+	if f.LeftHandSideArray != nil {
+		pp.Write(nameLeftHandSideArray)
+		f.LeftHandSideArray.printType(&pp, v)
+	} else {
+		pp.Write(nameLeftHandSideArray)
+		pp.Write(nilStr)
+	}
+	if f.LeftHandSideObject != nil {
+		pp.Write(nameLeftHandSideObject)
+		f.LeftHandSideArray.printType(&pp, v)
+	} else {
+		pp.Write(nameLeftHandSideObject)
 		pp.Write(nilStr)
 	}
 	if f.Yield || v {
