@@ -624,12 +624,8 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 		} else if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
 			return err
 		}
-	} else if a.LeftHandSideArray != nil {
-		if err := processArrayBindingPattern(a.LeftHandSideArray, scope, set, BindingBare); err != nil {
-			return err
-		}
-	} else if a.LeftHandSideObject != nil {
-		if err := processObjectBindingPattern(a.LeftHandSideObject, scope, set, BindingBare); err != nil {
+	} else if a.AssignmentPattern != nil {
+		if err := processAssignmentPattern(a.AssignmentPattern, scope, set); err != nil {
 			return err
 		}
 	}
@@ -652,6 +648,90 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 		}
 	} else if l.OptionalExpression != nil {
 		if err := processOptionalExpression(l.OptionalExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processAssignmentPattern(a *javascript.AssignmentPattern, scope *Scope, set bool) error {
+	if a.ArrayAssignmentPattern != nil {
+		if err := processArrayAssignmentPattern(a.ArrayAssignmentPattern, scope, set); err != nil {
+			return err
+		}
+	} else if a.ObjectAssignmentPattern != nil {
+		if err := processObjectAssignmentPattern(a.ObjectAssignmentPattern, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processObjectAssignmentPattern(o *javascript.ObjectAssignmentPattern, scope *Scope, set bool) error {
+	for n := range o.AssignmentPropertyList {
+		if err := processAssignmentProperty(&o.AssignmentPropertyList[n], scope, set); err != nil {
+			return err
+		}
+	}
+	if o.AssignmentRestElement != nil {
+		if err := processLeftHandSideExpression(o.AssignmentRestElement, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processAssignmentProperty(a *javascript.AssignmentProperty, scope *Scope, set bool) error {
+	if err := processPropertyName(&a.PropertyName, scope, set); err != nil {
+		return err
+	}
+	if a.DestructuringAssignmentTarget != nil {
+		if err := processDestructuringAssignmentTarget(a.DestructuringAssignmentTarget, scope, set); err != nil {
+			return err
+		}
+	}
+	if a.Initializer != nil {
+		if err := processAssignmentExpression(a.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processDestructuringAssignmentTarget(d *javascript.DestructuringAssignmentTarget, scope *Scope, set bool) error {
+	if d.LeftHandSideExpression != nil {
+		if err := processLeftHandSideExpression(d.LeftHandSideExpression, scope, set); err != nil {
+			return err
+		}
+	}
+	if d.AssignmentPattern != nil {
+		if err := processAssignmentPattern(d.AssignmentPattern, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processAssignmentElement(a *javascript.AssignmentElement, scope *Scope, set bool) error {
+	if err := processDestructuringAssignmentTarget(&a.DestructuringAssignmentTarget, scope, set); err != nil {
+		return err
+	}
+	if a.Initializer != nil {
+		if err := processAssignmentExpression(a.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processArrayAssignmentPattern(a *javascript.ArrayAssignmentPattern, scope *Scope, set bool) error {
+	for n := range a.AssignmentElements {
+		if err := processAssignmentElement(&a.AssignmentElements[n], scope, set); err != nil {
+			return err
+		}
+	}
+	if a.AssignmentRestElement != nil {
+		if err := processLeftHandSideExpression(a.AssignmentRestElement, scope, set); err != nil {
 			return err
 		}
 	}
