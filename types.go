@@ -52,6 +52,18 @@ func (AssignmentExpression) javascriptType() {}
 
 func (LeftHandSideExpression) javascriptType() {}
 
+func (AssignmentPattern) javascriptType() {}
+
+func (ObjectAssignmentPattern) javascriptType() {}
+
+func (AssignmentProperty) javascriptType() {}
+
+func (DestructuringAssignmentTarget) javascriptType() {}
+
+func (AssignmentElement) javascriptType() {}
+
+func (ArrayAssignmentPattern) javascriptType() {}
+
 func (OptionalExpression) javascriptType() {}
 
 func (OptionalChain) javascriptType() {}
