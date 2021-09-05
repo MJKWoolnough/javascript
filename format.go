@@ -164,6 +164,9 @@ func (f AdditiveExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f Arguments) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
+func (f ArrayAssignmentPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
 func (f ArrayBindingPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
@@ -173,7 +176,16 @@ func (f ArrayLiteral) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f ArrowFunction) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
+func (f AssignmentElement) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
 func (f AssignmentExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f AssignmentPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f AssignmentProperty) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
 func (f BindingElement) Format(s fmt.State, v rune) { format(&f, s, v) }
@@ -215,6 +227,9 @@ func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v
 
 // Format implements the fmt.Formatter interface
 func (f Declaration) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f DestructuringAssignmentTarget) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
 func (f EqualityExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
@@ -301,16 +316,19 @@ func (f NamedImports) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f NewExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
+func (f ObjectAssignmentPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
 func (f ObjectBindingPattern) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
 func (f ObjectLiteral) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
-func (f OptionalExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
+func (f OptionalChain) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
-func (f OptionalChain) Format(s fmt.State, v rune) { format(&f, s, v) }
+func (f OptionalExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
 func (f PrimaryExpression) Format(s fmt.State, v rune) { format(&f, s, v) }

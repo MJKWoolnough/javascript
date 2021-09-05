@@ -725,15 +725,11 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ArrowFunction != nil {
 		a.ArrowFunction.printSource(w, v)
-	} else if (a.LeftHandSideArray != nil || a.LeftHandSideObject != nil) && a.AssignmentExpression != nil {
+	} else if a.AssignmentPattern != nil && a.AssignmentExpression != nil {
 		if a.AssignmentOperator != AssignmentAssign {
 			return
 		}
-		if a.LeftHandSideArray != nil {
-			a.LeftHandSideArray.printSource(w, v)
-		} else {
-			a.LeftHandSideObject.printSource(w, v)
-		}
+		a.AssignmentPattern.printSource(w, v)
 		w.Write(assignment)
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
@@ -776,6 +772,10 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 		a.LeftHandSideExpression.printSource(w, v)
 		w.Write(ao)
 		a.AssignmentExpression.printSource(w, v)
+	} else if a.AssignmentPattern != nil && a.AssignmentExpression != nil && a.AssignmentOperator == AssignmentAssign {
+		a.AssignmentPattern.printSource(w, v)
+		w.Write(assignment)
+		a.AssignmentExpression.printSource(w, v)
 	} else if a.ConditionalExpression != nil {
 		a.ConditionalExpression.printSource(w, v)
 	}
@@ -788,6 +788,77 @@ func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
 		l.CallExpression.printSource(w, v)
 	} else if l.OptionalExpression != nil {
 		l.OptionalExpression.printSource(w, v)
+	}
+}
+
+func (a AssignmentPattern) printSource(w io.Writer, v bool) {
+	if a.ArrayAssignmentPattern != nil {
+		a.ArrayAssignmentPattern.printSource(w, v)
+	} else if a.ObjectAssignmentPattern != nil {
+		a.ObjectAssignmentPattern.printSource(w, v)
+	}
+}
+
+func (a ArrayAssignmentPattern) printSource(w io.Writer, v bool) {
+	w.Write(bracketOpen)
+	for n, ae := range a.AssignmentElements {
+		if n > 0 {
+			w.Write(commaSep)
+		}
+		ae.printSource(w, v)
+	}
+	if a.AssignmentRestElement != nil {
+		if len(a.AssignmentElements) > 0 {
+			w.Write(commaSep)
+		}
+		w.Write(ellipsis)
+		a.AssignmentRestElement.printSource(w, v)
+	}
+	w.Write(bracketClose)
+}
+
+func (o ObjectAssignmentPattern) printSource(w io.Writer, v bool) {
+	w.Write(blockOpen)
+	for n, ap := range o.AssignmentPropertyList {
+		if n > 0 {
+			w.Write(commaSep)
+		}
+		ap.printSource(w, v)
+	}
+	if o.AssignmentRestElement != nil {
+		if len(o.AssignmentPropertyList) > 0 {
+			w.Write(commaSep)
+		}
+		w.Write(ellipsis)
+		o.AssignmentRestElement.printSource(w, v)
+	}
+}
+
+func (a AssignmentElement) printSource(w io.Writer, v bool) {
+	a.DestructuringAssignmentTarget.printSource(w, v)
+	if a.Initializer != nil {
+		w.Write(assignment)
+		a.Initializer.printSource(w, v)
+	}
+}
+
+func (a AssignmentProperty) printSource(w io.Writer, v bool) {
+	a.PropertyName.printSource(w, v)
+	if a.DestructuringAssignmentTarget != nil {
+		w.Write(colonSep)
+		a.DestructuringAssignmentTarget.printSource(w, v)
+	}
+	if a.Initializer != nil {
+		w.Write(assignment)
+		a.Initializer.printSource(w, v)
+	}
+}
+
+func (d DestructuringAssignmentTarget) printSource(w io.Writer, v bool) {
+	if d.LeftHandSideExpression != nil {
+		d.LeftHandSideExpression.printSource(w, v)
+	} else if d.AssignmentPattern != nil {
+		d.AssignmentPattern.printSource(w, v)
 	}
 }
 

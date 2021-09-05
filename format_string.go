@@ -6,9 +6,13 @@ var (
 	nameAdditiveExpression                                = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameAdditiveOperator                                  = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameMultiplicativeExpression                          = []byte{'\n', 'M', 'u', 'l', 't', 'i', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameTokens                                            = []byte{'\n', 'T', 'o', 'k', 'e', 'n', 's', ':', ' '}
 	nameArguments                                         = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's', ':', ' '}
 	nameArgumentList                                      = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameSpreadArgument                                    = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', ':', ' '}
+	nameArrayAssignmentPattern                            = []byte{'\n', 'A', 'r', 'r', 'a', 'y', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
+	nameAssignmentElements                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', 's', ':', ' '}
+	nameAssignmentRestElement                             = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'R', 'e', 's', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrayBindingPattern                               = []byte{'\n', 'A', 'r', 'r', 'a', 'y', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
 	nameBindingElementList                                = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'E', 'l', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameBindingRestElement                                = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'R', 'e', 's', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
@@ -16,22 +20,27 @@ var (
 	nameElementList                                       = []byte{'\n', 'E', 'l', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameSpreadElement                                     = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrowFunction                                     = []byte{'\n', 'A', 'r', 'r', 'o', 'w', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', ':', ' '}
+	nameAsync                                             = []byte{'\n', 'A', 's', 'y', 'n', 'c', ':', ' '}
 	nameBindingIdentifier                                 = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
-	nameCoverParenthesizedExpressionAndArrowParameterList = []byte{'\n', 'C', 'o', 'v', 'e', 'r', 'P', 'a', 'r', 'e', 'n', 't', 'h', 'e', 's', 'i', 'z', 'e', 'd', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'A', 'n', 'd', 'A', 'r', 'r', 'o', 'w', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 'L', 'i', 's', 't', ':', ' '}
 	nameFormalParameters                                  = []byte{'\n', 'F', 'o', 'r', 'm', 'a', 'l', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 's', ':', ' '}
 	nameAssignmentExpression                              = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameFunctionBody                                      = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'B', 'o', 'd', 'y', ':', ' '}
+	nameAssignmentElement                                 = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
+	nameDestructuringAssignmentTarget                     = []byte{'\n', 'D', 'e', 's', 't', 'r', 'u', 'c', 't', 'u', 'r', 'i', 'n', 'g', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'T', 'a', 'r', 'g', 'e', 't', ':', ' '}
+	nameInitializer                                       = []byte{'\n', 'I', 'n', 'i', 't', 'i', 'a', 'l', 'i', 'z', 'e', 'r', ':', ' '}
 	nameConditionalExpression                             = []byte{'\n', 'C', 'o', 'n', 'd', 'i', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameLeftHandSideExpression                            = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameLeftHandSideArray                                 = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'A', 'r', 'r', 'a', 'y', ':', ' '}
-	nameLeftHandSideObject                                = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'O', 'b', 'j', 'e', 'c', 't', ':', ' '}
+	nameAssignmentPattern                                 = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
+	nameYield                                             = []byte{'\n', 'Y', 'i', 'e', 'l', 'd', ':', ' '}
+	nameDelegate                                          = []byte{'\n', 'D', 'e', 'l', 'e', 'g', 'a', 't', 'e', ':', ' '}
 	nameAssignmentOperator                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
+	nameObjectAssignmentPattern                           = []byte{'\n', 'O', 'b', 'j', 'e', 'c', 't', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
+	nameAssignmentProperty                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
+	namePropertyName                                      = []byte{'\n', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameBindingElement                                    = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameSingleNameBinding                                 = []byte{'\n', 'S', 'i', 'n', 'g', 'l', 'e', 'N', 'a', 'm', 'e', 'B', 'i', 'n', 'd', 'i', 'n', 'g', ':', ' '}
 	nameObjectBindingPattern                              = []byte{'\n', 'O', 'b', 'j', 'e', 'c', 't', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
-	nameInitializer                                       = []byte{'\n', 'I', 'n', 'i', 't', 'i', 'a', 'l', 'i', 'z', 'e', 'r', ':', ' '}
 	nameBindingProperty                                   = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
-	namePropertyName                                      = []byte{'\n', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameBitwiseANDExpression                              = []byte{'\n', 'B', 'i', 't', 'w', 'i', 's', 'e', 'A', 'N', 'D', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameEqualityExpression                                = []byte{'\n', 'E', 'q', 'u', 'a', 'l', 'i', 't', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameBitwiseORExpression                               = []byte{'\n', 'B', 'i', 't', 'w', 'i', 's', 'e', 'O', 'R', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
@@ -40,6 +49,7 @@ var (
 	nameStatementList                                     = []byte{'\n', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameCallExpression                                    = []byte{'\n', 'C', 'a', 'l', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameMemberExpression                                  = []byte{'\n', 'M', 'e', 'm', 'b', 'e', 'r', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameSuperCall                                         = []byte{'\n', 'S', 'u', 'p', 'e', 'r', 'C', 'a', 'l', 'l', ':', ' '}
 	nameImportCall                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'C', 'a', 'l', 'l', ':', ' '}
 	nameExpression                                        = []byte{'\n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameIdentifierName                                    = []byte{'\n', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', 'N', 'a', 'm', 'e', ':', ' '}
@@ -48,10 +58,16 @@ var (
 	nameClassDeclaration                                  = []byte{'\n', 'C', 'l', 'a', 's', 's', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameClassHeritage                                     = []byte{'\n', 'C', 'l', 'a', 's', 's', 'H', 'e', 'r', 'i', 't', 'a', 'g', 'e', ':', ' '}
 	nameClassBody                                         = []byte{'\n', 'C', 'l', 'a', 's', 's', 'B', 'o', 'd', 'y', ':', ' '}
+	nameCoalesceExpression                                = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameCoalesceExpressionHead                            = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'H', 'e', 'a', 'd', ':', ' '}
 	nameLogicalORExpression                               = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'O', 'R', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameTrue                                              = []byte{'\n', 'T', 'r', 'u', 'e', ':', ' '}
 	nameFalse                                             = []byte{'\n', 'F', 'a', 'l', 's', 'e', ':', ' '}
+	nameCoverParenthesizedExpressionAndArrowParameterList = []byte{'\n', 'C', 'o', 'v', 'e', 'r', 'P', 'a', 'r', 'e', 'n', 't', 'h', 'e', 's', 'i', 'z', 'e', 'd', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'A', 'n', 'd', 'A', 'r', 'r', 'o', 'w', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 'L', 'i', 's', 't', ':', ' '}
 	nameExpressions                                       = []byte{'\n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 's', ':', ' '}
+	namebindingIdentifier                                 = []byte{'\n', 'b', 'i', 'n', 'd', 'i', 'n', 'g', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
+	namearrayBindingPattern                               = []byte{'\n', 'a', 'r', 'r', 'a', 'y', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
+	nameobjectBindingPattern                              = []byte{'\n', 'o', 'b', 'j', 'e', 'c', 't', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
 	nameDeclaration                                       = []byte{'\n', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameFunctionDeclaration                               = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameLexicalDeclaration                                = []byte{'\n', 'L', 'e', 'x', 'i', 'c', 'a', 'l', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
@@ -60,9 +76,9 @@ var (
 	nameExponentiationExpression                          = []byte{'\n', 'E', 'x', 'p', 'o', 'n', 'e', 'n', 't', 'i', 'a', 't', 'i', 'o', 'n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameUnaryExpression                                   = []byte{'\n', 'U', 'n', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameExportClause                                      = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
-	nameExportFromClause                                  = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'F', 'r', 'o', 'm', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
 	nameExportList                                        = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameExportDeclaration                                 = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
+	nameExportFromClause                                  = []byte{'\n', 'E', 'x', 'p', 'o', 'r', 't', 'F', 'r', 'o', 'm', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
 	nameFromClause                                        = []byte{'\n', 'F', 'r', 'o', 'm', 'C', 'l', 'a', 'u', 's', 'e', ':', ' '}
 	nameVariableStatement                                 = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameDefaultFunction                                   = []byte{'\n', 'D', 'e', 'f', 'a', 'u', 'l', 't', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', ':', ' '}
@@ -97,11 +113,15 @@ var (
 	nameOf                                                = []byte{'\n', 'O', 'f', ':', ' '}
 	nameIterationStatementWhile                           = []byte{'\n', 'I', 't', 'e', 'r', 'a', 't', 'i', 'o', 'n', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', 'W', 'h', 'i', 'l', 'e', ':', ' '}
 	nameNewExpression                                     = []byte{'\n', 'N', 'e', 'w', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameOptionalExpression                                = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameLexicalBinding                                    = []byte{'\n', 'L', 'e', 'x', 'i', 'c', 'a', 'l', 'B', 'i', 'n', 'd', 'i', 'n', 'g', ':', ' '}
 	nameLetOrConst                                        = []byte{'\n', 'L', 'e', 't', 'O', 'r', 'C', 'o', 'n', 's', 't', ':', ' '}
 	nameBindingList                                       = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'L', 'i', 's', 't', ':', ' '}
 	nameLogicalANDExpression                              = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'A', 'N', 'D', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePrimaryExpression                                 = []byte{'\n', 'P', 'r', 'i', 'm', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameSuperProperty                                     = []byte{'\n', 'S', 'u', 'p', 'e', 'r', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
+	nameNewTarget                                         = []byte{'\n', 'N', 'e', 'w', 'T', 'a', 'r', 'g', 'e', 't', ':', ' '}
+	nameImportMeta                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'M', 'e', 't', 'a', ':', ' '}
 	nameMethodDefinition                                  = []byte{'\n', 'M', 'e', 't', 'h', 'o', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
 	nameParams                                            = []byte{'\n', 'P', 'a', 'r', 'a', 'm', 's', ':', ' '}
 	nameModule                                            = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', ':', ' '}
@@ -110,15 +130,20 @@ var (
 	nameStatementListItem                                 = []byte{'\n', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', 'I', 't', 'e', 'm', ':', ' '}
 	nameMultiplicativeOperator                            = []byte{'\n', 'M', 'u', 'l', 't', 'i', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'v', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameImportList                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'L', 'i', 's', 't', ':', ' '}
+	nameNews                                              = []byte{'\n', 'N', 'e', 'w', 's', ':', ' '}
+	nameAssignmentPropertyList                            = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'L', 'i', 's', 't', ':', ' '}
 	nameBindingPropertyList                               = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'L', 'i', 's', 't', ':', ' '}
 	nameBindingRestProperty                               = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'R', 'e', 's', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
 	nameObjectLiteral                                     = []byte{'\n', 'O', 'b', 'j', 'e', 'c', 't', 'L', 'i', 't', 'e', 'r', 'a', 'l', ':', ' '}
 	namePropertyDefinitionList                            = []byte{'\n', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', 'L', 'i', 's', 't', ':', ' '}
+	nameOptionalChain                                     = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'C', 'h', 'a', 'i', 'n', ':', ' '}
+	nameThis                                              = []byte{'\n', 'T', 'h', 'i', 's', ':', ' '}
 	nameIdentifierReference                               = []byte{'\n', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', 'R', 'e', 'f', 'e', 'r', 'e', 'n', 'c', 'e', ':', ' '}
 	nameLiteral                                           = []byte{'\n', 'L', 'i', 't', 'e', 'r', 'a', 'l', ':', ' '}
 	nameFunctionExpression                                = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameClassExpression                                   = []byte{'\n', 'C', 'l', 'a', 's', 's', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePropertyDefinition                                = []byte{'\n', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
+	nameIsCoverInitializedName                            = []byte{'\n', 'I', 's', 'C', 'o', 'v', 'e', 'r', 'I', 'n', 'i', 't', 'i', 'a', 'l', 'i', 'z', 'e', 'd', 'N', 'a', 'm', 'e', ':', ' '}
 	nameLiteralPropertyName                               = []byte{'\n', 'L', 'i', 't', 'e', 'r', 'a', 'l', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameComputedPropertyName                              = []byte{'\n', 'C', 'o', 'm', 'p', 'u', 't', 'e', 'd', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameRelationshipOperator                              = []byte{'\n', 'R', 'e', 'l', 'a', 't', 'i', 'o', 'n', 's', 'h', 'i', 'p', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
@@ -151,10 +176,6 @@ var (
 	nameUpdateOperator                                    = []byte{'\n', 'U', 'p', 'd', 'a', 't', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameVariableDeclaration                               = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameVariableDeclarationList                           = []byte{'\n', 'V', 'a', 'r', 'i', 'a', 'b', 'l', 'e', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', 'L', 'i', 's', 't', ':', ' '}
-	nameOptionalExpression                                = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameOptionalChain                                     = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'C', 'h', 'a', 'i', 'n', ':', ' '}
-	nameCoalesceExpression                                = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameCoalesceExpressionHead                            = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'H', 'e', 'a', 'd', ':', ' '}
 )
 
 func (f *AdditiveExpression) printType(w io.Writer, v bool) {
@@ -201,6 +222,37 @@ func (f *Arguments) printType(w io.Writer, v bool) {
 		f.SpreadArgument.printType(&pp, v)
 	} else if v {
 		pp.Write(nameSpreadArgument)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *ArrayAssignmentPattern) printType(w io.Writer, v bool) {
+	w.Write(nameArrayAssignmentPattern[1:23])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if len(f.AssignmentElements) > 0 {
+		pp.Write(nameAssignmentElements)
+		pp.Write(arrayOpen)
+		ipp := indentPrinter{&pp}
+		for n, e := range f.AssignmentElements {
+			ipp.Printf("\n%d:", n)
+			e.printType(&ipp, v)
+		}
+		pp.Write(arrayClose)
+	} else if v {
+		pp.Write(nameAssignmentElements)
+		pp.Write(arrayOpenClose)
+	}
+	if f.AssignmentRestElement != nil {
+		pp.Write(nameAssignmentRestElement)
+		f.AssignmentRestElement.printType(&pp, v)
+	} else if v {
+		pp.Write(nameAssignmentRestElement)
 		pp.Write(nilStr)
 	}
 	if v {
@@ -314,6 +366,26 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *AssignmentElement) printType(w io.Writer, v bool) {
+	w.Write(nameAssignmentElement[1:18])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	pp.Write(nameDestructuringAssignmentTarget)
+	f.DestructuringAssignmentTarget.printType(&pp, v)
+	if f.Initializer != nil {
+		pp.Write(nameInitializer)
+		f.Initializer.printType(&pp, v)
+	} else if v {
+		pp.Write(nameInitializer)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 	w.Write(nameAssignmentExpression[1:21])
 	w.Write(objectOpen)
@@ -339,18 +411,11 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLeftHandSideExpression)
 		pp.Write(nilStr)
 	}
-	if f.LeftHandSideArray != nil {
-		pp.Write(nameLeftHandSideArray)
-		f.LeftHandSideArray.printType(&pp, v)
-	} else {
-		pp.Write(nameLeftHandSideArray)
-		pp.Write(nilStr)
-	}
-	if f.LeftHandSideObject != nil {
-		pp.Write(nameLeftHandSideObject)
-		f.LeftHandSideArray.printType(&pp, v)
-	} else {
-		pp.Write(nameLeftHandSideObject)
+	if f.AssignmentPattern != nil {
+		pp.Write(nameAssignmentPattern)
+		f.AssignmentPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameAssignmentPattern)
 		pp.Write(nilStr)
 	}
 	if f.Yield || v {
@@ -366,6 +431,58 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		f.AssignmentExpression.printType(&pp, v)
 	} else if v {
 		pp.Write(nameAssignmentExpression)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *AssignmentPattern) printType(w io.Writer, v bool) {
+	w.Write(nameAssignmentPattern[1:18])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.ObjectAssignmentPattern != nil {
+		pp.Write(nameObjectAssignmentPattern)
+		f.ObjectAssignmentPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameObjectAssignmentPattern)
+		pp.Write(nilStr)
+	}
+	if f.ArrayAssignmentPattern != nil {
+		pp.Write(nameArrayAssignmentPattern)
+		f.ArrayAssignmentPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameArrayAssignmentPattern)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *AssignmentProperty) printType(w io.Writer, v bool) {
+	w.Write(nameAssignmentProperty[1:19])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	pp.Write(namePropertyName)
+	f.PropertyName.printType(&pp, v)
+	if f.DestructuringAssignmentTarget != nil {
+		pp.Write(nameDestructuringAssignmentTarget)
+		f.DestructuringAssignmentTarget.printType(&pp, v)
+	} else if v {
+		pp.Write(nameDestructuringAssignmentTarget)
+		pp.Write(nilStr)
+	}
+	if f.Initializer != nil {
+		pp.Write(nameInitializer)
+		f.Initializer.printType(&pp, v)
+	} else if v {
+		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
 	if v {
@@ -652,7 +769,7 @@ func (f *CoalesceExpression) printType(w io.Writer, v bool) {
 		pp.Write(nilStr)
 	}
 	pp.Write(nameBitwiseORExpression)
-	f.BitwiseORExpression.printType(w, v)
+	f.BitwiseORExpression.printType(&pp, v)
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
@@ -716,6 +833,27 @@ func (f *CoverParenthesizedExpressionAndArrowParameterList) printType(w io.Write
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
+	if f.bindingIdentifier != nil {
+		pp.Write(namebindingIdentifier)
+		f.bindingIdentifier.printType(&pp, v)
+	} else if v {
+		pp.Write(namebindingIdentifier)
+		pp.Write(nilStr)
+	}
+	if f.arrayBindingPattern != nil {
+		pp.Write(namearrayBindingPattern)
+		f.arrayBindingPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(namearrayBindingPattern)
+		pp.Write(nilStr)
+	}
+	if f.objectBindingPattern != nil {
+		pp.Write(nameobjectBindingPattern)
+		f.objectBindingPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameobjectBindingPattern)
+		pp.Write(nilStr)
+	}
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
@@ -746,6 +884,31 @@ func (f *Declaration) printType(w io.Writer, v bool) {
 		f.LexicalDeclaration.printType(&pp, v)
 	} else if v {
 		pp.Write(nameLexicalDeclaration)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *DestructuringAssignmentTarget) printType(w io.Writer, v bool) {
+	w.Write(nameDestructuringAssignmentTarget[1:30])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.LeftHandSideExpression != nil {
+		pp.Write(nameLeftHandSideExpression)
+		f.LeftHandSideExpression.printType(&pp, v)
+	} else if v {
+		pp.Write(nameLeftHandSideExpression)
+		pp.Write(nilStr)
+	}
+	if f.AssignmentPattern != nil {
+		pp.Write(nameAssignmentPattern)
+		f.AssignmentPattern.printType(&pp, v)
+	} else if v {
+		pp.Write(nameAssignmentPattern)
 		pp.Write(nilStr)
 	}
 	if v {
@@ -1585,6 +1748,37 @@ func (f *NewExpression) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *ObjectAssignmentPattern) printType(w io.Writer, v bool) {
+	w.Write(nameObjectAssignmentPattern[1:24])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if len(f.AssignmentPropertyList) > 0 {
+		pp.Write(nameAssignmentPropertyList)
+		pp.Write(arrayOpen)
+		ipp := indentPrinter{&pp}
+		for n, e := range f.AssignmentPropertyList {
+			ipp.Printf("\n%d:", n)
+			e.printType(&ipp, v)
+		}
+		pp.Write(arrayClose)
+	} else if v {
+		pp.Write(nameAssignmentPropertyList)
+		pp.Write(arrayOpenClose)
+	}
+	if f.AssignmentRestElement != nil {
+		pp.Write(nameAssignmentRestElement)
+		f.AssignmentRestElement.printType(&pp, v)
+	} else if v {
+		pp.Write(nameAssignmentRestElement)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *ObjectBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(nameObjectBindingPattern[1:21])
 	w.Write(objectOpen)
@@ -1687,7 +1881,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 }
 
 func (f *OptionalExpression) printType(w io.Writer, v bool) {
-	w.Write(nameOptionalExpression[1:20])
+	w.Write(nameOptionalExpression[1:19])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
 	if f.MemberExpression != nil {
@@ -1724,8 +1918,12 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 	w.Write(namePrimaryExpression[1:18])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if f.This != nil || v {
-		pp.Printf("\nThis: %v", f.This)
+	if f.This != nil {
+		pp.Write(nameThis)
+		f.This.printType(&pp, v)
+	} else if v {
+		pp.Write(nameThis)
+		pp.Write(nilStr)
 	}
 	if f.IdentifierReference != nil {
 		pp.Write(nameIdentifierReference)
@@ -2336,7 +2534,7 @@ func (f *WithStatement) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
-// Format implements the fmt.Formatter interface
+// String implements the fmt.Stringer interface
 func (ft FunctionType) String() string {
 	switch ft {
 	case FunctionNormal:
