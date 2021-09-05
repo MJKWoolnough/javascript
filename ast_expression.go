@@ -256,6 +256,11 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// AssignmentPatternl as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-AssignmentPattern
+//
+// Only one of ObjectAssignmentPattern or ArrayAssignmentPattern must be
+// non-nil
 type AssignmentPattern struct {
 	ObjectAssignmentPattern *ObjectAssignmentPattern
 	ArrayAssignmentPattern  *ArrayAssignmentPattern
@@ -280,6 +285,8 @@ func (a *AssignmentPattern) from(p *PrimaryExpression) error {
 	return nil
 }
 
+// ObjectAssignmentPattern as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-ObjectAssignmentPattern
 type ObjectAssignmentPattern struct {
 	AssignmentPropertyList []AssignmentProperty
 	AssignmentRestElement  *LeftHandSideExpression
@@ -314,6 +321,8 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 	return nil
 }
 
+// AssignmentProperty as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-AssignmentProperty
 type AssignmentProperty struct {
 	PropertyName                  PropertyName
 	DestructuringAssignmentTarget *DestructuringAssignmentTarget
@@ -341,6 +350,10 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	return nil
 }
 
+// DestructuringAssignmentTarget as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-DestructuringAssignmentTarget
+//
+// Only one of LeftHandSideExpression or AssignmentPattern must be non-nil
 type DestructuringAssignmentTarget struct {
 	LeftHandSideExpression *LeftHandSideExpression
 	AssignmentPattern      *AssignmentPattern
@@ -369,6 +382,8 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression, rest bool
 	return nil
 }
 
+// AssignmentElement as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-AssignmentElement
 type AssignmentElement struct {
 	DestructuringAssignmentTarget DestructuringAssignmentTarget
 	Initializer                   *AssignmentExpression
@@ -385,6 +400,8 @@ func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 	return nil
 }
 
+// ArrayAssignmentPattern as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-ArrayAssignmentPattern
 type ArrayAssignmentPattern struct {
 	AssignmentElements    []AssignmentElement
 	AssignmentRestElement *LeftHandSideExpression
