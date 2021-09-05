@@ -373,7 +373,6 @@ logicalORExpression:
 //    *ExponentiationExpression
 //    *UnaryExpression
 //    *UpdateExpression
-//    *LeftHandSideExpression
 //    *CallExpression
 //    *NewExpression
 //    *MemberExpression
