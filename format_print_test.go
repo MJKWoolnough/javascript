@@ -1401,6 +1401,16 @@ func TestPrintingScript(t *testing.T) {
 			"a ??= 1;",
 			"a ??= 1;",
 		},
+		{ // 277
+			"[a, b] = [b, a]",
+			"[a, b] = [b, a];",
+			"[a, b] = [b, a];",
+		},
+		{ // 278
+			"[a.b, a.c] = [a.c, a.b]",
+			"[a.b, a.c] = [a.c, a.b];",
+			"[a.b, a.c] = [a.c, a.b];",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
