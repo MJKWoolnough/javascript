@@ -99,6 +99,30 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkLeftHandSideExpression(&t, fn)
 	case *javascript.LeftHandSideExpression:
 		return walkLeftHandSideExpression(t, fn)
+	case *javascript.AssignmentPattern:
+		return walkAssignmentPattern(t, fn)
+	case javascript.AssignmentPattern:
+		return walkAssignmentPattern(&t, fn)
+	case *javascript.ObjectAssignmentPattern:
+		return walkObjectAssignmentPattern(t, fn)
+	case javascript.ObjectAssignmentPattern:
+		return walkObjectAssignmentPattern(&t, fn)
+	case *javascript.AssignmentProperty:
+		return walkAssignmentProperty(t, fn)
+	case javascript.AssignmentProperty:
+		return walkAssignmentProperty(&t, fn)
+	case *javascript.DestructuringAssignmentTarget:
+		return walkDestructuringAssignmentTarget(t, fn)
+	case javascript.DestructuringAssignmentTarget:
+		return walkDestructuringAssignmentTarget(&t, fn)
+	case *javascript.AssignmentElement:
+		return walkAssignmentElement(t, fn)
+	case javascript.AssignmentElement:
+		return walkAssignmentElement(&t, fn)
+	case *javascript.ArrayAssignmentPattern:
+		return walkArrayAssignmentPattern(t, fn)
+	case javascript.ArrayAssignmentPattern:
+		return walkArrayAssignmentPattern(&t, fn)
 	case javascript.OptionalExpression:
 		return walkOptionalExpression(&t, fn)
 	case *javascript.OptionalExpression:
@@ -488,15 +512,11 @@ func walkAssignmentExpression(t *javascript.AssignmentExpression, fn Handler) er
 			return err
 		}
 	}
-	if t.LeftHandSideArray != nil {
-		if err := fn.Handle(t.LeftHandSideArray); err != nil {
+	if t.AssignmentPattern != nil {
+		if err := fn.Handle(t.AssignmentPattern); err != nil {
 			return err
 		}
-	}
-	if t.LeftHandSideObject != nil {
-		if err := fn.Handle(t.LeftHandSideObject); err != nil {
-			return err
-		}
+
 	}
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
@@ -519,6 +539,91 @@ func walkLeftHandSideExpression(t *javascript.LeftHandSideExpression, fn Handler
 	}
 	if t.OptionalExpression != nil {
 		if err := fn.Handle(t.OptionalExpression); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkAssignmentPattern(t *javascript.AssignmentPattern, fn Handler) error {
+	if t.ArrayAssignmentPattern != nil {
+		if err := fn.Handle(t.ArrayAssignmentPattern); err != nil {
+			return err
+		}
+	}
+	if t.ObjectAssignmentPattern != nil {
+		if err := fn.Handle(t.ObjectAssignmentPattern); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkObjectAssignmentPattern(t *javascript.ObjectAssignmentPattern, fn Handler) error {
+	for n := range t.AssignmentPropertyList {
+		if err := fn.Handle(&t.AssignmentPropertyList[n]); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentRestElement != nil {
+		if err := fn.Handle(t.AssignmentRestElement); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkAssignmentProperty(t *javascript.AssignmentProperty, fn Handler) error {
+	if err := fn.Handle(&t.PropertyName); err != nil {
+		return err
+	}
+	if t.DestructuringAssignmentTarget != nil {
+		if err := fn.Handle(t.DestructuringAssignmentTarget); err != nil {
+			return err
+		}
+	}
+	if t.Initializer != nil {
+		if err := fn.Handle(t.Initializer); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkDestructuringAssignmentTarget(t *javascript.DestructuringAssignmentTarget, fn Handler) error {
+	if t.LeftHandSideExpression != nil {
+		if err := fn.Handle(t.LeftHandSideExpression); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentPattern != nil {
+		if err := fn.Handle(t.AssignmentPattern); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkAssignmentElement(t *javascript.AssignmentElement, fn Handler) error {
+	if err := fn.Handle(&t.DestructuringAssignmentTarget); err != nil {
+		return err
+	}
+	if t.Initializer != nil {
+		if err := fn.Handle(t.Initializer); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkArrayAssignmentPattern(t *javascript.ArrayAssignmentPattern, fn Handler) error {
+	for n := range t.AssignmentElements {
+		if err := fn.Handle(&t.AssignmentElements[n]); err != nil {
+			return err
+		}
+	}
+	if t.AssignmentRestElement != nil {
+		if err := fn.Handle(t.AssignmentRestElement); err != nil {
 			return err
 		}
 	}
