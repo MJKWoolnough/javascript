@@ -32,6 +32,14 @@ Javascript Token values
 
 ```go
 var (
+	ErrBadRestElement                       = errors.New("bad rest element")
+	ErrInvalidAssignmentProperty            = errors.New("invalid assignment property")
+	ErrInvalidDestructuringAssignmentTarget = errors.New("invalid DestructuringAssignmentTarget")
+)
+```
+
+```go
+var (
 	ErrInvalidQuoted                  = errors.New("invalid quoted string")
 	ErrInvalidMethodName              = errors.New("invalid method name")
 	ErrInvalidPropertyName            = errors.New("invalid property name")
@@ -181,6 +189,26 @@ func (f Arguments) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type ArrayAssignmentPattern
+
+```go
+type ArrayAssignmentPattern struct {
+	AssignmentElements    []AssignmentElement
+	AssignmentRestElement *LeftHandSideExpression
+	Tokens                Tokens
+}
+```
+
+ArrayAssignmentPattern as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-ArrayAssignmentPattern
+
+#### func (ArrayAssignmentPattern) Format
+
+```go
+func (f ArrayAssignmentPattern) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type ArrayBindingPattern
 
 ```go
@@ -250,6 +278,26 @@ func (f ArrowFunction) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type AssignmentElement
+
+```go
+type AssignmentElement struct {
+	DestructuringAssignmentTarget DestructuringAssignmentTarget
+	Initializer                   *AssignmentExpression
+	Tokens                        Tokens
+}
+```
+
+AssignmentElement as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-AssignmentElement
+
+#### func (AssignmentElement) Format
+
+```go
+func (f AssignmentElement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type AssignmentExpression
 
 ```go
@@ -257,8 +305,7 @@ type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
 	LeftHandSideExpression *LeftHandSideExpression
-	LeftHandSideArray      *ArrayBindingPattern
-	LeftHandSideObject     *ObjectBindingPattern
+	AssignmentPattern      *AssignmentPattern
 	Yield                  bool
 	Delegate               bool
 	AssignmentOperator     AssignmentOperator
@@ -331,6 +378,49 @@ Valid AssignmentOperator's
 func (a AssignmentOperator) String() string
 ```
 String implements the fmt.Stringer interface
+
+#### type AssignmentPattern
+
+```go
+type AssignmentPattern struct {
+	ObjectAssignmentPattern *ObjectAssignmentPattern
+	ArrayAssignmentPattern  *ArrayAssignmentPattern
+	Tokens                  Tokens
+}
+```
+
+AssignmentPatternl as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-AssignmentPattern
+
+Only one of ObjectAssignmentPattern or ArrayAssignmentPattern must be non-nil
+
+#### func (AssignmentPattern) Format
+
+```go
+func (f AssignmentPattern) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type AssignmentProperty
+
+```go
+type AssignmentProperty struct {
+	PropertyName                  PropertyName
+	DestructuringAssignmentTarget *DestructuringAssignmentTarget
+	Initializer                   *AssignmentExpression
+	Tokens                        Tokens
+}
+```
+
+AssignmentProperty as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-AssignmentProperty
+
+#### func (AssignmentProperty) Format
+
+```go
+func (f AssignmentProperty) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
 
 #### type BindingElement
 
@@ -656,7 +746,6 @@ Possible returns types are as follows:
     *ExponentiationExpression
     *UnaryExpression
     *UpdateExpression
-    *LeftHandSideExpression
     *CallExpression
     *NewExpression
     *MemberExpression
@@ -712,6 +801,28 @@ non-nil
 
 ```go
 func (f Declaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type DestructuringAssignmentTarget
+
+```go
+type DestructuringAssignmentTarget struct {
+	LeftHandSideExpression *LeftHandSideExpression
+	AssignmentPattern      *AssignmentPattern
+	Tokens                 Tokens
+}
+```
+
+DestructuringAssignmentTarget as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-DestructuringAssignmentTarget
+
+Only one of LeftHandSideExpression or AssignmentPattern must be non-nil
+
+#### func (DestructuringAssignmentTarget) Format
+
+```go
+func (f DestructuringAssignmentTarget) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
@@ -1038,7 +1149,7 @@ Valid FunctionType's
 ```go
 func (ft FunctionType) String() string
 ```
-Format implements the fmt.Formatter interface
+String implements the fmt.Stringer interface
 
 #### type IfStatement
 
@@ -1579,6 +1690,26 @@ MemberExpression
 
 ```go
 func (f NewExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ObjectAssignmentPattern
+
+```go
+type ObjectAssignmentPattern struct {
+	AssignmentPropertyList []AssignmentProperty
+	AssignmentRestElement  *LeftHandSideExpression
+	Tokens                 Tokens
+}
+```
+
+ObjectAssignmentPattern as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-ObjectAssignmentPattern
+
+#### func (ObjectAssignmentPattern) Format
+
+```go
+func (f ObjectAssignmentPattern) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
