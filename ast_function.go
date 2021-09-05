@@ -217,12 +217,20 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 			}
 		}
 	case AssignmentAssign:
-		if ae.LeftHandSideArray != nil {
-			be.ArrayBindingPattern = ae.LeftHandSideArray
-			be.Initializer = ae.AssignmentExpression
-		} else if ae.LeftHandSideObject != nil {
-			be.ObjectBindingPattern = ae.LeftHandSideObject
-			be.Initializer = ae.AssignmentExpression
+		if ae.AssignmentPattern != nil {
+			if ae.AssignmentPattern.ArrayAssignmentPattern != nil {
+				be.ArrayBindingPattern = new(ArrayBindingPattern)
+				if err := be.ArrayBindingPattern.fromAP(ae.AssignmentPattern.ArrayAssignmentPattern); err != nil {
+					return err
+				}
+				be.Initializer = ae.AssignmentExpression
+			} else {
+				be.ObjectBindingPattern = new(ObjectBindingPattern)
+				if err := be.ObjectBindingPattern.fromAP(ae.AssignmentPattern.ObjectAssignmentPattern); err != nil {
+					return err
+				}
+				be.Initializer = ae.AssignmentExpression
+			}
 		} else if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
 			pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
 			be.Initializer = ae.AssignmentExpression
@@ -250,5 +258,31 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 		return ErrNoIdentifier
 	}
 	be.Tokens = ae.Tokens
+	return nil
+}
+
+func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPattern) error {
+	if lhs != nil {
+		if lhs.NewExpression == nil || lhs.NewExpression.News != 0 || lhs.NewExpression.MemberExpression.PrimaryExpression == nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
+			return ErrNoIdentifier
+		}
+		be.SingleNameBinding = lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
+		be.Tokens = lhs.Tokens
+	} else if ap != nil {
+		if ap.ArrayAssignmentPattern != nil {
+			be.ArrayBindingPattern = new(ArrayBindingPattern)
+			if err := be.ArrayBindingPattern.fromAP(ap.ArrayAssignmentPattern); err != nil {
+				return err
+			}
+		} else {
+			be.ObjectBindingPattern = new(ObjectBindingPattern)
+			if err := be.ObjectBindingPattern.fromAP(ap.ObjectAssignmentPattern); err != nil {
+				return err
+			}
+		}
+		be.Tokens = ap.Tokens
+	} else {
+		return ErrNoIdentifier
+	}
 	return nil
 }
