@@ -75,12 +75,11 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 // https://262.ecma-international.org/11.0/#prod-AssignmentExpression
 //
 // It is only valid for one of ConditionalExpression, ArrowFunction,
-// LeftHandSideExpression, LeftHandSideArray, and LeftHandSideObject to be
-// non-nil.
+// LeftHandSideExpression, and AssignmentPattern to be non-nil.
 //
-// If LeftHandSideExpression, LeftHandSideArray, or LeftHandSideObject are
-// non-nil, then AssignmentOperator must not be AssignmentNone and
-// AssignmentExpression must be non-nil.
+// If LeftHandSideExpression, or AssignmentPattern are non-nil, then
+// AssignmentOperator must not be AssignmentNone and AssignmentExpression must
+// be non-nil.
 //
 // If LeftHandSideArray, or LeftHandSideObject are non-nil, AssignmentOperator
 // must be AssignmentAssign.
@@ -89,8 +88,8 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 //
 // If AssignmentOperator is AssignmentNone LeftHandSideExpression must be nil.
 //
-// If LeftHandSideExpression, LeftHandSideArray, and LeftHandSideObject are nil
-// and Yield is false, AssignmentExpression must be nil.
+// If LeftHandSideExpression, and AssignmentPattern are nil and Yield is false,
+// AssignmentExpression must be nil.
 type AssignmentExpression struct {
 	ConditionalExpression  *ConditionalExpression
 	ArrowFunction          *ArrowFunction
