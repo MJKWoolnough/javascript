@@ -309,6 +309,7 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 					return z.Error("ObjectAssignmentPattern", ErrBadRestElement)
 				}
 				o.AssignmentRestElement = dat.LeftHandSideExpression
+				break
 			}
 		}
 		if err := o.AssignmentPropertyList[n].from(pd); err != nil {
