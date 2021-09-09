@@ -412,9 +412,11 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 	a.AssignmentElements = make([]AssignmentElement, len(al.ElementList))
 	for n := range al.ElementList {
 		ae := &al.ElementList[n]
-		if err := a.AssignmentElements[n].from(ae); err != nil {
-			z := jsParser(al.Tokens[:1])
-			return z.Error("ArrayAssignmentPattern", err)
+		if len(ae.Tokens) > 0 {
+			if err := a.AssignmentElements[n].from(ae); err != nil {
+				z := jsParser(al.Tokens[:1])
+				return z.Error("ArrayAssignmentPattern", err)
+			}
 		}
 	}
 	if al.SpreadElement != nil {
