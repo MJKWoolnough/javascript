@@ -827,6 +827,7 @@ func (o ObjectAssignmentPattern) printSource(w io.Writer, v bool) {
 		w.Write(ellipsis)
 		o.AssignmentRestElement.printSource(w, v)
 	}
+	w.Write(blockClose)
 }
 
 func (a AssignmentElement) printSource(w io.Writer, v bool) {
