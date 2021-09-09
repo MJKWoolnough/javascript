@@ -239,11 +239,13 @@ func (b Block) printSource(w io.Writer, v bool) {
 	for _, stmt := range b.StatementList {
 		if v {
 			if len(stmt.Tokens) > 0 {
-				if ll := stmt.Tokens[0].Line; ll > lastLine {
+				ll := stmt.Tokens[0].Line
+				if ll > lastLine {
 					pp.Write(newLine)
 				} else {
 					pp.Write(space)
 				}
+				lastLine = ll
 			} else {
 				pp.Write(newLine)
 			}
