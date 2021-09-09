@@ -1446,6 +1446,16 @@ func TestPrintingScript(t *testing.T) {
 			"({a, b, ...c} = d);",
 			"({a: a, b: b, ...c} = d);",
 		},
+		{ // 286
+			"({a:{b,c: d,...e},...f}=g)",
+			"({a: {b, c: d, ...e}, ...f} = g);",
+			"({a: {b: b, c: d, ...e}, ...f} = g);",
+		},
+		{ // 287
+			"[a, ,[b,{c},,...d],,...e]=f",
+			"[a, , [b, {c}, , ...d], , ...e] = f;",
+			"[a, , [b, {c: c}, , ...d], , ...e] = f;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
