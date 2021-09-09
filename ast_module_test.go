@@ -1472,6 +1472,13 @@ func TestExportDeclaration(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
+		{"export * as ;", func(t *test, tk Tokens) { //24
+			t.Err = Error{
+				Err:     ErrNoIdentifier,
+				Parsing: "ExportDeclaration",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ed ExportDeclaration
 		err := ed.parse(&t.Tokens)
