@@ -841,6 +841,9 @@ func (a AssignmentElement) printSource(w io.Writer, v bool) {
 func (a AssignmentProperty) printSource(w io.Writer, v bool) {
 	a.PropertyName.printSource(w, v)
 	if a.DestructuringAssignmentTarget != nil {
+		if !v && a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == a.PropertyName.LiteralPropertyName.Data {
+			return
+		}
 		w.Write(colonSep)
 		a.DestructuringAssignmentTarget.printSource(w, v)
 	}
