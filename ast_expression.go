@@ -255,7 +255,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-// AssignmentPatternl as defined in ECMA-262
+// AssignmentPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentPattern
 //
 // Only one of ObjectAssignmentPattern or ArrayAssignmentPattern must be
