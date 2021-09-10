@@ -371,13 +371,17 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression, rest bool
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 	}
 	switch UnwrapConditional(ae.ConditionalExpression).(type) {
-	case *CallExpression, *NewExpression, *MemberExpression, *PrimaryExpression, *FunctionDeclaration, *ClassDeclaration, *TemplateLiteral, *CoverParenthesizedExpressionAndArrowParameterList:
-		d.LeftHandSideExpression = ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression
 	case *ArrayLiteral, *ObjectLiteral:
 		d.AssignmentPattern = new(AssignmentPattern)
 		if err := d.AssignmentPattern.from(ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 			z := jsParser(ae.Tokens[:1])
 			return z.Error("DestructuringAssignmentTarget", err)
+		}
+	case *CallExpression, *MemberExpression, *PrimaryExpression:
+		d.LeftHandSideExpression = ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression
+		if !d.LeftHandSideExpression.IsSimple() {
+			z := jsParser(ae.Tokens[:1])
+			return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 		}
 	default:
 		z := jsParser(ae.Tokens[:1])
