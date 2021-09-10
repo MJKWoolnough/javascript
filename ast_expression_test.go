@@ -1865,6 +1865,29 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
+		{"[1] =", func(t *test, tk Tokens) { // 40
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidDestructuringAssignmentTarget,
+								Parsing: "DestructuringAssignmentTarget",
+								Token:   tk[1],
+							},
+							Parsing: "AssignmentElement",
+							Token:   tk[1],
+						},
+						Parsing: "ArrayAssignmentPattern",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[1],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
