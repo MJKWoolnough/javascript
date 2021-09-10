@@ -255,6 +255,11 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+// IsSimple returns whether or not the LeftHandSideExpression is classed as 'simple'
+func (lhs *LeftHandSideExpression) IsSimple() bool {
+	return lhs.OptionalExpression == nil && (lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.IsSimple() || lhs.CallExpression != nil && lhs.CallExpression.IsSimple())
+}
+
 // AssignmentPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentPattern
 //
@@ -815,6 +820,11 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
+// IsSimple returns whether or not the MemberExpression is classed as 'simple'
+func (me *MemberExpression) IsSimple() bool {
+	return me.Expression != nil || me.IdentifierName != nil || me.SuperProperty || (me.PrimaryExpression != nil && me.PrimaryExpression.IsSimple())
+}
+
 // PrimaryExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-PrimaryExpression
 //
@@ -890,6 +900,11 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 	}
 	pe.Tokens = j.ToTokens()
 	return nil
+}
+
+// IsSimple returns whether or not the PrimaryExpression is classed as 'simple'
+func (pe *PrimaryExpression) IsSimple() bool {
+	return pe.IdentifierReference != nil && pe.IdentifierReference.Data != "eval" && pe.IdentifierReference.Data != "arguments"
 }
 
 // CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
@@ -1130,6 +1145,11 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		}
 		j.Score(g)
 	}
+}
+
+// IsSimple returns whether or not the CallExpression is classed as 'simple'
+func (ce *CallExpression) IsSimple() bool {
+	return ce.Expression != nil || ce.IdentifierName != nil
 }
 
 var (
