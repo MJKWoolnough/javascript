@@ -1839,6 +1839,32 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:23],
 			}
 		}},
+		{"async (1) => 1", func(t *test, tk Tokens) { // 38
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrNoIdentifier,
+							Parsing: "BindingElement",
+							Token:   tk[3],
+						},
+						Parsing: "FormalParameters",
+						Token:   tk[3],
+					},
+					Parsing: "ArrowFunction",
+					Token:   tk[2],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"(...a)", func(t *test, tk Tokens) { // 39
+			t.Err = Error{
+				Err:     ErrMissingArrow,
+				Parsing: "AssignmentExpression",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
