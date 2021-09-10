@@ -804,6 +804,29 @@ func TestModuleItem(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{"import.meta", func(t *test, tk Tokens) { // 8
+			t.Output = ModuleItem{
+				StatementListItem: &StatementListItem{
+					Statement: &Statement{
+						ExpressionStatement: &Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: WrapConditional(MemberExpression{
+										ImportMeta: true,
+										Tokens:     tk[:3],
+									}),
+									Tokens: tk[:3],
+								},
+							},
+							Tokens: tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var mi ModuleItem
 		err := mi.parse(&t.Tokens)
