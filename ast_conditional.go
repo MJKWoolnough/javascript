@@ -684,9 +684,15 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 		g = j.NewGoal()
 		g.AcceptRunWhitespaceNoNewLine()
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "++"}) {
+			if !ue.LeftHandSideExpression.IsSimple() {
+				return j.Error("UpdateExpression", ErrNotSimple)
+			}
 			j.Score(g)
 			ue.UpdateOperator = UpdatePostIncrement
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "--"}) {
+			if !ue.LeftHandSideExpression.IsSimple() {
+				return j.Error("UpdateExpression", ErrNotSimple)
+			}
 			j.Score(g)
 			ue.UpdateOperator = UpdatePostDecrement
 		}
