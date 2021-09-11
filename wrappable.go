@@ -1,5 +1,8 @@
 package javascript
 
+// ConditionalWrappable is an interface that is implemented by all types that
+// are accepted by the WrapConditional function, and is the returned type of
+// the UnwrapConditional function
 type ConditionalWrappable interface {
 	conditionalWrapabble()
 }
