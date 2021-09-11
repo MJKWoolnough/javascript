@@ -35,8 +35,10 @@ var (
 	ErrBadRestElement                       = errors.New("bad rest element")
 	ErrInvalidAssignmentProperty            = errors.New("invalid assignment property")
 	ErrInvalidDestructuringAssignmentTarget = errors.New("invalid DestructuringAssignmentTarget")
+	ErrNotSimple                            = errors.New("not a simple expression")
 )
 ```
+Errors
 
 ```go
 var (
@@ -588,6 +590,13 @@ func (f CallExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### func (*CallExpression) IsSimple
+
+```go
+func (ce *CallExpression) IsSimple() bool
+```
+IsSimple returns whether or not the CallExpression is classed as 'simple'
+
 #### type CaseClause
 
 ```go
@@ -721,6 +730,9 @@ type ConditionalWrappable interface {
 }
 ```
 
+ConditionalWrappable is an interface that is implemented by all types that are
+accepted by the WrapConditional function, and is the returned type of the
+UnwrapConditional function
 
 #### func  UnwrapConditional
 
@@ -1350,6 +1362,14 @@ func (f LeftHandSideExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### func (*LeftHandSideExpression) IsSimple
+
+```go
+func (lhs *LeftHandSideExpression) IsSimple() bool
+```
+IsSimple returns whether or not the LeftHandSideExpression is classed as
+'simple'
+
 #### type LetOrConst
 
 ```go
@@ -1494,6 +1514,13 @@ Arguments is non-nil.
 func (f MemberExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### func (*MemberExpression) IsSimple
+
+```go
+func (me *MemberExpression) IsSimple() bool
+```
+IsSimple returns whether or not the MemberExpression is classed as 'simple'
 
 #### type MethodDefinition
 
@@ -1833,6 +1860,13 @@ CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
 func (f PrimaryExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### func (*PrimaryExpression) IsSimple
+
+```go
+func (pe *PrimaryExpression) IsSimple() bool
+```
+IsSimple returns whether or not the PrimaryExpression is classed as 'simple'
 
 #### type PropertyDefinition
 
