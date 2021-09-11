@@ -1156,6 +1156,7 @@ func (ce *CallExpression) IsSimple() bool {
 	return ce.Expression != nil || ce.IdentifierName != nil
 }
 
+// Errors
 var (
 	ErrBadRestElement                       = errors.New("bad rest element")
 	ErrInvalidAssignmentProperty            = errors.New("invalid assignment property")
