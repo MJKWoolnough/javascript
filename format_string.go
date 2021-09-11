@@ -6,7 +6,6 @@ var (
 	nameAdditiveExpression                                = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameAdditiveOperator                                  = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameMultiplicativeExpression                          = []byte{'\n', 'M', 'u', 'l', 't', 'i', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameTokens                                            = []byte{'\n', 'T', 'o', 'k', 'e', 'n', 's', ':', ' '}
 	nameArguments                                         = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's', ':', ' '}
 	nameArgumentList                                      = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameSpreadArgument                                    = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', ':', ' '}
@@ -20,7 +19,6 @@ var (
 	nameElementList                                       = []byte{'\n', 'E', 'l', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameSpreadElement                                     = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrowFunction                                     = []byte{'\n', 'A', 'r', 'r', 'o', 'w', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', ':', ' '}
-	nameAsync                                             = []byte{'\n', 'A', 's', 'y', 'n', 'c', ':', ' '}
 	nameBindingIdentifier                                 = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameFormalParameters                                  = []byte{'\n', 'F', 'o', 'r', 'm', 'a', 'l', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 's', ':', ' '}
 	nameAssignmentExpression                              = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
@@ -31,8 +29,6 @@ var (
 	nameConditionalExpression                             = []byte{'\n', 'C', 'o', 'n', 'd', 'i', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameLeftHandSideExpression                            = []byte{'\n', 'L', 'e', 'f', 't', 'H', 'a', 'n', 'd', 'S', 'i', 'd', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameAssignmentPattern                                 = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
-	nameYield                                             = []byte{'\n', 'Y', 'i', 'e', 'l', 'd', ':', ' '}
-	nameDelegate                                          = []byte{'\n', 'D', 'e', 'l', 'e', 'g', 'a', 't', 'e', ':', ' '}
 	nameAssignmentOperator                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameObjectAssignmentPattern                           = []byte{'\n', 'O', 'b', 'j', 'e', 'c', 't', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
 	nameAssignmentProperty                                = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
@@ -49,7 +45,6 @@ var (
 	nameStatementList                                     = []byte{'\n', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
 	nameCallExpression                                    = []byte{'\n', 'C', 'a', 'l', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameMemberExpression                                  = []byte{'\n', 'M', 'e', 'm', 'b', 'e', 'r', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameSuperCall                                         = []byte{'\n', 'S', 'u', 'p', 'e', 'r', 'C', 'a', 'l', 'l', ':', ' '}
 	nameImportCall                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'C', 'a', 'l', 'l', ':', ' '}
 	nameExpression                                        = []byte{'\n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameIdentifierName                                    = []byte{'\n', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', 'N', 'a', 'm', 'e', ':', ' '}
@@ -119,9 +114,6 @@ var (
 	nameBindingList                                       = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'L', 'i', 's', 't', ':', ' '}
 	nameLogicalANDExpression                              = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'A', 'N', 'D', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePrimaryExpression                                 = []byte{'\n', 'P', 'r', 'i', 'm', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	nameSuperProperty                                     = []byte{'\n', 'S', 'u', 'p', 'e', 'r', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
-	nameNewTarget                                         = []byte{'\n', 'N', 'e', 'w', 'T', 'a', 'r', 'g', 'e', 't', ':', ' '}
-	nameImportMeta                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'M', 'e', 't', 'a', ':', ' '}
 	nameMethodDefinition                                  = []byte{'\n', 'M', 'e', 't', 'h', 'o', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
 	nameParams                                            = []byte{'\n', 'P', 'a', 'r', 'a', 'm', 's', ':', ' '}
 	nameModule                                            = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', ':', ' '}
@@ -130,7 +122,6 @@ var (
 	nameStatementListItem                                 = []byte{'\n', 'S', 't', 'a', 't', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', 'I', 't', 'e', 'm', ':', ' '}
 	nameMultiplicativeOperator                            = []byte{'\n', 'M', 'u', 'l', 't', 'i', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'v', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameImportList                                        = []byte{'\n', 'I', 'm', 'p', 'o', 'r', 't', 'L', 'i', 's', 't', ':', ' '}
-	nameNews                                              = []byte{'\n', 'N', 'e', 'w', 's', ':', ' '}
 	nameAssignmentPropertyList                            = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'L', 'i', 's', 't', ':', ' '}
 	nameBindingPropertyList                               = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'L', 'i', 's', 't', ':', ' '}
 	nameBindingRestProperty                               = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'R', 'e', 's', 't', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', ':', ' '}
@@ -143,7 +134,6 @@ var (
 	nameFunctionExpression                                = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameClassExpression                                   = []byte{'\n', 'C', 'l', 'a', 's', 's', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePropertyDefinition                                = []byte{'\n', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
-	nameIsCoverInitializedName                            = []byte{'\n', 'I', 's', 'C', 'o', 'v', 'e', 'r', 'I', 'n', 'i', 't', 'i', 'a', 'l', 'i', 'z', 'e', 'd', 'N', 'a', 'm', 'e', ':', ' '}
 	nameLiteralPropertyName                               = []byte{'\n', 'L', 'i', 't', 'e', 'r', 'a', 'l', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameComputedPropertyName                              = []byte{'\n', 'C', 'o', 'm', 'p', 'u', 't', 'e', 'd', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'y', 'N', 'a', 'm', 'e', ':', ' '}
 	nameRelationshipOperator                              = []byte{'\n', 'R', 'e', 'l', 'a', 't', 'i', 'o', 'n', 's', 'h', 'i', 'p', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
