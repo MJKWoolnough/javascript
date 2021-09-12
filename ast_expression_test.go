@@ -1879,13 +1879,13 @@ func TestAssignmentExpression(t *testing.T) {
 							Token:   tk[1],
 						},
 						Parsing: "ArrayAssignmentPattern",
-						Token:   tk[1],
+						Token:   tk[0],
 					},
 					Parsing: "AssignmentPattern",
-					Token:   tk[1],
+					Token:   tk[0],
 				},
 				Parsing: "AssignmentExpression",
-				Token:   tk[1],
+				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (Type, error) {
