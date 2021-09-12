@@ -1046,6 +1046,124 @@ func TestConditional(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
+		{"1++", func(t *test, tk Tokens) { // 77
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err:     ErrNotSimple,
+																	Parsing: "UpdateExpression",
+																	Token:   tk[1],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[0],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"1--", func(t *test, tk Tokens) { // 78
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err:     ErrNotSimple,
+																	Parsing: "UpdateExpression",
+																	Token:   tk[1],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[0],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
