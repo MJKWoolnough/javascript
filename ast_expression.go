@@ -340,6 +340,10 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 		z := jsParser(pd.Tokens[:0])
 		return z.Error("AssignmentProperty", ErrInvalidAssignmentProperty)
 	}
+	if pd.PropertyName.LiteralPropertyName == nil {
+		z := jsParser(pd.Tokens[:0])
+		return z.Error("AssignmentProperty", z.Error("PropertyName", ErrNotSimple))
+	}
 	a.PropertyName = *pd.PropertyName
 	if pd.IsCoverInitializedName {
 		a.Initializer = pd.AssignmentExpression
