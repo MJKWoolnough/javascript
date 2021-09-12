@@ -736,7 +736,6 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			h := g.NewGoal()
 			me.MemberExpression = new(MemberExpression)
 			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
-				h.backup()
 				err = j.Error("MemberExpression", err)
 				g.Score(h)
 				j.Score(g)
