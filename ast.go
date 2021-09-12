@@ -766,7 +766,8 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		af.FormalParameters = new(FormalParameters)
 		if err := af.FormalParameters.from(pe.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
-			return err
+			z := jsParser(pe.CoverParenthesizedExpressionAndArrowParameterList.Tokens)
+			return z.Error("ArrowFunction", err)
 		}
 	} else {
 		af.BindingIdentifier = pe.IdentifierReference
