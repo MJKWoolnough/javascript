@@ -197,9 +197,11 @@ func (e Error) Unwrap() error {
 }
 
 func (j *jsParser) Error(parsingFunc string, err error) error {
+	tk := j.next()
+	j.backup()
 	return Error{
 		Err:     err,
 		Parsing: parsingFunc,
-		Token:   j.next(),
+		Token:   tk,
 	}
 }
