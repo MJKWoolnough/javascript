@@ -163,7 +163,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
 							ae.AssignmentPattern = new(AssignmentPattern)
 							if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
-								z := jsParser(lhs.Tokens[:1])
+								z := jsParser(lhs.Tokens[:0])
 								return z.Error("AssignmentExpression", err)
 							}
 							ae.LeftHandSideExpression = nil
@@ -275,13 +275,13 @@ func (a *AssignmentPattern) from(p *PrimaryExpression) error {
 	if p.ArrayLiteral != nil {
 		a.ArrayAssignmentPattern = new(ArrayAssignmentPattern)
 		if err := a.ArrayAssignmentPattern.from(p.ArrayLiteral); err != nil {
-			z := jsParser(p.ArrayLiteral.Tokens[:1])
+			z := jsParser(p.ArrayLiteral.Tokens[:0])
 			return z.Error("AssignmentPattern", err)
 		}
 	} else {
 		a.ObjectAssignmentPattern = new(ObjectAssignmentPattern)
 		if err := a.ObjectAssignmentPattern.from(p.ObjectLiteral); err != nil {
-			z := jsParser(p.ObjectLiteral.Tokens[:1])
+			z := jsParser(p.ObjectLiteral.Tokens[:0])
 			return z.Error("AssignmentPattern", err)
 		}
 	}
@@ -306,11 +306,11 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 				o.AssignmentPropertyList = o.AssignmentPropertyList[:n:n]
 				var dat DestructuringAssignmentTarget
 				if err := dat.from(pd.AssignmentExpression, true); err != nil {
-					z := jsParser(ol.Tokens[:1])
+					z := jsParser(ol.Tokens[:0])
 					return z.Error("ObjectAssignmentPattern", err)
 				}
 				if dat.AssignmentPattern != nil {
-					z := jsParser(ol.Tokens[:1])
+					z := jsParser(ol.Tokens[:0])
 					return z.Error("ObjectAssignmentPattern", ErrBadRestElement)
 				}
 				o.AssignmentRestElement = dat.LeftHandSideExpression
@@ -318,7 +318,7 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 			}
 		}
 		if err := o.AssignmentPropertyList[n].from(pd); err != nil {
-			z := jsParser(pd.Tokens[:1])
+			z := jsParser(pd.Tokens[:0])
 			return z.Error("ObjectAssignmentPattern", err)
 		}
 	}
@@ -337,7 +337,7 @@ type AssignmentProperty struct {
 
 func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	if pd.MethodDefinition != nil || pd.PropertyName == nil {
-		z := jsParser(pd.Tokens[:1])
+		z := jsParser(pd.Tokens[:0])
 		return z.Error("AssignmentProperty", ErrInvalidAssignmentProperty)
 	}
 	a.PropertyName = *pd.PropertyName
@@ -346,7 +346,7 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	} else {
 		a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
 		if err := a.DestructuringAssignmentTarget.from(pd.AssignmentExpression, false); err != nil {
-			z := jsParser(pd.Tokens[:1])
+			z := jsParser(pd.Tokens[:0])
 			return z.Error("AssignmentProperty", err)
 		}
 		a.Initializer = pd.AssignmentExpression.AssignmentExpression
@@ -367,24 +367,24 @@ type DestructuringAssignmentTarget struct {
 
 func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression, rest bool) error {
 	if (rest && ae.AssignmentOperator != AssignmentNone) || (!rest && !(ae.AssignmentOperator == AssignmentNone || ae.AssignmentOperator == AssignmentAssign)) || ae.ConditionalExpression == nil {
-		z := jsParser(ae.Tokens[:1])
+		z := jsParser(ae.Tokens[:0])
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 	}
 	switch UnwrapConditional(ae.ConditionalExpression).(type) {
 	case *ArrayLiteral, *ObjectLiteral:
 		d.AssignmentPattern = new(AssignmentPattern)
 		if err := d.AssignmentPattern.from(ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression); err != nil {
-			z := jsParser(ae.Tokens[:1])
+			z := jsParser(ae.Tokens[:0])
 			return z.Error("DestructuringAssignmentTarget", err)
 		}
 	case *CallExpression, *MemberExpression, *PrimaryExpression:
 		d.LeftHandSideExpression = ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression
 		if !d.LeftHandSideExpression.IsSimple() {
-			z := jsParser(ae.Tokens[:1])
+			z := jsParser(ae.Tokens[:0])
 			return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 		}
 	default:
-		z := jsParser(ae.Tokens[:1])
+		z := jsParser(ae.Tokens[:0])
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 	}
 	d.Tokens = ae.Tokens
@@ -401,7 +401,7 @@ type AssignmentElement struct {
 
 func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 	if err := a.DestructuringAssignmentTarget.from(ae, false); err != nil {
-		z := jsParser(ae.Tokens[:1])
+		z := jsParser(ae.Tokens[:0])
 		return z.Error("AssignmentElement", err)
 	}
 	a.Initializer = ae.AssignmentExpression
@@ -423,7 +423,7 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 		ae := &al.ElementList[n]
 		if len(ae.Tokens) > 0 {
 			if err := a.AssignmentElements[n].from(ae); err != nil {
-				z := jsParser(al.Tokens[:1])
+				z := jsParser(al.Tokens[:0])
 				return z.Error("ArrayAssignmentPattern", err)
 			}
 		}
@@ -431,11 +431,11 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 	if al.SpreadElement != nil {
 		var dat DestructuringAssignmentTarget
 		if err := dat.from(al.SpreadElement, true); err != nil {
-			z := jsParser(al.Tokens[:1])
+			z := jsParser(al.Tokens[:0])
 			return z.Error("ArrayAssignmentPattern", err)
 		}
 		if dat.AssignmentPattern != nil {
-			z := jsParser(al.Tokens[:1])
+			z := jsParser(al.Tokens[:0])
 			return z.Error("ArrayAssignmentPattern", ErrBadRestElement)
 		}
 		a.AssignmentRestElement = dat.LeftHandSideExpression
