@@ -251,13 +251,15 @@ func (ab *ArrayBindingPattern) from(al *ArrayLiteral) error {
 	ab.BindingElementList = make([]BindingElement, len(al.ElementList))
 	for n := range al.ElementList {
 		if err := ab.BindingElementList[n].from(&al.ElementList[n]); err != nil {
-			return err
+			z := jsParser(ab.Tokens[:0])
+			return z.Error("ArrayBindingPattern", err)
 		}
 	}
 	if al.SpreadElement != nil {
 		ab.BindingRestElement = new(BindingElement)
 		if err := ab.BindingRestElement.from(al.SpreadElement); err != nil {
-			return err
+			z := jsParser(ab.Tokens[:0])
+			return z.Error("ArrayBindingPattern", err)
 		}
 	}
 	ab.Tokens = al.Tokens
@@ -268,14 +270,16 @@ func (ab *ArrayBindingPattern) fromAP(ap *ArrayAssignmentPattern) error {
 	ab.BindingElementList = make([]BindingElement, len(ap.AssignmentElements))
 	for n, ae := range ap.AssignmentElements {
 		if err := ab.BindingElementList[n].fromAP(ae.DestructuringAssignmentTarget.LeftHandSideExpression, ae.DestructuringAssignmentTarget.AssignmentPattern); err != nil {
-			return err
+			z := jsParser(ab.Tokens[:0])
+			return z.Error("ArrayBindingPattern", err)
 		}
 		ab.BindingElementList[n].Initializer = ae.Initializer
 	}
 	if ap.AssignmentRestElement != nil {
 		ab.BindingRestElement = new(BindingElement)
 		if err := ab.BindingRestElement.fromAP(ap.AssignmentRestElement, nil); err != nil {
-			return err
+			z := jsParser(ab.Tokens[:0])
+			return z.Error("ArrayBindingPattern", err)
 		}
 	}
 	ab.Tokens = ap.Tokens
