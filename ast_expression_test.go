@@ -1978,6 +1978,41 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"{a=b} = c", func(t *test, tk Tokens) { // 46
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ObjectAssignmentPattern: &ObjectAssignmentPattern{
+						AssignmentPropertyList: []AssignmentProperty{
+							{
+								PropertyName: PropertyName{
+									LiteralPropertyName: &tk[1],
+									Tokens:              tk[1:2],
+								},
+								Initializer: &AssignmentExpression{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										IdentifierReference: &tk[3],
+										Tokens:              tk[3:4],
+									}),
+									Tokens: tk[3:4],
+								},
+								Tokens: tk[1:4],
+							},
+						},
+						Tokens: tk[:5],
+					},
+					Tokens: tk[:5],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[8],
+						Tokens:              tk[8:9],
+					}),
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
