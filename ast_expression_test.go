@@ -1963,11 +1963,7 @@ func TestAssignmentExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: Error{
-							Err:     ErrInvalidDestructuringAssignmentTarget,
-							Parsing: "DestructuringAssignmentTarget",
-							Token:   tk[2],
-						},
+						Err:     ErrInvalidAssignment,
 						Parsing: "ObjectAssignmentPattern",
 						Token:   tk[2],
 					},

@@ -305,7 +305,11 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 			if n == len(ol.PropertyDefinitionList)-1 {
 				o.AssignmentPropertyList = o.AssignmentPropertyList[:n:n]
 				var dat DestructuringAssignmentTarget
-				if err := dat.from(pd.AssignmentExpression, true); err != nil {
+				if pd.AssignmentExpression.AssignmentOperator != AssignmentNone {
+					z := jsParser(pd.AssignmentExpression.Tokens[:0])
+					return z.Error("ObjectAssignmentPattern", ErrInvalidAssignment)
+				}
+				if err := dat.from(pd.AssignmentExpression); err != nil {
 					z := jsParser(pd.AssignmentExpression.Tokens[:0])
 					return z.Error("ObjectAssignmentPattern", err)
 				}
@@ -348,12 +352,18 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	if pd.IsCoverInitializedName {
 		a.Initializer = pd.AssignmentExpression
 	} else {
-		a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
-		if err := a.DestructuringAssignmentTarget.from(pd.AssignmentExpression, false); err != nil {
+		switch pd.AssignmentExpression.AssignmentOperator {
+		case AssignmentNone, AssignmentAssign:
+			a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
+			if err := a.DestructuringAssignmentTarget.from(pd.AssignmentExpression); err != nil {
+				z := jsParser(pd.Tokens[:0])
+				return z.Error("AssignmentProperty", err)
+			}
+			a.Initializer = pd.AssignmentExpression.AssignmentExpression
+		default:
 			z := jsParser(pd.Tokens[:0])
-			return z.Error("AssignmentProperty", err)
+			return z.Error("AssignmentProperty", ErrInvalidAssignment)
 		}
-		a.Initializer = pd.AssignmentExpression.AssignmentExpression
 	}
 	a.Tokens = pd.Tokens
 	return nil
@@ -369,8 +379,8 @@ type DestructuringAssignmentTarget struct {
 	Tokens                 Tokens
 }
 
-func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression, rest bool) error {
-	if (rest && ae.AssignmentOperator != AssignmentNone) || (!rest && !(ae.AssignmentOperator == AssignmentNone || ae.AssignmentOperator == AssignmentAssign)) || ae.ConditionalExpression == nil {
+func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
+	if ae.ConditionalExpression == nil {
 		z := jsParser(ae.Tokens[:0])
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 	}
@@ -404,11 +414,17 @@ type AssignmentElement struct {
 }
 
 func (a *AssignmentElement) from(ae *AssignmentExpression) error {
-	if err := a.DestructuringAssignmentTarget.from(ae, false); err != nil {
+	switch ae.AssignmentOperator {
+	case AssignmentNone, AssignmentAssign:
+		if err := a.DestructuringAssignmentTarget.from(ae); err != nil {
+			z := jsParser(ae.Tokens[:0])
+			return z.Error("AssignmentElement", err)
+		}
+		a.Initializer = ae.AssignmentExpression
+	default:
 		z := jsParser(ae.Tokens[:0])
-		return z.Error("AssignmentElement", err)
+		return z.Error("AssignmentElement", ErrInvalidAssignment)
 	}
-	a.Initializer = ae.AssignmentExpression
 	a.Tokens = ae.Tokens
 	return nil
 }
@@ -434,7 +450,11 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 	}
 	if al.SpreadElement != nil {
 		var dat DestructuringAssignmentTarget
-		if err := dat.from(al.SpreadElement, true); err != nil {
+		if al.SpreadElement.AssignmentOperator != AssignmentNone {
+			z := jsParser(al.Tokens[:0])
+			return z.Error("ArrayAssignmentPattern", ErrInvalidAssignment)
+		}
+		if err := dat.from(al.SpreadElement); err != nil {
 			z := jsParser(al.Tokens[:0])
 			return z.Error("ArrayAssignmentPattern", err)
 		}
