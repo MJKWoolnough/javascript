@@ -306,11 +306,11 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 				o.AssignmentPropertyList = o.AssignmentPropertyList[:n:n]
 				var dat DestructuringAssignmentTarget
 				if err := dat.from(pd.AssignmentExpression, true); err != nil {
-					z := jsParser(ol.Tokens[:0])
+					z := jsParser(pd.AssignmentExpression.Tokens[:0])
 					return z.Error("ObjectAssignmentPattern", err)
 				}
 				if dat.AssignmentPattern != nil {
-					z := jsParser(ol.Tokens[:0])
+					z := jsParser(dat.Tokens[:0])
 					return z.Error("ObjectAssignmentPattern", ErrBadRestElement)
 				}
 				o.AssignmentRestElement = dat.LeftHandSideExpression
