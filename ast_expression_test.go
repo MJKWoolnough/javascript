@@ -1839,7 +1839,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:23],
 			}
 		}},
-		{"async (1) => 1", func(t *test, tk Tokens) { // 38
+		{"async (1) => 1", func(t *test, tk Tokens) { // 39
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1858,14 +1858,14 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"(...a)", func(t *test, tk Tokens) { // 39
+		{"(...a)", func(t *test, tk Tokens) { // 40
 			t.Err = Error{
 				Err:     ErrMissingArrow,
 				Parsing: "AssignmentExpression",
 				Token:   tk[4],
 			}
 		}},
-		{"[1] =", func(t *test, tk Tokens) { // 40
+		{"[1] =", func(t *test, tk Tokens) { // 41
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1888,7 +1888,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"{[\"a\"]: b} = c", func(t *test, tk Tokens) { // 41
+		{"{[\"a\"]: b} = c", func(t *test, tk Tokens) { // 42
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1911,7 +1911,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"{...a} = b", func(t *test, tk Tokens) { // 42
+		{"{...a} = b", func(t *test, tk Tokens) { // 43
 			t.Output = AssignmentExpression{
 				AssignmentPattern: &AssignmentPattern{
 					ObjectAssignmentPattern: &ObjectAssignmentPattern{
@@ -1944,7 +1944,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"{...{a}} = b", func(t *test, tk Tokens) { // 43
+		{"{...{a}} = b", func(t *test, tk Tokens) { // 44
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1959,7 +1959,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"{...a=b} = c", func(t *test, tk Tokens) { // 44
+		{"{...a=b} = c", func(t *test, tk Tokens) { // 45
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
