@@ -2009,6 +2009,57 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"{a: b = c} = d", func(t *test, tk Tokens) { // 47
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ObjectAssignmentPattern: &ObjectAssignmentPattern{
+						AssignmentPropertyList: []AssignmentProperty{
+							{
+								PropertyName: PropertyName{
+									LiteralPropertyName: &tk[1],
+									Tokens:              tk[1:2],
+								},
+								DestructuringAssignmentTarget: &DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[4],
+													Tokens:              tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Initializer: &AssignmentExpression{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										IdentifierReference: &tk[8],
+										Tokens:              tk[8:9],
+									}),
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[1:9],
+							},
+						},
+						Tokens: tk[0:10],
+					},
+					Tokens: tk[0:10],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[13],
+						Tokens:              tk[13:14],
+					}),
+					Tokens: tk[13:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
