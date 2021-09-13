@@ -380,26 +380,31 @@ type DestructuringAssignmentTarget struct {
 }
 
 func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
-	if ae.ConditionalExpression == nil {
+	if ae.LeftHandSideExpression != nil {
+		d.LeftHandSideExpression = ae.LeftHandSideExpression
+	} else if ae.AssignmentPattern != nil {
+		d.AssignmentPattern = ae.AssignmentPattern
+	} else if ae.ConditionalExpression == nil {
 		z := jsParser(ae.Tokens[:0])
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
-	}
-	switch UnwrapConditional(ae.ConditionalExpression).(type) {
-	case *ArrayLiteral, *ObjectLiteral:
-		d.AssignmentPattern = new(AssignmentPattern)
-		if err := d.AssignmentPattern.from(ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression); err != nil {
-			z := jsParser(ae.Tokens[:0])
-			return z.Error("DestructuringAssignmentTarget", err)
-		}
-	case *CallExpression, *MemberExpression, *PrimaryExpression:
-		d.LeftHandSideExpression = ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression
-		if !d.LeftHandSideExpression.IsSimple() {
+	} else {
+		switch UnwrapConditional(ae.ConditionalExpression).(type) {
+		case *ArrayLiteral, *ObjectLiteral:
+			d.AssignmentPattern = new(AssignmentPattern)
+			if err := d.AssignmentPattern.from(ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+				z := jsParser(ae.Tokens[:0])
+				return z.Error("DestructuringAssignmentTarget", err)
+			}
+		case *CallExpression, *MemberExpression, *PrimaryExpression:
+			d.LeftHandSideExpression = ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression
+			if !d.LeftHandSideExpression.IsSimple() {
+				z := jsParser(ae.Tokens[:0])
+				return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
+			}
+		default:
 			z := jsParser(ae.Tokens[:0])
 			return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 		}
-	default:
-		z := jsParser(ae.Tokens[:0])
-		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 	}
 	d.Tokens = ae.Tokens
 	return nil
