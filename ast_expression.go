@@ -382,8 +382,10 @@ type DestructuringAssignmentTarget struct {
 func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
 	if ae.LeftHandSideExpression != nil {
 		d.LeftHandSideExpression = ae.LeftHandSideExpression
+		d.Tokens = ae.LeftHandSideExpression.Tokens
 	} else if ae.AssignmentPattern != nil {
 		d.AssignmentPattern = ae.AssignmentPattern
+		d.Tokens = ae.AssignmentPattern.Tokens
 	} else if ae.ConditionalExpression == nil {
 		z := jsParser(ae.Tokens[:0])
 		return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
@@ -405,8 +407,8 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
 			z := jsParser(ae.Tokens[:0])
 			return z.Error("DestructuringAssignmentTarget", ErrInvalidDestructuringAssignmentTarget)
 		}
+		d.Tokens = ae.ConditionalExpression.Tokens
 	}
-	d.Tokens = ae.Tokens
 	return nil
 }
 
