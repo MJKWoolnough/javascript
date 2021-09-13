@@ -4,6 +4,7 @@ package javascript
 // are accepted by the WrapConditional function, and is the returned type of
 // the UnwrapConditional function
 type ConditionalWrappable interface {
+	Type
 	conditionalWrapabble()
 }
 
