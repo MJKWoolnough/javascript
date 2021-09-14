@@ -352,18 +352,12 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	if pd.IsCoverInitializedName {
 		a.Initializer = pd.AssignmentExpression
 	} else {
-		switch pd.AssignmentExpression.AssignmentOperator {
-		case AssignmentNone, AssignmentAssign:
-			a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
-			if err := a.DestructuringAssignmentTarget.from(pd.AssignmentExpression); err != nil {
-				z := jsParser(pd.Tokens[:0])
-				return z.Error("AssignmentProperty", err)
-			}
-			a.Initializer = pd.AssignmentExpression.AssignmentExpression
-		default:
+		a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
+		if err := a.DestructuringAssignmentTarget.from(pd.AssignmentExpression); err != nil {
 			z := jsParser(pd.Tokens[:0])
-			return z.Error("AssignmentProperty", ErrInvalidAssignment)
+			return z.Error("AssignmentProperty", err)
 		}
+		a.Initializer = pd.AssignmentExpression.AssignmentExpression
 	}
 	a.Tokens = pd.Tokens
 	return nil
