@@ -2318,6 +2318,25 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"{a(){}} = b", func(t *test, tk Tokens) { // 55
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidAssignmentProperty,
+							Parsing: "AssignmentProperty",
+							Token:   tk[1],
+						},
+						Parsing: "ObjectAssignmentPattern",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
