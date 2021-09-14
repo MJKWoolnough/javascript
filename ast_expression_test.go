@@ -2337,6 +2337,39 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"[...a] = b", func(t *test, tk Tokens) { // 56
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ArrayAssignmentPattern: &ArrayAssignmentPattern{
+						AssignmentElements: []AssignmentElement{},
+						AssignmentRestElement: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[2],
+										Tokens:              tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[:4],
+					},
+					Tokens: tk[:4],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[7],
+						Tokens:              tk[7:8],
+					}),
+					Tokens: tk[7:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
