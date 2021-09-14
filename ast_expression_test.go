@@ -2122,6 +2122,75 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
+		{"{a: 1} = c", func(t *test, tk Tokens) { // 49
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidDestructuringAssignmentTarget,
+								Parsing: "DestructuringAssignmentTarget",
+								Token:   tk[4],
+							},
+							Parsing: "AssignmentProperty",
+							Token:   tk[1],
+						},
+						Parsing: "ObjectAssignmentPattern",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"{a: !b} = c", func(t *test, tk Tokens) { // 50
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidDestructuringAssignmentTarget,
+								Parsing: "DestructuringAssignmentTarget",
+								Token:   tk[4],
+							},
+							Parsing: "AssignmentProperty",
+							Token:   tk[1],
+						},
+						Parsing: "ObjectAssignmentPattern",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"{a: ()=>b} = c", func(t *test, tk Tokens) { // 51
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidDestructuringAssignmentTarget,
+								Parsing: "DestructuringAssignmentTarget",
+								Token:   tk[4],
+							},
+							Parsing: "AssignmentProperty",
+							Token:   tk[1],
+						},
+						Parsing: "ObjectAssignmentPattern",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
