@@ -2417,6 +2417,21 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"[...a=1] = c", func(t *test, tk Tokens) { // 58
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidAssignment,
+						Parsing: "ArrayAssignmentPattern",
+						Token:   tk[0],
+					},
+					Parsing: "AssignmentPattern",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
