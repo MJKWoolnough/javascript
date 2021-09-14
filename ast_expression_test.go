@@ -2370,6 +2370,53 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
+		{"[a().b] = c", func(t *test, tk Tokens) { // 57
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ArrayAssignmentPattern: &ArrayAssignmentPattern{
+						AssignmentElements: []AssignmentElement{
+							{
+								DestructuringAssignmentTarget: DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										CallExpression: &CallExpression{
+											CallExpression: &CallExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[1],
+														Tokens:              tk[1:2],
+													},
+													Tokens: tk[1:2],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[2:4],
+												},
+												Tokens: tk[1:4],
+											},
+											IdentifierName: &tk[5],
+											Tokens:         tk[1:6],
+										},
+										Tokens: tk[1:6],
+									},
+									Tokens: tk[1:6],
+								},
+								Tokens: tk[1:6],
+							},
+						},
+						Tokens: tk[:7],
+					},
+					Tokens: tk[:7],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[10],
+						Tokens:              tk[10:11],
+					}),
+					Tokens: tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
