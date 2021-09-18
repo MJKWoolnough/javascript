@@ -335,7 +335,7 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 	for _, pd := range ol.PropertyDefinitionList {
 		if pd.AssignmentExpression == nil {
-			z := jsParser(ol.Tokens)
+			z := jsParser(ol.Tokens[:0])
 			return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 		}
 		bp := BindingProperty{
@@ -348,7 +348,7 @@ func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 				bp.BindingElement.Initializer = pd.AssignmentExpression
 				bp.BindingElement.Tokens = pd.Tokens
 			} else if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
-				z := jsParser(ol.Tokens)
+				z := jsParser(ol.Tokens[:0])
 				return z.Error("ObjectBindingPattern", err)
 			}
 		} else {
@@ -356,7 +356,7 @@ func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
 				ob.BindingRestProperty = pe.IdentifierReference
 				break
 			} else {
-				z := jsParser(ol.Tokens)
+				z := jsParser(ol.Tokens[:0])
 				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 			}
 		}
@@ -370,13 +370,13 @@ func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
 	ob.BindingPropertyList = make([]BindingProperty, len(op.AssignmentPropertyList))
 	for n := range op.AssignmentPropertyList {
 		if err := ob.BindingPropertyList[n].fromAP(&op.AssignmentPropertyList[n]); err != nil {
-			z := jsParser(op.Tokens)
+			z := jsParser(op.Tokens[:0])
 			return z.Error("ObjectBindingPattern", err)
 		}
 	}
 	if op.AssignmentRestElement != nil {
 		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || op.AssignmentRestElement.NewExpression.News != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-			z := jsParser(op.Tokens)
+			z := jsParser(op.Tokens[:0])
 			return z.Error("ObjectBindingPattern", ErrBadRestElement)
 		}
 		ob.BindingRestProperty = op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
@@ -431,25 +431,25 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil {
 			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-				z := jsParser(bp.Tokens)
+				z := jsParser(bp.Tokens[:0])
 				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 			}
 			bp.BindingElement.SingleNameBinding = ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 		} else if ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern != nil {
 			bp.BindingElement.ArrayBindingPattern = new(ArrayBindingPattern)
 			if err := bp.BindingElement.ArrayBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern); err != nil {
-				z := jsParser(bp.Tokens)
+				z := jsParser(bp.Tokens[:0])
 				return z.Error("ObjectBindingPattern", err)
 			}
 		} else {
 			bp.BindingElement.ObjectBindingPattern = new(ObjectBindingPattern)
 			if err := bp.BindingElement.ObjectBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ObjectAssignmentPattern); err != nil {
-				z := jsParser(bp.Tokens)
+				z := jsParser(bp.Tokens[:0])
 				return z.Error("ObjectBindingPattern", err)
 			}
 		}
 	} else if bp.PropertyName.LiteralPropertyName == nil {
-		z := jsParser(bp.Tokens)
+		z := jsParser(bp.Tokens[:0])
 		return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 	} else {
 		bp.BindingElement.SingleNameBinding = bp.PropertyName.LiteralPropertyName
@@ -766,7 +766,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
 		af.FormalParameters = new(FormalParameters)
 		if err := af.FormalParameters.from(pe.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
-			z := jsParser(pe.CoverParenthesizedExpressionAndArrowParameterList.Tokens)
+			z := jsParser(pe.CoverParenthesizedExpressionAndArrowParameterList.Tokens[:0])
 			return z.Error("ArrowFunction", err)
 		}
 	} else {
