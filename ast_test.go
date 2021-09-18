@@ -2992,6 +2992,17 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"(()=>a) => b", func(t *test, tk Tokens) { // 28
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrNoIdentifier,
+					Parsing: "FormalParameters",
+					Token:   tk[0],
+				},
+				Parsing: "ArrowFunction",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
