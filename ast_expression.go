@@ -84,6 +84,8 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 //
 // If Yield is true, AssignmentExpression must be non-nil.
 //
+// It is only valid for Delagate to be true if Yield is also true.
+//
 // If AssignmentOperator is AssignmentNone LeftHandSideExpression must be nil.
 //
 // If LeftHandSideExpression, and AssignmentPattern are nil and Yield is false,
