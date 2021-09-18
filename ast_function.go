@@ -241,7 +241,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 		}
 	default:
 		z := jsParser(ae.Tokens[:0])
-		return z.Error("BindingElement", ErrNoIdentifier)
+		return z.Error("BindingElement", ErrInvalidAssignment)
 	}
 	if pe == nil {
 		if be.ArrayBindingPattern == nil && be.ObjectBindingPattern == nil {
