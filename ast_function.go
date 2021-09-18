@@ -139,7 +139,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 func (fp *FormalParameters) from(ce *CoverParenthesizedExpressionAndArrowParameterList) error {
 	for n := range ce.Expressions {
 		ae := &ce.Expressions[n]
-		if ae.Delegate || ae.Yield || ae.ArrowFunction != nil {
+		if ae.Yield || ae.ArrowFunction != nil {
 			z := jsParser(ce.Tokens)
 			return z.Error("FormalParameters", ErrNoIdentifier)
 		}
