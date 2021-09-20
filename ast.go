@@ -251,14 +251,14 @@ func (ab *ArrayBindingPattern) from(al *ArrayLiteral) error {
 	ab.BindingElementList = make([]BindingElement, len(al.ElementList))
 	for n := range al.ElementList {
 		if err := ab.BindingElementList[n].from(&al.ElementList[n]); err != nil {
-			z := jsParser(ab.Tokens[:0])
+			z := jsParser(al.Tokens[:0])
 			return z.Error("ArrayBindingPattern", err)
 		}
 	}
 	if al.SpreadElement != nil {
 		ab.BindingRestElement = new(BindingElement)
 		if err := ab.BindingRestElement.from(al.SpreadElement); err != nil {
-			z := jsParser(ab.Tokens[:0])
+			z := jsParser(al.Tokens[:0])
 			return z.Error("ArrayBindingPattern", err)
 		}
 	}
