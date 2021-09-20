@@ -384,6 +384,9 @@ logicalORExpression:
 //    *TemplateLiteral
 //    *CoverParenthesizedExpressionAndArrowParameterList
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
+	if c == nil {
+		return nil
+	}
 	if c.True != nil || c.LogicalORExpression == nil {
 		return c
 	} else if c.LogicalORExpression.LogicalORExpression != nil {
