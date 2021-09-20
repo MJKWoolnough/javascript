@@ -3003,6 +3003,21 @@ func TestArrowFunction(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"(a/=b) => b", func(t *test, tk Tokens) { // 29
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidAssignment,
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
+					Parsing: "FormalParameters",
+					Token:   tk[0],
+				},
+				Parsing: "ArrowFunction",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
