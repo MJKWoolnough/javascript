@@ -370,13 +370,13 @@ func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
 	ob.BindingPropertyList = make([]BindingProperty, len(op.AssignmentPropertyList))
 	for n := range op.AssignmentPropertyList {
 		if err := ob.BindingPropertyList[n].fromAP(&op.AssignmentPropertyList[n]); err != nil {
-			z := jsParser(ob.Tokens[:0])
+			z := jsParser(op.Tokens[:0])
 			return z.Error("ObjectBindingPattern", err)
 		}
 	}
 	if op.AssignmentRestElement != nil {
 		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || op.AssignmentRestElement.NewExpression.News != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-			z := jsParser(ob.Tokens[:0])
+			z := jsParser(op.Tokens[:0])
 			return z.Error("ObjectBindingPattern", ErrBadRestElement)
 		}
 		ob.BindingRestProperty = op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
