@@ -448,11 +448,18 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 				return z.Error("ObjectBindingPattern", err)
 			}
 		}
+		for n := range ap.Tokens {
+			if &ap.Tokens[n] == &ap.DestructuringAssignmentTarget.Tokens[0] {
+				bp.BindingElement.Tokens = ap.Tokens[n:]
+				break
+			}
+		}
 	} else if bp.PropertyName.LiteralPropertyName == nil {
 		z := jsParser(ap.Tokens[:0])
 		return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 	} else {
 		bp.BindingElement.SingleNameBinding = bp.PropertyName.LiteralPropertyName
+		bp.BindingElement.Tokens = ap.Tokens
 	}
 	bp.BindingElement.Initializer = ap.Initializer
 	bp.Tokens = ap.Tokens
