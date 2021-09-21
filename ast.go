@@ -431,21 +431,22 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil {
 			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-				z := jsParser(ap.Tokens[:0])
-				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
+				y := jsParser(ap.Tokens[:0])
+				z := jsParser(ap.DestructuringAssignmentTarget.Tokens[:0])
+				return y.Error("BindingProperty", z.Error("BindingElement", ErrNoIdentifier))
 			}
 			bp.BindingElement.SingleNameBinding = ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 		} else if ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern != nil {
 			bp.BindingElement.ArrayBindingPattern = new(ArrayBindingPattern)
 			if err := bp.BindingElement.ArrayBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern); err != nil {
 				z := jsParser(ap.Tokens[:0])
-				return z.Error("ObjectBindingPattern", err)
+				return z.Error("BindingProperty", err)
 			}
 		} else {
 			bp.BindingElement.ObjectBindingPattern = new(ObjectBindingPattern)
 			if err := bp.BindingElement.ObjectBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ObjectAssignmentPattern); err != nil {
 				z := jsParser(ap.Tokens[:0])
-				return z.Error("ObjectBindingPattern", err)
+				return z.Error("BindingProperty", err)
 			}
 		}
 		for n := range ap.Tokens {
