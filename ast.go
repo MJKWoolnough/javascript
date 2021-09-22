@@ -455,9 +455,6 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 				break
 			}
 		}
-	} else if bp.PropertyName.LiteralPropertyName == nil {
-		z := jsParser(ap.Tokens[:0])
-		return z.Error("ObjectBindingPattern", ErrNoIdentifier)
 	} else {
 		bp.BindingElement.SingleNameBinding = bp.PropertyName.LiteralPropertyName
 		bp.BindingElement.Tokens = ap.Tokens
