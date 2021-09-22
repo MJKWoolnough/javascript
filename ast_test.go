@@ -3540,6 +3540,70 @@ func TestArrowFunction(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"({a: {b = 1}} = {}) => 2", func(t *test, tk Tokens) { // 49
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								BindingPropertyList: []BindingProperty{
+									{
+										PropertyName: PropertyName{
+											LiteralPropertyName: &tk[2],
+											Tokens:              tk[2:3],
+										},
+										BindingElement: BindingElement{
+											ObjectBindingPattern: &ObjectBindingPattern{
+												BindingPropertyList: []BindingProperty{
+													{
+														PropertyName: PropertyName{
+															LiteralPropertyName: &tk[6],
+															Tokens:              tk[6:7],
+														},
+														BindingElement: BindingElement{
+															SingleNameBinding: &tk[6],
+															Initializer: &AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	Literal: &tk[10],
+																	Tokens:  tk[10:11],
+																}),
+																Tokens: tk[10:11],
+															},
+															Tokens: tk[6:11],
+														},
+														Tokens: tk[6:11],
+													},
+												},
+												Tokens: tk[5:12],
+											},
+											Tokens: tk[5:12],
+										},
+										Tokens: tk[2:12],
+									},
+								},
+								Tokens: tk[1:13],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&ObjectLiteral{
+									Tokens: tk[16:18],
+								}),
+								Tokens: tk[16:18],
+							},
+							Tokens: tk[1:18],
+						},
+					},
+					Tokens: tk[:19],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Literal: &tk[22],
+						Tokens:  tk[22:23],
+					}),
+					Tokens: tk[22:23],
+				},
+				Tokens: tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
