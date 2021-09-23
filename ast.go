@@ -274,6 +274,7 @@ func (ab *ArrayBindingPattern) fromAP(ap *ArrayAssignmentPattern) error {
 			return z.Error("ArrayBindingPattern", err)
 		}
 		ab.BindingElementList[n].Initializer = ae.Initializer
+		ab.BindingElementList[n].Tokens = ae.Tokens
 	}
 	if ap.AssignmentRestElement != nil {
 		ab.BindingRestElement = new(BindingElement)
