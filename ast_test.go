@@ -3653,6 +3653,37 @@ func TestArrowFunction(t *testing.T) {
 				Tokens: tk[:21],
 			}
 		}},
+		{"([[a.b] = []] = []) => 1", func(t *test, tk Tokens) { // 51
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrNoIdentifier,
+										Parsing: "BindingElement",
+										Token:   tk[3],
+									},
+									Parsing: "ArrayBindingPattern",
+									Token:   tk[2],
+								},
+								Parsing: "BindingElement",
+								Token:   tk[2],
+							},
+							Parsing: "ArrayBindingPattern",
+							Token:   tk[1],
+						},
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
+					Parsing: "FormalParameters",
+					Token:   tk[0],
+				},
+				Parsing: "ArrowFunction",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
