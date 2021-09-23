@@ -3684,6 +3684,76 @@ func TestArrowFunction(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"({a: {b: c = 1} = {}} = {}) => 2", func(t *test, tk Tokens) { // 52
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							ObjectBindingPattern: &ObjectBindingPattern{
+								BindingPropertyList: []BindingProperty{
+									{
+										PropertyName: PropertyName{
+											LiteralPropertyName: &tk[2],
+											Tokens:              tk[2:3],
+										},
+										BindingElement: BindingElement{
+											ObjectBindingPattern: &ObjectBindingPattern{
+												BindingPropertyList: []BindingProperty{
+													{
+														PropertyName: PropertyName{
+															LiteralPropertyName: &tk[6],
+															Tokens:              tk[6:7],
+														},
+														BindingElement: BindingElement{
+															SingleNameBinding: &tk[9],
+															Initializer: &AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	Literal: &tk[13],
+																	Tokens:  tk[13:14],
+																}),
+																Tokens: tk[13:14],
+															},
+															Tokens: tk[9:14],
+														},
+														Tokens: tk[6:14],
+													},
+												},
+												Tokens: tk[5:15],
+											},
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&ObjectLiteral{
+													Tokens: tk[18:20],
+												}),
+												Tokens: tk[18:20],
+											},
+											Tokens: tk[5:20],
+										},
+										Tokens: tk[2:20],
+									},
+								},
+								Tokens: tk[1:21],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&ObjectLiteral{
+									Tokens: tk[24:26],
+								}),
+								Tokens: tk[24:26],
+							},
+							Tokens: tk[1:26],
+						},
+					},
+					Tokens: tk[:27],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Literal: &tk[30],
+						Tokens:  tk[30:31],
+					}),
+					Tokens: tk[30:31],
+				},
+				Tokens: tk[:31],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var (
 			pe  PrimaryExpression
