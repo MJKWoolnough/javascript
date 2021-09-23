@@ -290,7 +290,7 @@ func (vs VariableStatement) printSource(w io.Writer, v bool) {
 				w.Write(commaSep)
 			}
 		}
-		LexicalBinding(vd).printSource(w, v)
+		vd.printSource(w, v)
 	}
 	w.Write(semiColon)
 }
