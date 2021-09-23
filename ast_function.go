@@ -293,8 +293,6 @@ func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPatt
 			}
 		}
 		be.Tokens = ap.Tokens
-	} else {
-		return ErrNoIdentifier
 	}
 	return nil
 }
