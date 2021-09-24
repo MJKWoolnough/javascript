@@ -45,6 +45,11 @@ func TestUnquote(t *testing.T) {
 			"",
 			ErrInvalidQuoted,
 		},
+		{ // 8
+			"\"\\x41\"",
+			"A",
+			nil,
+		},
 	} {
 		o, err := Unquote(test.Input)
 		if !reflect.DeepEqual(err, test.Err) {
