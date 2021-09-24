@@ -10,37 +10,37 @@ func TestUnquote(t *testing.T) {
 		Input, Output string
 		Err           error
 	}{
-		{
+		{ // 1
 			"\"\"",
 			"",
 			nil,
 		},
-		{
+		{ // 2
 			"''",
 			"",
 			nil,
 		},
-		{
+		{ // 3
 			"\"a\"",
 			"a",
 			nil,
 		},
-		{
+		{ // 4
 			"'a'",
 			"a",
 			nil,
 		},
-		{
+		{ // 5
 			"\"\\\"'\\n\\t\"",
 			"\"'\n\t",
 			nil,
 		},
-		{
+		{ // 6
 			"'\x41'",
 			"A",
 			nil,
 		},
-		{
+		{ // 7
 			"",
 			"",
 			ErrInvalidQuoted,
