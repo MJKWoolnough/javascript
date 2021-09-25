@@ -31,8 +31,8 @@ func TestUnquote(t *testing.T) {
 			nil,
 		},
 		{ // 5
-			"\"\\\"'\\n\\t\"",
-			"\"'\n\t",
+			"\"\\'\\\"\\\\\\b\\f\\n\\r\\t\\v\"",
+			"'\"\\\b\f\n\r\t\v",
 			nil,
 		},
 		{ // 6
