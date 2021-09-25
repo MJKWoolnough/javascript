@@ -550,7 +550,7 @@ func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
 var (
 	stringChars       = "'\\" + lineTerminators + "\""
 	doubleStringChars = stringChars[1:]
-	singleStringChars = stringChars[:len(stringChars)-2]
+	singleStringChars = stringChars[:len(stringChars)-1]
 )
 
 func (j *jsTokeniser) stringToken(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
