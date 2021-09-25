@@ -49,6 +49,7 @@ Loop:
 					if !s.Accept("}") {
 						break Loop
 					}
+					s.Get()
 				} else if !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) {
 					break Loop
 				} else {
