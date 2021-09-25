@@ -81,8 +81,6 @@ Loop:
 					ret += "\t"
 				case "v":
 					ret += "\v"
-				default:
-					break Loop
 				}
 			} else {
 				break Loop
