@@ -36,7 +36,7 @@ func TestUnquote(t *testing.T) {
 			nil,
 		},
 		{ // 6
-			"'\x41'",
+			"\"\x41\"",
 			"A",
 			nil,
 		},
@@ -122,6 +122,96 @@ func TestUnquote(t *testing.T) {
 		},
 		{ // 23
 			"\"\\u{41\"",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 24
+			"'\\'\\\"\\\\\\b\\f\\n\\r\\t\\v'",
+			"'\"\\\b\f\n\r\t\v",
+			nil,
+		},
+		{ // 6
+			"'\x41'",
+			"A",
+			nil,
+		},
+		{ // 8
+			"'\\x41'",
+			"A",
+			nil,
+		},
+		{ // 9
+			"'\\x4G'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 10
+			"'\\xG1'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 11
+			"'\\u0041'",
+			"A",
+			nil,
+		},
+		{ // 12
+			"'\\u004G'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 13
+			"'\\u00G1'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 14
+			"'\\u0G41'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 15
+			"'\\uG041'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 16
+			"'\\c'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 17
+			"'\n'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 18
+			"'\\0'",
+			"\000",
+			nil,
+		},
+		{ // 19
+			"'\\01'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 20
+			"'\\u{41}'",
+			"A",
+			nil,
+		},
+		{ // 21
+			"'\\u{}'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 22
+			"'\\u{41G}'",
+			"",
+			ErrInvalidQuoted,
+		},
+		{ // 23
+			"'\\u{41'",
 			"",
 			ErrInvalidQuoted,
 		},
