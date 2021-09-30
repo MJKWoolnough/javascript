@@ -1000,7 +1000,7 @@ func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, s
 	return nil
 }
 
-func processCoverParenthesizedExpressionAndArrowParameterList(c *javascript.CoverParenthesizedExpressionAndArrowParameterList, scope *Scope, set bool) error {
+func processParenthesizedExpression(c *javascript.ParenthesizedExpression, scope *Scope, set bool) error {
 	for n := range c.Expressions {
 		if err := processAssignmentExpression(&c.Expressions[n], scope, set); err != nil {
 			return err
@@ -1125,8 +1125,8 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 		if err := processTemplateLiteral(p.TemplateLiteral, scope, set); err != nil {
 			return err
 		}
-	} else if p.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		if err := processCoverParenthesizedExpressionAndArrowParameterList(p.CoverParenthesizedExpressionAndArrowParameterList, scope, set); err != nil {
+	} else if p.ParenthesizedExpression != nil {
+		if err := processParenthesizedExpression(p.ParenthesizedExpression, scope, set); err != nil {
 			return err
 		}
 	} else if p.This != nil && !set {

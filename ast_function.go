@@ -136,7 +136,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-func (fp *FormalParameters) from(ce *CoverParenthesizedExpressionAndArrowParameterList) error {
+func (fp *FormalParameters) from(ce *ParenthesizedExpression) error {
 	for n := range ce.Expressions {
 		ae := &ce.Expressions[n]
 		if ae.Yield || ae.ArrowFunction != nil {

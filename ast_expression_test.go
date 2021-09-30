@@ -3425,7 +3425,7 @@ func TestPrimaryExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err:     assignmentError(tk[1]),
-					Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+					Parsing: "ParenthesizedExpression",
 					Token:   tk[1],
 				},
 				Parsing: "PrimaryExpression",
@@ -3434,7 +3434,7 @@ func TestPrimaryExpression(t *testing.T) {
 		}},
 		{"()", func(t *test, tk Tokens) { // 21
 			t.Output = PrimaryExpression{
-				CoverParenthesizedExpressionAndArrowParameterList: &CoverParenthesizedExpressionAndArrowParameterList{
+				ParenthesizedExpression: &ParenthesizedExpression{
 					Tokens: tk[:2],
 				},
 				Tokens: tk[:2],
@@ -3460,17 +3460,17 @@ func TestPrimaryExpression(t *testing.T) {
 	})
 }
 
-func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
+func TestParenthesizedExpression(t *testing.T) {
 	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
 			t.Err = Error{
 				Err:     ErrMissingOpeningParenthesis,
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[0],
 			}
 		}},
 		{"(\n)", func(t *test, tk Tokens) { // 2
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				Tokens: tk[:3],
 			}
 		}},
@@ -3497,12 +3497,12 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 					Parsing: "ArrayBindingPattern",
 					Token:   tk[5],
 				},
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[4],
 			}
 		}},
 		{"(\n...\n[a]\n)", func(t *test, tk Tokens) { // 4
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				arrayBindingPattern: &ArrayBindingPattern{
 					BindingElementList: []BindingElement{
 						{
@@ -3530,12 +3530,12 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 					Parsing: "ObjectBindingPattern",
 					Token:   tk[5],
 				},
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[4],
 			}
 		}},
 		{"(\n...\n{}\n)", func(t *test, tk Tokens) { // 6
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				objectBindingPattern: &ObjectBindingPattern{
 					Tokens: tk[4:6],
 				},
@@ -3545,12 +3545,12 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		{"(\n...\n1\n)", func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrNoIdentifier,
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[4],
 			}
 		}},
 		{"(\n...\na\n)", func(t *test, tk Tokens) { // 8
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				bindingIdentifier: &tk[4],
 				Tokens:            tk[:7],
 			}
@@ -3558,20 +3558,20 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		{"(\n...\na\n,)", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingClosingParenthesis,
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[6],
 			}
 		}},
 		{"(\n,)", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     assignmentError(tk[2]),
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[2],
 			}
 		}},
 		{"(\n1\n)", func(t *test, tk Tokens) { // 11
 			lit1 := makeConditionLiteral(tk, 2)
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				Expressions: []AssignmentExpression{
 					{
 						ConditionalExpression: &lit1,
@@ -3584,14 +3584,14 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		{"(\n1\n2)", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingComma,
-				Parsing: "CoverParenthesizedExpressionAndArrowParameterList",
+				Parsing: "ParenthesizedExpression",
 				Token:   tk[4],
 			}
 		}},
 		{"(\n1\n,\n2\n)", func(t *test, tk Tokens) { // 13
 			lit1 := makeConditionLiteral(tk, 2)
 			lit2 := makeConditionLiteral(tk, 6)
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				Expressions: []AssignmentExpression{
 					{
 						ConditionalExpression: &lit1,
@@ -3607,7 +3607,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 		}},
 		{"(\n1\n,\n...\na\n)", func(t *test, tk Tokens) { // 14
 			lit1 := makeConditionLiteral(tk, 2)
-			t.Output = CoverParenthesizedExpressionAndArrowParameterList{
+			t.Output = ParenthesizedExpression{
 				Expressions: []AssignmentExpression{
 					{
 						ConditionalExpression: &lit1,
@@ -3619,7 +3619,7 @@ func TestCoverParenthesizedExpressionAndArrowParameterList(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var c CoverParenthesizedExpressionAndArrowParameterList
+		var c ParenthesizedExpression
 		err := c.parse(&t.Tokens, t.Yield, t.Await)
 		return c, err
 	})

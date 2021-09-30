@@ -1194,7 +1194,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       scope,
-							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CoverParenthesizedExpressionAndArrowParameterList).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
 					},
 					"b": []Binding{
@@ -1206,7 +1206,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       scope,
-							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CoverParenthesizedExpressionAndArrowParameterList).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
 					},
 				}

@@ -1086,7 +1086,7 @@ func (l LogicalORExpression) printSource(w io.Writer, v bool) {
 	l.LogicalANDExpression.printSource(w, v)
 }
 
-func (c CoverParenthesizedExpressionAndArrowParameterList) printSource(w io.Writer, v bool) {
+func (c ParenthesizedExpression) printSource(w io.Writer, v bool) {
 	w.Write(parenOpen)
 	if len(c.Expressions) > 0 {
 		c.Expressions[0].printSource(w, v)
@@ -1199,8 +1199,8 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 		p.ClassExpression.printSource(w, v)
 	} else if p.TemplateLiteral != nil {
 		p.TemplateLiteral.printSource(w, v)
-	} else if p.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		p.CoverParenthesizedExpressionAndArrowParameterList.printSource(w, v)
+	} else if p.ParenthesizedExpression != nil {
+		p.ParenthesizedExpression.printSource(w, v)
 	}
 }
 

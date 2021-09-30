@@ -56,4 +56,4 @@ func (ClassDeclaration) conditionalWrapabble() {}
 
 func (TemplateLiteral) conditionalWrapabble() {}
 
-func (CoverParenthesizedExpressionAndArrowParameterList) conditionalWrapabble() {}
+func (ParenthesizedExpression) conditionalWrapabble() {}

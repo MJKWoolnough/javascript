@@ -147,10 +147,10 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkPrimaryExpression(&t, fn)
 	case *javascript.PrimaryExpression:
 		return walkPrimaryExpression(t, fn)
-	case javascript.CoverParenthesizedExpressionAndArrowParameterList:
-		return walkCoverParenthesizedExpressionAndArrowParameterList(&t, fn)
-	case *javascript.CoverParenthesizedExpressionAndArrowParameterList:
-		return walkCoverParenthesizedExpressionAndArrowParameterList(t, fn)
+	case javascript.ParenthesizedExpression:
+		return walkParenthesizedExpression(&t, fn)
+	case *javascript.ParenthesizedExpression:
+		return walkParenthesizedExpression(t, fn)
 	case javascript.Arguments:
 		return walkArguments(&t, fn)
 	case *javascript.Arguments:
@@ -741,15 +741,15 @@ func walkPrimaryExpression(t *javascript.PrimaryExpression, fn Handler) error {
 			return err
 		}
 	}
-	if t.CoverParenthesizedExpressionAndArrowParameterList != nil {
-		if err := fn.Handle(t.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
+	if t.ParenthesizedExpression != nil {
+		if err := fn.Handle(t.ParenthesizedExpression); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func walkCoverParenthesizedExpressionAndArrowParameterList(t *javascript.CoverParenthesizedExpressionAndArrowParameterList, fn Handler) error {
+func walkParenthesizedExpression(t *javascript.ParenthesizedExpression, fn Handler) error {
 	for n := range t.Expressions {
 		if err := fn.Handle(&t.Expressions[n]); err != nil {
 			return err

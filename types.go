@@ -76,7 +76,7 @@ func (MemberExpression) javascriptType() {}
 
 func (PrimaryExpression) javascriptType() {}
 
-func (CoverParenthesizedExpressionAndArrowParameterList) javascriptType() {}
+func (ParenthesizedExpression) javascriptType() {}
 
 func (Arguments) javascriptType() {}
 

@@ -221,7 +221,7 @@ func (f CoalesceExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f ConditionalExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
-func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v rune) {
+func (f ParenthesizedExpression) Format(s fmt.State, v rune) {
 	format(&f, s, v)
 }
 

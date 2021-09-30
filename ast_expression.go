@@ -141,7 +141,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		if ae.ConditionalExpression.LogicalORExpression != nil {
 			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
 				h := g.NewGoal()
-				if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+				if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
 					h.AcceptRunWhitespaceNoNewLine()
 					if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "=>"}) {
 						ae.ConditionalExpression = nil
@@ -149,7 +149,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						if err := ae.ArrowFunction.parse(&g, lhs.NewExpression.MemberExpression.PrimaryExpression, in, yield, await); err != nil {
 							return j.Error("AssignmentExpression", err)
 						}
-					} else if cpe := lhs.NewExpression.MemberExpression.PrimaryExpression.CoverParenthesizedExpressionAndArrowParameterList; cpe != nil && (cpe.bindingIdentifier != nil || cpe.arrayBindingPattern != nil || cpe.objectBindingPattern != nil) {
+					} else if cpe := lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression; cpe != nil && (cpe.bindingIdentifier != nil || cpe.arrayBindingPattern != nil || cpe.objectBindingPattern != nil) {
 						return h.Error("AssignmentExpression", ErrMissingArrow)
 					}
 				}
@@ -858,18 +858,18 @@ func (me *MemberExpression) IsSimple() bool {
 //
 // It is only valid is one IdentifierReference, Literal, ArrayLiteral,
 // ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
-// CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
+// ParenthesizedExpression is non-nil or This is true.
 type PrimaryExpression struct {
-	This                                              *Token
-	IdentifierReference                               *Token
-	Literal                                           *Token
-	ArrayLiteral                                      *ArrayLiteral
-	ObjectLiteral                                     *ObjectLiteral
-	FunctionExpression                                *FunctionDeclaration
-	ClassExpression                                   *ClassDeclaration
-	TemplateLiteral                                   *TemplateLiteral
-	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
-	Tokens                                            Tokens
+	This                    *Token
+	IdentifierReference     *Token
+	Literal                 *Token
+	ArrayLiteral            *ArrayLiteral
+	ObjectLiteral           *ObjectLiteral
+	FunctionExpression      *FunctionDeclaration
+	ClassExpression         *ClassDeclaration
+	TemplateLiteral         *TemplateLiteral
+	ParenthesizedExpression *ParenthesizedExpression
+	Tokens                  Tokens
 }
 
 func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
@@ -914,8 +914,8 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	} else if t == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 		g := j.NewGoal()
-		pe.CoverParenthesizedExpressionAndArrowParameterList = new(CoverParenthesizedExpressionAndArrowParameterList)
-		if err := pe.CoverParenthesizedExpressionAndArrowParameterList.parse(&g, yield, await); err != nil {
+		pe.ParenthesizedExpression = new(ParenthesizedExpression)
+		if err := pe.ParenthesizedExpression.parse(&g, yield, await); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 		j.Score(g)
@@ -935,12 +935,12 @@ func (pe *PrimaryExpression) IsSimple() bool {
 	return pe.IdentifierReference != nil && pe.IdentifierReference.Data != "eval" && pe.IdentifierReference.Data != "arguments"
 }
 
-// CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-CoverParenthesizedExpressionAndArrowParameterList
+// ParenthesizedExpression as defined in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-ParenthesizedExpression
 //
 // It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
 // ObjectBindingPattern to be non-nil
-type CoverParenthesizedExpressionAndArrowParameterList struct {
+type ParenthesizedExpression struct {
 	Expressions          []AssignmentExpression
 	bindingIdentifier    *Token
 	arrayBindingPattern  *ArrayBindingPattern
@@ -948,9 +948,9 @@ type CoverParenthesizedExpressionAndArrowParameterList struct {
 	Tokens               Tokens
 }
 
-func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, yield, await bool) error {
+func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
-		return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingOpeningParenthesis)
+		return j.Error("ParenthesizedExpression", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
@@ -961,20 +961,20 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 				if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 					cp.arrayBindingPattern = new(ArrayBindingPattern)
 					if err := cp.arrayBindingPattern.parse(&g, yield, await); err != nil {
-						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
+						return j.Error("ParenthesizedExpression", err)
 					}
 				} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 					cp.objectBindingPattern = new(ObjectBindingPattern)
 					if err := cp.objectBindingPattern.parse(&g, yield, await); err != nil {
-						return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
+						return j.Error("ParenthesizedExpression", err)
 					}
 				} else if cp.bindingIdentifier = g.parseIdentifier(yield, await); cp.bindingIdentifier == nil {
-					return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrNoIdentifier)
+					return j.Error("ParenthesizedExpression", ErrNoIdentifier)
 				}
 				j.Score(g)
 				j.AcceptRunWhitespace()
 				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-					return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingClosingParenthesis)
+					return j.Error("ParenthesizedExpression", ErrMissingClosingParenthesis)
 				}
 				break
 			}
@@ -982,14 +982,14 @@ func (cp *CoverParenthesizedExpressionAndArrowParameterList) parse(j *jsParser, 
 			e := len(cp.Expressions)
 			cp.Expressions = append(cp.Expressions, AssignmentExpression{})
 			if err := cp.Expressions[e].parse(&g, true, yield, await); err != nil {
-				return j.Error("CoverParenthesizedExpressionAndArrowParameterList", err)
+				return j.Error("ParenthesizedExpression", err)
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
 			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-				return j.Error("CoverParenthesizedExpressionAndArrowParameterList", ErrMissingComma)
+				return j.Error("ParenthesizedExpression", ErrMissingComma)
 			}
 			j.AcceptRunWhitespace()
 		}

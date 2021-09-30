@@ -121,7 +121,7 @@ Loop:
 //    FunctionDeclaration (FunctionExpression)
 //    ClassDeclaration (ClassExpression)
 //    TemplateLiteral
-//    CoverParenthesizedExpressionAndArrowParameterList
+//    ParenthesizedExpression
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -306,11 +306,11 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 		case TemplateLiteral:
 			pe.TemplateLiteral = &p
 			pe.Tokens = p.Tokens
-		case *CoverParenthesizedExpressionAndArrowParameterList:
-			pe.CoverParenthesizedExpressionAndArrowParameterList = p
+		case *ParenthesizedExpression:
+			pe.ParenthesizedExpression = p
 			pe.Tokens = p.Tokens
-		case CoverParenthesizedExpressionAndArrowParameterList:
-			pe.CoverParenthesizedExpressionAndArrowParameterList = &p
+		case ParenthesizedExpression:
+			pe.ParenthesizedExpression = &p
 			pe.Tokens = p.Tokens
 		}
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
@@ -381,7 +381,7 @@ logicalORExpression:
 //    *FunctionDeclaration (FunctionExpression)
 //    *ClassDeclaration (ClassExpression)
 //    *TemplateLiteral
-//    *CoverParenthesizedExpressionAndArrowParameterList
+//    *ParenthesizedExpression
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c == nil {
 		return nil
@@ -432,8 +432,8 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 			return pe.ClassExpression
 		} else if pe.TemplateLiteral != nil {
 			return pe.TemplateLiteral
-		} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
-			return pe.CoverParenthesizedExpressionAndArrowParameterList
+		} else if pe.ParenthesizedExpression != nil {
+			return pe.ParenthesizedExpression
 		}
 		return pe
 	}

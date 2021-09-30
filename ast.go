@@ -769,10 +769,10 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			}
 			j.Score(g)
 		}
-	} else if pe.CoverParenthesizedExpressionAndArrowParameterList != nil {
+	} else if pe.ParenthesizedExpression != nil {
 		af.FormalParameters = new(FormalParameters)
-		if err := af.FormalParameters.from(pe.CoverParenthesizedExpressionAndArrowParameterList); err != nil {
-			z := jsParser(pe.CoverParenthesizedExpressionAndArrowParameterList.Tokens[:0])
+		if err := af.FormalParameters.from(pe.ParenthesizedExpression); err != nil {
+			z := jsParser(pe.ParenthesizedExpression.Tokens[:0])
 			return z.Error("ArrowFunction", err)
 		}
 	} else {
