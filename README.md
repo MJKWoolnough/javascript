@@ -709,7 +709,7 @@ The accepted types/pointers are as follows:
     FunctionDeclaration (FunctionExpression)
     ClassDeclaration (ClassExpression)
     TemplateLiteral
-    CoverParenthesizedExpressionAndArrowParameterList
+    ParenthesizedExpression
 
 #### func (ConditionalExpression) Format
 
@@ -764,30 +764,7 @@ Possible returns types are as follows:
     *FunctionDeclaration (FunctionExpression)
     *ClassDeclaration (ClassExpression)
     *TemplateLiteral
-    *CoverParenthesizedExpressionAndArrowParameterList
-
-#### type CoverParenthesizedExpressionAndArrowParameterList
-
-```go
-type CoverParenthesizedExpressionAndArrowParameterList struct {
-	Expressions []AssignmentExpression
-
-	Tokens Tokens
-}
-```
-
-CoverParenthesizedExpressionAndArrowParameterList as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-CoverParenthesizedExpressionAndArrowParameterList
-
-It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
-ObjectBindingPattern to be non-nil
-
-#### func (CoverParenthesizedExpressionAndArrowParameterList) Format
-
-```go
-func (f CoverParenthesizedExpressionAndArrowParameterList) Format(s fmt.State, v rune)
-```
-Format implements the fmt.Formatter interface
+    *ParenthesizedExpression
 
 #### type Declaration
 
@@ -1827,20 +1804,43 @@ func (f OptionalExpression) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type ParenthesizedExpression
+
+```go
+type ParenthesizedExpression struct {
+	Expressions []AssignmentExpression
+
+	Tokens Tokens
+}
+```
+
+ParenthesizedExpression as defined in ECMA-262
+https://262.ecma-international.org/11.0/#prod-ParenthesizedExpression
+
+It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
+ObjectBindingPattern to be non-nil
+
+#### func (ParenthesizedExpression) Format
+
+```go
+func (f ParenthesizedExpression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type PrimaryExpression
 
 ```go
 type PrimaryExpression struct {
-	This                                              *Token
-	IdentifierReference                               *Token
-	Literal                                           *Token
-	ArrayLiteral                                      *ArrayLiteral
-	ObjectLiteral                                     *ObjectLiteral
-	FunctionExpression                                *FunctionDeclaration
-	ClassExpression                                   *ClassDeclaration
-	TemplateLiteral                                   *TemplateLiteral
-	CoverParenthesizedExpressionAndArrowParameterList *CoverParenthesizedExpressionAndArrowParameterList
-	Tokens                                            Tokens
+	This                    *Token
+	IdentifierReference     *Token
+	Literal                 *Token
+	ArrayLiteral            *ArrayLiteral
+	ObjectLiteral           *ObjectLiteral
+	FunctionExpression      *FunctionDeclaration
+	ClassExpression         *ClassDeclaration
+	TemplateLiteral         *TemplateLiteral
+	ParenthesizedExpression *ParenthesizedExpression
+	Tokens                  Tokens
 }
 ```
 
@@ -1849,7 +1849,7 @@ https://262.ecma-international.org/11.0/#prod-PrimaryExpression
 
 It is only valid is one IdentifierReference, Literal, ArrayLiteral,
 ObjectLiteral, FunctionExpression, ClassExpression, TemplateLiteral, or
-CoverParenthesizedExpressionAndArrowParameterList is non-nil or This is true.
+ParenthesizedExpression is non-nil or This is true.
 
 #### func (PrimaryExpression) Format
 
