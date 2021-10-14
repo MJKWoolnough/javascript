@@ -33,6 +33,7 @@ const (
 	TokenSingleLineComment
 	TokenMultiLineComment
 	TokenIdentifier
+	TokenPrivateIdentifier
 	TokenBooleanLiteral
 	TokenKeyword
 	TokenPunctuator
@@ -174,6 +175,18 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 	case '`':
 		t.Except("")
 		return j.template(t)
+	case '#':
+		t.Except("")
+		if !isIDStart(t.Peek()) {
+			t.Except("")
+			t.Err = fmt.Errorf("%w: %s", ErrInvalidSequence, t.Get())
+			return t.Error()
+		}
+		tk, tf := j.identifier(t)
+		if tk.Type == TokenIdentifier {
+			tk.Type = TokenPrivateIdentifier
+		}
+		return tk, tf
 	default:
 		if strings.ContainsRune(decimalDigit, c) {
 			j.divisionAllowed = true
