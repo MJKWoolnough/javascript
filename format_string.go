@@ -58,7 +58,7 @@ var (
 	nameLogicalORExpression                = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'O', 'R', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameTrue                               = []byte{'\n', 'T', 'r', 'u', 'e', ':', ' '}
 	nameFalse                              = []byte{'\n', 'F', 'a', 'l', 's', 'e', ':', ' '}
-	nameParenthesizedExpression            = []byte{'\n', 'P', 'a', 'r', 'e', 'n', 't', 'h', 'e', 's', 'i', 'z', 'e', 'd', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n'}
+	nameParenthesizedExpression            = []byte{'\n', 'P', 'a', 'r', 'e', 'n', 't', 'h', 'e', 's', 'i', 'z', 'e', 'd', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameExpressions                        = []byte{'\n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 's', ':', ' '}
 	namebindingIdentifier                  = []byte{'\n', 'b', 'i', 'n', 'd', 'i', 'n', 'g', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	namearrayBindingPattern                = []byte{'\n', 'a', 'r', 'r', 'a', 'y', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
@@ -808,7 +808,7 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 }
 
 func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
-	w.Write(nameParenthesizedExpression[1:50])
+	w.Write(nameParenthesizedExpression[1:24])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
 	if len(f.Expressions) > 0 {
