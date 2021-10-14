@@ -1116,6 +1116,13 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 			}
 			w.Write(dot)
 			io.WriteString(w, m.IdentifierName.Data)
+		} else if m.PrivateIdentifier != nil {
+			m.MemberExpression.printSource(w, v)
+			if v && len(m.MemberExpression.Tokens) > 0 && m.PrivateIdentifier.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
+				w.Write(newLine)
+			}
+			w.Write(dot)
+			io.WriteString(w, m.PrivateIdentifier.Data)
 		} else if m.TemplateLiteral != nil {
 			m.MemberExpression.printSource(w, v)
 			m.TemplateLiteral.printSource(w, v)
