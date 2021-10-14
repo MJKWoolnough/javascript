@@ -114,6 +114,7 @@ var (
 	nameBindingList                        = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'L', 'i', 's', 't', ':', ' '}
 	nameLogicalANDExpression               = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'A', 'N', 'D', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePrimaryExpression                  = []byte{'\n', 'P', 'r', 'i', 'm', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	namePrivateIdentifier                  = []byte{'\n', 'P', 'r', 'i', 'v', 'a', 't', 'e', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameMethodDefinition                   = []byte{'\n', 'M', 'e', 't', 'h', 'o', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
 	nameParams                             = []byte{'\n', 'P', 'a', 'r', 'a', 'm', 's', ':', ' '}
 	nameModule                             = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', ':', ' '}
@@ -1594,6 +1595,13 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		f.Arguments.printType(&pp, v)
 	} else if v {
 		pp.Write(nameArguments)
+		pp.Write(nilStr)
+	}
+	if f.PrivateIdentifier != nil {
+		pp.Write(namePrivateIdentifier)
+		f.PrivateIdentifier.printType(&pp, v)
+	} else if v {
+		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
 	if v {
