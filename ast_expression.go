@@ -686,17 +686,17 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 }
 
 // MemberExpression as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-MemberExpression
+// https://tc39.es/ecma262/#prod-MemberExpression
 //
 // If PrimaryExpression is nil, SuperProperty is true, NewTarget is true, or
-// ImportMeta is true, Expression, IdentifierName, TemplateLiteral, and
-// Arguments must be nil.
+// ImportMeta is true, Expression, IdentifierName, TemplateLiteral, Arguments
+// and PrivateIdentifier must be nil.
 //
-// If Expression, IdentifierName, TemplateLiteral, or Arguments is non-nil,
-// then MemberExpression must be non-nil.
+// If Expression, IdentifierName, TemplateLiteral, Arguments, or
+// PrivateIdentifier is non-nil, then MemberExpression must be non-nil.
 //
-// It is only valid if one of Expression, IdentifierName, TemplateLiteral, and
-// Arguments is non-nil.
+// It is only valid if one of Expression, IdentifierName, TemplateLiteral,
+// Arguments, and PrivateIdentifier is non-nil.
 type MemberExpression struct {
 	MemberExpression  *MemberExpression
 	PrimaryExpression *PrimaryExpression
@@ -707,6 +707,7 @@ type MemberExpression struct {
 	NewTarget         bool
 	ImportMeta        bool
 	Arguments         *Arguments
+	PrivateIdentifier *Token
 	Tokens            Tokens
 }
 
@@ -797,9 +798,9 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
 		var (
-			tl *TemplateLiteral
-			i  *Token
-			e  *Expression
+			tl   *TemplateLiteral
+			i, p *Token
+			e    *Expression
 		)
 		switch tk := h.Peek(); tk.Type {
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
@@ -812,10 +813,14 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			case ".":
 				h.Skip()
 				h.AcceptRunWhitespace()
-				if !h.Accept(TokenIdentifier, TokenKeyword) {
+				if !h.Accept(TokenIdentifier, TokenKeyword, TokenPrivateIdentifier) {
 					return g.Error("MemberExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
+				if i.Type == TokenPrivateIdentifier {
+					p = i
+					i = nil
+				}
 			case "[":
 				h.Skip()
 				h.AcceptRunWhitespace()
@@ -839,10 +844,11 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		nme := new(MemberExpression)
 		*nme = *me
 		*me = MemberExpression{
-			MemberExpression: nme,
-			Expression:       e,
-			IdentifierName:   i,
-			TemplateLiteral:  tl,
+			MemberExpression:  nme,
+			Expression:        e,
+			IdentifierName:    i,
+			TemplateLiteral:   tl,
+			PrivateIdentifier: p,
 		}
 		j.Score(g)
 	}
