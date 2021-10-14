@@ -1069,6 +1069,32 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenTemplateTail, Data: "}c`"},
 			},
 		},
+		{ // 129
+			"#a",
+			[]parser.Token{
+				{Type: TokenPrivateIdentifier, Data: "#a"},
+			},
+		},
+		{ // 130
+			"a.#b",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: "."},
+				{Type: TokenPrivateIdentifier, Data: "#b"},
+			},
+		},
+		{ // 131
+			"#",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid character sequence: #"},
+			},
+		},
+		{ // 132
+			"#.a",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid character sequence: #."},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
