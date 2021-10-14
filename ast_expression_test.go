@@ -3224,6 +3224,64 @@ func TestMemberExpression(t *testing.T) {
 				Tokens:     tk[:5],
 			}
 		}},
+		{"a.#b", func(t *test, tk Tokens) { // 28
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				PrivateIdentifier: &tk[2],
+				Tokens:            tk[:3],
+			}
+		}},
+		{"a.#b.c", func(t *test, tk Tokens) { // 29
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					PrivateIdentifier: &tk[2],
+					Tokens:            tk[:3],
+				},
+				IdentifierName: &tk[4],
+				Tokens:         tk[:5],
+			}
+		}},
+		{"a.#b[\"c\"]", func(t *test, tk Tokens) { // 30
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					PrivateIdentifier: &tk[2],
+					Tokens:            tk[:3],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								Literal: &tk[4],
+								Tokens:  tk[4:5],
+							}),
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var me MemberExpression
 		err := me.parse(&t.Tokens, t.Yield, t.Await)
