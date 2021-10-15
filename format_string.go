@@ -53,6 +53,12 @@ var (
 	nameClassDeclaration                   = []byte{'\n', 'C', 'l', 'a', 's', 's', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameClassHeritage                      = []byte{'\n', 'C', 'l', 'a', 's', 's', 'H', 'e', 'r', 'i', 't', 'a', 'g', 'e', ':', ' '}
 	nameClassBody                          = []byte{'\n', 'C', 'l', 'a', 's', 's', 'B', 'o', 'd', 'y', ':', ' '}
+	nameClassElement                       = []byte{'\n', 'C', 'l', 'a', 's', 's', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
+	nameMethodDefinition                   = []byte{'\n', 'M', 'e', 't', 'h', 'o', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
+	nameFieldDefinition                    = []byte{'\n', 'F', 'i', 'e', 'l', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
+	nameClassStaticBlock                   = []byte{'\n', 'C', 'l', 'a', 's', 's', 'S', 't', 'a', 't', 'i', 'c', 'B', 'l', 'o', 'c', 'k', ':', ' '}
+	nameClassElementName                   = []byte{'\n', 'C', 'l', 'a', 's', 's', 'E', 'l', 'e', 'm', 'e', 'n', 't', 'N', 'a', 'm', 'e', ':', ' '}
+	namePrivateIdentifier                  = []byte{'\n', 'P', 'r', 'i', 'v', 'a', 't', 'e', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameCoalesceExpression                 = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameCoalesceExpressionHead             = []byte{'\n', 'C', 'o', 'a', 'l', 'e', 's', 'c', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', 'H', 'e', 'a', 'd', ':', ' '}
 	nameLogicalORExpression                = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'O', 'R', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
@@ -66,6 +72,7 @@ var (
 	nameDeclaration                        = []byte{'\n', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameFunctionDeclaration                = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
 	nameLexicalDeclaration                 = []byte{'\n', 'L', 'e', 'x', 'i', 'c', 'a', 'l', 'D', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', ':', ' '}
+	nameLetOrConst                         = []byte{'\n', 'L', 'e', 't', 'O', 'r', 'C', 'o', 'n', 's', 't', ':', ' '}
 	nameEqualityOperator                   = []byte{'\n', 'E', 'q', 'u', 'a', 'l', 'i', 't', 'y', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameRelationalExpression               = []byte{'\n', 'R', 'e', 'l', 'a', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameExponentiationExpression           = []byte{'\n', 'E', 'x', 'p', 'o', 'n', 'e', 'n', 't', 'i', 'a', 't', 'i', 'o', 'n', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
@@ -110,12 +117,9 @@ var (
 	nameNewExpression                      = []byte{'\n', 'N', 'e', 'w', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameOptionalExpression                 = []byte{'\n', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameLexicalBinding                     = []byte{'\n', 'L', 'e', 'x', 'i', 'c', 'a', 'l', 'B', 'i', 'n', 'd', 'i', 'n', 'g', ':', ' '}
-	nameLetOrConst                         = []byte{'\n', 'L', 'e', 't', 'O', 'r', 'C', 'o', 'n', 's', 't', ':', ' '}
 	nameBindingList                        = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'L', 'i', 's', 't', ':', ' '}
 	nameLogicalANDExpression               = []byte{'\n', 'L', 'o', 'g', 'i', 'c', 'a', 'l', 'A', 'N', 'D', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	namePrimaryExpression                  = []byte{'\n', 'P', 'r', 'i', 'm', 'a', 'r', 'y', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
-	namePrivateIdentifier                  = []byte{'\n', 'P', 'r', 'i', 'v', 'a', 't', 'e', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
-	nameMethodDefinition                   = []byte{'\n', 'M', 'e', 't', 'h', 'o', 'd', 'D', 'e', 'f', 'i', 'n', 'i', 't', 'i', 'o', 'n', ':', ' '}
 	nameParams                             = []byte{'\n', 'P', 'a', 'r', 'a', 'm', 's', ':', ' '}
 	nameModule                             = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', ':', ' '}
 	nameModuleListItems                    = []byte{'\n', 'M', 'o', 'd', 'u', 'l', 'e', 'L', 'i', 's', 't', 'I', 't', 'e', 'm', 's', ':', ' '}
@@ -748,6 +752,66 @@ func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *ClassElement) printType(w io.Writer, v bool) {
+	w.Write(nameClassElement[1:13])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.Static || v {
+		pp.Printf("\nStatic: %v", f.Static)
+	}
+	if f.MethodDefinition != nil {
+		pp.Write(nameMethodDefinition)
+		f.MethodDefinition.printType(&pp, v)
+	} else if v {
+		pp.Write(nameMethodDefinition)
+		pp.Write(nilStr)
+	}
+	if f.FieldDefinition != nil {
+		pp.Write(nameFieldDefinition)
+		f.FieldDefinition.printType(&pp, v)
+	} else if v {
+		pp.Write(nameFieldDefinition)
+		pp.Write(nilStr)
+	}
+	if f.ClassStaticBlock != nil {
+		pp.Write(nameClassStaticBlock)
+		f.ClassStaticBlock.printType(&pp, v)
+	} else if v {
+		pp.Write(nameClassStaticBlock)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *ClassElementName) printType(w io.Writer, v bool) {
+	w.Write(nameClassElementName[1:17])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.PropertyName != nil {
+		pp.Write(namePropertyName)
+		f.PropertyName.printType(&pp, v)
+	} else if v {
+		pp.Write(namePropertyName)
+		pp.Write(nilStr)
+	}
+	if f.PrivateIdentifier != nil {
+		pp.Write(namePrivateIdentifier)
+		f.PrivateIdentifier.printType(&pp, v)
+	} else if v {
+		pp.Write(namePrivateIdentifier)
+		pp.Write(nilStr)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *CoalesceExpression) printType(w io.Writer, v bool) {
 	w.Write(nameCoalesceExpression[1:19])
 	w.Write(objectOpen)
@@ -1083,6 +1147,26 @@ func (f *Expression) printType(w io.Writer, v bool) {
 	} else if v {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
+	}
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
+func (f *FieldDefinition) printType(w io.Writer, v bool) {
+	w.Write(nameFieldDefinition[1:16])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	pp.Write(nameClassElementName)
+	f.ClassElementName.printType(&pp, v)
+	if f.Initializer != nil {
+		pp.Write(nameInitializer)
+		f.Initializer.printType(&pp, v)
+	} else if v {
+		pp.Write(nameInitializer)
+		pp.Write(nilStr)
 	}
 	if v {
 		pp.Write(tokensTo)
@@ -1617,8 +1701,8 @@ func (f *MethodDefinition) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 	pp.Write(nameType)
 	io.WriteString(&pp, f.Type.String())
-	pp.Write(namePropertyName)
-	f.PropertyName.printType(&pp, v)
+	pp.Write(nameClassElementName)
+	f.ClassElementName.printType(&pp, v)
 	pp.Write(nameParams)
 	f.Params.printType(&pp, v)
 	pp.Write(nameFunctionBody)
@@ -2563,18 +2647,6 @@ func (mt MethodType) String() string {
 		return "MethodGetter"
 	case MethodSetter:
 		return "MethodSetter"
-	case MethodStatic:
-		return "MethodStatic"
-	case MethodStaticGenerator:
-		return "MethodStaticGenerator"
-	case MethodStaticAsync:
-		return "MethodStaticAsync"
-	case MethodStaticAsyncGenerator:
-		return "MethodStaticAsyncGenerator"
-	case MethodStaticGetter:
-		return "MethodStaticGetter"
-	case MethodStaticSetter:
-		return "MethodStaticSetter"
 	default:
 		return unknown
 	}
