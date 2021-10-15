@@ -23,6 +23,18 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkClassDeclaration(&t, fn)
 	case *javascript.ClassDeclaration:
 		return walkClassDeclaration(t, fn)
+	case javascript.ClassElement:
+		return walkClassElement(&t, fn)
+	case *javascript.ClassElement:
+		return walkClassElement(t, fn)
+	case javascript.FieldDefinition:
+		return walkFieldDefinition(&t, fn)
+	case *javascript.FieldDefinition:
+		return walkFieldDefinition(t, fn)
+	case javascript.ClassElementName:
+		return walkClassElementName(&t, fn)
+	case *javascript.ClassElementName:
+		return walkClassElementName(t, fn)
 	case javascript.MethodDefinition:
 		return walkMethodDefinition(&t, fn)
 	case *javascript.MethodDefinition:
@@ -329,8 +341,46 @@ func walkClassDeclaration(t *javascript.ClassDeclaration, fn Handler) error {
 	return nil
 }
 
+func walkClassElement(t *javascript.ClassElement, fn Handler) error {
+	if t.FieldDefinition != nil {
+		if err := fn.Handle(t.FieldDefinition); err != nil {
+			return err
+		}
+	} else if t.MethodDefinition != nil {
+		if err := fn.Handle(t.MethodDefinition); err != nil {
+			return err
+		}
+	} else if t.ClassStaticBlock != nil {
+		if err := fn.Handle(t.ClassStaticBlock); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkFieldDefinition(t *javascript.FieldDefinition, fn Handler) error {
+	if err := fn.Handle(&t.ClassElementName); err != nil {
+		return err
+	}
+	if t.Initializer != nil {
+		if err := fn.Handle(t.Initializer); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func walkClassElementName(t *javascript.ClassElementName, fn Handler) error {
+	if t.PropertyName != nil {
+		if err := fn.Handle(t.PropertyName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func walkMethodDefinition(t *javascript.MethodDefinition, fn Handler) error {
-	if err := fn.Handle(&t.PropertyName); err != nil {
+	if err := fn.Handle(&t.ClassElementName); err != nil {
 		return err
 	}
 	if err := fn.Handle(&t.Params); err != nil {
