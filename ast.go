@@ -664,15 +664,15 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				}
 			}
 			if !propertyName {
-				var pn *PropertyName
+				pd.MethodDefinition = new(MethodDefinition)
 				if pd.PropertyName != nil && pd.PropertyName.ComputedPropertyName != nil {
-					pn = pd.PropertyName
+					pd.MethodDefinition.ClassElementName.PropertyName = pd.PropertyName
+					pd.MethodDefinition.ClassElementName.Tokens = pd.PropertyName.Tokens
 				} else {
 					g = j.NewGoal()
 				}
 				pd.PropertyName = nil
-				pd.MethodDefinition = new(MethodDefinition)
-				if err := pd.MethodDefinition.parse(&g, pn, yield, await); err != nil {
+				if err := pd.MethodDefinition.parse(&g, yield, await); err != nil {
 					return j.Error("PropertyDefinition", err)
 				}
 			}
