@@ -2170,9 +2170,12 @@ func TestPropertyDefinition(t *testing.T) {
 		{"a\n(){}", func(t *test, tk Tokens) { // 12
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[0],
-						Tokens:              tk[:1],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
 					},
 					Params: FormalParameters{
 						Tokens: tk[2:4],
@@ -2185,32 +2188,16 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"static\na\n(){}", func(t *test, tk Tokens) { // 13
-			t.Output = PropertyDefinition{
-				MethodDefinition: &MethodDefinition{
-					Type: MethodStatic,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
-					},
-					Params: FormalParameters{
-						Tokens: tk[4:6],
-					},
-					FunctionBody: Block{
-						Tokens: tk[6:8],
-					},
-					Tokens: tk[:8],
-				},
-				Tokens: tk[:8],
-			}
-		}},
-		{"*\na\n(){}", func(t *test, tk Tokens) { // 14
+		{"*\na\n(){}", func(t *test, tk Tokens) { // 13
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodGenerator,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					Params: FormalParameters{
 						Tokens: tk[4:6],
@@ -2223,13 +2210,16 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"async a\n(){}", func(t *test, tk Tokens) { // 15
+		{"async a\n(){}", func(t *test, tk Tokens) { // 14
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodAsync,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					Params: FormalParameters{
 						Tokens: tk[4:6],
@@ -2242,13 +2232,16 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"get\na\n(){}", func(t *test, tk Tokens) { // 16
+		{"get\na\n(){}", func(t *test, tk Tokens) { // 15
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodGetter,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					Params: FormalParameters{
 						Tokens: tk[4:6],
@@ -2261,13 +2254,16 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"set\na\n(b){}", func(t *test, tk Tokens) { // 17
+		{"set\na\n(b){}", func(t *test, tk Tokens) { // 16
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodSetter,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					Params: FormalParameters{
 						FormalParameterList: []BindingElement{
@@ -2286,14 +2282,17 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"[\n\"a\"\n]\n()\n{}", func(t *test, tk Tokens) { // 18
+		{"[\n\"a\"\n]\n()\n{}", func(t *test, tk Tokens) { // 17
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
-					PropertyName: PropertyName{
-						ComputedPropertyName: &AssignmentExpression{
-							ConditionalExpression: &litA,
-							Tokens:                tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							ComputedPropertyName: &AssignmentExpression{
+								ConditionalExpression: &litA,
+								Tokens:                tk[2:3],
+							},
+							Tokens: tk[:5],
 						},
 						Tokens: tk[:5],
 					},
@@ -2308,13 +2307,16 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"async/* */a (){}", func(t *test, tk Tokens) { // 19
+		{"async/* */a (){}", func(t *test, tk Tokens) { // 18
 			t.Output = PropertyDefinition{
 				MethodDefinition: &MethodDefinition{
 					Type: MethodAsync,
-					PropertyName: PropertyName{
-						LiteralPropertyName: &tk[2],
-						Tokens:              tk[2:3],
+					ClassElementName: ClassElementName{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					Params: FormalParameters{
 						Tokens: tk[4:6],
@@ -2327,7 +2329,7 @@ func TestPropertyDefinition(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"async/*\n*/a (){}", func(t *test, tk Tokens) { // 20
+		{"async/*\n*/a (){}", func(t *test, tk Tokens) { // 19
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
