@@ -68,17 +68,12 @@ var (
 	ellipsis                     = []byte{'.', '.', '.'}
 	bracketOpen                  = []byte{'['}
 	bracketClose                 = []byte{']'}
-	methodStaticAsyncGenerator   = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 'a', 's', 'y', 'n', 'c', ' ', '*', ' '}
-	methodAsyncGenerator         = methodStaticAsyncGenerator[7:]
-	methodStatic                 = methodStaticAsyncGenerator[:7]
-	methodAsync                  = methodStaticAsyncGenerator[7:13]
-	methodStaticAsync            = methodStaticAsyncGenerator[:13]
-	methodGenerator              = methodStaticAsyncGenerator[13:15]
-	methodStaticGenerator        = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', '*', ' '}
-	methodStaticGet              = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 'g', 'e', 't', ' '}
-	methodStaticSet              = []byte{'s', 't', 'a', 't', 'i', 'c', ' ', 's', 'e', 't', ' '}
-	methodGet                    = methodStaticGet[7:]
-	methodSet                    = methodStaticSet[7:]
+	methodAsyncGenerator         = []byte{'a', 's', 'y', 'n', 'c', ' ', '*', ' '}
+	methodAsync                  = methodAsyncGenerator[0:6]
+	methodGenerator              = methodAsyncGenerator[6:8]
+	methodGet                    = []byte{'g', 'e', 't', ' '}
+	methodSet                    = []byte{'s', 'e', 't', ' '}
+	methodStatic                 = []byte{'s', 't', 'a', 't', 'i', 'c', ' '}
 	arrow                        = []byte{'=', '>', ' '}
 	news                         = []byte{'n', 'e', 'w', ' '}
 	super                        = []byte{'s', 'u', 'p', 'e', 'r'}
@@ -672,9 +667,9 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(blockOpen)
 	if len(c.ClassBody) > 0 {
 		pp := indentPrinter{w}
-		for _, md := range c.ClassBody {
+		for _, ce := range c.ClassBody {
 			pp.Write(newLine)
-			md.printSource(&pp, v)
+			ce.printSource(&pp, v)
 		}
 		w.Write(newLine)
 	}
@@ -946,24 +941,42 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 		w.Write(methodGet)
 	case MethodSetter:
 		w.Write(methodSet)
-	case MethodStatic:
-		w.Write(methodStatic)
-	case MethodStaticGenerator:
-		w.Write(methodStaticGenerator)
-	case MethodStaticAsync:
-		w.Write(methodStaticAsync)
-	case MethodStaticAsyncGenerator:
-		w.Write(methodStaticAsyncGenerator)
-	case MethodStaticGetter:
-		w.Write(methodStaticGet)
-	case MethodStaticSetter:
-		w.Write(methodStaticSet)
 	default:
 		return
 	}
-	m.PropertyName.printSource(w, v)
+	m.ClassElementName.printSource(w, v)
 	m.Params.printSource(w, v)
 	m.FunctionBody.printSource(w, v)
+}
+
+func (ce ClassElement) printSource(w io.Writer, v bool) {
+	if ce.Static {
+		w.Write(methodStatic)
+	}
+	if ce.MethodDefinition != nil {
+		ce.MethodDefinition.printSource(w, v)
+	} else if ce.FieldDefinition != nil {
+		ce.FieldDefinition.printSource(w, v)
+	} else if ce.ClassStaticBlock != nil {
+		ce.ClassStaticBlock.printSource(w, v)
+	}
+}
+
+func (fd FieldDefinition) printSource(w io.Writer, v bool) {
+	fd.ClassElementName.printSource(w, v)
+	if fd.Initializer != nil {
+		w.Write(assignment)
+		fd.Initializer.printSource(w, v)
+	}
+	w.Write(semiColon)
+}
+
+func (cen ClassElementName) printSource(w io.Writer, v bool) {
+	if cen.PropertyName != nil {
+		cen.PropertyName.printSource(w, v)
+	} else if cen.PrivateIdentifier != nil {
+		io.WriteString(w, cen.PrivateIdentifier.Data)
+	}
 }
 
 func (c ConditionalExpression) printSource(w io.Writer, v bool) {
