@@ -215,6 +215,15 @@ func (f CaseClause) Format(s fmt.State, v rune) { format(&f, s, v) }
 func (f ClassDeclaration) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
+func (f ClassElement) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f FieldDefinition) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
+func (f ClassElementName) Format(s fmt.State, v rune) { format(&f, s, v) }
+
+// Format implements the fmt.Formatter interface
 func (f CoalesceExpression) Format(s fmt.State, v rune) { format(&f, s, v) }
 
 // Format implements the fmt.Formatter interface
