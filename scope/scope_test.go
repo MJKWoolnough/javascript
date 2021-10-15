@@ -2628,7 +2628,7 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0]: mscope,
+					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscope,
 				}
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
@@ -2663,8 +2663,8 @@ func TestScriptScope(t *testing.T) {
 					"arguments": []Binding{},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0]: mscopea,
-					&s.StatementList[0].Declaration.ClassDeclaration.ClassBody[1]: mscopeb,
+					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscopea,
+					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[1].MethodDefinition: mscopeb,
 				}
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
@@ -2693,19 +2693,19 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingVar,
 							Scope:       mscope,
-							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
 						},
 					},
 					"b": []Binding{
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       mscope,
-							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].FunctionBody.StatementList[1].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.FunctionBody.StatementList[1].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 						},
 					},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0]: mscope,
+					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscope,
 				}
 				scope.Bindings = map[string][]Binding{
 					"a": []Binding{
