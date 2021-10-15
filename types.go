@@ -14,6 +14,12 @@ func (Token) javascriptType() {}
 
 func (ClassDeclaration) javascriptType() {}
 
+func (ClassElement) javascriptType() {}
+
+func (FieldDefinition) javascriptType() {}
+
+func (ClassElementName) javascriptType() {}
+
 func (MethodDefinition) javascriptType() {}
 
 func (PropertyName) javascriptType() {}
