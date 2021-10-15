@@ -565,7 +565,46 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set, 
 		}
 	}
 	for n := range c.ClassBody {
-		if err := processMethodDefinition(&c.ClassBody[n], scope, set); err != nil {
+		if err := processClassElement(&c.ClassBody[n], scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processClassElement(c *javascript.ClassElement, scope *Scope, set bool) error {
+	if c.MethodDefinition != nil {
+		if err := processMethodDefinition(c.MethodDefinition, scope, set); err != nil {
+			return err
+		}
+	} else if c.FieldDefinition != nil {
+		if err := processFieldDefinition(c.FieldDefinition, scope, set); err != nil {
+			return err
+		}
+	} else if c.ClassStaticBlock != nil {
+		scope = scope.newLexicalScope(c.ClassStaticBlock)
+		if err := processBlockStatement(c.ClassStaticBlock, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processFieldDefinition(f *javascript.FieldDefinition, scope *Scope, set bool) error {
+	if err := processClassElementName(&f.ClassElementName, scope, set); err != nil {
+		return err
+	}
+	if f.Initializer != nil {
+		if err := processAssignmentExpression(f.Initializer, scope, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processClassElementName(c *javascript.ClassElementName, scope *Scope, set bool) error {
+	if c.PropertyName != nil {
+		if err := processPropertyName(c.PropertyName, scope, set); err != nil {
 			return err
 		}
 	}
@@ -793,7 +832,7 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 }
 
 func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set bool) error {
-	if err := processPropertyName(&m.PropertyName, scope, set); err != nil {
+	if err := processClassElementName(&m.ClassElementName, scope, set); err != nil {
 		return err
 	}
 	scope = scope.newFunctionScope(m)
