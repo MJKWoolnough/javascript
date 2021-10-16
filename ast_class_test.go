@@ -1091,6 +1091,74 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{"class a {static\n{}}", func(t *test, tk Tokens) { // 39
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						ClassStaticBlock: &Block{
+							Tokens: tk[7:9],
+						},
+						Tokens: tk[5:9],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"class a {static{b;c}}", func(t *test, tk Tokens) { // 40
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						ClassStaticBlock: &Block{
+							StatementList: []StatementListItem{
+								{
+									Statement: &Statement{
+										ExpressionStatement: &Expression{
+											Expressions: []AssignmentExpression{
+												{
+													ConditionalExpression: WrapConditional(&PrimaryExpression{
+														IdentifierReference: &tk[7],
+														Tokens:              tk[7:8],
+													}),
+													Tokens: tk[7:8],
+												},
+											},
+											Tokens: tk[7:8],
+										},
+										Tokens: tk[7:9],
+									},
+									Tokens: tk[7:9],
+								},
+								{
+									Statement: &Statement{
+										ExpressionStatement: &Expression{
+											Expressions: []AssignmentExpression{
+												{
+													ConditionalExpression: WrapConditional(&PrimaryExpression{
+														IdentifierReference: &tk[9],
+														Tokens:              tk[9:10],
+													}),
+													Tokens: tk[9:10],
+												},
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+							},
+							Tokens: tk[6:11],
+						},
+						Tokens: tk[5:11],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
