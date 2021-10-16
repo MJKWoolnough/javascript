@@ -160,7 +160,13 @@ type FieldDefinition struct {
 }
 
 func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
-	// check CEN
+	if len(fd.ClassElementName.Tokens) == 0 {
+		g := j.NewGoal()
+		if err := fd.ClassElementName.parse(&g, yield, await); err != nil {
+			return j.Error("FieldDefinition", err)
+		}
+		j.Score(g)
+	}
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
