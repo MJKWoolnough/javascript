@@ -71,7 +71,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		g.Skip()
 		g.AcceptRunWhitespace()
-		if tk := g.Peek(); tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(") {
+		if tk := g.Peek(); (tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(")) && tk.Type != TokenRightBracePunctuator {
 			ce.Static = true
 			j.Skip()
 			j.AcceptRunWhitespace()
