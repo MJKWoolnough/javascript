@@ -71,7 +71,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		g.Skip()
 		g.AcceptRunWhitespace()
-		if tk := g.Peek(); tk.Type != TokenPunctuator || (tk.Data != "[" && tk.Data != "=" && tk.Data != ";") {
+		if tk := g.Peek(); tk.Type != TokenPunctuator || (tk.Data != "[" && tk.Data != "=" && tk.Data != ";" && tk.Data != "(") {
 			ce.Static = true
 			j.Skip()
 			j.AcceptRunWhitespace()
@@ -96,11 +96,11 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 			h.AcceptRunWhitespaceNoNewLine()
 			tk := h.Peek()
-			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk.Type == TokenIdentifier
+			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) || h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 			h.AcceptRunWhitespace()
 			tk := h.Peek()
-			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk.Type == TokenIdentifier
+			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier
 		} else {
 			if err := cen.parse(&g, yield, await); err != nil {
 				return j.Error("ClassElement", err)
