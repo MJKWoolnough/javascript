@@ -623,6 +623,31 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
+		{"class a {static #b() {} }", func(t *test, tk Tokens) { // 21
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[7:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
