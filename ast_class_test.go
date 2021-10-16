@@ -807,7 +807,166 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"class a {static () {}}", func(t *test, tk Tokens) { // 28
+		{"class a {static b;}", func(t *test, tk Tokens) { // 28
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[5:8],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"class a {static b = 1 ;}", func(t *test, tk Tokens) { // 29
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[11],
+									Tokens:  tk[11:12],
+								}),
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[7:12],
+						},
+						Tokens: tk[5:12],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a {static [b]\n;}", func(t *test, tk Tokens) { // 30
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[8],
+											Tokens:              tk[8:9],
+										}),
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[7:10],
+								},
+								Tokens: tk[7:10],
+							},
+							Tokens: tk[7:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {static [b] = 1;;}", func(t *test, tk Tokens) { // 31
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[8],
+											Tokens:              tk[8:9],
+										}),
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[7:10],
+								},
+								Tokens: tk[7:10],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[13],
+									Tokens:  tk[13:14],
+								}),
+								Tokens: tk[13:14],
+							},
+							Tokens: tk[7:14],
+						},
+						Tokens: tk[5:14],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"class a {static #b \n;}", func(t *test, tk Tokens) { // 32
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[5:8],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{"class a {static #b = 1\n ;}", func(t *test, tk Tokens) { // 33
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[11],
+									Tokens:  tk[11:12],
+								}),
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[7:12],
+						},
+						Tokens: tk[5:12],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {static () {}}", func(t *test, tk Tokens) { // 34
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -834,7 +993,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"class a {static}", func(t *test, tk Tokens) { // 29
+		{"class a {static}", func(t *test, tk Tokens) { // 35
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -855,7 +1014,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"class a {static = 1}", func(t *test, tk Tokens) { // 30
+		{"class a {static = 1}", func(t *test, tk Tokens) { // 36
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -883,7 +1042,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"class a {static\n;}", func(t *test, tk Tokens) { // 31
+		{"class a {static\n;}", func(t *test, tk Tokens) { // 37
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -904,7 +1063,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"class a {static = 1\n;}", func(t *test, tk Tokens) { // 32
+		{"class a {static = 1\n;}", func(t *test, tk Tokens) { // 38
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
