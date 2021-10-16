@@ -561,6 +561,68 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:25],
 			}
 		}},
+		{"class a {static b() {} }", func(t *test, tk Tokens) { // 19
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[7:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a {static [\"b\"]() {} }", func(t *test, tk Tokens) { // 20
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											Literal: &tk[8],
+											Tokens:  tk[8:9],
+										}),
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[7:10],
+								},
+								Tokens: tk[7:10],
+							},
+							Params: FormalParameters{
+								Tokens: tk[10:12],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[7:15],
+						},
+						Tokens: tk[5:15],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
