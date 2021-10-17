@@ -1379,6 +1379,122 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
+		{"class a {static\nasync *\nb() {}}", func(t *test, tk Tokens) { // 48
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[11],
+									Tokens:              tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"class a {static async * async() {}}", func(t *test, tk Tokens) { // 49
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[11],
+									Tokens:              tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"class a {static\nasync * get() {}}", func(t *test, tk Tokens) { // 50
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[11],
+									Tokens:              tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{"class a {static async * set() {}}", func(t *test, tk Tokens) { // 51
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[11],
+									Tokens:              tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
