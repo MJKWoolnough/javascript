@@ -1,6 +1,8 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"vimagination.zapto.org/parser"
+)
 
 // ClassDeclaration as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ClassDeclaration
@@ -100,7 +102,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) || h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 			h.AcceptRunWhitespace()
 			tk := h.Peek()
-			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier
+			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier || tk.Type == TokenPrivateIdentifier
 		} else {
 			if err := cen.parse(&g, yield, await); err != nil {
 				return j.Error("ClassElement", err)
