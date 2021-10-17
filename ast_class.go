@@ -123,6 +123,20 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			if err := ce.FieldDefinition.parse(&g, yield, await); err != nil {
 				return j.Error("ClassElement", err)
 			}
+			if g.GetLastToken().Token != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				h := g.NewGoal()
+				h.AcceptRunWhitespace()
+				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+					g.Score(h)
+				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) {
+					h.AcceptRunWhitespace()
+					if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+						g.Score(g)
+					}
+				} else if h.Peek() != (parser.Token{Type: TokenRightBracePunctuator, Data: "}"}) {
+					return h.Error("ClassElement", ErrMissingSemiColon)
+				}
+			}
 		}
 		j.Score(g)
 	}
