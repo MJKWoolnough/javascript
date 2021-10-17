@@ -1161,6 +1161,108 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
+		{"class a {static async}", func(t *test, tk Tokens) { // 41
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[5:8],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"class a {static async;}", func(t *test, tk Tokens) { // 42
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[5:9],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"class a {static async\n= 1}", func(t *test, tk Tokens) { // 43
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[11],
+									Tokens:  tk[11:12],
+								}),
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[7:12],
+						},
+						Tokens: tk[5:12],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {static async = 1;}", func(t *test, tk Tokens) { // 43
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[11],
+									Tokens:  tk[11:12],
+								}),
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[7:12],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
