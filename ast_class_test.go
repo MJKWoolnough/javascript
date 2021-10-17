@@ -1466,33 +1466,68 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
-		{"class a {static async * set() {}}", func(t *test, tk Tokens) { // 51
+		{"class a {static\nget\nb()\n{}}", func(t *test, tk Tokens) { // 51
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
 					{
 						Static: true,
 						MethodDefinition: &MethodDefinition{
-							Type: MethodAsyncGenerator,
+							Type: MethodGetter,
 							ClassElementName: ClassElementName{
 								PropertyName: &PropertyName{
-									LiteralPropertyName: &tk[11],
-									Tokens:              tk[11:12],
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
 								},
-								Tokens: tk[11:12],
+								Tokens: tk[9:10],
 							},
 							Params: FormalParameters{
-								Tokens: tk[12:14],
+								Tokens: tk[10:12],
 							},
 							FunctionBody: Block{
-								Tokens: tk[15:17],
+								Tokens: tk[13:15],
 							},
-							Tokens: tk[7:17],
+							Tokens: tk[7:15],
 						},
-						Tokens: tk[5:17],
+						Tokens: tk[5:15],
 					},
 				},
-				Tokens: tk[:18],
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {static\nset\nb(c)\n{}}", func(t *test, tk Tokens) { // 51
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodSetter,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Params: FormalParameters{
+								FormalParameterList: []BindingElement{
+									{
+										SingleNameBinding: &tk[11],
+										Tokens:            tk[11:12],
+									},
+								},
+								Tokens: tk[10:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[14:16],
+							},
+							Tokens: tk[7:16],
+						},
+						Tokens: tk[5:16],
+					},
+				},
+				Tokens: tk[:17],
 			}
 		}},
 	}, func(t *test) (Type, error) {
