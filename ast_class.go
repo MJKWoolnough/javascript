@@ -98,7 +98,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 			h.AcceptRunWhitespaceNoNewLine()
 			tk := h.Peek()
-			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier
+			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier || tk.Type == TokenPrivateIdentifier
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) || h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 			h.AcceptRunWhitespace()
 			tk := h.Peek()
