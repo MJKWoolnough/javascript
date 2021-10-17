@@ -1,6 +1,8 @@
 package javascript
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestClassDeclarationOld(t *testing.T) {
 	doTests(t, []sourceFn{
@@ -823,7 +825,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:8],
 						},
-						Tokens: tk[5:8],
+						Tokens: tk[5:9],
 					},
 				},
 				Tokens: tk[:10],
@@ -852,7 +854,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:12],
 						},
-						Tokens: tk[5:12],
+						Tokens: tk[5:14],
 					},
 				},
 				Tokens: tk[:15],
@@ -880,7 +882,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:10],
 						},
-						Tokens: tk[5:10],
+						Tokens: tk[5:12],
 					},
 				},
 				Tokens: tk[:13],
@@ -915,7 +917,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:14],
 						},
-						Tokens: tk[5:14],
+						Tokens: tk[5:15],
 					},
 				},
 				Tokens: tk[:17],
@@ -934,7 +936,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:8],
 						},
-						Tokens: tk[5:8],
+						Tokens: tk[5:11],
 					},
 				},
 				Tokens: tk[:12],
@@ -960,7 +962,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[7:12],
 						},
-						Tokens: tk[5:12],
+						Tokens: tk[5:15],
 					},
 				},
 				Tokens: tk[:16],
@@ -1057,7 +1059,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[5:6],
 						},
-						Tokens: tk[5:6],
+						Tokens: tk[5:8],
 					},
 				},
 				Tokens: tk[:9],
@@ -1085,7 +1087,7 @@ func TestClassDeclaration(t *testing.T) {
 							},
 							Tokens: tk[5:10],
 						},
-						Tokens: tk[5:10],
+						Tokens: tk[5:12],
 					},
 				},
 				Tokens: tk[:13],
