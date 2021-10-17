@@ -1234,7 +1234,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"class a {static async = 1;}", func(t *test, tk Tokens) { // 43
+		{"class a {static async = 1;}", func(t *test, tk Tokens) { // 44
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1263,7 +1263,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:14],
 			}
 		}},
-		{"class a {static\n*\nb() {}}", func(t *test, tk Tokens) { // 44
+		{"class a {static\n*\nb() {}}", func(t *test, tk Tokens) { // 45
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1292,7 +1292,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {static * async() {}}", func(t *test, tk Tokens) { // 45
+		{"class a {static * async() {}}", func(t *test, tk Tokens) { // 46
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1321,7 +1321,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {static\n* get() {}}", func(t *test, tk Tokens) { // 46
+		{"class a {static\n* get() {}}", func(t *test, tk Tokens) { // 47
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1350,7 +1350,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {static *\nset() {}}", func(t *test, tk Tokens) { // 47
+		{"class a {static *\nset() {}}", func(t *test, tk Tokens) { // 48
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1379,7 +1379,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {static\nasync *\nb() {}}", func(t *test, tk Tokens) { // 48
+		{"class a {static\nasync *\nb() {}}", func(t *test, tk Tokens) { // 49
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1408,7 +1408,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
-		{"class a {static async * async() {}}", func(t *test, tk Tokens) { // 49
+		{"class a {static async * async() {}}", func(t *test, tk Tokens) { // 50
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1437,7 +1437,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
-		{"class a {static\nasync * get() {}}", func(t *test, tk Tokens) { // 50
+		{"class a {static\nasync * get() {}}", func(t *test, tk Tokens) { // 51
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1466,7 +1466,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
-		{"class a {static\nget\nb()\n{}}", func(t *test, tk Tokens) { // 51
+		{"class a {static\nget\nb()\n{}}", func(t *test, tk Tokens) { // 52
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1495,7 +1495,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {static\nset\nb(c)\n{}}", func(t *test, tk Tokens) { // 51
+		{"class a {static\nset\nb(c)\n{}}", func(t *test, tk Tokens) { // 53
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -1509,6 +1509,64 @@ func TestClassDeclaration(t *testing.T) {
 									Tokens:              tk[9:10],
 								},
 								Tokens: tk[9:10],
+							},
+							Params: FormalParameters{
+								FormalParameterList: []BindingElement{
+									{
+										SingleNameBinding: &tk[11],
+										Tokens:            tk[11:12],
+									},
+								},
+								Tokens: tk[10:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[14:16],
+							},
+							Tokens: tk[7:16],
+						},
+						Tokens: tk[5:16],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"class a {static\nget\n#b()\n{}}", func(t *test, tk Tokens) { // 54
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGetter,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[9],
+								Tokens:            tk[9:10],
+							},
+							Params: FormalParameters{
+								Tokens: tk[10:12],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[7:15],
+						},
+						Tokens: tk[5:15],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {static\nset\n#b(c)\n{}}", func(t *test, tk Tokens) { // 55
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodSetter,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[9],
+								Tokens:            tk[9:10],
 							},
 							Params: FormalParameters{
 								FormalParameterList: []BindingElement{
