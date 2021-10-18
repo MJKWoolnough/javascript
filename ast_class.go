@@ -5,7 +5,7 @@ import (
 )
 
 // ClassDeclaration as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-ClassDeclaration
+// https://tc39.es/ecma262/#prod-ClassDeclaration
 //
 // Also covers ClassExpression when BindingIdentifier is nil.
 type ClassDeclaration struct {
@@ -60,6 +60,12 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 }
 
 // ClassElement as defined in ECMA-262
+// https://tc39.es/ecma262/#prod-ClassElement
+//
+// Only one of MethodDefinition, FieldDefinition, or ClassStaticBlock must be
+// non-nil.
+//
+// If ClassStaticBlock is non-nil, Static should be true
 type ClassElement struct {
 	Static           bool
 	MethodDefinition *MethodDefinition
@@ -147,6 +153,9 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 }
 
 // ClassElementName as defined in ECMA-262
+// https://tc39.es/ecma262/#prod-ClassElementName
+//
+// Only one of PropertyName or PrivateIdentifier must be non-nil
 type ClassElementName struct {
 	PropertyName      *PropertyName
 	PrivateIdentifier *Token
@@ -169,6 +178,7 @@ func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
 }
 
 // FieldDefinition as defined in ECMA-262
+// https://tc39.es/ecma262/#prod-FieldDefinition
 type FieldDefinition struct {
 	ClassElementName ClassElementName
 	Initializer      *AssignmentExpression
@@ -213,9 +223,7 @@ const (
 )
 
 // MethodDefinition as specified in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-MethodDefinition
-//
-// Static methods from ClassElement are parsed here with the `static` prefix
+// https://tc39.es/ecma262/#prod-MethodDefinition
 type MethodDefinition struct {
 	Type             MethodType
 	ClassElementName ClassElementName
