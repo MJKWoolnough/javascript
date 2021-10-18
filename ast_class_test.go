@@ -2891,6 +2891,97 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"class a {b = +}", func(t *test, tk Tokens) { // 99
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err: Error{
+																								Err: Error{
+																									Err:     ErrNoIdentifier,
+																									Parsing: "PrimaryExpression",
+																									Token:   tk[10],
+																								},
+																								Parsing: "MemberExpression",
+																								Token:   tk[10],
+																							},
+																							Parsing: "NewExpression",
+																							Token:   tk[10],
+																						},
+																						Parsing: "LeftHandSideExpression",
+																						Token:   tk[10],
+																					},
+																					Parsing: "UpdateExpression",
+																					Token:   tk[10],
+																				},
+																				Parsing: "UnaryExpression",
+																				Token:   tk[10],
+																			},
+																			Parsing: "ExponentiationExpression",
+																			Token:   tk[9],
+																		},
+																		Parsing: "MultiplicativeExpression",
+																		Token:   tk[9],
+																	},
+																	Parsing: "AdditiveExpression",
+																	Token:   tk[9],
+																},
+																Parsing: "ShiftExpression",
+																Token:   tk[9],
+															},
+															Parsing: "RelationalExpression",
+															Token:   tk[9],
+														},
+														Parsing: "EqualityExpression",
+														Token:   tk[9],
+													},
+													Parsing: "BitwiseANDExpression",
+													Token:   tk[9],
+												},
+												Parsing: "BitwiseXORExpression",
+												Token:   tk[9],
+											},
+											Parsing: "BitwiseORExpression",
+											Token:   tk[9],
+										},
+										Parsing: "LogicalANDExpression",
+										Token:   tk[9],
+									},
+									Parsing: "LogicalORExpression",
+									Token:   tk[9],
+								},
+								Parsing: "ConditionalExpression",
+								Token:   tk[9],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[9],
+						},
+						Parsing: "FieldDefinition",
+						Token:   tk[9],
+					},
+					Parsing: "ClassElement",
+					Token:   tk[5],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
