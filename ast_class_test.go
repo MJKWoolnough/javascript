@@ -2763,6 +2763,96 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"class a {a b}", func(t *test, tk Tokens) { // 93
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingSemiColon,
+					Parsing: "ClassElement",
+					Token:   tk[7],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[5],
+			}
+		}},
+		{"class a {a/* */b}", func(t *test, tk Tokens) { // 94
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingSemiColon,
+					Parsing: "ClassElement",
+					Token:   tk[7],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[5],
+			}
+		}},
+		{"class a {a/*\n*/b}", func(t *test, tk Tokens) { // 95
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[7:8],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"class a {a//\nc}", func(t *test, tk Tokens) { // 96
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[8],
+									Tokens:              tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
