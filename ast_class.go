@@ -139,7 +139,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) {
 					h.AcceptRunWhitespace()
 					if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
-						g.Score(g)
+						g.Score(h)
 					}
 				} else if h.Peek() != (parser.Token{Type: TokenRightBracePunctuator, Data: "}"}) {
 					return h.Error("ClassElement", ErrMissingSemiColon)
