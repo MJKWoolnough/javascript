@@ -12,6 +12,7 @@ const (
 	TokenSingleLineComment
 	TokenMultiLineComment
 	TokenIdentifier
+	TokenPrivateIdentifier
 	TokenBooleanLiteral
 	TokenKeyword
 	TokenPunctuator
@@ -619,13 +620,13 @@ Format implements the fmt.Formatter interface
 type ClassDeclaration struct {
 	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
-	ClassBody         []MethodDefinition
+	ClassBody         []ClassElement
 	Tokens            Tokens
 }
 ```
 
 ClassDeclaration as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-ClassDeclaration
+https://tc39.es/ecma262/#prod-ClassDeclaration
 
 Also covers ClassExpression when BindingIdentifier is nil.
 
@@ -633,6 +634,54 @@ Also covers ClassExpression when BindingIdentifier is nil.
 
 ```go
 func (f ClassDeclaration) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ClassElement
+
+```go
+type ClassElement struct {
+	Static           bool
+	MethodDefinition *MethodDefinition
+	FieldDefinition  *FieldDefinition
+	ClassStaticBlock *Block
+	Tokens           Tokens
+}
+```
+
+ClassElement as defined in ECMA-262 https://tc39.es/ecma262/#prod-ClassElement
+
+Only one of MethodDefinition, FieldDefinition, or ClassStaticBlock must be
+non-nil.
+
+If ClassStaticBlock is non-nil, Static should be true
+
+#### func (ClassElement) Format
+
+```go
+func (f ClassElement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type ClassElementName
+
+```go
+type ClassElementName struct {
+	PropertyName      *PropertyName
+	PrivateIdentifier *Token
+	Tokens            Tokens
+}
+```
+
+ClassElementName as defined in ECMA-262
+https://tc39.es/ecma262/#prod-ClassElementName
+
+Only one of PropertyName or PrivateIdentifier must be non-nil
+
+#### func (ClassElementName) Format
+
+```go
+func (f ClassElementName) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
@@ -998,6 +1047,26 @@ Expressions must have a length of at least one to be valid.
 
 ```go
 func (f Expression) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type FieldDefinition
+
+```go
+type FieldDefinition struct {
+	ClassElementName ClassElementName
+	Initializer      *AssignmentExpression
+	Tokens           Tokens
+}
+```
+
+FieldDefinition as defined in ECMA-262
+https://tc39.es/ecma262/#prod-FieldDefinition
+
+#### func (FieldDefinition) Format
+
+```go
+func (f FieldDefinition) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
@@ -1465,22 +1534,23 @@ type MemberExpression struct {
 	NewTarget         bool
 	ImportMeta        bool
 	Arguments         *Arguments
+	PrivateIdentifier *Token
 	Tokens            Tokens
 }
 ```
 
 MemberExpression as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-MemberExpression
+https://tc39.es/ecma262/#prod-MemberExpression
 
 If PrimaryExpression is nil, SuperProperty is true, NewTarget is true, or
-ImportMeta is true, Expression, IdentifierName, TemplateLiteral, and Arguments
-must be nil.
+ImportMeta is true, Expression, IdentifierName, TemplateLiteral, Arguments and
+PrivateIdentifier must be nil.
 
-If Expression, IdentifierName, TemplateLiteral, or Arguments is non-nil, then
-MemberExpression must be non-nil.
+If Expression, IdentifierName, TemplateLiteral, Arguments, or PrivateIdentifier
+is non-nil, then MemberExpression must be non-nil.
 
-It is only valid if one of Expression, IdentifierName, TemplateLiteral, and
-Arguments is non-nil.
+It is only valid if one of Expression, IdentifierName, TemplateLiteral,
+Arguments, and PrivateIdentifier is non-nil.
 
 #### func (MemberExpression) Format
 
@@ -1500,18 +1570,16 @@ IsSimple returns whether or not the MemberExpression is classed as 'simple'
 
 ```go
 type MethodDefinition struct {
-	Type         MethodType
-	PropertyName PropertyName
-	Params       FormalParameters
-	FunctionBody Block
-	Tokens       Tokens
+	Type             MethodType
+	ClassElementName ClassElementName
+	Params           FormalParameters
+	FunctionBody     Block
+	Tokens           Tokens
 }
 ```
 
 MethodDefinition as specified in ECMA-262
-https://262.ecma-international.org/11.0/#prod-MethodDefinition
-
-Static methods from ClassElement are parsed here with the `static` prefix
+https://tc39.es/ecma262/#prod-MethodDefinition
 
 #### func (MethodDefinition) Format
 
@@ -1536,12 +1604,6 @@ const (
 	MethodAsyncGenerator
 	MethodGetter
 	MethodSetter
-	MethodStatic
-	MethodStaticGenerator
-	MethodStaticAsync
-	MethodStaticAsyncGenerator
-	MethodStaticGetter
-	MethodStaticSetter
 )
 ```
 Valid MethodType's
