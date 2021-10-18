@@ -133,7 +133,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			}
 			if g.GetLastToken().Token != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
 				h := g.NewGoal()
-				h.AcceptRunWhitespace()
+				h.AcceptRunWhitespaceNoNewLine()
 				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 					g.Score(h)
 				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) {
