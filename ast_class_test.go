@@ -2501,6 +2501,245 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"class a {set = 1\n#set = 2;a\n=\n3\nb = 4;;static async c(){}static\nasync d(){}#e(){}static{}#f=5;g=6\nh=7;i\n[j]}", func(t *test, tk Tokens) { // 91
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[11],
+								Tokens:            tk[11:12],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[15],
+									Tokens:  tk[15:16],
+								}),
+								Tokens: tk[15:16],
+							},
+							Tokens: tk[11:16],
+						},
+						Tokens: tk[11:17],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[17],
+									Tokens:              tk[17:18],
+								},
+								Tokens: tk[17:18],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[21],
+									Tokens:  tk[21:22],
+								}),
+								Tokens: tk[21:22],
+							},
+							Tokens: tk[17:22],
+						},
+						Tokens: tk[17:22],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[23],
+									Tokens:              tk[23:24],
+								},
+								Tokens: tk[23:24],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[27],
+									Tokens:  tk[27:28],
+								}),
+								Tokens: tk[27:28],
+							},
+							Tokens: tk[23:28],
+						},
+						Tokens: tk[23:29],
+					},
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsync,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[34],
+									Tokens:              tk[34:35],
+								},
+								Tokens: tk[34:35],
+							},
+							Params: FormalParameters{
+								Tokens: tk[35:37],
+							},
+							FunctionBody: Block{
+								Tokens: tk[37:39],
+							},
+							Tokens: tk[32:39],
+						},
+						Tokens: tk[30:39],
+					},
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsync,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[43],
+									Tokens:              tk[43:44],
+								},
+								Tokens: tk[43:44],
+							},
+							Params: FormalParameters{
+								Tokens: tk[44:46],
+							},
+							FunctionBody: Block{
+								Tokens: tk[46:48],
+							},
+							Tokens: tk[41:48],
+						},
+						Tokens: tk[39:48],
+					},
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[48],
+								Tokens:            tk[48:49],
+							},
+							Params: FormalParameters{
+								Tokens: tk[49:51],
+							},
+							FunctionBody: Block{
+								Tokens: tk[51:53],
+							},
+							Tokens: tk[48:53],
+						},
+						Tokens: tk[48:53],
+					},
+					{
+						Static: true,
+						ClassStaticBlock: &Block{
+							Tokens: tk[54:56],
+						},
+						Tokens: tk[53:56],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[56],
+								Tokens:            tk[56:57],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[58],
+									Tokens:  tk[58:59],
+								}),
+								Tokens: tk[58:59],
+							},
+							Tokens: tk[56:59],
+						},
+						Tokens: tk[56:60],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[60],
+									Tokens:              tk[60:61],
+								},
+								Tokens: tk[60:61],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[62],
+									Tokens:  tk[62:63],
+								}),
+								Tokens: tk[62:63],
+							},
+							Tokens: tk[60:63],
+						},
+						Tokens: tk[60:63],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[64],
+									Tokens:              tk[64:65],
+								},
+								Tokens: tk[64:65],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[66],
+									Tokens:  tk[66:67],
+								}),
+								Tokens: tk[66:67],
+							},
+							Tokens: tk[64:67],
+						},
+						Tokens: tk[64:68],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[68],
+									Tokens:              tk[68:69],
+								},
+								Tokens: tk[68:69],
+							},
+							Tokens: tk[68:69],
+						},
+						Tokens: tk[68:69],
+					},
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[71],
+											Tokens:              tk[71:72],
+										}),
+										Tokens: tk[71:72],
+									},
+									Tokens: tk[70:73],
+								},
+								Tokens: tk[70:73],
+							},
+							Tokens: tk[70:73],
+						},
+						Tokens: tk[70:73],
+					},
+				},
+				Tokens: tk[:74],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
