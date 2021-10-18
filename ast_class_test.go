@@ -1742,6 +1742,765 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{"class a {#b() {} }", func(t *test, tk Tokens) { // 62
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[5],
+								Tokens:            tk[5:6],
+							},
+							Params: FormalParameters{
+								Tokens: tk[6:8],
+							},
+							FunctionBody: Block{
+								Tokens: tk[9:11],
+							},
+							Tokens: tk[5:11],
+						},
+						Tokens: tk[5:11],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {b}", func(t *test, tk Tokens) { // 63
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"class a {b = 1}", func(t *test, tk Tokens) { // 64
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class a {#b}", func(t *test, tk Tokens) { // 65
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[5],
+								Tokens:            tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"class a {#b = 1}", func(t *test, tk Tokens) { // 66
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[5],
+								Tokens:            tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class a {[b]\n;}", func(t *test, tk Tokens) { // 67
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[6],
+											Tokens:              tk[6:7],
+										}),
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[5:8],
+								},
+								Tokens: tk[5:8],
+							},
+							Tokens: tk[5:8],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class a {[b] = 1;;}", func(t *test, tk Tokens) { // 68
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[6],
+											Tokens:              tk[6:7],
+										}),
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[5:8],
+								},
+								Tokens: tk[5:8],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[11],
+									Tokens:  tk[11:12],
+								}),
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[5:12],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a {#b \n;}", func(t *test, tk Tokens) { // 69
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[5],
+								Tokens:            tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:9],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"class a {#b = 1\n ;}", func(t *test, tk Tokens) { // 70
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[5],
+								Tokens:            tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {async}", func(t *test, tk Tokens) { // 71
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"class a {async\n= 1}", func(t *test, tk Tokens) { // 72
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class a {async = 1;}", func(t *test, tk Tokens) { // 73
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:11],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{"class a {*\nb() {}}", func(t *test, tk Tokens) { // 74
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {* async() {}}", func(t *test, tk Tokens) { // 75
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {* get() {}}", func(t *test, tk Tokens) { // 76
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {*\nset() {}}", func(t *test, tk Tokens) { // 77
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {async *\nb() {}}", func(t *test, tk Tokens) { // 78
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Params: FormalParameters{
+								Tokens: tk[10:12],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[5:15],
+						},
+						Tokens: tk[5:15],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {async * async() {}}", func(t *test, tk Tokens) { // 79
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Params: FormalParameters{
+								Tokens: tk[10:12],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[5:15],
+						},
+						Tokens: tk[5:15],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {async * get() {}}", func(t *test, tk Tokens) { // 80
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Params: FormalParameters{
+								Tokens: tk[10:12],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[5:15],
+						},
+						Tokens: tk[5:15],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {async #b(){}}", func(t *test, tk Tokens) { // 81
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsync,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[10:12],
+							},
+							Tokens: tk[5:12],
+						},
+						Tokens: tk[5:12],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {async*#b(){}}", func(t *test, tk Tokens) { // 82
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodAsyncGenerator,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[10:12],
+							},
+							Tokens: tk[5:12],
+						},
+						Tokens: tk[5:12],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {get\nb()\n{}}", func(t *test, tk Tokens) { // 83
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGetter,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {set\nb(c)\n{}}", func(t *test, tk Tokens) { // 84
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodSetter,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[7],
+									Tokens:              tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Params: FormalParameters{
+								FormalParameterList: []BindingElement{
+									{
+										SingleNameBinding: &tk[9],
+										Tokens:            tk[9:10],
+									},
+								},
+								Tokens: tk[8:11],
+							},
+							FunctionBody: Block{
+								Tokens: tk[12:14],
+							},
+							Tokens: tk[5:14],
+						},
+						Tokens: tk[5:14],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a {get\n#b()\n{}}", func(t *test, tk Tokens) { // 85
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGetter,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Params: FormalParameters{
+								Tokens: tk[8:10],
+							},
+							FunctionBody: Block{
+								Tokens: tk[11:13],
+							},
+							Tokens: tk[5:13],
+						},
+						Tokens: tk[5:13],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"class a {set\n#b(c)\n{}}", func(t *test, tk Tokens) { // 86
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodSetter,
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[7],
+								Tokens:            tk[7:8],
+							},
+							Params: FormalParameters{
+								FormalParameterList: []BindingElement{
+									{
+										SingleNameBinding: &tk[9],
+										Tokens:            tk[9:10],
+									},
+								},
+								Tokens: tk[8:11],
+							},
+							FunctionBody: Block{
+								Tokens: tk[12:14],
+							},
+							Tokens: tk[5:14],
+						},
+						Tokens: tk[5:14],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a {get}", func(t *test, tk Tokens) { // 87
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"class a {set}", func(t *test, tk Tokens) { // 88
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"class a {get\n= 1}", func(t *test, tk Tokens) { // 89
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class a {set\n= 1}", func(t *test, tk Tokens) { // 90
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[5],
+									Tokens:              tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[9],
+									Tokens:  tk[9:10],
+								}),
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[5:10],
+						},
+						Tokens: tk[5:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
