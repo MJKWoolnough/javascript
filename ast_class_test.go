@@ -2740,6 +2740,29 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:74],
 			}
 		}},
+		{"class a {static{function}}", func(t *test, tk Tokens) { // 92
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidStatement,
+								Parsing: "Statement",
+								Token:   tk[7],
+							},
+							Parsing: "StatementListItem",
+							Token:   tk[7],
+						},
+						Parsing: "Block",
+						Token:   tk[7],
+					},
+					Parsing: "ClassElement",
+					Token:   tk[6],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
