@@ -2872,6 +2872,25 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"class a {+}", func(t *test, tk Tokens) { // 98
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidPropertyName,
+							Parsing: "PropertyName",
+							Token:   tk[5],
+						},
+						Parsing: "ClassElementName",
+						Token:   tk[5],
+					},
+					Parsing: "ClassElement",
+					Token:   tk[5],
+				},
+				Parsing: "ClassDeclaration",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 		err := cd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
