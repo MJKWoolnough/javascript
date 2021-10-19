@@ -1491,7 +1491,7 @@ func TestPrintingScript(t *testing.T) {
 			"a.#b;",
 			"a.#b;",
 		},
-		{ // 2954
+		{ // 295
 			"a\n.#b",
 			"a.#b;",
 			"a\n.#b;",
