@@ -1526,6 +1526,46 @@ func TestPrintingScript(t *testing.T) {
 			"class a {\n	#b() {}\n}",
 			"class a {\n	#b() {}\n}",
 		},
+		{ // 302
+			"class a { #b = 1 }",
+			"class a {\n	#b = 1;\n}",
+			"class a {\n	#b = 1;\n}",
+		},
+		{ // 303
+			"class a { #b = 1; #c = 2 }",
+			"class a {\n	#b = 1;\n	#c = 2;\n}",
+			"class a {\n	#b = 1;\n	#c = 2;\n}",
+		},
+		{ // 304
+			"class a { #b = 1\n#c = 2 }",
+			"class a {\n	#b = 1;\n	#c = 2;\n}",
+			"class a {\n	#b = 1;\n	#c = 2;\n}",
+		},
+		{ // 305
+			"class a { #b(){}#c = 2 }",
+			"class a {\n	#b() {}\n	#c = 2;\n}",
+			"class a {\n	#b() {}\n	#c = 2;\n}",
+		},
+		{ // 306
+			"class a { #b\n#c(){}}",
+			"class a {\n	#b;\n	#c() {}\n}",
+			"class a {\n	#b;\n	#c() {}\n}",
+		},
+		{ // 307
+			"class a { #b = 1\n#c(){}}",
+			"class a {\n	#b = 1;\n	#c() {}\n}",
+			"class a {\n	#b = 1;\n	#c() {}\n}",
+		},
+		{ // 308
+			"class a { #b = 1;#c(){}}",
+			"class a {\n	#b = 1;\n	#c() {}\n}",
+			"class a {\n	#b = 1;\n	#c() {}\n}",
+		},
+		{ // 309
+			"class a { #b;#c(){}}",
+			"class a {\n	#b;\n	#c() {}\n}",
+			"class a {\n	#b;\n	#c() {}\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
