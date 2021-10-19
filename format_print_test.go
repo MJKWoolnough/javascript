@@ -1516,6 +1516,16 @@ func TestPrintingScript(t *testing.T) {
 			"class a {\n	b() {}\n}",
 			"class a {\n	b() {}\n}",
 		},
+		{ // 300
+			"class\na\n{\n#b\n}",
+			"class a {\n	#b;\n}",
+			"class a {\n	#b;\n}",
+		},
+		{ // 301
+			"class a { #b () {} }",
+			"class a {\n	#b() {}\n}",
+			"class a {\n	#b() {}\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
