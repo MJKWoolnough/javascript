@@ -187,11 +187,7 @@ type FieldDefinition struct {
 
 func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 	if len(fd.ClassElementName.Tokens) == 0 {
-		g := j.NewGoal()
-		if err := fd.ClassElementName.parse(&g, yield, await); err != nil {
-			return j.Error("FieldDefinition", err)
-		}
-		j.Score(g)
+		fd.ClassElementName.parse(j, yield, await)
 	}
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
