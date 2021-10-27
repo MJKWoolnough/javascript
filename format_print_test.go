@@ -1571,6 +1571,16 @@ func TestPrintingScript(t *testing.T) {
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic { e; }\n\tstatic { e; f; }\n}",
 		},
+		{ // 311
+			"#a in b",
+			"#a in b;",
+			"#a in b;",
+		},
+		{ // 312
+			"#a\nin\nb",
+			"#a in b;",
+			"#a in b;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
