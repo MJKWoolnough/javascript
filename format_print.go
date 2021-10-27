@@ -1355,7 +1355,10 @@ func (e EqualityExpression) printSource(w io.Writer, v bool) {
 }
 
 func (r RelationalExpression) printSource(w io.Writer, v bool) {
-	if r.RelationalExpression != nil {
+	if r.PrivateIdentifier != nil {
+		io.WriteString(w, r.PrivateIdentifier.Data)
+		w.Write(relationshipIn)
+	} else if r.RelationalExpression != nil {
 		var ro []byte
 		switch r.RelationshipOperator {
 		case RelationshipLessThan:
