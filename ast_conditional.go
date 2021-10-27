@@ -321,10 +321,13 @@ const (
 )
 
 // RelationalExpression as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-RelationalExpression
+// https://tc39.es/ecma262/#prod-RelationalExpression
 //
-// If RelationshipOperator is not RelationshipNone then RelationalExpression
-// must be non-nil, and vice-verse.
+// If PrivateIdentifier is non-nil, then RelationshipOperator should be
+// RelationshipIn.
+//
+// If PrivateIdentifier is nil and RelationshipOperator does not equal
+// RelationshipNone, then RelationalExpression should be non-nil
 type RelationalExpression struct {
 	PrivateIdentifier    *Token
 	RelationalExpression *RelationalExpression
