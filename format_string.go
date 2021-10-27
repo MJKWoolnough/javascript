@@ -2134,6 +2134,13 @@ func (f *RelationalExpression) printType(w io.Writer, v bool) {
 	w.Write(nameRelationalExpression[1:21])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
+	if f.PrivateIdentifier != nil {
+		pp.Write(namePrivateIdentifier)
+		f.PrivateIdentifier.printType(&pp, v)
+	} else if v {
+		pp.Write(namePrivateIdentifier)
+		pp.Write(nilStr)
+	}
 	if f.RelationalExpression != nil {
 		pp.Write(nameRelationalExpression)
 		f.RelationalExpression.printType(&pp, v)
