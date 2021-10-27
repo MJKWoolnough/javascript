@@ -1164,6 +1164,272 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"#a in b", func(t *test, tk Tokens) { // 79
+			t.In = true
+			t.Output = *WrapConditional(RelationalExpression{
+				PrivateIdentifier:    &tk[0],
+				RelationshipOperator: RelationshipIn,
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[4],
+														Tokens:              tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			})
+		}},
+		{"#a in b", func(t *test, tk Tokens) { // 80
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err:     ErrNoIdentifier,
+																					Parsing: "PrimaryExpression",
+																					Token:   tk[0],
+																				},
+																				Parsing: "MemberExpression",
+																				Token:   tk[0],
+																			},
+																			Parsing: "NewExpression",
+																			Token:   tk[0],
+																		},
+																		Parsing: "LeftHandSideExpression",
+																		Token:   tk[0],
+																	},
+																	Parsing: "UpdateExpression",
+																	Token:   tk[0],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[0],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"#a of b", func(t *test, tk Tokens) { // 81
+			t.In = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err:     ErrNoIdentifier,
+																					Parsing: "PrimaryExpression",
+																					Token:   tk[0],
+																				},
+																				Parsing: "MemberExpression",
+																				Token:   tk[0],
+																			},
+																			Parsing: "NewExpression",
+																			Token:   tk[0],
+																		},
+																		Parsing: "LeftHandSideExpression",
+																		Token:   tk[0],
+																	},
+																	Parsing: "UpdateExpression",
+																	Token:   tk[0],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[0],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"#a in #b", func(t *test, tk Tokens) { // 82
+			t.In = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err:     ErrNoIdentifier,
+																					Parsing: "PrimaryExpression",
+																					Token:   tk[4],
+																				},
+																				Parsing: "MemberExpression",
+																				Token:   tk[4],
+																			},
+																			Parsing: "NewExpression",
+																			Token:   tk[4],
+																		},
+																		Parsing: "LeftHandSideExpression",
+																		Token:   tk[4],
+																	},
+																	Parsing: "UpdateExpression",
+																	Token:   tk[4],
+																},
+																Parsing: "UnaryExpression",
+																Token:   tk[4],
+															},
+															Parsing: "ExponentiationExpression",
+															Token:   tk[4],
+														},
+														Parsing: "MultiplicativeExpression",
+														Token:   tk[4],
+													},
+													Parsing: "AdditiveExpression",
+													Token:   tk[4],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[4],
+											},
+											Parsing: "RelationalExpression",
+											Token:   tk[0],
+										},
+										Parsing: "EqualityExpression",
+										Token:   tk[0],
+									},
+									Parsing: "BitwiseANDExpression",
+									Token:   tk[0],
+								},
+								Parsing: "BitwiseXORExpression",
+								Token:   tk[0],
+							},
+							Parsing: "BitwiseORExpression",
+							Token:   tk[0],
+						},
+						Parsing: "LogicalANDExpression",
+						Token:   tk[0],
+					},
+					Parsing: "LogicalORExpression",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
