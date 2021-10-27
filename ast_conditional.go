@@ -326,6 +326,7 @@ const (
 // If RelationshipOperator is not RelationshipNone then RelationalExpression
 // must be non-nil, and vice-verse.
 type RelationalExpression struct {
+	PrivateIdentifier    *Token
 	RelationalExpression *RelationalExpression
 	RelationshipOperator RelationshipOperator
 	ShiftExpression      ShiftExpression
@@ -333,8 +334,26 @@ type RelationalExpression struct {
 }
 
 func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error {
+	g := j.NewGoal()
+	if in && g.Accept(TokenPrivateIdentifier) {
+		re.PrivateIdentifier = g.GetLastToken()
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+			re.RelationshipOperator = RelationshipIn
+			g.AcceptRunWhitespace()
+			h := g.NewGoal()
+			if err := re.ShiftExpression.parse(&h, yield, await); err != nil {
+				return j.Error("RelationalExpression", err)
+			}
+			g.Score(h)
+			j.Score(g)
+			re.Tokens = j.ToTokens()
+			return nil
+		}
+		re.PrivateIdentifier = nil
+		g = j.NewGoal()
+	}
 	for {
-		g := j.NewGoal()
 		if err := re.ShiftExpression.parse(&g, yield, await); err != nil {
 			return j.Error("RelationalExpression", err)
 		}
@@ -371,6 +390,7 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 			RelationshipOperator: ro,
 		}
 		j.Score(g)
+		g = j.NewGoal()
 	}
 }
 
