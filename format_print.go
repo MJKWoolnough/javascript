@@ -1679,6 +1679,11 @@ func (oe OptionalChain) printSource(w io.Writer, v bool) {
 		io.WriteString(w, oe.IdentifierName.Data)
 	} else if oe.TemplateLiteral != nil {
 		oe.TemplateLiteral.printSource(w, v)
+	} else if oe.PrivateIdentifier != nil {
+		if oe.OptionalChain != nil {
+			w.Write(dot)
+		}
+		io.WriteString(w, oe.PrivateIdentifier.Data)
 	}
 }
 
