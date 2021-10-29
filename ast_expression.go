@@ -1069,15 +1069,16 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 // If CallExpression is non-nil, only one of Arguments, Expression,
 // IdentifierName, or TemplateLiteral must be non-nil.
 type CallExpression struct {
-	MemberExpression *MemberExpression
-	SuperCall        bool
-	ImportCall       *AssignmentExpression
-	CallExpression   *CallExpression
-	Arguments        *Arguments
-	Expression       *Expression
-	IdentifierName   *Token
-	TemplateLiteral  *TemplateLiteral
-	Tokens           Tokens
+	MemberExpression  *MemberExpression
+	SuperCall         bool
+	ImportCall        *AssignmentExpression
+	CallExpression    *CallExpression
+	Arguments         *Arguments
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	PrivateIdentifier *Token
+	Tokens            Tokens
 }
 
 func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await bool) error {
@@ -1123,10 +1124,10 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		g.AcceptRunWhitespace()
 		h := g.NewGoal()
 		var (
-			tl *TemplateLiteral
-			a  *Arguments
-			i  *Token
-			e  *Expression
+			tl   *TemplateLiteral
+			a    *Arguments
+			i, p *Token
+			e    *Expression
 		)
 		switch tk := h.Peek(); tk.Type {
 		case TokenNoSubstitutionTemplate, TokenTemplateHead:
@@ -1144,10 +1145,14 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			case ".":
 				h.Skip()
 				h.AcceptRunWhitespace()
-				if !h.Accept(TokenIdentifier, TokenKeyword) {
+				if !h.Accept(TokenIdentifier, TokenKeyword, TokenPrivateIdentifier) {
 					return h.Error("CallExpression", ErrNoIdentifier)
 				}
 				i = h.GetLastToken()
+				if i.Type == TokenPrivateIdentifier {
+					p = i
+					i = nil
+				}
 			case "[":
 				h.Skip()
 				h.AcceptRunWhitespace()
@@ -1171,11 +1176,12 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		nce := new(CallExpression)
 		*nce = *ce
 		*ce = CallExpression{
-			CallExpression:  nce,
-			Expression:      e,
-			Arguments:       a,
-			IdentifierName:  i,
-			TemplateLiteral: tl,
+			CallExpression:    nce,
+			Expression:        e,
+			Arguments:         a,
+			IdentifierName:    i,
+			TemplateLiteral:   tl,
+			PrivateIdentifier: p,
 		}
 		j.Score(g)
 	}
