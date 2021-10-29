@@ -554,23 +554,21 @@ Format implements the fmt.Formatter interface
 
 ```go
 type CallExpression struct {
-	MemberExpression *MemberExpression
-	SuperCall        bool
-	ImportCall       *AssignmentExpression
-	CallExpression   *CallExpression
-	Arguments        *Arguments
-	Expression       *Expression
-	IdentifierName   *Token
-	TemplateLiteral  *TemplateLiteral
-	Tokens           Tokens
+	MemberExpression  *MemberExpression
+	SuperCall         bool
+	ImportCall        *AssignmentExpression
+	CallExpression    *CallExpression
+	Arguments         *Arguments
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	PrivateIdentifier *Token
+	Tokens            Tokens
 }
 ```
 
 CallExpression as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-CallExpression
-
-Includes the TC39 proposal for the dynamic import function call
-https://github.com/tc39/proposal-dynamic-import/#import
+https://tc39.es/ecma262/#prod-CallExpression
 
 It is only valid for one of MemberExpression, ImportCall, or CallExpression to
 be non-nil or SuperCall to be true.
@@ -578,7 +576,7 @@ be non-nil or SuperCall to be true.
 If MemberExpression is non-nil, or SuperCall is true, Arguments must be non-nil.
 
 If CallExpression is non-nil, only one of Arguments, Expression, IdentifierName,
-or TemplateLiteral must be non-nil.
+TemplateLiteral, or PrivateIdentifier must be non-nil.
 
 #### func (CallExpression) Format
 
@@ -1819,20 +1817,21 @@ Format implements the fmt.Formatter interface
 
 ```go
 type OptionalChain struct {
-	OptionalChain   *OptionalChain
-	Arguments       *Arguments
-	Expression      *Expression
-	IdentifierName  *Token
-	TemplateLiteral *TemplateLiteral
-	Tokens          Tokens
+	OptionalChain     *OptionalChain
+	Arguments         *Arguments
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	PrivateIdentifier *Token
+	Tokens            Tokens
 }
 ```
 
 OptionalChain as defined in TC39
 https://tc39.es/ecma262/#prod-OptionalExpression
 
-It is only valid for one of Arguments, Expression, IdentifierName, or
-TemplateLiteral to be non-nil.
+It is only valid for one of Arguments, Expression, IdentifierName,
+TemplateLiteral, or PrivateIdentifier to be non-nil.
 
 #### func (OptionalChain) Format
 
