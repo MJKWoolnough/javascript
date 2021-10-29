@@ -2717,6 +2717,25 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{"a?.#b", func(t *test, tk Tokens) { // 14
+			t.Output = LeftHandSideExpression{
+				OptionalExpression: &OptionalExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[0],
+							Tokens:              tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					OptionalChain: OptionalChain{
+						PrivateIdentifier: &tk[2],
+						Tokens:            tk[1:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var lhs LeftHandSideExpression
 		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
