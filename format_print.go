@@ -1051,6 +1051,13 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 		} else if c.TemplateLiteral != nil {
 			c.CallExpression.printSource(w, v)
 			c.TemplateLiteral.printSource(w, v)
+		} else if c.PrivateIdentifier != nil {
+			c.CallExpression.printSource(w, v)
+			if v && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+				w.Write(newLine)
+			}
+			w.Write(dot)
+			io.WriteString(w, c.PrivateIdentifier.Data)
 		}
 	}
 }
