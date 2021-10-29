@@ -520,12 +520,13 @@ func (oe *OptionalExpression) parse(j *jsParser, yield, await bool, me *MemberEx
 // It is only valid for one of Arguments, Expression, IdentifierName, or
 // TemplateLiteral to be non-nil.
 type OptionalChain struct {
-	OptionalChain   *OptionalChain
-	Arguments       *Arguments
-	Expression      *Expression
-	IdentifierName  *Token
-	TemplateLiteral *TemplateLiteral
-	Tokens          Tokens
+	OptionalChain     *OptionalChain
+	Arguments         *Arguments
+	Expression        *Expression
+	IdentifierName    *Token
+	TemplateLiteral   *TemplateLiteral
+	PrivateIdentifier *Token
+	Tokens            Tokens
 }
 
 func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
@@ -554,6 +555,8 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	} else if j.Accept(TokenIdentifier, TokenKeyword) {
 		oc.IdentifierName = j.GetLastToken()
+	} else if j.Accept(TokenPrivateIdentifier) {
+		oc.PrivateIdentifier = j.GetLastToken()
 	} else if t := j.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
 		g := j.NewGoal()
 		oc.TemplateLiteral = new(TemplateLiteral)
