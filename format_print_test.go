@@ -1591,6 +1591,11 @@ func TestPrintingScript(t *testing.T) {
 			"a().#b;",
 			"a()\n.#b;",
 		},
+		{ // 314
+			"a\n?.\n#b",
+			"a?.#b;",
+			"a?.#b;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(parser.NewStringTokeniser(in))
