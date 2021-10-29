@@ -685,6 +685,13 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+	if f.PrivateIdentifier != nil {
+		pp.Write(namePrivateIdentifier)
+		f.PrivateIdentifier.printType(&pp, v)
+	} else if v {
+		pp.Write(namePrivateIdentifier)
+		pp.Write(nilStr)
+	}
 	w.Write(objectClose)
 }
 
