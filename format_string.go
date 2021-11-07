@@ -199,7 +199,10 @@ func (f *Arguments) printType(w io.Writer, v bool) {
 	w.Write(nameArguments[1:10])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.ArgumentList) > 0 {
+	if f.ArgumentList == nil {
+		pp.Write(nameArgumentList)
+		pp.Write(nilStr)
+	} else if len(f.ArgumentList) > 0 {
 		pp.Write(nameArgumentList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -230,7 +233,10 @@ func (f *ArrayAssignmentPattern) printType(w io.Writer, v bool) {
 	w.Write(nameArrayAssignmentPattern[1:23])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.AssignmentElements) > 0 {
+	if f.AssignmentElements == nil {
+		pp.Write(nameAssignmentElements)
+		pp.Write(nilStr)
+	} else if len(f.AssignmentElements) > 0 {
 		pp.Write(nameAssignmentElements)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -261,7 +267,10 @@ func (f *ArrayBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(nameArrayBindingPattern[1:20])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.BindingElementList) > 0 {
+	if f.BindingElementList == nil {
+		pp.Write(nameBindingElementList)
+		pp.Write(nilStr)
+	} else if len(f.BindingElementList) > 0 {
 		pp.Write(nameBindingElementList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -292,7 +301,10 @@ func (f *ArrayLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameArrayLiteral[1:13])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.ElementList) > 0 {
+	if f.ElementList == nil {
+		pp.Write(nameElementList)
+		pp.Write(nilStr)
+	} else if len(f.ElementList) > 0 {
 		pp.Write(nameElementList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -605,7 +617,10 @@ func (f *Block) printType(w io.Writer, v bool) {
 	w.Write(nameBlock[1:6])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.StatementList) > 0 {
+	if f.StatementList == nil {
+		pp.Write(nameStatementList)
+		pp.Write(nilStr)
+	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -701,7 +716,10 @@ func (f *CaseClause) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
-	if len(f.StatementList) > 0 {
+	if f.StatementList == nil {
+		pp.Write(nameStatementList)
+		pp.Write(nilStr)
+	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -739,7 +757,10 @@ func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameClassHeritage)
 		pp.Write(nilStr)
 	}
-	if len(f.ClassBody) > 0 {
+	if f.ClassBody == nil {
+		pp.Write(nameClassBody)
+		pp.Write(nilStr)
+	} else if len(f.ClassBody) > 0 {
 		pp.Write(nameClassBody)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -882,7 +903,10 @@ func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 	w.Write(nameParenthesizedExpression[1:24])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.Expressions) > 0 {
+	if f.Expressions == nil {
+		pp.Write(nameExpressions)
+		pp.Write(nilStr)
+	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1026,7 +1050,10 @@ func (f *ExportClause) printType(w io.Writer, v bool) {
 	w.Write(nameExportClause[1:13])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.ExportList) > 0 {
+	if f.ExportList == nil {
+		pp.Write(nameExportList)
+		pp.Write(nilStr)
+	} else if len(f.ExportList) > 0 {
 		pp.Write(nameExportList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1142,7 +1169,10 @@ func (f *Expression) printType(w io.Writer, v bool) {
 	w.Write(nameExpression[1:11])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.Expressions) > 0 {
+	if f.Expressions == nil {
+		pp.Write(nameExpressions)
+		pp.Write(nilStr)
+	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1186,7 +1216,10 @@ func (f *FormalParameters) printType(w io.Writer, v bool) {
 	w.Write(nameFormalParameters[1:17])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.FormalParameterList) > 0 {
+	if f.FormalParameterList == nil {
+		pp.Write(nameFormalParameterList)
+		pp.Write(nilStr)
+	} else if len(f.FormalParameterList) > 0 {
 		pp.Write(nameFormalParameterList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1396,7 +1429,10 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameInitExpression)
 		pp.Write(nilStr)
 	}
-	if len(f.InitVar) > 0 {
+	if f.InitVar == nil {
+		pp.Write(nameInitVar)
+		pp.Write(nilStr)
+	} else if len(f.InitVar) > 0 {
 		pp.Write(nameInitVar)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1573,7 +1609,10 @@ func (f *LexicalDeclaration) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 	pp.Write(nameLetOrConst)
 	io.WriteString(&pp, f.LetOrConst.String())
-	if len(f.BindingList) > 0 {
+	if f.BindingList == nil {
+		pp.Write(nameBindingList)
+		pp.Write(nilStr)
+	} else if len(f.BindingList) > 0 {
 		pp.Write(nameBindingList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1725,7 +1764,10 @@ func (f *Module) printType(w io.Writer, v bool) {
 	w.Write(nameModule[1:7])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.ModuleListItems) > 0 {
+	if f.ModuleListItems == nil {
+		pp.Write(nameModuleListItems)
+		pp.Write(nilStr)
+	} else if len(f.ModuleListItems) > 0 {
 		pp.Write(nameModuleListItems)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1803,7 +1845,10 @@ func (f *NamedImports) printType(w io.Writer, v bool) {
 	w.Write(nameNamedImports[1:13])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.ImportList) > 0 {
+	if f.ImportList == nil {
+		pp.Write(nameImportList)
+		pp.Write(nilStr)
+	} else if len(f.ImportList) > 0 {
 		pp.Write(nameImportList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1841,7 +1886,10 @@ func (f *ObjectAssignmentPattern) printType(w io.Writer, v bool) {
 	w.Write(nameObjectAssignmentPattern[1:24])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.AssignmentPropertyList) > 0 {
+	if f.AssignmentPropertyList == nil {
+		pp.Write(nameAssignmentPropertyList)
+		pp.Write(nilStr)
+	} else if len(f.AssignmentPropertyList) > 0 {
 		pp.Write(nameAssignmentPropertyList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1872,7 +1920,10 @@ func (f *ObjectBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(nameObjectBindingPattern[1:21])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.BindingPropertyList) > 0 {
+	if f.BindingPropertyList == nil {
+		pp.Write(nameBindingPropertyList)
+		pp.Write(nilStr)
+	} else if len(f.BindingPropertyList) > 0 {
 		pp.Write(nameBindingPropertyList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -1903,7 +1954,10 @@ func (f *ObjectLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameObjectLiteral[1:14])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.PropertyDefinitionList) > 0 {
+	if f.PropertyDefinitionList == nil {
+		pp.Write(namePropertyDefinitionList)
+		pp.Write(nilStr)
+	} else if len(f.PropertyDefinitionList) > 0 {
 		pp.Write(namePropertyDefinitionList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2177,7 +2231,10 @@ func (f *Script) printType(w io.Writer, v bool) {
 	w.Write(nameScript[1:7])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.StatementList) > 0 {
+	if f.StatementList == nil {
+		pp.Write(nameStatementList)
+		pp.Write(nilStr)
+	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2354,7 +2411,10 @@ func (f *SwitchStatement) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
-	if len(f.CaseClauses) > 0 {
+	if f.CaseClauses == nil {
+		pp.Write(nameCaseClauses)
+		pp.Write(nilStr)
+	} else if len(f.CaseClauses) > 0 {
 		pp.Write(nameCaseClauses)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2367,7 +2427,10 @@ func (f *SwitchStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameCaseClauses)
 		pp.Write(arrayOpenClose)
 	}
-	if len(f.DefaultClause) > 0 {
+	if f.DefaultClause == nil {
+		pp.Write(nameDefaultClause)
+		pp.Write(nilStr)
+	} else if len(f.DefaultClause) > 0 {
 		pp.Write(nameDefaultClause)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2380,7 +2443,10 @@ func (f *SwitchStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameDefaultClause)
 		pp.Write(arrayOpenClose)
 	}
-	if len(f.PostDefaultCaseClauses) > 0 {
+	if f.PostDefaultCaseClauses == nil {
+		pp.Write(namePostDefaultCaseClauses)
+		pp.Write(nilStr)
+	} else if len(f.PostDefaultCaseClauses) > 0 {
 		pp.Write(namePostDefaultCaseClauses)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2418,7 +2484,10 @@ func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateHead)
 		pp.Write(nilStr)
 	}
-	if len(f.Expressions) > 0 {
+	if f.Expressions == nil {
+		pp.Write(nameExpressions)
+		pp.Write(nilStr)
+	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2431,7 +2500,10 @@ func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
-	if len(f.TemplateMiddleList) > 0 {
+	if f.TemplateMiddleList == nil {
+		pp.Write(nameTemplateMiddleList)
+		pp.Write(nilStr)
+	} else if len(f.TemplateMiddleList) > 0 {
 		pp.Write(nameTemplateMiddleList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2510,7 +2582,10 @@ func (f *UnaryExpression) printType(w io.Writer, v bool) {
 	w.Write(nameUnaryExpression[1:16])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.UnaryOperators) > 0 {
+	if f.UnaryOperators == nil {
+		pp.Write(nameUnaryOperators)
+		pp.Write(nilStr)
+	} else if len(f.UnaryOperators) > 0 {
 		pp.Write(nameUnaryOperators)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
@@ -2602,7 +2677,10 @@ func (f *VariableStatement) printType(w io.Writer, v bool) {
 	w.Write(nameVariableStatement[1:18])
 	w.Write(objectOpen)
 	pp := indentPrinter{w}
-	if len(f.VariableDeclarationList) > 0 {
+	if f.VariableDeclarationList == nil {
+		pp.Write(nameVariableDeclarationList)
+		pp.Write(nilStr)
+	} else if len(f.VariableDeclarationList) > 0 {
 		pp.Write(nameVariableDeclarationList)
 		pp.Write(arrayOpen)
 		ipp := indentPrinter{&pp}
