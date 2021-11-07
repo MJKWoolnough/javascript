@@ -1430,6 +1430,42 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"this.#a", func(t *test, tk Tokens) { // 83
+			t.Output = *WrapConditional(MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						This:   &tk[0],
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				PrivateIdentifier: &tk[2],
+				Tokens:            tk[:3],
+			})
+		}},
+		{"this.#a++", func(t *test, tk Tokens) { // 84
+			t.Output = *WrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							MemberExpression: &MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									This:   &tk[0],
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							PrivateIdentifier: &tk[2],
+							Tokens:            tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+					Tokens: tk[:3],
+				},
+				UpdateOperator: UpdatePostIncrement,
+				Tokens:         tk[:4],
+			})
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
