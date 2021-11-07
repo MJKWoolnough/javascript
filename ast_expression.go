@@ -859,7 +859,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 
 // IsSimple returns whether or not the MemberExpression is classed as 'simple'
 func (me *MemberExpression) IsSimple() bool {
-	return me.Expression != nil || me.IdentifierName != nil || me.SuperProperty || (me.PrimaryExpression != nil && me.PrimaryExpression.IsSimple())
+	return me.Expression != nil || me.IdentifierName != nil || me.SuperProperty || me.PrivateIdentifier != nil || (me.PrimaryExpression != nil && me.PrimaryExpression.IsSimple())
 }
 
 // PrimaryExpression as defined in ECMA-262
@@ -1189,5 +1189,5 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 
 // IsSimple returns whether or not the CallExpression is classed as 'simple'
 func (ce *CallExpression) IsSimple() bool {
-	return ce.Expression != nil || ce.IdentifierName != nil
+	return ce.Expression != nil || ce.IdentifierName != nil || ce.PrivateIdentifier != nil
 }
