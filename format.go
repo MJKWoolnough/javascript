@@ -160,8 +160,9 @@ func format(f formatter, s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f AdditiveExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _AdditiveExpression AdditiveExpression
-		fmt.Fprintf(s, "%#v", _AdditiveExpression(f))
+		type X = AdditiveExpression
+		type AdditiveExpression X
+		fmt.Fprintf(s, "%#v", AdditiveExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -170,8 +171,9 @@ func (f AdditiveExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Arguments) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Arguments Arguments
-		fmt.Fprintf(s, "%#v", _Arguments(f))
+		type X = Arguments
+		type Arguments X
+		fmt.Fprintf(s, "%#v", Arguments(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -180,8 +182,9 @@ func (f Arguments) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ArrayAssignmentPattern) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ArrayAssignmentPattern ArrayAssignmentPattern
-		fmt.Fprintf(s, "%#v", _ArrayAssignmentPattern(f))
+		type X = ArrayAssignmentPattern
+		type ArrayAssignmentPattern X
+		fmt.Fprintf(s, "%#v", ArrayAssignmentPattern(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -190,8 +193,9 @@ func (f ArrayAssignmentPattern) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ArrayBindingPattern) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ArrayBindingPattern ArrayBindingPattern
-		fmt.Fprintf(s, "%#v", _ArrayBindingPattern(f))
+		type X = ArrayBindingPattern
+		type ArrayBindingPattern X
+		fmt.Fprintf(s, "%#v", ArrayBindingPattern(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -200,8 +204,9 @@ func (f ArrayBindingPattern) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ArrayLiteral) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ArrayLiteral ArrayLiteral
-		fmt.Fprintf(s, "%#v", _ArrayLiteral(f))
+		type X = ArrayLiteral
+		type ArrayLiteral X
+		fmt.Fprintf(s, "%#v", ArrayLiteral(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -210,8 +215,9 @@ func (f ArrayLiteral) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ArrowFunction) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ArrowFunction ArrowFunction
-		fmt.Fprintf(s, "%#v", _ArrowFunction(f))
+		type X = ArrowFunction
+		type ArrowFunction X
+		fmt.Fprintf(s, "%#v", ArrowFunction(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -220,8 +226,9 @@ func (f ArrowFunction) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f AssignmentElement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _AssignmentElement AssignmentElement
-		fmt.Fprintf(s, "%#v", _AssignmentElement(f))
+		type X = AssignmentElement
+		type AssignmentElement X
+		fmt.Fprintf(s, "%#v", AssignmentElement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -230,8 +237,9 @@ func (f AssignmentElement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f AssignmentExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _AssignmentExpression AssignmentExpression
-		fmt.Fprintf(s, "%#v", _AssignmentExpression(f))
+		type X = AssignmentExpression
+		type AssignmentExpression X
+		fmt.Fprintf(s, "%#v", AssignmentExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -240,8 +248,9 @@ func (f AssignmentExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f AssignmentPattern) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _AssignmentPattern AssignmentPattern
-		fmt.Fprintf(s, "%#v", _AssignmentPattern(f))
+		type X = AssignmentPattern
+		type AssignmentPattern X
+		fmt.Fprintf(s, "%#v", AssignmentPattern(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -250,8 +259,9 @@ func (f AssignmentPattern) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f AssignmentProperty) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _AssignmentProperty AssignmentProperty
-		fmt.Fprintf(s, "%#v", _AssignmentProperty(f))
+		type X = AssignmentProperty
+		type AssignmentProperty X
+		fmt.Fprintf(s, "%#v", AssignmentProperty(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -260,8 +270,9 @@ func (f AssignmentProperty) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f BindingElement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _BindingElement BindingElement
-		fmt.Fprintf(s, "%#v", _BindingElement(f))
+		type X = BindingElement
+		type BindingElement X
+		fmt.Fprintf(s, "%#v", BindingElement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -270,8 +281,9 @@ func (f BindingElement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f BindingProperty) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _BindingProperty BindingProperty
-		fmt.Fprintf(s, "%#v", _BindingProperty(f))
+		type X = BindingProperty
+		type BindingProperty X
+		fmt.Fprintf(s, "%#v", BindingProperty(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -280,8 +292,9 @@ func (f BindingProperty) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f BitwiseANDExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _BitwiseANDExpression BitwiseANDExpression
-		fmt.Fprintf(s, "%#v", _BitwiseANDExpression(f))
+		type X = BitwiseANDExpression
+		type BitwiseANDExpression X
+		fmt.Fprintf(s, "%#v", BitwiseANDExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -290,8 +303,9 @@ func (f BitwiseANDExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f BitwiseORExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _BitwiseORExpression BitwiseORExpression
-		fmt.Fprintf(s, "%#v", _BitwiseORExpression(f))
+		type X = BitwiseORExpression
+		type BitwiseORExpression X
+		fmt.Fprintf(s, "%#v", BitwiseORExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -300,8 +314,9 @@ func (f BitwiseORExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f BitwiseXORExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _BitwiseXORExpression BitwiseXORExpression
-		fmt.Fprintf(s, "%#v", _BitwiseXORExpression(f))
+		type X = BitwiseXORExpression
+		type BitwiseXORExpression X
+		fmt.Fprintf(s, "%#v", BitwiseXORExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -310,8 +325,9 @@ func (f BitwiseXORExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Block) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Block Block
-		fmt.Fprintf(s, "%#v", _Block(f))
+		type X = Block
+		type Block X
+		fmt.Fprintf(s, "%#v", Block(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -320,8 +336,9 @@ func (f Block) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f CallExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _CallExpression CallExpression
-		fmt.Fprintf(s, "%#v", _CallExpression(f))
+		type X = CallExpression
+		type CallExpression X
+		fmt.Fprintf(s, "%#v", CallExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -330,8 +347,9 @@ func (f CallExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f CaseClause) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _CaseClause CaseClause
-		fmt.Fprintf(s, "%#v", _CaseClause(f))
+		type X = CaseClause
+		type CaseClause X
+		fmt.Fprintf(s, "%#v", CaseClause(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -340,8 +358,9 @@ func (f CaseClause) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ClassDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ClassDeclaration ClassDeclaration
-		fmt.Fprintf(s, "%#v", _ClassDeclaration(f))
+		type X = ClassDeclaration
+		type ClassDeclaration X
+		fmt.Fprintf(s, "%#v", ClassDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -350,8 +369,9 @@ func (f ClassDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ClassElement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ClassElement ClassElement
-		fmt.Fprintf(s, "%#v", _ClassElement(f))
+		type X = ClassElement
+		type ClassElement X
+		fmt.Fprintf(s, "%#v", ClassElement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -360,8 +380,9 @@ func (f ClassElement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ClassElementName) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ClassElementName ClassElementName
-		fmt.Fprintf(s, "%#v", _ClassElementName(f))
+		type X = ClassElementName
+		type ClassElementName X
+		fmt.Fprintf(s, "%#v", ClassElementName(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -370,8 +391,9 @@ func (f ClassElementName) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f CoalesceExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _CoalesceExpression CoalesceExpression
-		fmt.Fprintf(s, "%#v", _CoalesceExpression(f))
+		type X = CoalesceExpression
+		type CoalesceExpression X
+		fmt.Fprintf(s, "%#v", CoalesceExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -380,8 +402,9 @@ func (f CoalesceExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ConditionalExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ConditionalExpression ConditionalExpression
-		fmt.Fprintf(s, "%#v", _ConditionalExpression(f))
+		type X = ConditionalExpression
+		type ConditionalExpression X
+		fmt.Fprintf(s, "%#v", ConditionalExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -390,8 +413,9 @@ func (f ConditionalExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ParenthesizedExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ParenthesizedExpression ParenthesizedExpression
-		fmt.Fprintf(s, "%#v", _ParenthesizedExpression(f))
+		type X = ParenthesizedExpression
+		type ParenthesizedExpression X
+		fmt.Fprintf(s, "%#v", ParenthesizedExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -400,8 +424,9 @@ func (f ParenthesizedExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Declaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Declaration Declaration
-		fmt.Fprintf(s, "%#v", _Declaration(f))
+		type X = Declaration
+		type Declaration X
+		fmt.Fprintf(s, "%#v", Declaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -410,8 +435,9 @@ func (f Declaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f DestructuringAssignmentTarget) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _DestructuringAssignmentTarget DestructuringAssignmentTarget
-		fmt.Fprintf(s, "%#v", _DestructuringAssignmentTarget(f))
+		type X = DestructuringAssignmentTarget
+		type DestructuringAssignmentTarget X
+		fmt.Fprintf(s, "%#v", DestructuringAssignmentTarget(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -420,8 +446,9 @@ func (f DestructuringAssignmentTarget) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f EqualityExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _EqualityExpression EqualityExpression
-		fmt.Fprintf(s, "%#v", _EqualityExpression(f))
+		type X = EqualityExpression
+		type EqualityExpression X
+		fmt.Fprintf(s, "%#v", EqualityExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -430,8 +457,9 @@ func (f EqualityExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ExponentiationExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ExponentiationExpression ExponentiationExpression
-		fmt.Fprintf(s, "%#v", _ExponentiationExpression(f))
+		type X = ExponentiationExpression
+		type ExponentiationExpression X
+		fmt.Fprintf(s, "%#v", ExponentiationExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -440,8 +468,9 @@ func (f ExponentiationExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ExportClause) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ExportClause ExportClause
-		fmt.Fprintf(s, "%#v", _ExportClause(f))
+		type X = ExportClause
+		type ExportClause X
+		fmt.Fprintf(s, "%#v", ExportClause(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -450,8 +479,9 @@ func (f ExportClause) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ExportDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ExportDeclaration ExportDeclaration
-		fmt.Fprintf(s, "%#v", _ExportDeclaration(f))
+		type X = ExportDeclaration
+		type ExportDeclaration X
+		fmt.Fprintf(s, "%#v", ExportDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -460,8 +490,9 @@ func (f ExportDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ExportSpecifier) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ExportSpecifier ExportSpecifier
-		fmt.Fprintf(s, "%#v", _ExportSpecifier(f))
+		type X = ExportSpecifier
+		type ExportSpecifier X
+		fmt.Fprintf(s, "%#v", ExportSpecifier(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -470,8 +501,9 @@ func (f ExportSpecifier) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Expression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Expression Expression
-		fmt.Fprintf(s, "%#v", _Expression(f))
+		type X = Expression
+		type Expression X
+		fmt.Fprintf(s, "%#v", Expression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -480,8 +512,9 @@ func (f Expression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f FieldDefinition) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _FieldDefinition FieldDefinition
-		fmt.Fprintf(s, "%#v", _FieldDefinition(f))
+		type X = FieldDefinition
+		type FieldDefinition X
+		fmt.Fprintf(s, "%#v", FieldDefinition(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -490,8 +523,9 @@ func (f FieldDefinition) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f FormalParameters) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _FormalParameters FormalParameters
-		fmt.Fprintf(s, "%#v", _FormalParameters(f))
+		type X = FormalParameters
+		type FormalParameters X
+		fmt.Fprintf(s, "%#v", FormalParameters(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -500,8 +534,9 @@ func (f FormalParameters) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f FromClause) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _FromClause FromClause
-		fmt.Fprintf(s, "%#v", _FromClause(f))
+		type X = FromClause
+		type FromClause X
+		fmt.Fprintf(s, "%#v", FromClause(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -510,8 +545,9 @@ func (f FromClause) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f FunctionDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _FunctionDeclaration FunctionDeclaration
-		fmt.Fprintf(s, "%#v", _FunctionDeclaration(f))
+		type X = FunctionDeclaration
+		type FunctionDeclaration X
+		fmt.Fprintf(s, "%#v", FunctionDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -520,8 +556,9 @@ func (f FunctionDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f IfStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _IfStatement IfStatement
-		fmt.Fprintf(s, "%#v", _IfStatement(f))
+		type X = IfStatement
+		type IfStatement X
+		fmt.Fprintf(s, "%#v", IfStatement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -530,8 +567,9 @@ func (f IfStatement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ImportClause) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ImportClause ImportClause
-		fmt.Fprintf(s, "%#v", _ImportClause(f))
+		type X = ImportClause
+		type ImportClause X
+		fmt.Fprintf(s, "%#v", ImportClause(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -540,8 +578,9 @@ func (f ImportClause) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ImportDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ImportDeclaration ImportDeclaration
-		fmt.Fprintf(s, "%#v", _ImportDeclaration(f))
+		type X = ImportDeclaration
+		type ImportDeclaration X
+		fmt.Fprintf(s, "%#v", ImportDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -550,8 +589,9 @@ func (f ImportDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ImportSpecifier) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ImportSpecifier ImportSpecifier
-		fmt.Fprintf(s, "%#v", _ImportSpecifier(f))
+		type X = ImportSpecifier
+		type ImportSpecifier X
+		fmt.Fprintf(s, "%#v", ImportSpecifier(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -560,8 +600,9 @@ func (f ImportSpecifier) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f IterationStatementDo) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _IterationStatementDo IterationStatementDo
-		fmt.Fprintf(s, "%#v", _IterationStatementDo(f))
+		type X = IterationStatementDo
+		type IterationStatementDo X
+		fmt.Fprintf(s, "%#v", IterationStatementDo(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -570,8 +611,9 @@ func (f IterationStatementDo) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f IterationStatementFor) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _IterationStatementFor IterationStatementFor
-		fmt.Fprintf(s, "%#v", _IterationStatementFor(f))
+		type X = IterationStatementFor
+		type IterationStatementFor X
+		fmt.Fprintf(s, "%#v", IterationStatementFor(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -580,8 +622,9 @@ func (f IterationStatementFor) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f IterationStatementWhile) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _IterationStatementWhile IterationStatementWhile
-		fmt.Fprintf(s, "%#v", _IterationStatementWhile(f))
+		type X = IterationStatementWhile
+		type IterationStatementWhile X
+		fmt.Fprintf(s, "%#v", IterationStatementWhile(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -590,8 +633,9 @@ func (f IterationStatementWhile) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f LeftHandSideExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _LeftHandSideExpression LeftHandSideExpression
-		fmt.Fprintf(s, "%#v", _LeftHandSideExpression(f))
+		type X = LeftHandSideExpression
+		type LeftHandSideExpression X
+		fmt.Fprintf(s, "%#v", LeftHandSideExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -600,8 +644,9 @@ func (f LeftHandSideExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f LexicalBinding) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _LexicalBinding LexicalBinding
-		fmt.Fprintf(s, "%#v", _LexicalBinding(f))
+		type X = LexicalBinding
+		type LexicalBinding X
+		fmt.Fprintf(s, "%#v", LexicalBinding(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -610,8 +655,9 @@ func (f LexicalBinding) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f LexicalDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _LexicalDeclaration LexicalDeclaration
-		fmt.Fprintf(s, "%#v", _LexicalDeclaration(f))
+		type X = LexicalDeclaration
+		type LexicalDeclaration X
+		fmt.Fprintf(s, "%#v", LexicalDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -620,8 +666,9 @@ func (f LexicalDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f LogicalANDExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _LogicalANDExpression LogicalANDExpression
-		fmt.Fprintf(s, "%#v", _LogicalANDExpression(f))
+		type X = LogicalANDExpression
+		type LogicalANDExpression X
+		fmt.Fprintf(s, "%#v", LogicalANDExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -630,8 +677,9 @@ func (f LogicalANDExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f LogicalORExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _LogicalORExpression LogicalORExpression
-		fmt.Fprintf(s, "%#v", _LogicalORExpression(f))
+		type X = LogicalORExpression
+		type LogicalORExpression X
+		fmt.Fprintf(s, "%#v", LogicalORExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -640,8 +688,9 @@ func (f LogicalORExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f MemberExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _MemberExpression MemberExpression
-		fmt.Fprintf(s, "%#v", _MemberExpression(f))
+		type X = MemberExpression
+		type MemberExpression X
+		fmt.Fprintf(s, "%#v", MemberExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -650,8 +699,9 @@ func (f MemberExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f MethodDefinition) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _MethodDefinition MethodDefinition
-		fmt.Fprintf(s, "%#v", _MethodDefinition(f))
+		type X = MethodDefinition
+		type MethodDefinition X
+		fmt.Fprintf(s, "%#v", MethodDefinition(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -660,8 +710,9 @@ func (f MethodDefinition) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Module) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Module Module
-		fmt.Fprintf(s, "%#v", _Module(f))
+		type X = Module
+		type Module X
+		fmt.Fprintf(s, "%#v", Module(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -670,8 +721,9 @@ func (f Module) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ModuleItem) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ModuleItem ModuleItem
-		fmt.Fprintf(s, "%#v", _ModuleItem(f))
+		type X = ModuleItem
+		type ModuleItem X
+		fmt.Fprintf(s, "%#v", ModuleItem(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -680,8 +732,9 @@ func (f ModuleItem) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f MultiplicativeExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _MultiplicativeExpression MultiplicativeExpression
-		fmt.Fprintf(s, "%#v", _MultiplicativeExpression(f))
+		type X = MultiplicativeExpression
+		type MultiplicativeExpression X
+		fmt.Fprintf(s, "%#v", MultiplicativeExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -690,8 +743,9 @@ func (f MultiplicativeExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f NamedImports) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _NamedImports NamedImports
-		fmt.Fprintf(s, "%#v", _NamedImports(f))
+		type X = NamedImports
+		type NamedImports X
+		fmt.Fprintf(s, "%#v", NamedImports(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -700,8 +754,9 @@ func (f NamedImports) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f NewExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _NewExpression NewExpression
-		fmt.Fprintf(s, "%#v", _NewExpression(f))
+		type X = NewExpression
+		type NewExpression X
+		fmt.Fprintf(s, "%#v", NewExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -710,8 +765,9 @@ func (f NewExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ObjectAssignmentPattern) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ObjectAssignmentPattern ObjectAssignmentPattern
-		fmt.Fprintf(s, "%#v", _ObjectAssignmentPattern(f))
+		type X = ObjectAssignmentPattern
+		type ObjectAssignmentPattern X
+		fmt.Fprintf(s, "%#v", ObjectAssignmentPattern(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -720,8 +776,9 @@ func (f ObjectAssignmentPattern) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ObjectBindingPattern) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ObjectBindingPattern ObjectBindingPattern
-		fmt.Fprintf(s, "%#v", _ObjectBindingPattern(f))
+		type X = ObjectBindingPattern
+		type ObjectBindingPattern X
+		fmt.Fprintf(s, "%#v", ObjectBindingPattern(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -730,8 +787,9 @@ func (f ObjectBindingPattern) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ObjectLiteral) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ObjectLiteral ObjectLiteral
-		fmt.Fprintf(s, "%#v", _ObjectLiteral(f))
+		type X = ObjectLiteral
+		type ObjectLiteral X
+		fmt.Fprintf(s, "%#v", ObjectLiteral(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -740,8 +798,9 @@ func (f ObjectLiteral) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f OptionalChain) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _OptionalChain OptionalChain
-		fmt.Fprintf(s, "%#v", _OptionalChain(f))
+		type X = OptionalChain
+		type OptionalChain X
+		fmt.Fprintf(s, "%#v", OptionalChain(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -750,8 +809,9 @@ func (f OptionalChain) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f OptionalExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _OptionalExpression OptionalExpression
-		fmt.Fprintf(s, "%#v", _OptionalExpression(f))
+		type X = OptionalExpression
+		type OptionalExpression X
+		fmt.Fprintf(s, "%#v", OptionalExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -760,8 +820,9 @@ func (f OptionalExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f PrimaryExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _PrimaryExpression PrimaryExpression
-		fmt.Fprintf(s, "%#v", _PrimaryExpression(f))
+		type X = PrimaryExpression
+		type PrimaryExpression X
+		fmt.Fprintf(s, "%#v", PrimaryExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -770,8 +831,9 @@ func (f PrimaryExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f PropertyDefinition) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _PropertyDefinition PropertyDefinition
-		fmt.Fprintf(s, "%#v", _PropertyDefinition(f))
+		type X = PropertyDefinition
+		type PropertyDefinition X
+		fmt.Fprintf(s, "%#v", PropertyDefinition(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -780,8 +842,9 @@ func (f PropertyDefinition) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f PropertyName) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _PropertyName PropertyName
-		fmt.Fprintf(s, "%#v", _PropertyName(f))
+		type X = PropertyName
+		type PropertyName X
+		fmt.Fprintf(s, "%#v", PropertyName(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -790,8 +853,9 @@ func (f PropertyName) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f RelationalExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _RelationalExpression RelationalExpression
-		fmt.Fprintf(s, "%#v", _RelationalExpression(f))
+		type X = RelationalExpression
+		type RelationalExpression X
+		fmt.Fprintf(s, "%#v", RelationalExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -800,8 +864,9 @@ func (f RelationalExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Script) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Script Script
-		fmt.Fprintf(s, "%#v", _Script(f))
+		type X = Script
+		type Script X
+		fmt.Fprintf(s, "%#v", Script(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -810,8 +875,9 @@ func (f Script) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f ShiftExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _ShiftExpression ShiftExpression
-		fmt.Fprintf(s, "%#v", _ShiftExpression(f))
+		type X = ShiftExpression
+		type ShiftExpression X
+		fmt.Fprintf(s, "%#v", ShiftExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -820,8 +886,9 @@ func (f ShiftExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f Statement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _Statement Statement
-		fmt.Fprintf(s, "%#v", _Statement(f))
+		type X = Statement
+		type Statement X
+		fmt.Fprintf(s, "%#v", Statement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -830,8 +897,9 @@ func (f Statement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f StatementListItem) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _StatementListItem StatementListItem
-		fmt.Fprintf(s, "%#v", _StatementListItem(f))
+		type X = StatementListItem
+		type StatementListItem X
+		fmt.Fprintf(s, "%#v", StatementListItem(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -840,8 +908,9 @@ func (f StatementListItem) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f SwitchStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _SwitchStatement SwitchStatement
-		fmt.Fprintf(s, "%#v", _SwitchStatement(f))
+		type X = SwitchStatement
+		type SwitchStatement X
+		fmt.Fprintf(s, "%#v", SwitchStatement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -850,8 +919,9 @@ func (f SwitchStatement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f TemplateLiteral) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _TemplateLiteral TemplateLiteral
-		fmt.Fprintf(s, "%#v", _TemplateLiteral(f))
+		type X = TemplateLiteral
+		type TemplateLiteral X
+		fmt.Fprintf(s, "%#v", TemplateLiteral(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -860,8 +930,9 @@ func (f TemplateLiteral) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f TryStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _TryStatement TryStatement
-		fmt.Fprintf(s, "%#v", _TryStatement(f))
+		type X = TryStatement
+		type TryStatement X
+		fmt.Fprintf(s, "%#v", TryStatement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -870,8 +941,9 @@ func (f TryStatement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f UnaryExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _UnaryExpression UnaryExpression
-		fmt.Fprintf(s, "%#v", _UnaryExpression(f))
+		type X = UnaryExpression
+		type UnaryExpression X
+		fmt.Fprintf(s, "%#v", UnaryExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -880,8 +952,9 @@ func (f UnaryExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f UpdateExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _UpdateExpression UpdateExpression
-		fmt.Fprintf(s, "%#v", _UpdateExpression(f))
+		type X = UpdateExpression
+		type UpdateExpression X
+		fmt.Fprintf(s, "%#v", UpdateExpression(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -890,8 +963,9 @@ func (f UpdateExpression) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f VariableDeclaration) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _VariableDeclaration VariableDeclaration
-		fmt.Fprintf(s, "%#v", _VariableDeclaration(f))
+		type X = VariableDeclaration
+		type VariableDeclaration X
+		fmt.Fprintf(s, "%#v", VariableDeclaration(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -900,8 +974,9 @@ func (f VariableDeclaration) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f VariableStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _VariableStatement VariableStatement
-		fmt.Fprintf(s, "%#v", _VariableStatement(f))
+		type X = VariableStatement
+		type VariableStatement X
+		fmt.Fprintf(s, "%#v", VariableStatement(f))
 	} else {
 		format(&f, s, v)
 	}
@@ -910,8 +985,9 @@ func (f VariableStatement) Format(s fmt.State, v rune) {
 // Format implements the fmt.Formatter interface
 func (f WithStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type _WithStatement WithStatement
-		fmt.Fprintf(s, "%#v", _WithStatement(f))
+		type X = WithStatement
+		type WithStatement X
+		fmt.Fprintf(s, "%#v", WithStatement(f))
 	} else {
 		format(&f, s, v)
 	}
