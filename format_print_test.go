@@ -1,14 +1,14 @@
 package javascript
 
 import (
+	"bytes"
 	"testing"
 
-	"vimagination.zapto.org/memio"
 	"vimagination.zapto.org/parser"
 )
 
 type state struct {
-	memio.Buffer
+	bytes.Buffer
 	Verbose bool
 }
 
@@ -1604,15 +1604,15 @@ func TestPrintingScript(t *testing.T) {
 				continue
 			}
 			st.Verbose = false
-			st.Buffer = st.Buffer[:0]
+			st.Buffer.Reset()
 			s.Format(&st, 's')
-			if str := string(st.Buffer); str != test.SimpleOutput {
+			if str := st.String(); str != test.SimpleOutput {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 			st.Verbose = true
-			st.Buffer = st.Buffer[:0]
+			st.Buffer.Reset()
 			s.Format(&st, 's')
-			if str := string(st.Buffer); str != test.VerboseOutput {
+			if str := st.Buffer.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
 		}
@@ -1752,15 +1752,15 @@ func TestPrintingModule(t *testing.T) {
 				continue
 			}
 			st.Verbose = false
-			st.Buffer = st.Buffer[:0]
+			st.Buffer.Reset()
 			s.Format(&st, 's')
-			if str := string(st.Buffer); str != test.SimpleOutput {
+			if str := st.Buffer.String(); str != test.SimpleOutput {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 			st.Verbose = true
-			st.Buffer = st.Buffer[:0]
+			st.Buffer.Reset()
 			s.Format(&st, 's')
-			if str := string(st.Buffer); str != test.VerboseOutput {
+			if str := st.Buffer.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
 		}
