@@ -1147,7 +1147,6 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 			m.MemberExpression.printSource(w, v)
 			m.TemplateLiteral.printSource(w, v)
 		}
-
 	} else if m.PrimaryExpression != nil {
 		m.PrimaryExpression.printSource(w, v)
 	} else if m.SuperProperty {
@@ -1239,6 +1238,13 @@ func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
 	b.BitwiseXORExpression.printSource(w, v)
 }
 
+func (a ArrayElement) printSource(w io.Writer, v bool) {
+	if a.Spread {
+		w.Write(ellipsis)
+	}
+	a.AssignmentExpression.printSource(w, v)
+}
+
 func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 	w.Write(bracketOpen)
 	if len(a.ElementList) > 0 {
@@ -1247,13 +1253,6 @@ func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 			w.Write(commaSep)
 			ae.printSource(w, v)
 		}
-		if a.SpreadElement != nil {
-			w.Write(commaSep)
-		}
-	}
-	if a.SpreadElement != nil {
-		w.Write(ellipsis)
-		a.SpreadElement.printSource(w, v)
 	}
 	w.Write(bracketClose)
 }

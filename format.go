@@ -202,6 +202,17 @@ func (f ArrayBindingPattern) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f ArrayElement) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = ArrayElement
+		type ArrayElement X
+		fmt.Fprintf(s, "%#v", ArrayElement(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f ArrayLiteral) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = ArrayLiteral

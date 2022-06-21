@@ -17,10 +17,10 @@ var (
 	nameBindingRestElement                 = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'R', 'e', 's', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrayLiteral                       = []byte{'\n', 'A', 'r', 'r', 'a', 'y', 'L', 'i', 't', 'e', 'r', 'a', 'l', ':', ' '}
 	nameElementList                        = []byte{'\n', 'E', 'l', 'e', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
-	nameSpreadElement                      = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrowFunction                      = []byte{'\n', 'A', 'r', 'r', 'o', 'w', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', ':', ' '}
 	nameBindingIdentifier                  = []byte{'\n', 'B', 'i', 'n', 'd', 'i', 'n', 'g', 'I', 'd', 'e', 'n', 't', 'i', 'f', 'i', 'e', 'r', ':', ' '}
 	nameFormalParameters                   = []byte{'\n', 'F', 'o', 'r', 'm', 'a', 'l', 'P', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', 's', ':', ' '}
+	nameArrayElement                       = []byte{'\n', 'A', 'r', 'r', 'a', 'y', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
 	nameAssignmentExpression               = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameFunctionBody                       = []byte{'\n', 'F', 'u', 'n', 'c', 't', 'i', 'o', 'n', 'B', 'o', 'd', 'y', ':', ' '}
 	nameAssignmentElement                  = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
@@ -297,6 +297,22 @@ func (f *ArrayBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *ArrayElement) printType(w io.Writer, v bool) {
+	w.Write(nameArrayElement[1:13])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.Spread || v {
+		pp.Printf("\nSpread: %v", f.Spread)
+	}
+	pp.Write(nameAssignmentExpression)
+	f.AssignmentExpression.printType(&pp, v)
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *ArrayLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameArrayLiteral[1:13])
 	w.Write(objectOpen)
@@ -316,13 +332,6 @@ func (f *ArrayLiteral) printType(w io.Writer, v bool) {
 	} else if v {
 		pp.Write(nameElementList)
 		pp.Write(arrayOpenClose)
-	}
-	if f.SpreadElement != nil {
-		pp.Write(nameSpreadElement)
-		f.SpreadElement.printType(&pp, v)
-	} else if v {
-		pp.Write(nameSpreadElement)
-		pp.Write(nilStr)
 	}
 	if v {
 		pp.Write(tokensTo)

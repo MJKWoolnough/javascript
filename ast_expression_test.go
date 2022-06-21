@@ -1720,19 +1720,25 @@ func TestAssignmentExpression(t *testing.T) {
 				AssignmentOperator: AssignmentAssign,
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&ArrayLiteral{
-						ElementList: []AssignmentExpression{
+						ElementList: []ArrayElement{
 							{
-								ConditionalExpression: WrapConditional(&PrimaryExpression{
-									IdentifierReference: &tk[10],
-									Tokens:              tk[10:11],
-								}),
+								AssignmentExpression: AssignmentExpression{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										IdentifierReference: &tk[10],
+										Tokens:              tk[10:11],
+									}),
+									Tokens: tk[10:11],
+								},
 								Tokens: tk[10:11],
 							},
 							{
-								ConditionalExpression: WrapConditional(&PrimaryExpression{
-									IdentifierReference: &tk[13],
-									Tokens:              tk[13:14],
-								}),
+								AssignmentExpression: AssignmentExpression{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										IdentifierReference: &tk[13],
+										Tokens:              tk[13:14],
+									}),
+									Tokens: tk[13:14],
+								},
 								Tokens: tk[13:14],
 							},
 						},
@@ -1802,33 +1808,39 @@ func TestAssignmentExpression(t *testing.T) {
 				AssignmentOperator: AssignmentAssign,
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&ArrayLiteral{
-						ElementList: []AssignmentExpression{
+						ElementList: []ArrayElement{
 							{
-								ConditionalExpression: WrapConditional(&MemberExpression{
-									MemberExpression: &MemberExpression{
-										PrimaryExpression: &PrimaryExpression{
-											IdentifierReference: &tk[14],
-											Tokens:              tk[14:15],
+								AssignmentExpression: AssignmentExpression{
+									ConditionalExpression: WrapConditional(&MemberExpression{
+										MemberExpression: &MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												IdentifierReference: &tk[14],
+												Tokens:              tk[14:15],
+											},
+											Tokens: tk[14:15],
 										},
-										Tokens: tk[14:15],
-									},
-									IdentifierName: &tk[16],
-									Tokens:         tk[14:17],
-								}),
+										IdentifierName: &tk[16],
+										Tokens:         tk[14:17],
+									}),
+									Tokens: tk[14:17],
+								},
 								Tokens: tk[14:17],
 							},
 							{
-								ConditionalExpression: WrapConditional(&MemberExpression{
-									MemberExpression: &MemberExpression{
-										PrimaryExpression: &PrimaryExpression{
-											IdentifierReference: &tk[19],
-											Tokens:              tk[19:20],
+								AssignmentExpression: AssignmentExpression{
+									ConditionalExpression: WrapConditional(&MemberExpression{
+										MemberExpression: &MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												IdentifierReference: &tk[19],
+												Tokens:              tk[19:20],
+											},
+											Tokens: tk[19:20],
 										},
-										Tokens: tk[19:20],
-									},
-									IdentifierName: &tk[21],
-									Tokens:         tk[19:22],
-								}),
+										IdentifierName: &tk[21],
+										Tokens:         tk[19:22],
+									}),
+									Tokens: tk[19:22],
+								},
 								Tokens: tk[19:22],
 							},
 						},
@@ -3380,9 +3392,13 @@ func TestPrimaryExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     assignmentError(tk[2]),
-						Parsing: "AssignmentExpression",
-						Token:   tk[2],
+						Err: Error{
+							Err:     assignmentError(tk[2]),
+							Parsing: "AssignmentExpression",
+							Token:   tk[2],
+						},
+						Parsing: "ArrayElement",
+						Token:   tk[1],
 					},
 					Parsing: "ArrayLiteral",
 					Token:   tk[1],

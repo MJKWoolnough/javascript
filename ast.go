@@ -248,18 +248,26 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 }
 
 func (ab *ArrayBindingPattern) from(al *ArrayLiteral) error {
-	ab.BindingElementList = make([]BindingElement, len(al.ElementList))
-	for n := range al.ElementList {
-		if err := ab.BindingElementList[n].from(&al.ElementList[n]); err != nil {
+	ab.BindingElementList = make([]BindingElement, 0, len(al.ElementList))
+	hasSpread := false
+	for _, ae := range al.ElementList {
+		if hasSpread {
 			z := jsParser(al.Tokens[:0])
-			return z.Error("ArrayBindingPattern", err)
-		}
-	}
-	if al.SpreadElement != nil {
-		ab.BindingRestElement = new(BindingElement)
-		if err := ab.BindingRestElement.from(al.SpreadElement); err != nil {
-			z := jsParser(al.Tokens[:0])
-			return z.Error("ArrayBindingPattern", err)
+			return z.Error("ArrayBindingPattern", ErrBadRestElement)
+		} else if ae.Spread {
+			hasSpread = true
+			ab.BindingRestElement = new(BindingElement)
+			if err := ab.BindingRestElement.from(&ae.AssignmentExpression); err != nil {
+				z := jsParser(al.Tokens[:0])
+				return z.Error("ArrayBindingPattern", err)
+			}
+		} else {
+			var be BindingElement
+			if err := be.from(&ae.AssignmentExpression); err != nil {
+				z := jsParser(al.Tokens[:0])
+				return z.Error("ArrayBindingPattern", err)
+			}
+			ab.BindingElementList = append(ab.BindingElementList, be)
 		}
 	}
 	ab.Tokens = al.Tokens
@@ -478,12 +486,33 @@ func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+// ArrayElement is an element of ElementList in ECMA-262
+// https://262.ecma-international.org/11.0/#prod-ElementList
+type ArrayElement struct {
+	Spread bool
+	AssignmentExpression
+	Tokens Tokens
+}
+
+func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
+	g := j.NewGoal()
+	ae.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
+	g.AcceptRunWhitespace()
+	h := g.NewGoal()
+	if err := ae.AssignmentExpression.parse(&h, true, yield, await); err != nil {
+		return j.Error("ArrayElement", err)
+	}
+	g.Score(h)
+	j.Score(g)
+	ae.Tokens = j.ToTokens()
+	return nil
+}
+
 // ArrayLiteral as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ArrayLiteral
 type ArrayLiteral struct {
-	ElementList   []AssignmentExpression
-	SpreadElement *AssignmentExpression
-	Tokens        Tokens
+	ElementList []ArrayElement
+	Tokens      Tokens
 }
 
 func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
@@ -495,29 +524,15 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 			break
 		} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			al.ElementList = append(al.ElementList, AssignmentExpression{})
+			al.ElementList = append(al.ElementList, ArrayElement{})
 			continue
 		}
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-			j.AcceptRunWhitespace()
-			g := j.NewGoal()
-			al.SpreadElement = new(AssignmentExpression)
-			if err := al.SpreadElement.parse(&g, true, yield, await); err != nil {
-				return j.Error("ArrayLiteral", err)
-			}
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
-				return j.Error("ArrayLiteral", ErrMissingClosingBracket)
-			}
-			break
-		}
 		g := j.NewGoal()
-		ae := len(al.ElementList)
-		al.ElementList = append(al.ElementList, AssignmentExpression{})
-		if err := al.ElementList[ae].parse(&g, true, yield, await); err != nil {
+		var ae ArrayElement
+		if err := ae.parse(&g, yield, await); err != nil {
 			return j.Error("ArrayLiteral", err)
 		}
+		al.ElementList = append(al.ElementList, ae)
 		j.Score(g)
 		j.AcceptRunWhitespace()
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {

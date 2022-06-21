@@ -1819,7 +1819,7 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 		{"[\n,\n]", func(t *test, tk Tokens) { // 4
 			t.Output = ArrayLiteral{
-				ElementList: []AssignmentExpression{
+				ElementList: []ArrayElement{
 					{},
 				},
 				Tokens: tk[:5],
@@ -1827,7 +1827,7 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 		{"[\n,\n,\n]", func(t *test, tk Tokens) { // 5
 			t.Output = ArrayLiteral{
-				ElementList: []AssignmentExpression{
+				ElementList: []ArrayElement{
 					{},
 					{},
 				},
@@ -1836,31 +1836,45 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 		{"[\n...\n]", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
-				Err:     assignmentError(tk[4]),
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "ArrayElement",
+					Token:   tk[2],
+				},
 				Parsing: "ArrayLiteral",
-				Token:   tk[4],
+				Token:   tk[2],
 			}
 		}},
 		{"[\n...\na\n]", func(t *test, tk Tokens) { // 7
 			litA := makeConditionLiteral(tk, 4)
 			t.Output = ArrayLiteral{
-				SpreadElement: &AssignmentExpression{
-					ConditionalExpression: &litA,
-					Tokens:                tk[4:5],
+				ElementList: []ArrayElement{
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+						Tokens: tk[2:5],
+					},
 				},
 				Tokens: tk[:7],
 			}
 		}},
 		{"[\n...\na\nb]", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
-				Err:     ErrMissingClosingBracket,
+				Err:     ErrMissingComma,
 				Parsing: "ArrayLiteral",
 				Token:   tk[6],
 			}
 		}},
 		{"[\n*\n]", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
-				Err:     assignmentError(tk[2]),
+				Err: Error{
+					Err:     assignmentError(tk[2]),
+					Parsing: "ArrayElement",
+					Token:   tk[2],
+				},
 				Parsing: "ArrayLiteral",
 				Token:   tk[2],
 			}
@@ -1868,10 +1882,13 @@ func TestArrayLiteral(t *testing.T) {
 		{"[\na\n]", func(t *test, tk Tokens) { // 10
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = ArrayLiteral{
-				ElementList: []AssignmentExpression{
+				ElementList: []ArrayElement{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 				},
 				Tokens: tk[:5],
@@ -1888,41 +1905,81 @@ func TestArrayLiteral(t *testing.T) {
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 6)
 			t.Output = ArrayLiteral{
-				ElementList: []AssignmentExpression{
+				ElementList: []ArrayElement{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					{
-						ConditionalExpression: &litB,
-						Tokens:                tk[6:7],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[6:7],
+						},
+						Tokens: tk[6:7],
 					},
 				},
 				Tokens: tk[:9],
 			}
 		}},
-		{"[\na\n,\n,\nb\n,\n,\n...\nc\n]", func(t *test, tk Tokens) { // 12
+		{"[\na\n,\n,\nb\n,\n,\n...\nc\n]", func(t *test, tk Tokens) { // 13
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 8)
 			litC := makeConditionLiteral(tk, 16)
 			t.Output = ArrayLiteral{
-				ElementList: []AssignmentExpression{
+				ElementList: []ArrayElement{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					{},
 					{
-						ConditionalExpression: &litB,
-						Tokens:                tk[8:9],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+						Tokens: tk[8:9],
 					},
 					{},
-				},
-				SpreadElement: &AssignmentExpression{
-					ConditionalExpression: &litC,
-					Tokens:                tk[16:17],
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litC,
+							Tokens:                tk[16:17],
+						},
+						Tokens: tk[14:17],
+					},
 				},
 				Tokens: tk[:19],
+			}
+		}},
+		{"[...a, b]", func(t *test, tk Tokens) { // 14
+			litA := makeConditionLiteral(tk, 2)
+			litB := makeConditionLiteral(tk, 5)
+			t.Output = ArrayLiteral{
+				ElementList: []ArrayElement{
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[1:3],
+					},
+					{
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Tokens: tk[:7],
 			}
 		}},
 	}, func(t *test) (Type, error) {
@@ -2926,19 +2983,25 @@ func TestArrowFunction(t *testing.T) {
 											},
 											Initializer: &AssignmentExpression{
 												ConditionalExpression: WrapConditional(&ArrayLiteral{
-													ElementList: []AssignmentExpression{
+													ElementList: []ArrayElement{
 														{
-															ConditionalExpression: WrapConditional(&PrimaryExpression{
-																IdentifierReference: &tk[63],
-																Tokens:              tk[63:64],
-															}),
+															AssignmentExpression: AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	IdentifierReference: &tk[63],
+																	Tokens:              tk[63:64],
+																}),
+																Tokens: tk[63:64],
+															},
 															Tokens: tk[63:64],
 														},
 														{
-															ConditionalExpression: WrapConditional(&PrimaryExpression{
-																IdentifierReference: &tk[66],
-																Tokens:              tk[66:67],
-															}),
+															AssignmentExpression: AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	IdentifierReference: &tk[66],
+																	Tokens:              tk[66:67],
+																}),
+																Tokens: tk[66:67],
+															},
 															Tokens: tk[66:67],
 														},
 													},

@@ -148,14 +148,20 @@ func TestStatementOld(t *testing.T) {
 						MemberExpression: MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
 								ArrayLiteral: &ArrayLiteral{
-									ElementList: []AssignmentExpression{
+									ElementList: []ArrayElement{
 										{
-											ConditionalExpression: &litA,
-											Tokens:                tk[12:13],
+											AssignmentExpression: AssignmentExpression{
+												ConditionalExpression: &litA,
+												Tokens:                tk[12:13],
+											},
+											Tokens: tk[12:13],
 										},
 										{
-											ConditionalExpression: &litB,
-											Tokens:                tk[15:16],
+											AssignmentExpression: AssignmentExpression{
+												ConditionalExpression: &litB,
+												Tokens:                tk[15:16],
+											},
+											Tokens: tk[15:16],
 										},
 									},
 									Tokens: tk[11:17],
@@ -292,7 +298,6 @@ func TestStatementOld(t *testing.T) {
 				},
 				Tokens: tk[:18],
 			}
-
 		}},
 		{`;`, func(t *test, tk Tokens) { // 9
 			t.Output = StatementListItem{
@@ -2231,7 +2236,7 @@ func TestBlock(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"{\n,\n}", func(t *test, tk Tokens) { //3
+		{"{\n,\n}", func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2562,7 +2567,7 @@ func TestStatementListItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"function\na(){}", func(t *test, tk Tokens) { //15
+		{"function\na(){}", func(t *test, tk Tokens) { // 15
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					FunctionDeclaration: &FunctionDeclaration{
@@ -2820,7 +2825,6 @@ func TestStatement(t *testing.T) {
 				},
 				Tokens: tk[:9],
 			}
-
 		}},
 		{"switch", func(t *test, tk Tokens) { // 15
 			t.Err = Error{

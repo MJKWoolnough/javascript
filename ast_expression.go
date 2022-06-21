@@ -439,31 +439,38 @@ type ArrayAssignmentPattern struct {
 }
 
 func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
-	a.AssignmentElements = make([]AssignmentElement, len(al.ElementList))
-	for n := range al.ElementList {
-		ae := &al.ElementList[n]
-		if len(ae.Tokens) > 0 {
-			if err := a.AssignmentElements[n].from(ae); err != nil {
+	a.AssignmentElements = make([]AssignmentElement, 0, len(al.ElementList))
+	hasSpread := false
+	for _, ae := range al.ElementList {
+		if hasSpread {
+			z := jsParser(al.Tokens[:0])
+			return z.Error("ArrayAssignmentPattern", ErrBadRestElement)
+		} else if ae.Spread {
+			hasSpread = true
+			var dat DestructuringAssignmentTarget
+			if ae.AssignmentExpression.AssignmentOperator != AssignmentNone {
+				z := jsParser(al.Tokens[:0])
+				return z.Error("ArrayAssignmentPattern", ErrInvalidAssignment)
+			}
+			if err := dat.from(&ae.AssignmentExpression); err != nil {
 				z := jsParser(al.Tokens[:0])
 				return z.Error("ArrayAssignmentPattern", err)
 			}
+			if dat.AssignmentPattern != nil {
+				z := jsParser(al.Tokens[:0])
+				return z.Error("ArrayAssignmentPattern", ErrBadRestElement)
+			}
+			a.AssignmentRestElement = dat.LeftHandSideExpression
+		} else if len(ae.Tokens) > 0 {
+			var e AssignmentElement
+			if err := e.from(&ae.AssignmentExpression); err != nil {
+				z := jsParser(al.Tokens[:0])
+				return z.Error("ArrayAssignmentPattern", err)
+			}
+			a.AssignmentElements = append(a.AssignmentElements, e)
+		} else {
+			a.AssignmentElements = append(a.AssignmentElements, AssignmentElement{})
 		}
-	}
-	if al.SpreadElement != nil {
-		var dat DestructuringAssignmentTarget
-		if al.SpreadElement.AssignmentOperator != AssignmentNone {
-			z := jsParser(al.Tokens[:0])
-			return z.Error("ArrayAssignmentPattern", ErrInvalidAssignment)
-		}
-		if err := dat.from(al.SpreadElement); err != nil {
-			z := jsParser(al.Tokens[:0])
-			return z.Error("ArrayAssignmentPattern", err)
-		}
-		if dat.AssignmentPattern != nil {
-			z := jsParser(al.Tokens[:0])
-			return z.Error("ArrayAssignmentPattern", ErrBadRestElement)
-		}
-		a.AssignmentRestElement = dat.LeftHandSideExpression
 	}
 	a.Tokens = al.Tokens
 	return nil
