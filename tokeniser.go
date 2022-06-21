@@ -185,6 +185,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		tk, tf := j.identifier(t)
 		if tk.Type == TokenIdentifier {
 			tk.Type = TokenPrivateIdentifier
+			j.divisionAllowed = true
 		}
 		return tk, tf
 	default:
@@ -221,7 +222,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 						if tk.Data[0] == '\\' {
 							code := ""
 							if tk.Data[2] == '{' {
-								var n = 3
+								n := 3
 								for ; tk.Data[n] != '}'; n++ {
 								}
 								code = tk.Data[3:n]
