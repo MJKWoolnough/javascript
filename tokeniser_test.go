@@ -1095,6 +1095,32 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid character sequence: #."},
 			},
 		},
+		{ // 133
+			"Number(10000n * this.#numerator / this.#denominator) / 10000;",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "Number"},
+				{Type: TokenPunctuator, Data: "("},
+				{Type: TokenNumericLiteral, Data: "10000n"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenPunctuator, Data: "*"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "this"},
+				{Type: TokenPunctuator, Data: "."},
+				{Type: TokenPrivateIdentifier, Data: "#numerator"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDivPunctuator, Data: "/"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "this"},
+				{Type: TokenPunctuator, Data: "."},
+				{Type: TokenPrivateIdentifier, Data: "#denominator"},
+				{Type: TokenPunctuator, Data: ")"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDivPunctuator, Data: "/"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "10000"},
+				{Type: TokenPunctuator, Data: ";"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
