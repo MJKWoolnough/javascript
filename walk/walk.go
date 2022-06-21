@@ -215,6 +215,10 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkVariableDeclaration(&t, fn)
 	case *javascript.VariableDeclaration:
 		return walkVariableDeclaration(t, fn)
+	case javascript.ArrayElement:
+		return walkArrayElement(&t, fn)
+	case *javascript.ArrayElement:
+		return walkArrayElement(t, fn)
 	case javascript.ArrayLiteral:
 		return walkArrayLiteral(&t, fn)
 	case *javascript.ArrayLiteral:
@@ -566,7 +570,6 @@ func walkAssignmentExpression(t *javascript.AssignmentExpression, fn Handler) er
 		if err := fn.Handle(t.AssignmentPattern); err != nil {
 			return err
 		}
-
 	}
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
@@ -996,14 +999,13 @@ func walkVariableDeclaration(t *javascript.VariableDeclaration, fn Handler) erro
 	return walkLexicalBinding((*javascript.LexicalBinding)(t), fn)
 }
 
+func walkArrayElement(t *javascript.ArrayElement, fn Handler) error {
+	return fn.Handle(&t.AssignmentExpression)
+}
+
 func walkArrayLiteral(t *javascript.ArrayLiteral, fn Handler) error {
 	for n := range t.ElementList {
 		if err := fn.Handle(&t.ElementList[n]); err != nil {
-			return err
-		}
-	}
-	if t.SpreadElement != nil {
-		if err := fn.Handle(t.SpreadElement); err != nil {
 			return err
 		}
 	}
@@ -1205,7 +1207,6 @@ func walkStatementListItem(t *javascript.StatementListItem, fn Handler) error {
 }
 
 func walkStatement(t *javascript.Statement, fn Handler) error {
-
 	if t.BlockStatement != nil {
 		if err := fn.Handle(t.BlockStatement); err != nil {
 			return err
