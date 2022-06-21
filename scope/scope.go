@@ -131,8 +131,8 @@ func (s *Scope) newFunctionScope(js fmt.Formatter) *Scope {
 		Parent: s,
 		Scopes: make(map[fmt.Formatter]*Scope),
 		Bindings: map[string][]Binding{
-			"this":      []Binding{},
-			"arguments": []Binding{},
+			"this":      {},
+			"arguments": {},
 		},
 	}
 	s.Scopes[js] = ns
@@ -1188,14 +1188,13 @@ func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scop
 	return nil
 }
 
+func processArrayElement(a *javascript.ArrayElement, scope *Scope, set bool) error {
+	return processAssignmentExpression(&a.AssignmentExpression, scope, set)
+}
+
 func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) error {
 	for n := range a.ElementList {
-		if err := processAssignmentExpression(&a.ElementList[n], scope, set); err != nil {
-			return err
-		}
-	}
-	if a.SpreadElement != nil {
-		if err := processAssignmentExpression(a.SpreadElement, scope, set); err != nil {
+		if err := processArrayElement(&a.ElementList[n], scope, set); err != nil {
 			return err
 		}
 	}
