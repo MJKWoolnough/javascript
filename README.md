@@ -226,13 +226,32 @@ func (f ArrayBindingPattern) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type ArrayElement
+
+```go
+type ArrayElement struct {
+	Spread bool
+	AssignmentExpression
+	Tokens Tokens
+}
+```
+
+ArrayElement is an element of ElementList in ECMA-262
+https://262.ecma-international.org/11.0/#prod-ElementList
+
+#### func (ArrayElement) Format
+
+```go
+func (f ArrayElement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type ArrayLiteral
 
 ```go
 type ArrayLiteral struct {
-	ElementList   []AssignmentExpression
-	SpreadElement *AssignmentExpression
-	Tokens        Tokens
+	ElementList []ArrayElement
+	Tokens      Tokens
 }
 ```
 
