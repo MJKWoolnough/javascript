@@ -579,10 +579,11 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
 		var (
-			arguments       *Arguments
-			expression      *Expression
-			identifierName  *Token
-			templateLiteral *TemplateLiteral
+			arguments         *Arguments
+			expression        *Expression
+			identifierName    *Token
+			templateLiteral   *TemplateLiteral
+			privateIdentifier *Token
 		)
 		if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 			h := g.NewGoal()
@@ -605,10 +606,14 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			g.Score(h)
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
 			g.AcceptRunWhitespace()
-			if !g.Accept(TokenIdentifier, TokenKeyword) {
-				return g.Error("OptionalChain", ErrNoIdentifier)
+			if g.Accept(TokenPrivateIdentifier) {
+				privateIdentifier = g.GetLastToken()
+			} else {
+				if !g.Accept(TokenIdentifier, TokenKeyword) {
+					return g.Error("OptionalChain", ErrNoIdentifier)
+				}
+				identifierName = g.GetLastToken()
 			}
-			identifierName = g.GetLastToken()
 		} else if t := g.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
 			h := g.NewGoal()
 			templateLiteral = new(TemplateLiteral)
@@ -622,11 +627,12 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		noc := new(OptionalChain)
 		*noc = *oc
 		*oc = OptionalChain{
-			Arguments:       arguments,
-			Expression:      expression,
-			IdentifierName:  identifierName,
-			TemplateLiteral: templateLiteral,
-			OptionalChain:   noc,
+			Arguments:         arguments,
+			Expression:        expression,
+			IdentifierName:    identifierName,
+			TemplateLiteral:   templateLiteral,
+			PrivateIdentifier: privateIdentifier,
+			OptionalChain:     noc,
 		}
 		j.Score(g)
 	}
