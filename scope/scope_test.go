@@ -2847,6 +2847,106 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 2
+			`export default class MyClass {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyClass": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.DefaultClass.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 3
+			`export default class MyClass {static INSTANCE = new MyClass()}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[fmt.Formatter]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyClass": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.DefaultClass.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].ExportDeclaration.DefaultClass.ClassBody[0].FieldDefinition.Initializer.ConditionalExpression).(*javascript.MemberExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 4
+			`export default function MyFunc() {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[fmt.Formatter]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					m.ModuleListItems[0].ExportDeclaration.DefaultFunction: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyFunc": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.DefaultFunction.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 5
+			`export default function MyFunc() {MyFunc()}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[fmt.Formatter]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[fmt.Formatter]*Scope{
+					m.ModuleListItems[0].ExportDeclaration.DefaultFunction: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyFunc": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.DefaultFunction.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].ExportDeclaration.DefaultFunction.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		source, err := javascript.ParseModule(parser.NewStringTokeniser(test.Input))
 		if err != nil {
