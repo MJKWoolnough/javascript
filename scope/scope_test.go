@@ -183,7 +183,7 @@ func TestScriptScope(t *testing.T) {
 					Bindings: make(map[string][]Binding),
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
-					s.StatementList[0].Statement.BlockStatement: &Scope{
+					s.StatementList[0].Statement.BlockStatement: {
 						IsLexicalScope: true,
 						Parent:         scope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -198,7 +198,7 @@ func TestScriptScope(t *testing.T) {
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -210,8 +210,8 @@ func TestScriptScope(t *testing.T) {
 					Parent: scope,
 					Scopes: make(map[fmt.Formatter]*Scope),
 					Bindings: map[string][]Binding{
-						"this":      []Binding{},
-						"arguments": []Binding{},
+						"this":      {},
+						"arguments": {},
 					},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
@@ -225,7 +225,7 @@ func TestScriptScope(t *testing.T) {
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
@@ -259,7 +259,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -287,7 +287,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -314,7 +314,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -323,7 +323,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       bscope,
@@ -351,12 +351,12 @@ func TestScriptScope(t *testing.T) {
 				}
 				bscope.Bindings = map[string][]Binding{"a": abind}
 				bscope.Scopes = map[fmt.Formatter]*Scope{
-					s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: &Scope{
+					s.StatementList[0].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: {
 						Parent: bscope,
 						Scopes: make(map[fmt.Formatter]*Scope),
 						Bindings: map[string][]Binding{
-							"this":      []Binding{},
-							"arguments": []Binding{},
+							"this":      {},
+							"arguments": {},
 						},
 					},
 				}
@@ -374,7 +374,7 @@ func TestScriptScope(t *testing.T) {
 					Parent:         scope,
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       bscope,
@@ -383,17 +383,17 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				bscope.Scopes = map[fmt.Formatter]*Scope{
-					s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: &Scope{
+					s.StatementList[1].Statement.BlockStatement.StatementList[0].Declaration.FunctionDeclaration: {
 						Parent: bscope,
 						Scopes: make(map[fmt.Formatter]*Scope),
 						Bindings: map[string][]Binding{
-							"this":      []Binding{},
-							"arguments": []Binding{},
+							"this":      {},
+							"arguments": {},
 						},
 					},
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -412,7 +412,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       scope,
@@ -430,7 +430,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       scope,
@@ -458,7 +458,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       scope,
@@ -484,7 +484,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -494,7 +494,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -520,7 +520,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -530,7 +530,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       scope,
@@ -555,9 +555,9 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -567,7 +567,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -587,9 +587,9 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -604,7 +604,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -632,9 +632,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.BlockStatement: bscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -649,7 +649,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -673,7 +673,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -685,9 +685,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.BlockStatement: bscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -702,7 +702,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -726,7 +726,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       bscope,
@@ -738,9 +738,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.BlockStatement: bscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -755,7 +755,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -775,9 +775,9 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"b": []Binding{
+					"this":      {},
+					"arguments": {},
+					"b": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       fscope,
@@ -789,14 +789,14 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
-					"c": []Binding{
+					"c": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[1].SingleNameBinding,
 						},
 					},
-					"d": []Binding{
+					"d": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       fscope,
@@ -808,7 +808,7 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration: fscope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -828,7 +828,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				ascope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       ascope,
@@ -845,7 +845,7 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
@@ -865,23 +865,23 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"b": []Binding{
+					"this":      {},
+					"arguments": {},
+					"b": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
 						},
 					},
-					"c": []Binding{
+					"c": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingElementList[1].SingleNameBinding,
 						},
 					},
-					"d": []Binding{
+					"d": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -896,7 +896,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -916,23 +916,23 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"b": []Binding{
+					"this":      {},
+					"arguments": {},
+					"b": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 					},
-					"c": []Binding{
+					"c": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 					},
-					"d": []Binding{
+					"d": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -947,7 +947,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -970,7 +970,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				ascope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       ascope,
@@ -985,9 +985,9 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"b": []Binding{
+					"this":      {},
+					"arguments": {},
+					"b": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       fscope,
@@ -1004,7 +1004,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).Arguments.ArgumentList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
-					"c": []Binding{
+					"c": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -1016,7 +1016,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
 						},
 					},
-					"d": []Binding{
+					"d": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -1036,7 +1036,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1056,18 +1056,18 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this": []Binding{
+					"this": {
 						{
 							BindingType: BindingRef,
 							Scope:       fscope,
 							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).This,
 						},
 					},
-					"arguments": []Binding{},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1087,8 +1087,8 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this": []Binding{},
-					"arguments": []Binding{
+					"this": {},
+					"arguments": {
 						{
 							BindingType: BindingRef,
 							Scope:       fscope,
@@ -1098,7 +1098,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1118,12 +1118,12 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[1].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -1135,7 +1135,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1153,21 +1153,21 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 					},
-					"c": []Binding{
+					"c": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 					},
-					"d": []Binding{
+					"d": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
@@ -1185,7 +1185,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -1197,7 +1197,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -1229,7 +1229,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
@@ -1247,7 +1247,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       scope,
@@ -1268,7 +1268,7 @@ func TestScriptScope(t *testing.T) {
 					Parent:         fscope,
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{
-					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: &Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: {
 						IsLexicalScope: true,
 						Parent:         iscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1276,7 +1276,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       iscope,
@@ -1296,12 +1296,12 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1331,7 +1331,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       iscope,
@@ -1351,13 +1351,13 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 					"a":         iscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1389,19 +1389,19 @@ func TestScriptScope(t *testing.T) {
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingBare,
 							Scope:       iscope,
@@ -1441,7 +1441,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       iscope,
@@ -1451,9 +1451,9 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -1463,7 +1463,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1493,7 +1493,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       iscope,
@@ -1503,9 +1503,9 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -1515,7 +1515,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1545,7 +1545,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       iscope,
@@ -1555,13 +1555,13 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 					"a":         iscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1591,7 +1591,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       iscope,
@@ -1601,12 +1601,12 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1636,7 +1636,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				iscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement: bscope}
 				iscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       iscope,
@@ -1646,12 +1646,12 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor: iscope}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1675,7 +1675,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingCatch,
 							Scope:       tscope,
@@ -1689,7 +1689,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1698,9 +1698,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -1710,7 +1710,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1743,7 +1743,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingCatch,
 							Scope:       tscope,
@@ -1762,7 +1762,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1771,9 +1771,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -1783,7 +1783,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1811,7 +1811,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       bscope,
@@ -1821,7 +1821,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				tscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement: bscope}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingCatch,
 							Scope:       tscope,
@@ -1830,7 +1830,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1839,9 +1839,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.CatchBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -1851,7 +1851,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1877,7 +1877,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
 					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: tscope,
-					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.FinallyBlock: &Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.FinallyBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1885,9 +1885,9 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -1902,7 +1902,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1926,7 +1926,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       tscope,
@@ -1936,7 +1936,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
 					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.TryBlock: tscope,
-					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.FinallyBlock: &Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.TryStatement.FinallyBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1944,9 +1944,9 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       fscope,
@@ -1956,7 +1956,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -1980,7 +1980,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       tscope,
@@ -1990,7 +1990,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
 					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: tscope,
-					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.FinallyBlock: &Scope{
+					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.FinallyBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -1998,13 +1998,13 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 					"a":         tscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2028,14 +2028,14 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingCatch,
 							Scope:       tscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.CatchParameterBindingIdentifier,
 						},
 					},
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       tscope,
@@ -2044,7 +2044,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -2053,13 +2053,13 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.CatchBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 					"a":         tscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2083,14 +2083,14 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingCatch,
 							Scope:       tscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.CatchParameterBindingIdentifier,
 						},
 					},
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       tscope,
@@ -2099,7 +2099,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -2108,12 +2108,12 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.CatchBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2137,7 +2137,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       tscope,
@@ -2146,7 +2146,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -2155,13 +2155,13 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.FinallyBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 					"a":         tscope.Bindings["a"],
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2185,7 +2185,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				tscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       tscope,
@@ -2194,7 +2194,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{
-					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: &Scope{
+					&s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.TryBlock: {
 						IsLexicalScope: true,
 						Parent:         fscope,
 						Scopes:         make(map[fmt.Formatter]*Scope),
@@ -2203,12 +2203,12 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.TryStatement.FinallyBlock: tscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2236,9 +2236,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement: sscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -2253,7 +2253,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2281,9 +2281,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement: sscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -2303,7 +2303,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2327,7 +2327,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				sscope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       sscope,
@@ -2344,9 +2344,9 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.SwitchStatement: sscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       fscope,
@@ -2361,7 +2361,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2440,7 +2440,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes:         make(map[fmt.Formatter]*Scope),
 				}
 				bscopea.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       bscopea,
@@ -2449,7 +2449,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				bscopeb.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       bscopeb,
@@ -2465,12 +2465,12 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.SwitchStatement: sscope,
 				}
 				fscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2495,15 +2495,15 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope}
 				fscope.Bindings = map[string][]Binding{
-					"this": []Binding{
+					"this": {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
 							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).This,
 						},
 					},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       fscope,
@@ -2513,7 +2513,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2538,15 +2538,15 @@ func TestScriptScope(t *testing.T) {
 				}
 				fscope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope}
 				fscope.Bindings = map[string][]Binding{
-					"this": []Binding{},
-					"arguments": []Binding{
+					"this": {},
+					"arguments": {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
 							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       fscope,
@@ -2556,7 +2556,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{s.StatementList[0].Declaration.FunctionDeclaration: fscope}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2574,7 +2574,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2592,7 +2592,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2604,7 +2604,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[1].Declaration.ClassDeclaration.ClassHeritage.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2624,14 +2624,14 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				mscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
 					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2651,23 +2651,23 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				mscopea.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				mscopeb := &Scope{
 					Parent: scope,
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				mscopeb.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
+					"this":      {},
+					"arguments": {},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
 					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscopea,
 					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[1].MethodDefinition: mscopeb,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2687,16 +2687,16 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				mscope.Bindings = map[string][]Binding{
-					"this":      []Binding{},
-					"arguments": []Binding{},
-					"a": []Binding{
+					"this":      {},
+					"arguments": {},
+					"a": {
 						{
 							BindingType: BindingVar,
 							Scope:       mscope,
 							Token:       s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       mscope,
@@ -2708,7 +2708,7 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.ClassDeclaration.ClassBody[0].MethodDefinition: mscope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
@@ -2728,7 +2728,7 @@ func TestScriptScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				ascope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingFunctionParam,
 							Scope:       ascope,
@@ -2745,7 +2745,7 @@ func TestScriptScope(t *testing.T) {
 					s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction: ascope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalConst,
 							Scope:       scope,
@@ -2764,22 +2764,22 @@ func TestScriptScope(t *testing.T) {
 					Parent: scope,
 					Scopes: map[fmt.Formatter]*Scope{},
 					Bindings: map[string][]Binding{
-						"this":      []Binding{},
-						"arguments": []Binding{},
+						"this":      {},
+						"arguments": {},
 					},
 				}
 				scope.Scopes = map[fmt.Formatter]*Scope{
 					s.StatementList[0].Declaration.FunctionDeclaration: fscope,
 				}
 				scope.Bindings = map[string][]Binding{
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingHoistable,
 							Scope:       scope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier,
 						},
 					},
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
@@ -2829,14 +2829,14 @@ func TestModuleScope(t *testing.T) {
 					Scopes: make(map[fmt.Formatter]*Scope),
 				}
 				scope.Bindings = map[string][]Binding{
-					"b": []Binding{
+					"b": {
 						{
 							BindingType: BindingImport,
 							Scope:       scope,
 							Token:       m.ModuleListItems[0].ImportDeclaration.ImportClause.NamedImports.ImportList[0].ImportedBinding,
 						},
 					},
-					"a": []Binding{
+					"a": {
 						{
 							BindingType: BindingLexicalLet,
 							Scope:       scope,
