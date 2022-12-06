@@ -6,9 +6,9 @@ var (
 	nameAdditiveExpression                 = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
 	nameAdditiveOperator                   = []byte{'\n', 'A', 'd', 'd', 'i', 't', 'i', 'v', 'e', 'O', 'p', 'e', 'r', 'a', 't', 'o', 'r', ':', ' '}
 	nameMultiplicativeExpression           = []byte{'\n', 'M', 'u', 'l', 't', 'i', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'v', 'e', 'E', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n', ':', ' '}
+	nameArgument                           = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', ':', ' '}
 	nameArguments                          = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's', ':', ' '}
 	nameArgumentList                       = []byte{'\n', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', 'L', 'i', 's', 't', ':', ' '}
-	nameSpreadArgument                     = []byte{'\n', 'S', 'p', 'r', 'e', 'a', 'd', 'A', 'r', 'g', 'u', 'm', 'e', 'n', 't', ':', ' '}
 	nameArrayAssignmentPattern             = []byte{'\n', 'A', 'r', 'r', 'a', 'y', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'P', 'a', 't', 't', 'e', 'r', 'n', ':', ' '}
 	nameAssignmentElements                 = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', 's', ':', ' '}
 	nameAssignmentRestElement              = []byte{'\n', 'A', 's', 's', 'i', 'g', 'n', 'm', 'e', 'n', 't', 'R', 'e', 's', 't', 'E', 'l', 'e', 'm', 'e', 'n', 't', ':', ' '}
@@ -195,6 +195,22 @@ func (f *AdditiveExpression) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
+func (f *Argument) printType(w io.Writer, v bool) {
+	w.Write(nameArgument[1:9])
+	w.Write(objectOpen)
+	pp := indentPrinter{w}
+	if f.Spread || v {
+		pp.Printf("\nSpread: %v", f.Spread)
+	}
+	pp.Write(nameAssignmentExpression)
+	f.AssignmentExpression.printType(&pp, v)
+	if v {
+		pp.Write(tokensTo)
+		f.Tokens.printType(&pp, v)
+	}
+	w.Write(objectClose)
+}
+
 func (f *Arguments) printType(w io.Writer, v bool) {
 	w.Write(nameArguments[1:10])
 	w.Write(objectOpen)
@@ -214,13 +230,6 @@ func (f *Arguments) printType(w io.Writer, v bool) {
 	} else if v {
 		pp.Write(nameArgumentList)
 		pp.Write(arrayOpenClose)
-	}
-	if f.SpreadArgument != nil {
-		pp.Write(nameSpreadArgument)
-		f.SpreadArgument.printType(&pp, v)
-	} else if v {
-		pp.Write(nameSpreadArgument)
-		pp.Write(nilStr)
 	}
 	if v {
 		pp.Write(tokensTo)
