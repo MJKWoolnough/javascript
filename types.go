@@ -84,6 +84,8 @@ func (PrimaryExpression) javascriptType() {}
 
 func (ParenthesizedExpression) javascriptType() {}
 
+func (Argument) javascriptType() {}
+
 func (Arguments) javascriptType() {}
 
 func (CallExpression) javascriptType() {}
