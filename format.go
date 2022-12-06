@@ -169,6 +169,17 @@ func (f AdditiveExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f Argument) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = Argument
+		type Argument X
+		fmt.Fprintf(s, "%#v", Argument(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f Arguments) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = Arguments
