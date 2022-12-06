@@ -1076,12 +1076,7 @@ func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set b
 
 func processArguments(a *javascript.Arguments, scope *Scope, set bool) error {
 	for n := range a.ArgumentList {
-		if err := processAssignmentExpression(&a.ArgumentList[n], scope, set); err != nil {
-			return err
-		}
-	}
-	if a.SpreadArgument != nil {
-		if err := processAssignmentExpression(a.SpreadArgument, scope, set); err != nil {
+		if err := processAssignmentExpression(&a.ArgumentList[n].AssignmentExpression, scope, set); err != nil {
 			return err
 		}
 	}
