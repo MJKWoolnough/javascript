@@ -1001,7 +1001,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       fscope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).Arguments.ArgumentList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentExpression.ConditionalExpression).(*javascript.CallExpression).Arguments.ArgumentList[0].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 					"c": {
