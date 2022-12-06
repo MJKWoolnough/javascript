@@ -1020,12 +1020,11 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-// Arguments as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-Arguments
+// Arguments as defined in TC39
+// https://tc39.es/ecma262/#prod-Arguments
 type Arguments struct {
-	ArgumentList   []AssignmentExpression
-	SpreadArgument *AssignmentExpression
-	Tokens         Tokens
+	ArgumentList []Argument
+	Tokens       Tokens
 }
 
 func (a *Arguments) parse(j *jsParser, yield, await bool) error {
@@ -1037,25 +1036,10 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 			break
 		}
-		g := j.NewGoal()
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-			g.AcceptRunWhitespace()
-			h := g.NewGoal()
-			a.SpreadArgument = new(AssignmentExpression)
-			if err := a.SpreadArgument.parse(&h, true, yield, await); err != nil {
-				return j.Error("Arguments", err)
-			}
-			g.Score(h)
-			j.Score(g)
-			j.AcceptRunWhitespace()
-			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-				return j.Error("Arguments", ErrMissingClosingParenthesis)
-			}
-			break
-		}
 		ae := len(a.ArgumentList)
-		a.ArgumentList = append(a.ArgumentList, AssignmentExpression{})
-		if err := a.ArgumentList[ae].parse(&g, true, yield, await); err != nil {
+		a.ArgumentList = append(a.ArgumentList, Argument{})
+		g := j.NewGoal()
+		if err := a.ArgumentList[ae].parse(&g, yield, await); err != nil {
 			return j.Error("Arguments", err)
 		}
 		j.Score(g)
@@ -1066,6 +1050,26 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 			return j.Error("Arguments", ErrMissingComma)
 		}
 	}
+	a.Tokens = j.ToTokens()
+	return nil
+}
+
+// Argument is an item in an ArgumentList and contains the spread information
+// and the AssignementExpression
+type Argument struct {
+	Spread               bool
+	AssignmentExpression AssignmentExpression
+	Tokens               Tokens
+}
+
+func (a *Argument) parse(j *jsParser, yield, await bool) error {
+	a.Spread = j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
+	j.AcceptRunWhitespace()
+	g := j.NewGoal()
+	if err := a.AssignmentExpression.parse(&g, true, yield, await); err != nil {
+		return j.Error("Argument", err)
+	}
+	j.Score(g)
 	a.Tokens = j.ToTokens()
 	return nil
 }
