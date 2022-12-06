@@ -2544,7 +2544,11 @@ func TestLeftHandSideExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     assignmentError(tk[3]),
+						Err: Error{
+							Err:     assignmentError(tk[3]),
+							Parsing: "Argument",
+							Token:   tk[3],
+						},
 						Parsing: "Arguments",
 						Token:   tk[3],
 					},
@@ -2608,10 +2612,13 @@ func TestLeftHandSideExpression(t *testing.T) {
 						Tokens:         tk[0:6],
 					},
 					Arguments: &Arguments{
-						ArgumentList: []AssignmentExpression{
+						ArgumentList: []Argument{
 							{
-								ConditionalExpression: &litB,
-								Tokens:                tk[7:8],
+								AssignmentExpression: AssignmentExpression{
+									ConditionalExpression: &litB,
+									Tokens:                tk[7:8],
+								},
+								Tokens: tk[7:8],
 							},
 						},
 						Tokens: tk[6:9],
@@ -2711,7 +2718,11 @@ func TestLeftHandSideExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     assignmentError(tk[3]),
+						Err: Error{
+							Err:     assignmentError(tk[3]),
+							Parsing: "Argument",
+							Token:   tk[3],
+						},
 						Parsing: "Arguments",
 						Token:   tk[3],
 					},
@@ -3771,7 +3782,11 @@ func TestArguments(t *testing.T) {
 		}},
 		{"(\n...\n)", func(t *test, tk Tokens) { // 3
 			t.Err = Error{
-				Err:     assignmentError(tk[4]),
+				Err: Error{
+					Err:     assignmentError(tk[4]),
+					Parsing: "Argument",
+					Token:   tk[4],
+				},
 				Parsing: "Arguments",
 				Token:   tk[2],
 			}
@@ -3779,23 +3794,33 @@ func TestArguments(t *testing.T) {
 		{"(\n...\na\n)", func(t *test, tk Tokens) { // 4
 			litA := makeConditionLiteral(tk, 4)
 			t.Output = Arguments{
-				SpreadArgument: &AssignmentExpression{
-					ConditionalExpression: &litA,
-					Tokens:                tk[4:5],
+				ArgumentList: []Argument{
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[4:5],
+						},
+						Tokens: tk[2:5],
+					},
 				},
 				Tokens: tk[:7],
 			}
 		}},
 		{"(\n...\na\nb)", func(t *test, tk Tokens) { // 5
 			t.Err = Error{
-				Err:     ErrMissingClosingParenthesis,
+				Err:     ErrMissingComma,
 				Parsing: "Arguments",
 				Token:   tk[6],
 			}
 		}},
 		{"(\n,)", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
-				Err:     assignmentError(tk[2]),
+				Err: Error{
+					Err:     assignmentError(tk[2]),
+					Parsing: "Argument",
+					Token:   tk[2],
+				},
 				Parsing: "Arguments",
 				Token:   tk[2],
 			}
@@ -3803,10 +3828,13 @@ func TestArguments(t *testing.T) {
 		{"(\na\n)", func(t *test, tk Tokens) { // 7
 			litA := makeConditionLiteral(tk, 2)
 			t.Output = Arguments{
-				ArgumentList: []AssignmentExpression{
+				ArgumentList: []Argument{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 				},
 				Tokens: tk[:5],
@@ -3823,14 +3851,20 @@ func TestArguments(t *testing.T) {
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 6)
 			t.Output = Arguments{
-				ArgumentList: []AssignmentExpression{
+				ArgumentList: []Argument{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
 					{
-						ConditionalExpression: &litB,
-						Tokens:                tk[6:7],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[6:7],
+						},
+						Tokens: tk[6:7],
 					},
 				},
 				Tokens: tk[:9],
@@ -3840,36 +3874,46 @@ func TestArguments(t *testing.T) {
 			litA := makeConditionLiteral(tk, 2)
 			litB := makeConditionLiteral(tk, 8)
 			t.Output = Arguments{
-				ArgumentList: []AssignmentExpression{
+				ArgumentList: []Argument{
 					{
-						ConditionalExpression: &litA,
-						Tokens:                tk[2:3],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litA,
+							Tokens:                tk[2:3],
+						},
+						Tokens: tk[2:3],
 					},
-				},
-				SpreadArgument: &AssignmentExpression{
-					ConditionalExpression: &litB,
-					Tokens:                tk[8:9],
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: &litB,
+							Tokens:                tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
 				},
 				Tokens: tk[:11],
 			}
 		}},
 		{"(async function(){})", func(t *test, tk Tokens) { // 11
 			t.Output = Arguments{
-				ArgumentList: []AssignmentExpression{
+				ArgumentList: []Argument{
 					{
-						ConditionalExpression: WrapConditional(PrimaryExpression{
-							FunctionExpression: &FunctionDeclaration{
-								Type: FunctionAsync,
-								FormalParameters: FormalParameters{
-									Tokens: tk[4:6],
-								},
-								FunctionBody: Block{
-									Tokens: tk[6:8],
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(PrimaryExpression{
+								FunctionExpression: &FunctionDeclaration{
+									Type: FunctionAsync,
+									FormalParameters: FormalParameters{
+										Tokens: tk[4:6],
+									},
+									FunctionBody: Block{
+										Tokens: tk[6:8],
+									},
+									Tokens: tk[1:8],
 								},
 								Tokens: tk[1:8],
-							},
+							}),
 							Tokens: tk[1:8],
-						}),
+						},
 						Tokens: tk[1:8],
 					},
 				},
@@ -3973,7 +4017,11 @@ func TestCallExpression(t *testing.T) {
 		{"super\n()\n(,)", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
-					Err:     assignmentError(tk[6]),
+					Err: Error{
+						Err:     assignmentError(tk[6]),
+						Parsing: "Argument",
+						Token:   tk[6],
+					},
 					Parsing: "Arguments",
 					Token:   tk[6],
 				},
@@ -4234,7 +4282,11 @@ func TestOptionalChain(t *testing.T) {
 		{"?.(.)", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
-					Err:     assignmentError(tk[2]),
+					Err: Error{
+						Err:     assignmentError(tk[2]),
+						Parsing: "Argument",
+						Token:   tk[2],
+					},
 					Parsing: "Arguments",
 					Token:   tk[2],
 				},
@@ -4278,7 +4330,11 @@ func TestOptionalChain(t *testing.T) {
 		{"?.a(.)", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err: Error{
-					Err:     assignmentError(tk[3]),
+					Err: Error{
+						Err:     assignmentError(tk[3]),
+						Parsing: "Argument",
+						Token:   tk[3],
+					},
 					Parsing: "Arguments",
 					Token:   tk[3],
 				},
