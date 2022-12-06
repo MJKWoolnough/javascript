@@ -167,6 +167,10 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkArguments(&t, fn)
 	case *javascript.Arguments:
 		return walkArguments(t, fn)
+	case javascript.Argument:
+		return walkArgument(&t, fn)
+	case *javascript.Argument:
+		return walkArgument(t, fn)
 	case javascript.CallExpression:
 		return walkCallExpression(&t, fn)
 	case *javascript.CallExpression:
@@ -817,11 +821,11 @@ func walkArguments(t *javascript.Arguments, fn Handler) error {
 			return err
 		}
 	}
-	if t.SpreadArgument != nil {
-		if err := fn.Handle(t.SpreadArgument); err != nil {
-			return err
-		}
-	}
+	return nil
+}
+
+func walkArgument(t *javascript.Argument, fn Handler) error {
+	fn.Handle(&t.AssignmentExpression)
 	return nil
 }
 
