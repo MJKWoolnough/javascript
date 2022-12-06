@@ -1167,6 +1167,13 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
+func (a Argument) printSource(w io.Writer, v bool) {
+	if a.Spread {
+		w.Write(ellipsis)
+	}
+	a.AssignmentExpression.printSource(w, v)
+}
+
 func (a Arguments) printSource(w io.Writer, v bool) {
 	w.Write(parenOpen)
 	if len(a.ArgumentList) > 0 {
@@ -1175,13 +1182,6 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 			w.Write(commaSep)
 			ae.printSource(w, v)
 		}
-		if a.SpreadArgument != nil {
-			w.Write(commaSep)
-		}
-	}
-	if a.SpreadArgument != nil {
-		w.Write(ellipsis)
-		a.SpreadArgument.printSource(w, v)
 	}
 	w.Write(parenClose)
 }
