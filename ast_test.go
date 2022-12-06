@@ -211,10 +211,13 @@ for(
 							Tokens: tk[42:43],
 						},
 						Arguments: &Arguments{
-							ArgumentList: []AssignmentExpression{
+							ArgumentList: []Argument{
 								{
-									ConditionalExpression: &x,
-									Tokens:                tk[44:45],
+									AssignmentExpression: AssignmentExpression{
+										ConditionalExpression: &x,
+										Tokens:                tk[44:45],
+									},
+									Tokens: tk[44:45],
 								},
 							},
 							Tokens: tk[43:46],
@@ -263,10 +266,13 @@ for(
 							Tokens: tk[81:82],
 						},
 						Arguments: &Arguments{
-							ArgumentList: []AssignmentExpression{
+							ArgumentList: []Argument{
 								{
-									ConditionalExpression: &argA,
-									Tokens:                tk[85:86],
+									AssignmentExpression: AssignmentExpression{
+										ConditionalExpression: &argA,
+										Tokens:                tk[85:86],
+									},
+									Tokens: tk[85:86],
 								},
 							},
 							Tokens: tk[83:88],
@@ -848,10 +854,13 @@ for(
 										Tokens: tk[8:9],
 									},
 									Arguments: &Arguments{
-										ArgumentList: []AssignmentExpression{
+										ArgumentList: []Argument{
 											{
-												ConditionalExpression: &de,
-												Tokens:                tk[11:16],
+												AssignmentExpression: AssignmentExpression{
+													ConditionalExpression: &de,
+													Tokens:                tk[11:16],
+												},
+												Tokens: tk[11:16],
 											},
 										},
 										Tokens: tk[10:17],
