@@ -558,7 +558,8 @@ func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
 	} else if t.Accept("0") {
 		return !t.Accept(decimalDigit)
 	}
-	return t.Accept(singleEscapeChar)
+	t.Accept(singleEscapeChar)
+	return true
 }
 
 var (
