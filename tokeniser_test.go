@@ -882,7 +882,8 @@ func TestTokeniser(t *testing.T) {
 		{ // 101
 			"`\\G`",
 			[]parser.Token{
-				{Type: parser.TokenError, Data: "invalid escape sequence: `\\G"},
+				{Type: TokenNoSubstitutionTemplate, Data: "`\\G`"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 102
