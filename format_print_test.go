@@ -1603,7 +1603,7 @@ func TestPrintingScript(t *testing.T) {
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
-			s, err := ParseScript(parser.NewStringTokeniser(in))
+			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
 			if err != nil {
 				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
 				continue
@@ -1751,7 +1751,7 @@ func TestPrintingModule(t *testing.T) {
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
-			s, err := ParseModule(parser.NewStringTokeniser(in))
+			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
 			if err != nil {
 				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
 				continue

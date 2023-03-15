@@ -19,12 +19,16 @@ type test struct {
 	Err                        error
 }
 
+func makeTokeniser(tk parser.Tokeniser) *parser.Tokeniser {
+	return &tk
+}
+
 func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 	t.Helper()
 	var err error
 	for n, tt := range tests {
 		var ts test
-		ts.Tokens, err = newJSParser(parser.NewStringTokeniser(tt.Source))
+		ts.Tokens, err = newJSParser(makeTokeniser(parser.NewStringTokeniser(tt.Source)))
 		if err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 			continue
