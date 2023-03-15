@@ -166,18 +166,36 @@ func (a AdditiveOperator) String() string
 ```
 String implements the fmt.Stringer interface
 
+#### type Argument
+
+```go
+type Argument struct {
+	Spread               bool
+	AssignmentExpression AssignmentExpression
+	Tokens               Tokens
+}
+```
+
+Argument is an item in an ArgumentList and contains the spread information and
+the AssignementExpression
+
+#### func (Argument) Format
+
+```go
+func (f Argument) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type Arguments
 
 ```go
 type Arguments struct {
-	ArgumentList   []AssignmentExpression
-	SpreadArgument *AssignmentExpression
-	Tokens         Tokens
+	ArgumentList []Argument
+	Tokens       Tokens
 }
 ```
 
-Arguments as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-Arguments
+Arguments as defined in TC39 https://tc39.es/ecma262/#prod-Arguments
 
 #### func (Arguments) Format
 
@@ -1646,7 +1664,7 @@ Module represents the top-level of a parsed javascript module
 #### func  ParseModule
 
 ```go
-func ParseModule(t parser.Tokeniser) (*Module, error)
+func ParseModule(t Tokeniser) (*Module, error)
 ```
 ParseModule parses a javascript module
 
@@ -2066,7 +2084,7 @@ Script represents the top-level of a parsed javascript text
 #### func  ParseScript
 
 ```go
-func ParseScript(t parser.Tokeniser) (*Script, error)
+func ParseScript(t Tokeniser) (*Script, error)
 ```
 ParseScript parses a javascript input into an AST.
 
@@ -2285,6 +2303,18 @@ Token represents a single parsed token with source positioning
 func (t Token) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### type Tokeniser
+
+```go
+type Tokeniser interface {
+	GetToken() (parser.Token, error)
+	GetError() error
+	TokeniserState(parser.TokenFunc)
+}
+```
+
+Tokeniser is an interface representing a tokeniser
 
 #### type Tokens
 
