@@ -18,7 +18,14 @@ type Tokens []Token
 
 type jsParser Tokens
 
-func newJSParser(t parser.Tokeniser) (jsParser, error) {
+// Tokeniser is an interface representing a tokeniser
+type Tokeniser interface {
+	GetToken() (parser.Token, error)
+	GetError() error
+	TokeniserState(parser.TokenFunc)
+}
+
+func newJSParser(t Tokeniser) (jsParser, error) {
 	t.TokeniserState(new(jsTokeniser).inputElement)
 	var (
 		tokens             jsParser
@@ -37,7 +44,7 @@ func newJSParser(t parser.Tokeniser) (jsParser, error) {
 			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
 			return nil, Error{
-				Err:     t.Err,
+				Err:     t.GetError(),
 				Parsing: "Tokens",
 				Token:   tokens[len(tokens)-1],
 			}

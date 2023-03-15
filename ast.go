@@ -13,7 +13,7 @@ type Script struct {
 // ParseScript parses a javascript input into an AST.
 //
 // It is recommended to use ParseModule instead of this function.
-func ParseScript(t parser.Tokeniser) (*Script, error) {
+func ParseScript(t Tokeniser) (*Script, error) {
 	j, err := newJSParser(t)
 	if err != nil {
 		return nil, err

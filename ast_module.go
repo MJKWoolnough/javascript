@@ -11,7 +11,7 @@ type Module struct {
 }
 
 // ParseModule parses a javascript module
-func ParseModule(t parser.Tokeniser) (*Module, error) {
+func ParseModule(t Tokeniser) (*Module, error) {
 	j, err := newJSParser(t)
 	if err != nil {
 		return nil, err
