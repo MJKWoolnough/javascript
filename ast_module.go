@@ -50,6 +50,7 @@ type ModuleItem struct {
 }
 
 func (ml *ModuleItem) parse(j *jsParser) error {
+	j.SkipImportType()
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "export"}:
