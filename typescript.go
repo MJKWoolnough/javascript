@@ -61,6 +61,19 @@ func (j *jsParser) SkipInterface() {}
 
 func (j *jsParser) SkipEnum() {}
 
+func (j *jsParser) SkipParameterProperties() {
+	if j.IsTypescript() {
+		if tk := j.Peek(); tk == (parser.Token{Type: TokenIdentifier, Data: "private"}) || tk == (parser.Token{Type: TokenIdentifier, Data: "protected"}) || tk == (parser.Token{Type: TokenIdentifier, Data: "public"}) {
+			g := j.NewGoal()
+			g.Skip()
+			g.AcceptRunWhitespaceNoNewLine()
+			if tk := g.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				j.Score(g)
+			}
+		}
+	}
+}
+
 func (j *jsParser) SkipImportType() {
 	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenKeyword, Data: "import"}) {
 		g := j.NewGoal()
