@@ -75,6 +75,7 @@ type ClassElement struct {
 }
 
 func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
+	j.SkipParameterProperties()
 	if j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "static"}) {
 		g := j.NewGoal()
 		g.Skip()
