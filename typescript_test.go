@@ -5,6 +5,7 @@ import "testing"
 func TestTypescriptModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`import def from './a';import type typeDef from './b';import type {typ1, typ2} from './c';import {a} from './d';`, func(t *test, tk Tokens) { // 1
+			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
 					{
@@ -66,8 +67,25 @@ func TestTypescriptModule(t *testing.T) {
 				Tokens: tk[:43],
 			}
 		}},
+		{`import def from './a';import type typeDef from './b';import type {typ1, typ2} from './c';import {a} from './d';`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingFrom,
+						Parsing: "FromClause",
+						Token:   tk[12],
+					},
+					Parsing: "ImportDeclaration",
+					Token:   tk[12],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
-		t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
+		if t.Typescript {
+			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
+		}
 		var m Module
 		err := m.parse(&t.Tokens)
 		return m, err
