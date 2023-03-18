@@ -13,10 +13,10 @@ type sourceFn struct {
 }
 
 type test struct {
-	Tokens                     jsParser
-	Yield, Await, In, Def, Ret bool
-	Output                     interface{}
-	Err                        error
+	Tokens                                 jsParser
+	Yield, Await, In, Def, Ret, Typescript bool
+	Output                                 interface{}
+	Err                                    error
 }
 
 func makeTokeniser(tk parser.Tokeniser) *parser.Tokeniser {
