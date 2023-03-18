@@ -965,7 +965,6 @@ func TestImportClause(t *testing.T) {
 				Parsing: "ImportClause",
 				Token:   tk[5],
 			}
-
 		}},
 		{"a\n,\n*\nas", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
@@ -973,7 +972,6 @@ func TestImportClause(t *testing.T) {
 				Parsing: "ImportClause",
 				Token:   tk[7],
 			}
-
 		}},
 		{"a\n,\n*\nas\nb", func(t *test, tk Tokens) { // 7
 			t.Output = ImportClause{
@@ -995,7 +993,6 @@ func TestImportClause(t *testing.T) {
 				Parsing: "ImportClause",
 				Token:   tk[1],
 			}
-
 		}},
 		{"*\nas", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
@@ -1003,7 +1000,6 @@ func TestImportClause(t *testing.T) {
 				Parsing: "ImportClause",
 				Token:   tk[3],
 			}
-
 		}},
 		{"*\nas\nb", func(t *test, tk Tokens) { // 11
 			t.Output = ImportClause{
@@ -1495,7 +1491,7 @@ func TestExportDeclaration(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{"export * as ;", func(t *test, tk Tokens) { //24
+		{"export * as ;", func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err:     ErrNoIdentifier,
 				Parsing: "ExportDeclaration",
