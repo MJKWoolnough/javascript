@@ -1,5 +1,7 @@
 package javascript
 
+import "vimagination.zapto.org/parser"
+
 const marker = "TS"
 
 func ParseTypescript(t Tokeniser) (*Script, error) {
@@ -60,4 +62,25 @@ func (j *jsParser) SkipInterface() {}
 func (j *jsParser) SkipEnum() {}
 
 func (j *jsParser) SkipImportType() {
+	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenKeyword, Data: "import"}) {
+		g := j.NewGoal()
+		g.Skip()
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+			g.AcceptRunWhitespace()
+			if tk := g.Peek(); tk != (parser.Token{Type: TokenPunctuator, Data: ","}) && tk != (parser.Token{Type: TokenIdentifier, Data: "from"}) {
+				var ic ImportClause
+				err := ic.parse(&g)
+				if err == nil {
+					g.AcceptRunWhitespace()
+					var fc FromClause
+					err := fc.parse(&g)
+					if err == nil {
+						j.AcceptRunWhitespace()
+						j.Score(g)
+					}
+				}
+			}
+		}
+	}
 }
