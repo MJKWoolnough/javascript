@@ -283,6 +283,160 @@ public static F
 				Token:   tk[0],
 			}
 		}},
+		{`class A {
+readonly;
+a
+readonly A
+private readonly B
+protected readonly C;
+public readonly D
+static readonly E;
+}`, func(t *test, tk Tokens) { // 5
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[6],
+														Tokens:              tk[6:7],
+													},
+													Tokens: tk[6:7],
+												},
+												Tokens: tk[6:7],
+											},
+											Tokens: tk[6:8],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[9],
+														Tokens:              tk[9:10],
+													},
+													Tokens: tk[9:10],
+												},
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[13],
+														Tokens:              tk[13:14],
+													},
+													Tokens: tk[13:14],
+												},
+												Tokens: tk[13:14],
+											},
+											Tokens: tk[11:14],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[19],
+														Tokens:              tk[19:20],
+													},
+													Tokens: tk[19:20],
+												},
+												Tokens: tk[19:20],
+											},
+											Tokens: tk[15:20],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[25],
+														Tokens:              tk[25:26],
+													},
+													Tokens: tk[25:26],
+												},
+												Tokens: tk[25:26],
+											},
+											Tokens: tk[21:27],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[32],
+														Tokens:              tk[32:33],
+													},
+													Tokens: tk[32:33],
+												},
+												Tokens: tk[32:33],
+											},
+											Tokens: tk[28:33],
+										},
+										{
+											Static: true,
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[38],
+														Tokens:              tk[38:39],
+													},
+													Tokens: tk[38:39],
+												},
+												Tokens: tk[38:39],
+											},
+											Tokens: tk[34:40],
+										},
+									},
+									Tokens: tk[:42],
+								},
+								Tokens: tk[:42],
+							},
+							Tokens: tk[:42],
+						},
+						Tokens: tk[:42],
+					},
+				},
+				Tokens: tk[:42],
+			}
+		}},
+		{`class A {
+readonly;
+a
+readonly A
+private readonly B
+protected readonly C;
+public readonly D
+static readonly E;
+}`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingSemiColon,
+								Parsing: "ClassElement",
+								Token:   tk[13],
+							},
+							Parsing: "ClassDeclaration",
+							Token:   tk[11],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
