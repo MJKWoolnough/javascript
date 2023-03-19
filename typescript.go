@@ -74,6 +74,19 @@ func (j *jsParser) SkipParameterProperties() {
 	}
 }
 
+func (j *jsParser) SkipReadOnly() {
+	if j.IsTypescript() {
+		if tk := j.Peek(); tk == (parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
+			g := j.NewGoal()
+			g.Skip()
+			g.AcceptRunWhitespaceNoNewLine()
+			if tk := g.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				j.Score(g)
+			}
+		}
+	}
+}
+
 func (j *jsParser) SkipImportType() {
 	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenKeyword, Data: "import"}) {
 		g := j.NewGoal()
