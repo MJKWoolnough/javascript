@@ -86,6 +86,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			j.AcceptRunWhitespace()
 		}
 	}
+	j.SkipReadOnly()
 	if ce.Static && j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		ce.ClassStaticBlock = new(Block)
 		g := j.NewGoal()
