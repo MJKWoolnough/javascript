@@ -132,6 +132,24 @@ func (j *jsParser) ReadType() bool {
 }
 
 func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
+	g := j.NewGoal()
+	if g.ReadUnionType() {
+		j.Score(g)
+		return true
+	}
+	g = j.NewGoal()
+	if g.ReadPrimaryType() {
+		j.Score(g)
+		return true
+	}
+	return false
+}
+
+func (j *jsParser) ReadUnionType() bool {
+	return false
+}
+
+func (j *jsParser) ReadPrimaryType() bool {
 	return false
 }
 
