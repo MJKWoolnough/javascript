@@ -250,7 +250,16 @@ func (j *jsParser) ReadPropertySignature() bool {
 }
 
 func (j *jsParser) ReadTypeAnnotation() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadCallSignature() bool {
