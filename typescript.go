@@ -352,7 +352,24 @@ func (j *jsParser) ReadConstructSignature() bool {
 }
 
 func (j *jsParser) ReadIndexSignature() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadTypeAnnotation() {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadMethodSignature() bool {
