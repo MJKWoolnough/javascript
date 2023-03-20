@@ -194,6 +194,31 @@ func (j *jsParser) ReadPredefinedType() bool {
 }
 
 func (j *jsParser) ReadObjectType() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.Accept(TokenRightBracePunctuator) {
+		for {
+			if !g.ReadTypeMember() {
+				return false
+			}
+			g.AcceptRunWhitespace()
+			sep := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","})
+			if g.Accept(TokenRightBracePunctuator) {
+				break
+			}
+			if sep {
+				return false
+			}
+		}
+	}
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadTypeMember() bool {
 	return false
 }
 
