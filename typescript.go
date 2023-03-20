@@ -266,18 +266,8 @@ func (j *jsParser) ReadCallSignature() bool {
 	g := j.NewGoal()
 	g.ReadTypeParameters()
 	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+	if !g.ReadParameterList() {
 		return false
-	}
-	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-		if !g.ReadParameterList() {
-			return false
-		}
-		g.AcceptRunWhitespace()
-		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-			return false
-		}
 	}
 	g.AcceptRunWhitespace()
 	g.ReadTypeAnnotation()
@@ -286,7 +276,63 @@ func (j *jsParser) ReadCallSignature() bool {
 }
 
 func (j *jsParser) ReadParameterList() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		optional := false
+		for {
+			g.AcceptRunWhitespace()
+			if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "..."}) {
+				g.Skip()
+				g.AcceptRunWhitespace()
+				if g.parseIdentifier(false, false) == nil {
+					return false
+				}
+				g.AcceptRunWhitespace()
+				g.ReadTypeAnnotation()
+				g.AcceptRunWhitespace()
+				if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+					return false
+				}
+				break
+			}
+			if bi := g.parseIdentifier(false, false); bi == nil {
+				return false
+			} else if bi.Data == "public" || bi.Data == "private" || bi.Data == "protected" {
+				g.AcceptRunWhitespace()
+				g.parseIdentifier(false, false)
+			}
+			g.AcceptRunWhitespace()
+			opt := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"})
+			g.AcceptRunWhitespace()
+			g.ReadTypeAnnotation()
+			g.AcceptRunWhitespace()
+			init := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="})
+			if optional && (!opt || !init) {
+				return false
+			}
+			if init {
+				g.AcceptRunWhitespace()
+				var ae AssignmentExpression
+				if err := ae.parse(&g, false, false, false); err != nil {
+					return false
+				}
+				g.AcceptRunWhitespace()
+			}
+			optional = optional || opt || init
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+				break
+			}
+			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				return false
+			}
+		}
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadConstructSignature() bool {
