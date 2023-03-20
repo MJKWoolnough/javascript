@@ -49,6 +49,31 @@ ModuleItem (import type)
 LeftHandSideExpression (<>)
 */
 
+func (j *jsParser) ReadTypeParameters() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<"}) {
+		return false
+	}
+	for {
+		g.AcceptRunWhitespace()
+		if !g.ReadTypeParameter() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			break
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return false
+		}
+	}
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadTypeParameter() bool {
+	return false
+}
+
 func (j *jsParser) SkipGeneric() {}
 
 func (j *jsParser) SkipAsType() {}
