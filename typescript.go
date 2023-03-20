@@ -71,6 +71,27 @@ func (j *jsParser) ReadTypeParameters() bool {
 }
 
 func (j *jsParser) ReadTypeParameter() bool {
+	g := j.NewGoal()
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
+		g.AcceptRunWhitespace()
+		if !g.ReadType() {
+			return false
+		}
+	}
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		g.AcceptRunWhitespace()
+		if !g.ReadType() {
+			return false
+		}
+	}
+	return false
+}
+
+func (j *jsParser) ReadType() bool {
 	return false
 }
 
