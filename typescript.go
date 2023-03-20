@@ -406,7 +406,26 @@ func (j *jsParser) ReadArrayType() bool {
 }
 
 func (j *jsParser) ReadTupleType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	for g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		if !g.ReadType() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+	}
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadTypeQuery() bool {
