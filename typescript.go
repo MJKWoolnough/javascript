@@ -148,6 +148,49 @@ func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 }
 
 func (j *jsParser) ReadPrimaryType() bool {
+	for _, fn := range [...]func(*jsParser) bool{
+		(*jsParser).ReadParenthesizedType,
+		(*jsParser).ReadPredefinedType,
+		(*jsParser).ReadObjectType,
+		(*jsParser).ReadArrayType,
+		(*jsParser).ReadTupleType,
+		(*jsParser).ReadTypeQuery,
+		(*jsParser).ReadTypeReference,
+	} {
+		g := j.NewGoal()
+		if fn(&g) {
+			j.Score(g)
+			return true
+		}
+	}
+	return false
+}
+
+func (j *jsParser) ReadParenthesizedType() bool {
+	return false
+}
+
+func (j *jsParser) ReadPredefinedType() bool {
+	return false
+}
+
+func (j *jsParser) ReadObjectType() bool {
+	return false
+}
+
+func (j *jsParser) ReadArrayType() bool {
+	return false
+}
+
+func (j *jsParser) ReadTupleType() bool {
+	return false
+}
+
+func (j *jsParser) ReadTypeQuery() bool {
+	return false
+}
+
+func (j *jsParser) ReadTypeReference() bool {
 	return false
 }
 
