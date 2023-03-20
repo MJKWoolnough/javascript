@@ -113,6 +113,33 @@ func (j *jsParser) ReadTypeArguments() bool {
 }
 
 func (j *jsParser) ReadType() bool {
+	g := j.NewGoal()
+	if g.ReadUnionOrIntersectionOrPrimaryType() {
+		j.Score(g)
+		return true
+	}
+	g = j.NewGoal()
+	if g.ReadFunctionType() {
+		j.Score(g)
+		return true
+	}
+	g = j.NewGoal()
+	if g.ReadConstructorType() {
+		j.Score(g)
+		return true
+	}
+	return false
+}
+
+func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
+	return false
+}
+
+func (j *jsParser) ReadFunctionType() bool {
+	return false
+}
+
+func (j *jsParser) ReadConstructorType() bool {
 	return false
 }
 
