@@ -263,6 +263,29 @@ func (j *jsParser) ReadTypeAnnotation() bool {
 }
 
 func (j *jsParser) ReadCallSignature() bool {
+	g := j.NewGoal()
+	g.ReadTypeParameters()
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		if !g.ReadParameterList() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+			return false
+		}
+	}
+	g.AcceptRunWhitespace()
+	g.ReadTypeAnnotation()
+	j.Score(g)
+	return false
+}
+
+func (j *jsParser) ReadParameterList() bool {
 	return false
 }
 
