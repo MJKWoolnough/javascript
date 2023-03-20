@@ -163,7 +163,20 @@ func (j *jsParser) ReadPrimaryType() bool {
 }
 
 func (j *jsParser) ReadParenthesizedType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadPredefinedType() bool {
