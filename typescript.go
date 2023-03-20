@@ -146,7 +146,26 @@ func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 }
 
 func (j *jsParser) ReadUnionType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.ReadUnionOrIntersectionOrPrimaryType() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "|"}) {
+		return false
+	}
+	for {
+		g.AcceptRunWhitespace()
+		if !g.ReadUnionOrIntersectionOrPrimaryType() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "|"}) {
+			break
+		}
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadPrimaryType() bool {
