@@ -336,7 +336,19 @@ func (j *jsParser) ReadParameterList() bool {
 }
 
 func (j *jsParser) ReadConstructSignature() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "new"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	g.ReadTypeParameters()
+	if !g.ReadParameterList() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	g.ReadTypeAnnotation()
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadIndexSignature() bool {
