@@ -236,6 +236,20 @@ func (j *jsParser) ReadTypeMember() bool {
 }
 
 func (j *jsParser) ReadPropertySignature() bool {
+	g := j.NewGoal()
+	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.AcceptRunWhitespace()
+	}
+	g.ReadTypeAnnotation()
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadTypeAnnotation() bool {
 	return false
 }
 
