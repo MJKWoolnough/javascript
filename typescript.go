@@ -373,7 +373,19 @@ func (j *jsParser) ReadIndexSignature() bool {
 }
 
 func (j *jsParser) ReadMethodSignature() bool {
-	return false
+	g := j.NewGoal()
+	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.AcceptRunWhitespace()
+	}
+	if !g.ReadCallSignature() {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadArrayType() bool {
