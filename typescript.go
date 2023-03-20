@@ -219,6 +219,39 @@ func (j *jsParser) ReadObjectType() bool {
 }
 
 func (j *jsParser) ReadTypeMember() bool {
+	for _, fn := range [...]func(*jsParser) bool{
+		(*jsParser).ReadCallSignature,
+		(*jsParser).ReadMethodSignature,
+		(*jsParser).ReadConstructSignature,
+		(*jsParser).ReadIndexSignature,
+		(*jsParser).ReadPropertySignature,
+	} {
+		g := j.NewGoal()
+		if fn(&g) {
+			j.Score(g)
+			return true
+		}
+	}
+	return false
+}
+
+func (j *jsParser) ReadPropertySignature() bool {
+	return false
+}
+
+func (j *jsParser) ReadCallSignature() bool {
+	return false
+}
+
+func (j *jsParser) ReadConstructSignature() bool {
+	return false
+}
+
+func (j *jsParser) ReadIndexSignature() bool {
+	return false
+}
+
+func (j *jsParser) ReadMethodSignature() bool {
 	return false
 }
 
