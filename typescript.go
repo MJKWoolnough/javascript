@@ -389,7 +389,20 @@ func (j *jsParser) ReadMethodSignature() bool {
 }
 
 func (j *jsParser) ReadArrayType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.ReadPrimaryType() {
+		return false
+	}
+	g.AcceptRunWhitespaceNoNewLine()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		return false
+	}
+	g.AcceptRunWhitespaceNoNewLine()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadTupleType() bool {
