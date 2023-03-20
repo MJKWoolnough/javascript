@@ -91,6 +91,27 @@ func (j *jsParser) ReadTypeParameter() bool {
 	return false
 }
 
+func (j *jsParser) ReadTypeArguments() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<"}) {
+		return false
+	}
+	for {
+		g.AcceptRunWhitespace()
+		if !g.ReadType() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			break
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return false
+		}
+	}
+	j.Score(g)
+	return true
+}
+
 func (j *jsParser) ReadType() bool {
 	return false
 }
