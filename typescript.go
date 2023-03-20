@@ -180,6 +180,16 @@ func (j *jsParser) ReadParenthesizedType() bool {
 }
 
 func (j *jsParser) ReadPredefinedType() bool {
+	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "void"}) {
+		return true
+	}
+	if tk := j.Peek(); tk.Type == TokenIdentifier {
+		switch tk.Data {
+		case "any", "number", "boolean", "string", "symbol", "unknown":
+			j.Skip()
+			return true
+		}
+	}
 	return false
 }
 
