@@ -523,7 +523,26 @@ func (j *jsParser) ReadFunctionType() bool {
 }
 
 func (j *jsParser) ReadConstructorType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "new"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	g.ReadTypeParameters()
+	g.AcceptRunWhitespace()
+	if !g.ReadParameterList() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) SkipGeneric() {}
