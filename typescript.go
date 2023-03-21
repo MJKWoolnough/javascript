@@ -503,7 +503,23 @@ func (j *jsParser) ReadTypeName() bool {
 }
 
 func (j *jsParser) ReadFunctionType() bool {
-	return false
+	g := j.NewGoal()
+	if g.ReadTypeParameters() {
+		g.AcceptRunWhitespace()
+	}
+	if !g.ReadParameterList() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadConstructorType() bool {
