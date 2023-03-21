@@ -482,7 +482,24 @@ func (j *jsParser) ReadTypeReference() bool {
 }
 
 func (j *jsParser) ReadTypeName() bool {
-	return false
+	g := j.NewGoal()
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	for {
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			break
+		}
+		h.AcceptRunWhitespace()
+		if h.parseIdentifier(false, false) == nil {
+			return false
+		}
+		g.Score(h)
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadFunctionType() bool {
