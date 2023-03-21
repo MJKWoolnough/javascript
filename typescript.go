@@ -150,6 +150,7 @@ func (j *jsParser) ReadPrimaryType() bool {
 		(*jsParser).ReadObjectType,
 		(*jsParser).ReadArrayType,
 		(*jsParser).ReadTupleType,
+		(*jsParser).ReadThisType,
 		(*jsParser).ReadTypeQuery,
 		(*jsParser).ReadTypeReference,
 	} {
@@ -426,6 +427,10 @@ func (j *jsParser) ReadTupleType() bool {
 	}
 	j.Score(g)
 	return true
+}
+
+func (j *jsParser) ReadThisType() bool {
+	return j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"})
 }
 
 func (j *jsParser) ReadTypeQuery() bool {
