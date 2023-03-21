@@ -464,7 +464,7 @@ func (j *jsParser) ReadTypeQueryExpression() bool {
 		g.Score(h)
 	}
 	j.Score(g)
-	return false
+	return true
 }
 
 func (j *jsParser) ReadTypeReference() bool {
