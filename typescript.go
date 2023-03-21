@@ -447,6 +447,23 @@ func (j *jsParser) ReadTypeQuery() bool {
 }
 
 func (j *jsParser) ReadTypeQueryExpression() bool {
+	g := j.NewGoal()
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	for {
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			break
+		}
+		h.AcceptRunWhitespace()
+		if !h.Accept(TokenIdentifier, TokenKeyword, TokenPrivateIdentifier) {
+			return false
+		}
+		g.Score(h)
+	}
+	j.Score(g)
 	return false
 }
 
