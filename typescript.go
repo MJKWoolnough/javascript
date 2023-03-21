@@ -434,6 +434,19 @@ func (j *jsParser) ReadThisType() bool {
 }
 
 func (j *jsParser) ReadTypeQuery() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "typeof"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadTypeQueryExpression() {
+		return false
+	}
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadTypeQueryExpression() bool {
 	return false
 }
 
