@@ -468,6 +468,20 @@ func (j *jsParser) ReadTypeQueryExpression() bool {
 }
 
 func (j *jsParser) ReadTypeReference() bool {
+	g := j.NewGoal()
+	if !g.ReadTypeName() {
+		return false
+	}
+	h := g.NewGoal()
+	h.AcceptRunWhitespaceNoNewLine()
+	if h.ReadTypeArguments() {
+		g.Score(h)
+	}
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadTypeName() bool {
 	return false
 }
 
