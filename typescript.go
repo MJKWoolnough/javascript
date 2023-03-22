@@ -114,9 +114,8 @@ func (j *jsParser) ReadTypeArguments() bool {
 
 func (j *jsParser) ReadType() bool {
 	for _, fn := range [...]func(*jsParser) bool{
-		(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 		(*jsParser).ReadFunctionType,
-		(*jsParser).ReadConstructorType,
+		(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 	} {
 		g := j.NewGoal()
 		if fn(&g) {
@@ -504,32 +503,12 @@ func (j *jsParser) ReadTypeName() bool {
 
 func (j *jsParser) ReadFunctionType() bool {
 	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "new"}) {
+		g.AcceptRunWhitespace()
+	}
 	if g.ReadTypeParameters() {
 		g.AcceptRunWhitespace()
 	}
-	if !g.ReadParameterList() {
-		return false
-	}
-	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
-		return false
-	}
-	g.AcceptRunWhitespace()
-	if !g.ReadType() {
-		return false
-	}
-	j.Score(g)
-	return true
-}
-
-func (j *jsParser) ReadConstructorType() bool {
-	g := j.NewGoal()
-	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "new"}) {
-		return false
-	}
-	g.AcceptRunWhitespace()
-	g.ReadTypeParameters()
-	g.AcceptRunWhitespace()
 	if !g.ReadParameterList() {
 		return false
 	}
