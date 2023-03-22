@@ -172,15 +172,38 @@ func (j *jsParser) ReadTypeOperator() bool {
 		if !g.ReadTypeOperator() {
 			return false
 		}
-	} else if !g.ReadConditionalType() {
+	} else if !g.ReadPostfixType() {
 		return false
 	}
 	j.Score(g)
 	return false
 }
 
-func (j *jsParser) ReadConditionalType() bool {
-	return false
+func (j *jsParser) ReadPostfixType() bool {
+	g := j.NewGoal()
+	if !g.ReadPrimaryType() {
+		return false
+	}
+	for {
+		h := g.NewGoal()
+		h.AcceptRunWhitespaceNoNewLine()
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+			h.AcceptRunWhitespace()
+			i := h.NewGoal()
+			if i.ReadType() {
+				h.Score(i)
+				h.AcceptRunWhitespace()
+			}
+			if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+				return false
+			}
+		} else if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"}) {
+			break
+		}
+		g.Score(h)
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadPrimaryType() bool {
@@ -188,7 +211,6 @@ func (j *jsParser) ReadPrimaryType() bool {
 		(*jsParser).ReadParenthesizedType,
 		(*jsParser).ReadPredefinedType,
 		(*jsParser).ReadObjectType,
-		(*jsParser).ReadArrayType,
 		(*jsParser).ReadTupleType,
 		(*jsParser).ReadThisType,
 		(*jsParser).ReadTypeQuery,
@@ -423,23 +445,6 @@ func (j *jsParser) ReadMethodSignature() bool {
 		g.AcceptRunWhitespace()
 	}
 	if !g.ReadCallSignature() {
-		return false
-	}
-	j.Score(g)
-	return true
-}
-
-func (j *jsParser) ReadArrayType() bool {
-	g := j.NewGoal()
-	if !g.ReadPrimaryType() {
-		return false
-	}
-	g.AcceptRunWhitespaceNoNewLine()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
-		return false
-	}
-	g.AcceptRunWhitespaceNoNewLine()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		return false
 	}
 	j.Score(g)
