@@ -151,7 +151,7 @@ func (j *jsParser) ReadType() bool {
 func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 	g := j.NewGoal()
 	for {
-		if !g.ReadPrimaryType() {
+		if !g.ReadTypeOperator() {
 			return false
 		}
 		g.AcceptRunWhitespace()
@@ -162,6 +162,25 @@ func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 	}
 	j.Score(g)
 	return true
+}
+
+func (j *jsParser) ReadTypeOperator() bool {
+	g := j.NewGoal()
+	if tk := g.Peek(); tk.Type == TokenIdentifier && (tk.Data == "keyof" || tk.Data == "unique" || tk.Data == "readonly") {
+		g.Skip()
+		g.AcceptRunWhitespace()
+		if !g.ReadTypeOperator() {
+			return false
+		}
+	} else if !g.ReadConditionalType() {
+		return false
+	}
+	j.Score(g)
+	return false
+}
+
+func (j *jsParser) ReadConditionalType() bool {
+	return false
 }
 
 func (j *jsParser) ReadPrimaryType() bool {
