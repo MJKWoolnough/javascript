@@ -113,16 +113,38 @@ func (j *jsParser) ReadTypeArguments() bool {
 }
 
 func (j *jsParser) ReadType() bool {
-	for _, fn := range [...]func(*jsParser) bool{
-		(*jsParser).ReadFunctionType,
-		(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
-	} {
-		g := j.NewGoal()
-		if fn(&g) {
-			j.Score(g)
-			return true
+	if g := j.NewGoal(); g.ReadFunctionType() {
+		j.Score(g)
+		return true
+	}
+	g := j.NewGoal()
+	if !g.ReadUnionOrIntersectionOrPrimaryType() {
+		return false
+	}
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	if h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
+		h.AcceptRunWhitespace()
+		if !h.ReadType() {
+			return false
+		}
+		h.AcceptRunWhitespace()
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+			return false
+		}
+		h.AcceptRunWhitespace()
+		if !h.ReadType() {
+			return false
+		}
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+			return false
+		}
+		h.AcceptRunWhitespace()
+		if !h.ReadType() {
+			return false
 		}
 	}
+	j.Score(g)
 	return false
 }
 
