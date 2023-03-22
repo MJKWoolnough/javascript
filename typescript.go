@@ -226,7 +226,7 @@ func (j *jsParser) ReadPredefinedType() bool {
 	}
 	if tk := j.Peek(); tk.Type == TokenIdentifier {
 		switch tk.Data {
-		case "any", "number", "boolean", "string", "symbol", "unknown":
+		case "any", "number", "boolean", "string", "symbol", "unknown", "bigint", "undefined", "never", "object":
 			j.Skip()
 			return true
 		}
