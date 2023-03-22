@@ -249,6 +249,12 @@ func (j *jsParser) ReadPredefinedType() bool {
 	if tk := j.Peek(); tk.Type == TokenIdentifier {
 		switch tk.Data {
 		case "any", "number", "boolean", "string", "symbol", "unknown", "bigint", "undefined", "never", "object":
+			g := j.NewGoal()
+			g.Skip()
+			g.AcceptRunWhitespace()
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+				return j.ReadTypeReference()
+			}
 			j.Skip()
 			return true
 		}
