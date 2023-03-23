@@ -437,6 +437,159 @@ static readonly E;
 				Token:   tk[0],
 			}
 		}},
+		{`import {type} from 'a';`, func(t *test, tk Tokens) { // 7
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									ImportList: []ImportSpecifier{
+										{
+											IdentifierName:  &tk[3],
+											ImportedBinding: &tk[3],
+											Tokens:          tk[3:4],
+										},
+									},
+									Tokens: tk[2:5],
+								},
+								Tokens: tk[2:5],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[8],
+								Tokens:          tk[6:9],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`import {type A} from 'a';`, func(t *test, tk Tokens) { // 8
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									Tokens: tk[2:7],
+								},
+								Tokens: tk[2:7],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[10],
+								Tokens:          tk[8:11],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`import {type A} from 'a';`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidNamedImport,
+							Parsing: "NamedImports",
+							Token:   tk[5],
+						},
+						Parsing: "ImportClause",
+						Token:   tk[2],
+					},
+					Parsing: "ImportDeclaration",
+					Token:   tk[2],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`import {type as} from 'a';`, func(t *test, tk Tokens) { // 10
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									Tokens: tk[2:7],
+								},
+								Tokens: tk[2:7],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[10],
+								Tokens:          tk[8:11],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`import {type as as} from 'a';`, func(t *test, tk Tokens) { // 11
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									ImportList: []ImportSpecifier{
+										{
+											IdentifierName:  &tk[3],
+											ImportedBinding: &tk[7],
+											Tokens:          tk[3:8],
+										},
+									},
+									Tokens: tk[2:9],
+								},
+								Tokens: tk[2:9],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[12],
+								Tokens:          tk[10:13],
+							},
+							Tokens: tk[:14],
+						},
+						Tokens: tk[:14],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{`import {type as as as} from 'a';`, func(t *test, tk Tokens) { // 12
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									Tokens: tk[2:11],
+								},
+								Tokens: tk[2:11],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[14],
+								Tokens:          tk[12:15],
+							},
+							Tokens: tk[:16],
+						},
+						Tokens: tk[:16],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
