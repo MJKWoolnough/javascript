@@ -671,3 +671,45 @@ func (j *jsParser) SkipImportType() {
 		}
 	}
 }
+
+func (j *jsParser) SkipTypeImport() bool {
+	g := j.NewGoal()
+	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+			i := h.NewGoal()
+			i.AcceptRunWhitespace()
+			if i.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+				i.AcceptRunWhitespace()
+				if i.parseIdentifier(false, false) != nil {
+					h.Score(i)
+					g.Score(h)
+					j.Score(g)
+					return true
+				}
+			} else {
+				g.Score(h)
+				j.Score(g)
+				return true
+			}
+		} else if h.Accept(TokenIdentifier, TokenKeyword) {
+			i := h.NewGoal()
+			i.AcceptRunWhitespace()
+			if i.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+				i.AcceptRunWhitespace()
+				if i.parseIdentifier(false, false) != nil {
+					h.Score(h)
+					g.Score(h)
+					j.Score(g)
+					return true
+				}
+			} else {
+				g.Score(h)
+				j.Score(g)
+				return true
+			}
+		}
+	}
+	return false
+}
