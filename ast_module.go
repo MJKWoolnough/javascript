@@ -210,19 +210,21 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		if j.Accept(TokenRightBracePunctuator) {
 			break
 		}
-		g := j.NewGoal()
-		is := len(ni.ImportList)
-		ni.ImportList = append(ni.ImportList, ImportSpecifier{})
-		if err := ni.ImportList[is].parse(&g); err != nil {
-			return j.Error("NamedImports", err)
-		}
-		name := ni.ImportList[is].ImportedBinding.Data
-		for _, im := range ni.ImportList[:is] {
-			if im.ImportedBinding.Data == name {
-				return j.Error("NamedImports", ErrInvalidNamedImport)
+		if !j.SkipTypeImport() {
+			g := j.NewGoal()
+			is := len(ni.ImportList)
+			ni.ImportList = append(ni.ImportList, ImportSpecifier{})
+			if err := ni.ImportList[is].parse(&g); err != nil {
+				return j.Error("NamedImports", err)
 			}
+			name := ni.ImportList[is].ImportedBinding.Data
+			for _, im := range ni.ImportList[:is] {
+				if im.ImportedBinding.Data == name {
+					return j.Error("NamedImports", ErrInvalidNamedImport)
+				}
+			}
+			j.Score(g)
 		}
-		j.Score(g)
 		j.AcceptRunWhitespace()
 		if j.Accept(TokenRightBracePunctuator) {
 			break
