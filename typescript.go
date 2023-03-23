@@ -614,7 +614,14 @@ func (j *jsParser) SkipGeneric() {}
 
 func (j *jsParser) SkipAsType() {}
 
-func (j *jsParser) SkipColonType() {}
+func (j *jsParser) SkipColonType() {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		if g.ReadTypeAnnotation() {
+			j.Score(g)
+		}
+	}
+}
 
 func (j *jsParser) SkipType() {}
 
