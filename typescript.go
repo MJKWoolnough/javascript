@@ -240,7 +240,23 @@ func (j *jsParser) ReadLiteralType() bool {
 }
 
 func (j *jsParser) ReadTemplateType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.Accept(TokenTemplateHead) {
+		return false
+	}
+	for {
+		if !g.ReadType() {
+			return false
+		}
+		if g.Accept(TokenTemplateTail) {
+			break
+		}
+		if !g.Accept(TokenTemplateMiddle) {
+			return false
+		}
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadParenthesizedType() bool {
