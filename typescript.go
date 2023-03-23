@@ -228,7 +228,15 @@ func (j *jsParser) ReadPrimaryType() bool {
 }
 
 func (j *jsParser) ReadLiteralType() bool {
-	return false
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "-"}) {
+		g.AcceptRunWhitespace()
+		if g.Accept(TokenNumericLiteral) {
+			j.Score(g)
+			return true
+		}
+	}
+	return j.Accept(TokenNullLiteral, TokenBooleanLiteral, TokenNumericLiteral, TokenStringLiteral, TokenNoSubstitutionTemplate)
 }
 
 func (j *jsParser) ReadTemplateType() bool {
