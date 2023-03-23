@@ -208,6 +208,8 @@ func (j *jsParser) ReadPostfixType() bool {
 
 func (j *jsParser) ReadPrimaryType() bool {
 	for _, fn := range [...]func(*jsParser) bool{
+		(*jsParser).ReadLiteralType,
+		(*jsParser).ReadTemplateType,
 		(*jsParser).ReadParenthesizedType,
 		(*jsParser).ReadPredefinedType,
 		(*jsParser).ReadObjectType,
@@ -222,6 +224,14 @@ func (j *jsParser) ReadPrimaryType() bool {
 			return true
 		}
 	}
+	return false
+}
+
+func (j *jsParser) ReadLiteralType() bool {
+	return false
+}
+
+func (j *jsParser) ReadTemplateType() bool {
 	return false
 }
 
