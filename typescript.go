@@ -623,7 +623,35 @@ func (j *jsParser) SkipColonType() {
 	}
 }
 
-func (j *jsParser) SkipType() {}
+func (j *jsParser) SkipType() bool {
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+		g.AcceptRunWhitespace()
+		if g.parseIdentifier(false, false) == nil {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if g.ReadTypeParameters() {
+			g.AcceptRunWhitespace()
+		}
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		// TODO: instrinsic check?
+		if !g.ReadType() {
+			return false
+		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			g.Score(h)
+		}
+		j.Score(g)
+		return true
+	}
+	return false
+}
 
 func (j *jsParser) SkipInterface() {}
 
