@@ -706,7 +706,8 @@ func (j *jsParser) SkipInterface() bool {
 	return false
 }
 
-func (j *jsParser) SkipEnum() {}
+func (j *jsParser) ParseEnum() {
+}
 
 func (j *jsParser) SkipParameterProperties() {
 	if j.IsTypescript() {
