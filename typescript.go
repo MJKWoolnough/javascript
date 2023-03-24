@@ -658,7 +658,35 @@ func (j *jsParser) SkipType() bool {
 	return false
 }
 
-func (j *jsParser) SkipInterface() {}
+func (j *jsParser) ReadHeritage() bool {
+	return false
+}
+
+func (j *jsParser) SkipInterface() bool {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "interface"}) {
+			g.AcceptRunWhitespace()
+			if g.parseIdentifier(false, false) == nil {
+				return false
+			}
+			g.AcceptRunWhitespace()
+			if g.ReadTypeParameters() {
+				g.AcceptRunWhitespace()
+			}
+			if g.ReadHeritage() {
+				g.AcceptRunWhitespace()
+				return false
+			}
+			if !g.ReadObjectType() {
+				return false
+			}
+			j.Score(g)
+			return true
+		}
+	}
+	return false
+}
 
 func (j *jsParser) SkipEnum() {}
 
