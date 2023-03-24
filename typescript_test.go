@@ -590,6 +590,66 @@ static readonly E;
 				Tokens: tk[:16],
 			}
 		}},
+		{`{}
+type B = number;
+{}`, func(t *test, tk Tokens) { // 13
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								BlockStatement: &Block{
+									Tokens: tk[:2],
+								},
+								Tokens: tk[:2],
+							},
+							Tokens: tk[:2],
+						},
+						Tokens: tk[:2],
+					},
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[3:11],
+							},
+							Tokens: tk[3:11],
+						},
+						Tokens: tk[3:11],
+					},
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								BlockStatement: &Block{
+									Tokens: tk[12:14],
+								},
+								Tokens: tk[12:14],
+							},
+							Tokens: tk[12:14],
+						},
+						Tokens: tk[12:14],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{`{}
+type B = number;
+{}`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingSemiColon,
+						Parsing: "Statement",
+						Token:   tk[4],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[3],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
