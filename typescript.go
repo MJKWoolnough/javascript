@@ -659,6 +659,24 @@ func (j *jsParser) SkipType() bool {
 }
 
 func (j *jsParser) ReadHeritage() bool {
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "implements"}) {
+		for {
+			g.AcceptRunWhitespace()
+			var lhs LeftHandSideExpression
+			if lhs.parse(&g, false, false) == nil {
+				return false
+			}
+			g.AcceptRunWhitespace()
+			g.ReadTypeParameters()
+			g.AcceptRunWhitespace()
+			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				break
+			}
+		}
+		j.Score(g)
+		return true
+	}
 	return false
 }
 
