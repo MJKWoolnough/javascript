@@ -43,7 +43,7 @@ type StatementListItem struct {
 }
 
 func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
-	if j.SkipType() {
+	if j.SkipType() || j.SkipInterface() {
 		si.Statement = &Statement{
 			Tokens: j.ToTokens(),
 		}
