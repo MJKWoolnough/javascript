@@ -88,7 +88,7 @@ func (j *jsParser) ReadTypeParameter() bool {
 			return false
 		}
 	}
-	return false
+	return true
 }
 
 func (j *jsParser) ReadTypeArguments() bool {
@@ -145,7 +145,7 @@ func (j *jsParser) ReadType() bool {
 		}
 	}
 	j.Score(g)
-	return false
+	return true
 }
 
 func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
@@ -176,7 +176,7 @@ func (j *jsParser) ReadTypeOperator() bool {
 		return false
 	}
 	j.Score(g)
-	return false
+	return true
 }
 
 func (j *jsParser) ReadPostfixType() bool {
@@ -378,7 +378,7 @@ func (j *jsParser) ReadCallSignature() bool {
 	g.AcceptRunWhitespace()
 	g.ReadTypeAnnotation()
 	j.Score(g)
-	return false
+	return true
 }
 
 func (j *jsParser) ReadParameterList() bool {
