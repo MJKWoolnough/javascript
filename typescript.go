@@ -735,7 +735,7 @@ func (j *jsParser) SkipReadOnly() {
 	}
 }
 
-func (j *jsParser) SkipImportType() {
+func (j *jsParser) SkipImportType() bool {
 	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenKeyword, Data: "import"}) {
 		g := j.NewGoal()
 		g.Skip()
@@ -750,13 +750,19 @@ func (j *jsParser) SkipImportType() {
 					var fc FromClause
 					err := fc.parse(&g)
 					if err == nil {
-						j.AcceptRunWhitespace()
+						h := g.NewGoal()
+						h.AcceptRunWhitespace()
+						if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+							g.Score(h)
+						}
 						j.Score(g)
+						return true
 					}
 				}
 			}
 		}
 	}
+	return false
 }
 
 func (j *jsParser) SkipTypeImport() bool {
