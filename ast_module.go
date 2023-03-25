@@ -50,7 +50,6 @@ type ModuleItem struct {
 }
 
 func (ml *ModuleItem) parse(j *jsParser) error {
-	j.SkipImportType()
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "export"}:
@@ -59,6 +58,15 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 			return j.Error("ModuleItem", err)
 		}
 	case parser.Token{Type: TokenKeyword, Data: "import"}:
+		if g.SkipImportType() {
+			ml.StatementListItem = &StatementListItem{
+				Statement: &Statement{
+					Tokens: g.ToTokens(),
+				},
+				Tokens: g.ToTokens(),
+			}
+			break
+		}
 		h := g.NewGoal()
 		h.Skip()
 		h.AcceptRunWhitespace()
