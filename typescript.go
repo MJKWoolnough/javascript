@@ -614,6 +614,17 @@ func (j *jsParser) ReadFunctionType() bool {
 	return true
 }
 
+func (j *jsParser) SkipHeritage() bool {
+	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "implements"}) {
+		g := j.NewGoal()
+		if g.ReadHeritage() {
+			j.Score(g)
+			return true
+		}
+	}
+	return false
+}
+
 func (j *jsParser) SkipGeneric() bool {
 	return j.IsTypescript() && j.ReadTypeParameters()
 }
