@@ -667,7 +667,7 @@ func (j *jsParser) ReadHeritage() bool {
 		for {
 			g.AcceptRunWhitespace()
 			var lhs LeftHandSideExpression
-			if lhs.parse(&g, false, false) == nil {
+			if lhs.parse(&g, false, false) != nil {
 				return false
 			}
 			g.AcceptRunWhitespace()
