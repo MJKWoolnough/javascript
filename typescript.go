@@ -358,7 +358,7 @@ func (j *jsParser) ReadPropertySignature() bool {
 
 func (j *jsParser) ReadTypeAnnotation() bool {
 	g := j.NewGoal()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
 		return false
 	}
 	g.AcceptRunWhitespace()
