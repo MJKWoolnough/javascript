@@ -88,6 +88,7 @@ func (j *jsParser) ReadTypeParameter() bool {
 			return false
 		}
 	}
+	j.Score(g)
 	return true
 }
 
