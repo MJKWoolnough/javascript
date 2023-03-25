@@ -613,7 +613,9 @@ func (j *jsParser) ReadFunctionType() bool {
 	return true
 }
 
-func (j *jsParser) SkipGeneric() {}
+func (j *jsParser) SkipGeneric() bool {
+	return j.IsTypescript() && j.ReadTypeParameters()
+}
 
 func (j *jsParser) SkipAsType() {}
 
