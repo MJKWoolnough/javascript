@@ -1,8 +1,6 @@
 package javascript
 
-import (
-	"vimagination.zapto.org/parser"
-)
+import "vimagination.zapto.org/parser"
 
 // ClassDeclaration as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-ClassDeclaration
@@ -27,6 +25,12 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	} else {
 		j.AcceptRunWhitespace()
 	}
+	if j.SkipGeneric() {
+		j.AcceptRunWhitespace()
+	}
+	if j.SkipHeritage() {
+		j.AcceptRunWhitespace()
+	}
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
 		j.AcceptRunWhitespace()
 		g := j.NewGoal()
@@ -35,6 +39,12 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 			return j.Error("ClassDeclaration", err)
 		}
 		j.Score(g)
+		j.AcceptRunWhitespace()
+		if j.SkipGeneric() {
+			j.AcceptRunWhitespace()
+		}
+	}
+	if j.SkipHeritage() {
 		j.AcceptRunWhitespace()
 	}
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
