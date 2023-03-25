@@ -650,6 +650,150 @@ type B = number;
 				Token:   tk[3],
 			}
 		}},
+		{`class A<B, C> extends D<E> implements F, G<H> {}`, func(t *test, tk Tokens) { // 15
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassHeritage: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[12],
+													Tokens:              tk[12:13],
+												},
+												Tokens: tk[12:13],
+											},
+											Tokens: tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[:29],
+								},
+								Tokens: tk[:29],
+							},
+							Tokens: tk[:29],
+						},
+						Tokens: tk[:29],
+					},
+				},
+				Tokens: tk[:29],
+			}
+		}},
+		{`class A<B, C> extends D<E> implements F, G<H> {}`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningBrace,
+							Parsing: "ClassDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`class A extends D<E> implements F, G<H> {}`, func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningBrace,
+							Parsing: "ClassDeclaration",
+							Token:   tk[7],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`class A extends D implements F, G<H> {}`, func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningBrace,
+							Parsing: "ClassDeclaration",
+							Token:   tk[8],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`class A<B, C> implements D, E<F> extends G<H> {}`, func(t *test, tk Tokens) { // 19
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassHeritage: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[22],
+													Tokens:              tk[22:23],
+												},
+												Tokens: tk[22:23],
+											},
+											Tokens: tk[22:23],
+										},
+										Tokens: tk[22:23],
+									},
+									Tokens: tk[:29],
+								},
+								Tokens: tk[:29],
+							},
+							Tokens: tk[:29],
+						},
+						Tokens: tk[:29],
+					},
+				},
+				Tokens: tk[:29],
+			}
+		}},
+		{`class A implements D, E<F> extends G<H> {}`, func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingOpeningBrace,
+							Parsing: "ClassDeclaration",
+							Token:   tk[4],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
