@@ -25,18 +25,18 @@ func TestTypescriptModule(t *testing.T) {
 					{
 						StatementListItem: &StatementListItem{
 							Statement: &Statement{
-								Tokens: tk[17:18],
+								Tokens: tk[8:18],
 							},
-							Tokens: tk[17:18],
+							Tokens: tk[8:18],
 						},
 						Tokens: tk[8:18],
 					},
 					{
 						StatementListItem: &StatementListItem{
 							Statement: &Statement{
-								Tokens: tk[32:33],
+								Tokens: tk[18:33],
 							},
-							Tokens: tk[32:33],
+							Tokens: tk[18:33],
 						},
 						Tokens: tk[18:33],
 					},
