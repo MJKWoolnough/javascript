@@ -24,15 +24,22 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	}
 	j.Score(g)
 	g = j.NewGoal()
-	g.AcceptRunWhitespace()
-	if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??"}) {
-		ce.CoalesceExpression = new(CoalesceExpression)
-		if err := ce.CoalesceExpression.parse(j, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
-			return j.Error("ConditionalExpression", err)
-		}
-		ce.LogicalORExpression = nil
+	g.AcceptRunWhitespaceNoNewLine()
+	if g.SkipAsType() {
+		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
+	} else {
+		g.AcceptRunWhitespace()
+		if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??"}) {
+			ce.CoalesceExpression = new(CoalesceExpression)
+			if err := ce.CoalesceExpression.parse(j, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
+				return j.Error("ConditionalExpression", err)
+			}
+			ce.LogicalORExpression = nil
+			g = j.NewGoal()
+			g.AcceptRunWhitespace()
+		}
 	}
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
 		j.Score(g)
