@@ -775,7 +775,7 @@ type B = number;
 				Tokens: tk[:29],
 			}
 		}},
-		{`class A implements D, E<F> extends G<H> {}`, func(t *test, tk Tokens) { // 18
+		{`class A implements D, E<F> extends G<H> {}`, func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
