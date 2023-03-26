@@ -55,12 +55,18 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		fd.BindingIdentifier = bi
 		j.AcceptRunWhitespace()
 	}
+	if j.SkipGeneric() {
+		j.AcceptRunWhitespace()
+	}
 	g := j.NewGoal()
 	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
 		return j.Error("FunctionDeclaration", err)
 	}
 	j.Score(g)
 	j.AcceptRunWhitespace()
+	if j.SkipColonType() {
+		j.AcceptRunWhitespace()
+	}
 	g = j.NewGoal()
 	if err := fd.FunctionBody.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true); err != nil {
 		return j.Error("FunctionDeclaration", err)
@@ -110,6 +116,9 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 				g.Score(h)
 				j.Score(g)
 				j.AcceptRunWhitespace()
+				if j.SkipColonType() {
+					j.AcceptRunWhitespace()
+				}
 				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 					return j.Error("FormalParameters", ErrMissingClosingParenthesis)
 				}
@@ -192,6 +201,11 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	j.Score(g)
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
+	if g.SkipOptionalColonType() {
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+	}
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		g.AcceptRunWhitespace()
 		j.Score(g)
