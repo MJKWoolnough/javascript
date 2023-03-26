@@ -794,6 +794,154 @@ type B = number;
 				Token:   tk[0],
 			}
 		}},
+		{`class A {
+b(): C {}
+get d(): E {}
+set f(g): H {}
+i <J> () {}
+}`, func(t *test, tk Tokens) { // 21
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											MethodDefinition: &MethodDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[6],
+														Tokens:              tk[6:7],
+													},
+													Tokens: tk[6:7],
+												},
+												Params: FormalParameters{
+													Tokens: tk[7:9],
+												},
+												FunctionBody: Block{
+													Tokens: tk[13:15],
+												},
+												Tokens: tk[6:15],
+											},
+											Tokens: tk[6:15],
+										},
+										{
+											MethodDefinition: &MethodDefinition{
+												Type: MethodGetter,
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[18],
+														Tokens:              tk[18:19],
+													},
+													Tokens: tk[18:19],
+												},
+												Params: FormalParameters{
+													Tokens: tk[19:21],
+												},
+												FunctionBody: Block{
+													Tokens: tk[25:27],
+												},
+												Tokens: tk[16:27],
+											},
+											Tokens: tk[16:27],
+										},
+										{
+											MethodDefinition: &MethodDefinition{
+												Type: MethodSetter,
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[30],
+														Tokens:              tk[30:31],
+													},
+													Tokens: tk[30:31],
+												},
+												Params: FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															SingleNameBinding: &tk[32],
+															Tokens:            tk[32:33],
+														},
+													},
+													Tokens: tk[31:34],
+												},
+												FunctionBody: Block{
+													Tokens: tk[38:40],
+												},
+												Tokens: tk[28:40],
+											},
+											Tokens: tk[28:40],
+										},
+										{
+											MethodDefinition: &MethodDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[41],
+														Tokens:              tk[41:42],
+													},
+													Tokens: tk[41:42],
+												},
+												Params: FormalParameters{
+													Tokens: tk[47:49],
+												},
+												FunctionBody: Block{
+													Tokens: tk[50:52],
+												},
+												Tokens: tk[41:52],
+											},
+											Tokens: tk[41:52],
+										},
+									},
+									Tokens: tk[:54],
+								},
+								Tokens: tk[:54],
+							},
+							Tokens: tk[:54],
+						},
+						Tokens: tk[:54],
+					},
+				},
+				Tokens: tk[:54],
+			}
+		}},
+		{`class A {
+b(): C {}
+get d(): E {}
+set f(g): H {}
+i <J> () {}
+}`, func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrMissingOpeningBrace,
+										Parsing: "Block",
+										Token:   tk[9],
+									},
+									Parsing: "MethodDefinition",
+									Token:   tk[9],
+								},
+								Parsing: "ClassElement",
+								Token:   tk[6],
+							},
+							Parsing: "ClassDeclaration",
+							Token:   tk[6],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
