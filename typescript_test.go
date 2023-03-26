@@ -911,7 +911,7 @@ b(): C {}
 get d(): E {}
 set f(g): H {}
 i <J> () {}
-}`, func(t *test, tk Tokens) { // 21
+}`, func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -942,7 +942,7 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
-		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 22
+		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 23
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -1011,7 +1011,7 @@ i <J> () {}
 				Tokens: tk[:55],
 			}
 		}},
-		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 22
+		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
