@@ -942,6 +942,98 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
+		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 22
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										FormalParameterList: []BindingElement{
+											{
+												SingleNameBinding: &tk[7],
+												Tokens:            tk[7:11],
+											},
+											{
+												ArrayBindingPattern: &ArrayBindingPattern{
+													BindingElementList: []BindingElement{
+														{
+															SingleNameBinding: &tk[14],
+															Tokens:            tk[14:15],
+														},
+														{
+															SingleNameBinding: &tk[17],
+															Tokens:            tk[17:18],
+														},
+													},
+													Tokens: tk[13:19],
+												},
+												Tokens: tk[13:28],
+											},
+											{
+												ObjectBindingPattern: &ObjectBindingPattern{
+													BindingPropertyList: []BindingProperty{
+														{
+															PropertyName: PropertyName{
+																LiteralPropertyName: &tk[31],
+																Tokens:              tk[31:32],
+															},
+															BindingElement: BindingElement{
+																SingleNameBinding: &tk[31],
+																Tokens:            tk[31:32],
+															},
+															Tokens: tk[31:32],
+														},
+													},
+													Tokens: tk[30:33],
+												},
+												Tokens: tk[30:41],
+											},
+										},
+										BindingIdentifier: &tk[44],
+										Tokens:            tk[6:49],
+									},
+									FunctionBody: Block{
+										Tokens: tk[53:55],
+									},
+									Tokens: tk[:55],
+								},
+								Tokens: tk[:55],
+							},
+							Tokens: tk[:55],
+						},
+						Tokens: tk[:55],
+					},
+				},
+				Tokens: tk[:55],
+			}
+		}},
+		{`function A<B>(c: D, [e, f]?: [number, string], {g}: {g: boolean}, ...i: J): K {}`, func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingOpeningParenthesis,
+								Parsing: "FormalParameters",
+								Token:   tk[3],
+							},
+							Parsing: "FunctionDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
