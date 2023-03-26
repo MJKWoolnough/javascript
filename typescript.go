@@ -631,13 +631,18 @@ func (j *jsParser) SkipGeneric() bool {
 
 func (j *jsParser) SkipAsType() {}
 
-func (j *jsParser) SkipColonType() {
+func (j *jsParser) SkipColonType() bool {
 	if j.IsTypescript() {
 		g := j.NewGoal()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+			g.AcceptRunWhitespace()
+		}
 		if g.ReadTypeAnnotation() {
 			j.Score(g)
+			return true
 		}
 	}
+	return false
 }
 
 func (j *jsParser) SkipType() bool {
