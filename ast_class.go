@@ -90,7 +90,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 		g.Skip()
 		g.AcceptRunWhitespace()
-		if tk := g.Peek(); (tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(")) && tk.Type != TokenRightBracePunctuator {
+		if tk := g.Peek(); (tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(" && tk.Data != ":")) && tk.Type != TokenRightBracePunctuator {
 			ce.Static = true
 			j.Skip()
 			j.AcceptRunWhitespace()
@@ -116,6 +116,9 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 			h.AcceptRunWhitespaceNoNewLine()
 			tk := h.Peek()
+			if h.SkipGeneric() {
+				h.AcceptRunWhitespace()
+			}
 			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier || tk.Type == TokenPrivateIdentifier
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) || h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 			h.AcceptRunWhitespace()
@@ -127,6 +130,9 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			}
 			h = g.NewGoal()
 			h.AcceptRunWhitespace()
+			if h.SkipGeneric() {
+				h.AcceptRunWhitespace()
+			}
 			isMethod = h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("})
 		}
 		if isMethod {
@@ -286,6 +292,9 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	}
 	j.AcceptRunWhitespace()
+	if j.SkipGeneric() {
+		j.AcceptRunWhitespace()
+	}
 	switch md.Type {
 	case MethodGetter:
 		g := j.NewGoal()
@@ -324,6 +333,9 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	}
 	j.AcceptRunWhitespace()
+	if j.SkipColonType() {
+		j.AcceptRunWhitespace()
+	}
 	g := j.NewGoal()
 	if err := md.FunctionBody.parse(&g, md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
 		return j.Error("MethodDefinition", err)
