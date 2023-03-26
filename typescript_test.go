@@ -1034,6 +1034,49 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
+		{`1 as number`, func(t *test, tk Tokens) { // 25
+			t.Typescript = true
+			one := makeConditionLiteral(tk, 0)
+			one.Tokens = tk[:5]
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: &one,
+											Tokens:                tk[:5],
+										},
+									},
+									Tokens: tk[:5],
+								},
+								Tokens: tk[:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`1 as number`, func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingSemiColon,
+						Parsing: "Statement",
+						Token:   tk[1],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
