@@ -506,6 +506,7 @@ func (j *jsParser) ReadTupleType() bool {
 	}
 	g.AcceptRunWhitespace()
 	for g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		g.AcceptRunWhitespace()
 		if !g.ReadType() {
 			return false
 		}
