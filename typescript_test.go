@@ -1571,7 +1571,48 @@ func TestTypescriptTypes(t *testing.T) {
 	for n, test := range [...]struct {
 		Fn    func(*jsParser) bool
 		Input string
-	}{} {
+	}{
+		{
+			(*jsParser).ReadLiteralType,
+			"1",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"2",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"-1",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"null",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"true",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"false",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"\"\"",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"\"string\"",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"``",
+		},
+		{
+			(*jsParser).ReadLiteralType,
+			"`template`",
+		},
+	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
 		if err != nil {
