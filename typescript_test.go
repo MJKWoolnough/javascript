@@ -1619,8 +1619,11 @@ func TestTypescriptTypes(t *testing.T) {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
 			j[:cap(j)][cap(j)-1].Data = marker
+			g := j
 			if !test.Fn(&j) {
-				t.Errorf("test %d: failed", n+1)
+				t.Errorf("test %d: failed on specific type fn ", n+1)
+			} else if !g.ReadType() {
+				t.Errorf("test %d: failed on generic type fn", n+1)
 			}
 		}
 	}
