@@ -1,6 +1,10 @@
 package javascript
 
-import "testing"
+import (
+	"testing"
+
+	"vimagination.zapto.org/parser"
+)
 
 func TestTypescriptModule(t *testing.T) {
 	doTests(t, []sourceFn{
@@ -1561,4 +1565,22 @@ i <J> () {}
 		err := m.parse(&t.Tokens)
 		return m, err
 	})
+}
+
+func TestTypescriptTypes(t *testing.T) {
+	for n, test := range [...]struct {
+		Fn    func(*jsParser) bool
+		Input string
+	}{} {
+		tk := parser.NewStringTokeniser(test.Input)
+		j, err := newJSParser(&tk)
+		if err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		} else {
+			j[:cap(j)][cap(j)-1].Data = marker
+			if !test.Fn(&j) {
+				t.Errorf("test %d: failed", n+1)
+			}
+		}
+	}
 }
