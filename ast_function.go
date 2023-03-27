@@ -94,6 +94,12 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
 	}
 	j.AcceptRunWhitespace()
+	if j.SkipThisParam() {
+		j.AcceptRunWhitespace()
+		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			j.AcceptRunWhitespace()
+		}
+	}
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
