@@ -1,8 +1,6 @@
 package javascript
 
-import (
-	"vimagination.zapto.org/parser"
-)
+import "vimagination.zapto.org/parser"
 
 // AssignmentOperator specifies the type of assignment in AssignmentExpression
 type AssignmentOperator uint8
@@ -122,6 +120,9 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		g := j.NewGoal()
 		g.Skip()
 		g.AcceptRunWhitespaceNoNewLine()
+		if g.SkipGeneric() {
+			g.AcceptRunWhitespaceNoNewLine()
+		}
 		if t := g.Peek().Type; t == TokenPunctuator || t == TokenIdentifier {
 			g := j.NewGoal()
 			ae.ArrowFunction = new(ArrowFunction)
@@ -130,6 +131,25 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			}
 			j.Score(g)
 			done = true
+		}
+	} else {
+		g := j.NewGoal()
+		if g.SkipGeneric() {
+			g.AcceptRunWhitespaceNoNewLine()
+			h := g.NewGoal()
+			var pe ParenthesizedExpression
+			if pe.parse(&h, yield, await) == nil {
+				g.Score(h)
+				ae.ArrowFunction = new(ArrowFunction)
+				if err := ae.ArrowFunction.parse(&g, &PrimaryExpression{
+					ParenthesizedExpression: &pe,
+					Tokens:                  pe.Tokens,
+				}, in, yield, await); err != nil {
+					return g.Error("AssignmentExpression", err)
+				}
+				j.Score(g)
+				done = true
+			}
 		}
 	}
 	if !done {
@@ -143,6 +163,9 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 				h := g.NewGoal()
 				if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
 					h.AcceptRunWhitespaceNoNewLine()
+					if h.SkipColonType() {
+						h.AcceptRunWhitespace()
+					}
 					if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "=>"}) {
 						ae.ConditionalExpression = nil
 						ae.ArrowFunction = new(ArrowFunction)
@@ -995,6 +1018,9 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 				}
 				j.Score(g)
 				j.AcceptRunWhitespace()
+				if j.SkipOptionalColonType() {
+					j.AcceptRunWhitespace()
+				}
 				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 					return j.Error("ParenthesizedExpression", ErrMissingClosingParenthesis)
 				}
@@ -1008,6 +1034,9 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
+			if j.SkipOptionalColonType() {
+				j.AcceptRunWhitespace()
+			}
 			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
