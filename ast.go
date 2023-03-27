@@ -770,6 +770,9 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 		}
 		af.Async = true
 		j.AcceptRunWhitespaceNoNewLine()
+		if j.SkipGeneric() {
+			j.AcceptRunWhitespaceNoNewLine()
+		}
 		if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 			g := j.NewGoal()
 			af.FormalParameters = new(FormalParameters)
@@ -777,6 +780,8 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 				return j.Error("ArrowFunction", err)
 			}
 			j.Score(g)
+			j.AcceptRunWhitespaceNoNewLine()
+			j.SkipColonType()
 		} else {
 			g := j.NewGoal()
 			if af.BindingIdentifier = g.parseIdentifier(yield, true); af.BindingIdentifier == nil {
@@ -790,6 +795,8 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			z := jsParser(pe.ParenthesizedExpression.Tokens[:0])
 			return z.Error("ArrowFunction", err)
 		}
+		j.AcceptRunWhitespaceNoNewLine()
+		j.SkipColonType()
 	} else {
 		af.BindingIdentifier = pe.IdentifierReference
 	}
