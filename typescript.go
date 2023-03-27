@@ -851,3 +851,14 @@ func (j *jsParser) SkipTypeImport() bool {
 	}
 	return false
 }
+
+func (j *jsParser) SkipThisParam() bool {
+	g := j.NewGoal()
+	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
+		g.AcceptRunWhitespace()
+		g.SkipColonType()
+		j.Score(g)
+		return true
+	}
+	return false
+}
