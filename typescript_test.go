@@ -1245,6 +1245,314 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
+		{`<A>() => {}`, func(t *test, tk Tokens) { // 33
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													Tokens: tk[3:5],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[8:10],
+												},
+												Tokens: tk[:10],
+											},
+											Tokens: tk[:10],
+										},
+									},
+									Tokens: tk[:10],
+								},
+								Tokens: tk[:10],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`(): A => {}`, func(t *test, tk Tokens) { // 35
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													Tokens: tk[0:2],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[8:10],
+												},
+												Tokens: tk[:10],
+											},
+											Tokens: tk[:10],
+										},
+									},
+									Tokens: tk[:10],
+								},
+								Tokens: tk[:10],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`(a: T) => {}`, func(t *test, tk Tokens) { // 35
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															SingleNameBinding: &tk[1],
+															Tokens:            tk[1:2],
+														},
+													},
+													Tokens: tk[0:6],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[9:11],
+												},
+												Tokens: tk[:11],
+											},
+											Tokens: tk[:11],
+										},
+									},
+									Tokens: tk[:11],
+								},
+								Tokens: tk[:11],
+							},
+							Tokens: tk[:11],
+						},
+						Tokens: tk[:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`<A>(a: A, b: C): D => {}`, func(t *test, tk Tokens) { // 36
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															SingleNameBinding: &tk[4],
+															Tokens:            tk[4:5],
+														},
+														{
+															SingleNameBinding: &tk[10],
+															Tokens:            tk[10:11],
+														},
+													},
+													Tokens: tk[3:15],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[21:23],
+												},
+												Tokens: tk[:23],
+											},
+											Tokens: tk[:23],
+										},
+									},
+									Tokens: tk[:23],
+								},
+								Tokens: tk[:23],
+							},
+							Tokens: tk[:23],
+						},
+						Tokens: tk[:23],
+					},
+				},
+				Tokens: tk[:23],
+			}
+		}},
+		{`async <A>() => {}`, func(t *test, tk Tokens) { // 37
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												Async: true,
+												FormalParameters: &FormalParameters{
+													Tokens: tk[5:7],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[10:12],
+												},
+												Tokens: tk[:12],
+											},
+											Tokens: tk[:12],
+										},
+									},
+									Tokens: tk[:12],
+								},
+								Tokens: tk[:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`async (): A => {}`, func(t *test, tk Tokens) { // 38
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												Async: true,
+												FormalParameters: &FormalParameters{
+													Tokens: tk[2:4],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[10:12],
+												},
+												Tokens: tk[:12],
+											},
+											Tokens: tk[:12],
+										},
+									},
+									Tokens: tk[:12],
+								},
+								Tokens: tk[:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`async (a: T) => {}`, func(t *test, tk Tokens) { // 39
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												Async: true,
+												FormalParameters: &FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															SingleNameBinding: &tk[3],
+															Tokens:            tk[3:7],
+														},
+													},
+													Tokens: tk[2:8],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[11:13],
+												},
+												Tokens: tk[:13],
+											},
+											Tokens: tk[:13],
+										},
+									},
+									Tokens: tk[:13],
+								},
+								Tokens: tk[:13],
+							},
+							Tokens: tk[:13],
+						},
+						Tokens: tk[:13],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`async <A>(a: A, b: C): D => {}`, func(t *test, tk Tokens) { // 40
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												Async: true,
+												FormalParameters: &FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															SingleNameBinding: &tk[6],
+															Tokens:            tk[6:10],
+														},
+														{
+															SingleNameBinding: &tk[12],
+															Tokens:            tk[12:16],
+														},
+													},
+													Tokens: tk[5:17],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[23:25],
+												},
+												Tokens: tk[:25],
+											},
+											Tokens: tk[:25],
+										},
+									},
+									Tokens: tk[:25],
+								},
+								Tokens: tk[:25],
+							},
+							Tokens: tk[:25],
+						},
+						Tokens: tk[:25],
+					},
+				},
+				Tokens: tk[:25],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
