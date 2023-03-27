@@ -1077,6 +1077,174 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
+		{`function a(this){}`, func(t *test, tk Tokens) { // 27
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										Tokens: tk[3:6],
+									},
+									FunctionBody: Block{
+										Tokens: tk[6:8],
+									},
+									Tokens: tk[:8],
+								},
+								Tokens: tk[:8],
+							},
+							Tokens: tk[:8],
+						},
+						Tokens: tk[:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`function a(this){}`, func(t *test, tk Tokens) { // 28
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrNoIdentifier,
+									Parsing: "BindingElement",
+									Token:   tk[4],
+								},
+								Parsing: "FormalParameters",
+								Token:   tk[4],
+							},
+							Parsing: "FunctionDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`function a(this: T){}`, func(t *test, tk Tokens) { // 29
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										Tokens: tk[3:9],
+									},
+									FunctionBody: Block{
+										Tokens: tk[9:11],
+									},
+									Tokens: tk[:11],
+								},
+								Tokens: tk[:11],
+							},
+							Tokens: tk[:11],
+						},
+						Tokens: tk[:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`function a(this: T){}`, func(t *test, tk Tokens) { // 30
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrNoIdentifier,
+									Parsing: "BindingElement",
+									Token:   tk[4],
+								},
+								Parsing: "FormalParameters",
+								Token:   tk[4],
+							},
+							Parsing: "FunctionDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
+		{`function a(this, b){}`, func(t *test, tk Tokens) { // 31
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										FormalParameterList: []BindingElement{
+											{
+												SingleNameBinding: &tk[7],
+												Tokens:            tk[7:8],
+											},
+										},
+										Tokens: tk[3:9],
+									},
+									FunctionBody: Block{
+										Tokens: tk[9:11],
+									},
+									Tokens: tk[:11],
+								},
+								Tokens: tk[:11],
+							},
+							Tokens: tk[:11],
+						},
+						Tokens: tk[:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`function a(this, b){}`, func(t *test, tk Tokens) { // 32
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrNoIdentifier,
+									Parsing: "BindingElement",
+									Token:   tk[4],
+								},
+								Parsing: "FormalParameters",
+								Token:   tk[4],
+							},
+							Parsing: "FunctionDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
