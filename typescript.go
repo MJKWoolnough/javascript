@@ -173,6 +173,12 @@ func (j *jsParser) ReadTypeOperator() bool {
 		if !g.ReadTypeOperator() {
 			return false
 		}
+	} else if tk == (parser.Token{Type: TokenIdentifier, Data: "infer"}) {
+		g.Skip()
+		g.AcceptRunWhitespace()
+		if g.parseIdentifier(false, false) == nil {
+			return false
+		}
 	} else if !g.ReadPostfixType() {
 		return false
 	}
