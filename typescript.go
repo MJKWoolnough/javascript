@@ -935,5 +935,28 @@ func (j *jsParser) ReadFunctionDeclaration() bool {
 }
 
 func (j *jsParser) ReadClassDeclaration() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	for g.ReadHeritage() {
+		g.AcceptRunWhitespace()
+	}
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	for g.ReadTypeMember() {
+		g.AcceptRunWhitespace()
+	}
+	if !g.Accept(TokenRightBracePunctuator) {
+		return false
+	}
+	j.Score(g)
+	return true
 }
