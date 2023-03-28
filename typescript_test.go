@@ -1557,6 +1557,81 @@ i <J> () {}
 				Tokens: tk[:25],
 			}
 		}},
+		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) {
+			t.Typescript = true
+			c := WrapConditional(&PrimaryExpression{
+				IdentifierReference: &tk[9],
+				Tokens:              tk[9:10],
+			})
+			c.Tokens = tk[9:14]
+			f := WrapConditional(&PrimaryExpression{
+				IdentifierReference: &tk[22],
+				Tokens:              tk[22:23],
+			})
+			f.Tokens = tk[22:27]
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: c,
+												Tokens:                tk[9:14],
+											},
+											Tokens: tk[2:14],
+										},
+										{
+											ArrayBindingPattern: &ArrayBindingPattern{
+												BindingElementList: []BindingElement{
+													{
+														SingleNameBinding: &tk[17],
+														Tokens:            tk[17:18],
+													},
+												},
+												Tokens: tk[16:19],
+											},
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: f,
+												Tokens:                tk[22:27],
+											},
+											Tokens: tk[16:27],
+										},
+									},
+									Tokens: tk[:27],
+								},
+								Tokens: tk[:27],
+							},
+							Tokens: tk[:27],
+						},
+						Tokens: tk[:27],
+					},
+				},
+				Tokens: tk[:27],
+			}
+		}},
+		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) {
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidLexicalDeclaration,
+							Parsing: "LexicalDeclaration",
+							Token:   tk[3],
+						},
+						Parsing: "Declaration",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
