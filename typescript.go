@@ -884,6 +884,10 @@ func (j *jsParser) SkipDeclare() bool {
 			if ld.parse(&g, true, false, false) == nil {
 				return true
 			}
+		case parser.Token{Type: TokenKeyword, Data: "async"}:
+			g.Skip()
+			g.AcceptRunWhitespace()
+			fallthrough
 		case parser.Token{Type: TokenKeyword, Data: "function"}:
 			if g.ReadFunctionDeclaration() {
 				return true
