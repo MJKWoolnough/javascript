@@ -643,7 +643,7 @@ func (j *jsParser) SkipAsType() bool {
 			return false
 		}
 		g.AcceptRunWhitespace()
-		if !g.ReadType() {
+		if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "const"}) && !g.ReadType() {
 			return false
 		}
 		j.Score(g)
