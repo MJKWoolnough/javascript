@@ -868,3 +868,35 @@ func (j *jsParser) SkipThisParam() bool {
 	}
 	return false
 }
+
+func (j *jsParser) SkipDeclare() bool {
+	g := j.NewGoal()
+	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "declare"}) {
+		g.AcceptRunWhitespace()
+		switch g.Peek() {
+		case parser.Token{Type: TokenKeyword, Data: "var"}:
+		case parser.Token{Type: TokenKeyword, Data: "const"}, parser.Token{Type: TokenIdentifier, Data: "let"}:
+			var ld LexicalDeclaration
+			if ld.parse(&g, true, false, false) == nil {
+				return true
+			}
+		case parser.Token{Type: TokenKeyword, Data: "function"}:
+			if g.ReadFunctionDeclaration() {
+				return true
+			}
+		case parser.Token{Type: TokenKeyword, Data: "class"}:
+			if g.ReadClassDeclaration() {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (j *jsParser) ReadFunctionDeclaration() bool {
+	return false
+}
+
+func (j *jsParser) ReadClassDeclaration() bool {
+	return false
+}
