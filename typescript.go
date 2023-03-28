@@ -875,6 +875,10 @@ func (j *jsParser) SkipDeclare() bool {
 		g.AcceptRunWhitespace()
 		switch g.Peek() {
 		case parser.Token{Type: TokenKeyword, Data: "var"}:
+			var vd VariableStatement
+			if vd.parse(&g, false, false) == nil {
+				return true
+			}
 		case parser.Token{Type: TokenKeyword, Data: "const"}, parser.Token{Type: TokenIdentifier, Data: "let"}:
 			var ld LexicalDeclaration
 			if ld.parse(&g, true, false, false) == nil {
