@@ -319,10 +319,11 @@ func (j *jsParser) ReadObjectType() bool {
 			}
 			g.AcceptRunWhitespace()
 			sep := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","})
+			g.AcceptRunWhitespace()
 			if g.Accept(TokenRightBracePunctuator) {
 				break
 			}
-			if sep {
+			if !sep {
 				return false
 			}
 		}
