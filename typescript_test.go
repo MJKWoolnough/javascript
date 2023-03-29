@@ -1632,6 +1632,26 @@ i <J> () {}
 				Token:   tk[0],
 			}
 		}},
+		{`type A = {
+	data: any;
+	other: number;
+}`, func(t *test, tk Tokens) {
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:23],
+							},
+							Tokens: tk[:23],
+						},
+						Tokens: tk[:23],
+					},
+				},
+				Tokens: tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
