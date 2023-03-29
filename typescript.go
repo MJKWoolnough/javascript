@@ -34,21 +34,6 @@ func (j *jsParser) IsTypescript() bool {
 	return (*j)[:cap(*j)][cap(*j)-1].Data == marker
 }
 
-/*
-ClassDeclaration (<>, implements)
-AssignmentExpression (!, as)
-FieldDefinition (private, protected)
-MethodDefinition (<>)
-FormalParameters (:TYPE)
-FunctionDeclaration (<>, :TYPE)
-ArrowFunction (<>, :TYPE)
-StatementListItem (enum, type, interface)
-LexicalBinding (!:TYPE)
-TryStatement (:TYPE)
-ModuleItem (import type)
-LeftHandSideExpression (<>)
-*/
-
 func (j *jsParser) ReadTypeParameters() bool {
 	g := j.NewGoal()
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<"}) {
