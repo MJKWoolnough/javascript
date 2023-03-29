@@ -812,6 +812,9 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			g.Score(h)
 			h = g.NewGoal()
 			h.AcceptRunWhitespace()
+			if h.SkipTypeArguments() {
+				h.AcceptRunWhitespace()
+			}
 			i := h.NewGoal()
 			me.Arguments = new(Arguments)
 			if err := me.Arguments.parse(&i, yield, await); err != nil {
