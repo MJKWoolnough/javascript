@@ -738,7 +738,7 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 			ao = assignmentSubtract
 		case AssignmentLeftShift:
 			ao = assignmentLeftShift
-		case AssignmentSignPropagatinRightShift:
+		case AssignmentSignPropagatingRightShift:
 			ao = assignmentSignRightShift
 		case AssignmentZeroFillRightShift:
 			ao = assignmentZeroRightShift

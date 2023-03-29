@@ -877,7 +877,7 @@ func TestAssignmentExpressionOld(t *testing.T) {
 					},
 					Tokens: tk[:1],
 				},
-				AssignmentOperator: AssignmentSignPropagatinRightShift,
+				AssignmentOperator: AssignmentSignPropagatingRightShift,
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: &litA,
 					Tokens:                tk[4:5],
@@ -1469,7 +1469,7 @@ func TestAssignmentExpression(t *testing.T) {
 					},
 					Tokens: tk[:1],
 				},
-				AssignmentOperator: AssignmentSignPropagatinRightShift,
+				AssignmentOperator: AssignmentSignPropagatingRightShift,
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: &lit1,
 					Tokens:                tk[4:5],

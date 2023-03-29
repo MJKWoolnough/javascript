@@ -15,7 +15,7 @@ const (
 	AssignmentAdd
 	AssignmentSubtract
 	AssignmentLeftShift
-	AssignmentSignPropagatinRightShift
+	AssignmentSignPropagatingRightShift
 	AssignmentZeroFillRightShift
 	AssignmentBitwiseAND
 	AssignmentBitwiseXOR
@@ -43,7 +43,7 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 	case parser.Token{Type: TokenPunctuator, Data: "<<="}:
 		*ao = AssignmentLeftShift
 	case parser.Token{Type: TokenPunctuator, Data: ">>="}:
-		*ao = AssignmentSignPropagatinRightShift
+		*ao = AssignmentSignPropagatingRightShift
 	case parser.Token{Type: TokenPunctuator, Data: ">>>="}:
 		*ao = AssignmentZeroFillRightShift
 	case parser.Token{Type: TokenPunctuator, Data: "&="}:

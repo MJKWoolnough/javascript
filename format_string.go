@@ -2984,7 +2984,7 @@ func (a AssignmentOperator) String() string {
 		return "-="
 	case AssignmentLeftShift:
 		return "<<="
-	case AssignmentSignPropagatinRightShift:
+	case AssignmentSignPropagatingRightShift:
 		return ">>="
 	case AssignmentZeroFillRightShift:
 		return ">>>="
