@@ -243,6 +243,9 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 		if lhs.NewExpression.News == 0 {
 			h := g.NewGoal()
 			h.AcceptRunWhitespace()
+			if h.SkipTypeArguments() {
+				h.AcceptRunWhitespace()
+			}
 			if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 				lhs.CallExpression = new(CallExpression)
 				if err := lhs.CallExpression.parse(&g, &lhs.NewExpression.MemberExpression, yield, await); err != nil {
@@ -1157,6 +1160,9 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 	}
 	if !skip {
 		j.AcceptRunWhitespace()
+		if j.SkipTypeArguments() {
+			j.AcceptRunWhitespace()
+		}
 		g := j.NewGoal()
 		ce.Arguments = new(Arguments)
 		if err := ce.Arguments.parse(&g, yield, await); err != nil {
