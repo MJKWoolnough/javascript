@@ -767,6 +767,10 @@ func (j *jsParser) SkipParameterProperties() {
 	}
 }
 
+func (j *jsParser) SkipTypeArguments() bool {
+	return j.IsTypescript() && j.ReadTypeArguments()
+}
+
 func (j *jsParser) SkipReadOnly() {
 	if j.IsTypescript() {
 		if tk := j.Peek(); tk == (parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
