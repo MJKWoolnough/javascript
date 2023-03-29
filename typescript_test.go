@@ -1557,7 +1557,7 @@ i <J> () {}
 				Tokens: tk[:25],
 			}
 		}},
-		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) {
+		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) { // 41
 			t.Typescript = true
 			c := WrapConditional(&PrimaryExpression{
 				IdentifierReference: &tk[9],
@@ -1613,7 +1613,7 @@ i <J> () {}
 				Tokens: tk[:27],
 			}
 		}},
-		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) {
+		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) { // 42
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1635,7 +1635,7 @@ i <J> () {}
 		{`type A = {
 	data: any;
 	other: number;
-}`, func(t *test, tk Tokens) {
+}`, func(t *test, tk Tokens) { // 43
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
