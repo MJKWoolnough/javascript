@@ -1741,6 +1741,52 @@ i <J> () {}
 				Tokens: tk[:17],
 			}
 		}},
+		{`const a = new B<C<D, E>>()`, func(t *test, tk Tokens) { // 46
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&NewExpression{
+													MemberExpression: MemberExpression{
+														MemberExpression: &MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[8],
+																Tokens:              tk[8:9],
+															},
+															Tokens: tk[8:9],
+														},
+														Arguments: &Arguments{
+															Tokens: tk[18:20],
+														},
+														Tokens: tk[6:20],
+													},
+													Tokens: tk[6:20],
+												}),
+												Tokens: tk[6:20],
+											},
+											Tokens: tk[2:20],
+										},
+									},
+									Tokens: tk[:20],
+								},
+								Tokens: tk[:20],
+							},
+							Tokens: tk[:20],
+						},
+						Tokens: tk[:20],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
