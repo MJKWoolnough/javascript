@@ -1652,6 +1652,50 @@ i <J> () {}
 				Tokens: tk[:23],
 			}
 		}},
+		{`const a = B<C, D>()`, func(t *test, tk Tokens) { // 44
+			t.Typescript = true
+			ce := WrapConditional(&CallExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[13:15],
+				},
+				Tokens: tk[6:15],
+			})
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: ce,
+												Tokens:                tk[6:15],
+											},
+											Tokens: tk[2:15],
+										},
+									},
+									Tokens: tk[:15],
+								},
+								Tokens: tk[:15],
+							},
+							Tokens: tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
