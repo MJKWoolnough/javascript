@@ -1654,19 +1654,6 @@ i <J> () {}
 		}},
 		{`const a = B<C, D>()`, func(t *test, tk Tokens) { // 44
 			t.Typescript = true
-			ce := WrapConditional(&CallExpression{
-				MemberExpression: &MemberExpression{
-					PrimaryExpression: &PrimaryExpression{
-						IdentifierReference: &tk[6],
-						Tokens:              tk[6:7],
-					},
-					Tokens: tk[6:7],
-				},
-				Arguments: &Arguments{
-					Tokens: tk[13:15],
-				},
-				Tokens: tk[6:15],
-			})
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
 					{
@@ -1678,8 +1665,20 @@ i <J> () {}
 										{
 											BindingIdentifier: &tk[2],
 											Initializer: &AssignmentExpression{
-												ConditionalExpression: ce,
-												Tokens:                tk[6:15],
+												ConditionalExpression: WrapConditional(&CallExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[6],
+															Tokens:              tk[6:7],
+														},
+														Tokens: tk[6:7],
+													},
+													Arguments: &Arguments{
+														Tokens: tk[13:15],
+													},
+													Tokens: tk[6:15],
+												}),
+												Tokens: tk[6:15],
 											},
 											Tokens: tk[2:15],
 										},
@@ -1694,6 +1693,52 @@ i <J> () {}
 					},
 				},
 				Tokens: tk[:15],
+			}
+		}},
+		{`const a = new B<C, D>()`, func(t *test, tk Tokens) { // 45
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&NewExpression{
+													MemberExpression: MemberExpression{
+														MemberExpression: &MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[8],
+																Tokens:              tk[8:9],
+															},
+															Tokens: tk[8:9],
+														},
+														Arguments: &Arguments{
+															Tokens: tk[15:17],
+														},
+														Tokens: tk[6:17],
+													},
+													Tokens: tk[6:17],
+												}),
+												Tokens: tk[6:17],
+											},
+											Tokens: tk[2:17],
+										},
+									},
+									Tokens: tk[:17],
+								},
+								Tokens: tk[:17],
+							},
+							Tokens: tk[:17],
+						},
+						Tokens: tk[:17],
+					},
+				},
+				Tokens: tk[:17],
 			}
 		}},
 	}, func(t *test) (Type, error) {
