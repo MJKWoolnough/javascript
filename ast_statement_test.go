@@ -656,8 +656,8 @@ func TestStatementOld(t *testing.T) {
 		{`for(const i = a; b >= c; ++d) {}`, func(t *test, tk Tokens) { // 18
 			litA := makeConditionLiteral(tk, 8)
 			litB := makeConditionLiteral(tk, 11)
-			litC := makeConditionLiteral(tk, 15)
-			litD := makeConditionLiteral(tk, 19)
+			litC := makeConditionLiteral(tk, 16)
+			litD := makeConditionLiteral(tk, 20)
 			t.Output = StatementListItem{
 				Statement: &Statement{
 					IterationStatementFor: &IterationStatementFor{
@@ -684,14 +684,14 @@ func TestStatementOld(t *testing.T) {
 											RelationalExpression: &litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
 											RelationshipOperator: RelationshipGreaterThanEqual,
 											ShiftExpression:      litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
-											Tokens:               tk[11:16],
+											Tokens:               tk[11:17],
 										}).LogicalORExpression,
-										Tokens: tk[11:16],
+										Tokens: tk[11:17],
 									},
-									Tokens: tk[11:16],
+									Tokens: tk[11:17],
 								},
 							},
-							Tokens: tk[11:16],
+							Tokens: tk[11:17],
 						},
 						Afterthought: &Expression{
 							Expressions: []AssignmentExpression{
@@ -700,26 +700,26 @@ func TestStatementOld(t *testing.T) {
 										LogicalORExpression: wrapConditional(UpdateExpression{
 											UpdateOperator:  UpdatePreIncrement,
 											UnaryExpression: &litD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression,
-											Tokens:          tk[18:20],
+											Tokens:          tk[19:21],
 										}).LogicalORExpression,
-										Tokens: tk[18:20],
+										Tokens: tk[19:21],
 									},
-									Tokens: tk[18:20],
+									Tokens: tk[19:21],
 								},
 							},
-							Tokens: tk[18:20],
+							Tokens: tk[19:21],
 						},
 						Statement: Statement{
 							BlockStatement: &Block{
-								Tokens: tk[22:24],
+								Tokens: tk[23:25],
 							},
-							Tokens: tk[22:24],
+							Tokens: tk[23:25],
 						},
-						Tokens: tk[:24],
+						Tokens: tk[:25],
 					},
-					Tokens: tk[:24],
+					Tokens: tk[:25],
 				},
-				Tokens: tk[:24],
+				Tokens: tk[:25],
 			}
 		}},
 		{`for(a in b) {}`, func(t *test, tk Tokens) { // 19

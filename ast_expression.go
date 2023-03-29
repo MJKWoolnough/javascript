@@ -27,43 +27,51 @@ const (
 )
 
 func (ao *AssignmentOperator) parse(j *jsParser) error {
-	switch j.Peek() {
-	case parser.Token{Type: TokenPunctuator, Data: "="}:
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		*ao = AssignmentAssign
-	case parser.Token{Type: TokenPunctuator, Data: "*="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*="}) {
 		*ao = AssignmentMultiply
-	case parser.Token{Type: TokenDivPunctuator, Data: "/="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenDivPunctuator, Data: "/="}) {
 		*ao = AssignmentDivide
-	case parser.Token{Type: TokenPunctuator, Data: "%="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "%="}) {
 		*ao = AssignmentRemainder
-	case parser.Token{Type: TokenPunctuator, Data: "+="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+="}) {
 		*ao = AssignmentAdd
-	case parser.Token{Type: TokenPunctuator, Data: "-="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "-="}) {
 		*ao = AssignmentSubtract
-	case parser.Token{Type: TokenPunctuator, Data: "<<="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<<="}) {
 		*ao = AssignmentLeftShift
-	case parser.Token{Type: TokenPunctuator, Data: ">>="}:
-		*ao = AssignmentSignPropagatingRightShift
-	case parser.Token{Type: TokenPunctuator, Data: ">>>="}:
-		*ao = AssignmentZeroFillRightShift
-	case parser.Token{Type: TokenPunctuator, Data: "&="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+				*ao = AssignmentSignPropagatingRightShift
+			} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+				*ao = AssignmentZeroFillRightShift
+			} else {
+				return ErrInvalidAssignment
+			}
+		} else {
+			return ErrInvalidAssignment
+		}
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "&="}) {
 		*ao = AssignmentBitwiseAND
-	case parser.Token{Type: TokenPunctuator, Data: "^="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "^="}) {
 		*ao = AssignmentBitwiseXOR
-	case parser.Token{Type: TokenPunctuator, Data: "|="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "|="}) {
 		*ao = AssignmentBitwiseOR
-	case parser.Token{Type: TokenPunctuator, Data: "**="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "**="}) {
 		*ao = AssignmentExponentiation
-	case parser.Token{Type: TokenPunctuator, Data: "&&="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "&&="}) {
 		*ao = AssignmentLogicalAnd
-	case parser.Token{Type: TokenPunctuator, Data: "||="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "||="}) {
 		*ao = AssignmentLogicalOr
-	case parser.Token{Type: TokenPunctuator, Data: "??="}:
+	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??="}) {
 		*ao = AssignmentNullish
-	default:
+	} else {
 		return ErrInvalidAssignment
 	}
-	j.Skip()
+	j.Score(g)
 	return nil
 }
 

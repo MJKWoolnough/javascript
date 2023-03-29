@@ -259,7 +259,6 @@ func TestConditional(t *testing.T) {
 				RelationalExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
 				Tokens:               tk[:5],
 			})
-
 		}},
 		{`1 !== 2 === true`, func(t *test, tk Tokens) { // 21
 			litA := makeConditionLiteral(tk, 0)
@@ -276,7 +275,6 @@ func TestConditional(t *testing.T) {
 				RelationalExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
 				Tokens:               tk[:9],
 			})
-
 		}},
 		{`1 < 2`, func(t *test, tk Tokens) { // 22
 			litA := makeConditionLiteral(tk, 0)
@@ -332,7 +330,6 @@ func TestConditional(t *testing.T) {
 				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 				Tokens:               tk[:5],
 			})
-
 		}},
 		{`1 <= 2`, func(t *test, tk Tokens) { // 26
 			litA := makeConditionLiteral(tk, 0)
@@ -343,16 +340,15 @@ func TestConditional(t *testing.T) {
 				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 				Tokens:               tk[:5],
 			})
-
 		}},
 		{`1 >= 2`, func(t *test, tk Tokens) { // 27
 			litA := makeConditionLiteral(tk, 0)
-			litB := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 5)
 			t.Output = wrapConditional(RelationalExpression{
 				RelationalExpression: &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
 				RelationshipOperator: RelationshipGreaterThanEqual,
 				ShiftExpression:      litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
-				Tokens:               tk[:5],
+				Tokens:               tk[:6],
 			})
 		}},
 		{`1 instanceof 2`, func(t *test, tk Tokens) { // 28
@@ -407,54 +403,54 @@ func TestConditional(t *testing.T) {
 		}},
 		{`1 >> 2`, func(t *test, tk Tokens) { // 33
 			litA := makeConditionLiteral(tk, 0)
-			litB := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 5)
 			t.Output = wrapConditional(ShiftExpression{
 				ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 				ShiftOperator:      ShiftRight,
 				AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-				Tokens:             tk[:5],
+				Tokens:             tk[:6],
 			})
 		}},
 		{`1 >> 2 >> 3`, func(t *test, tk Tokens) { // 34
 			litA := makeConditionLiteral(tk, 0)
-			litB := makeConditionLiteral(tk, 4)
-			litC := makeConditionLiteral(tk, 8)
+			litB := makeConditionLiteral(tk, 5)
+			litC := makeConditionLiteral(tk, 10)
 			t.Output = wrapConditional(ShiftExpression{
 				ShiftExpression: &ShiftExpression{
 					ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 					ShiftOperator:      ShiftRight,
 					AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-					Tokens:             tk[:5],
+					Tokens:             tk[:6],
 				},
 				ShiftOperator:      ShiftRight,
 				AdditiveExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-				Tokens:             tk[:9],
+				Tokens:             tk[:11],
 			})
 		}},
 		{`1 >>> 2`, func(t *test, tk Tokens) { // 35
 			litA := makeConditionLiteral(tk, 0)
-			litB := makeConditionLiteral(tk, 4)
+			litB := makeConditionLiteral(tk, 6)
 			t.Output = wrapConditional(ShiftExpression{
 				ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 				ShiftOperator:      ShiftUnsignedRight,
 				AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-				Tokens:             tk[:5],
+				Tokens:             tk[:7],
 			})
 		}},
 		{`1 >>> 2 >>> 3`, func(t *test, tk Tokens) { // 36
 			litA := makeConditionLiteral(tk, 0)
-			litB := makeConditionLiteral(tk, 4)
-			litC := makeConditionLiteral(tk, 8)
+			litB := makeConditionLiteral(tk, 6)
+			litC := makeConditionLiteral(tk, 12)
 			t.Output = wrapConditional(ShiftExpression{
 				ShiftExpression: &ShiftExpression{
 					ShiftExpression:    &litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
 					ShiftOperator:      ShiftUnsignedRight,
 					AdditiveExpression: litB.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-					Tokens:             tk[:5],
+					Tokens:             tk[:7],
 				},
 				ShiftOperator:      ShiftUnsignedRight,
 				AdditiveExpression: litC.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
-				Tokens:             tk[:9],
+				Tokens:             tk[:13],
 			})
 		}},
 		{`1 + 2`, func(t *test, tk Tokens) { // 37
@@ -779,7 +775,6 @@ func TestConditional(t *testing.T) {
 				},
 				Tokens: tk[:3],
 			})
-
 		}},
 		{`true ? 1 : 2`, func(t *test, tk Tokens) { // 68
 			litA := makeConditionLiteral(tk, 0)

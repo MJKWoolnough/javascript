@@ -372,26 +372,28 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		var ro RelationshipOperator
-		switch g.Peek() {
-		case parser.Token{Type: TokenPunctuator, Data: "<"}:
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<"}) {
 			ro = RelationshipLessThan
-		case parser.Token{Type: TokenPunctuator, Data: ">"}:
-			ro = RelationshipGreaterThan
-		case parser.Token{Type: TokenPunctuator, Data: "<="}:
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+				ro = RelationshipGreaterThanEqual
+			} else if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: ">"}) {
+				return nil
+			} else {
+				ro = RelationshipGreaterThan
+			}
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<="}) {
 			ro = RelationshipLessThanEqual
-		case parser.Token{Type: TokenPunctuator, Data: ">="}:
-			ro = RelationshipGreaterThanEqual
-		case parser.Token{Type: TokenKeyword, Data: "instanceof"}:
+		} else if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "instanceof"}) {
 			ro = RelationshipInstanceOf
-		case parser.Token{Type: TokenKeyword, Data: "in"}:
+		} else if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
 			if !in {
 				return nil
 			}
 			ro = RelationshipIn
-		default:
+		} else {
 			return nil
 		}
-		g.Skip()
 		g.AcceptRunWhitespace()
 		nre := new(RelationalExpression)
 		*nre = *re
@@ -438,17 +440,20 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 		var so ShiftOperator
-		switch g.Peek() {
-		case parser.Token{Type: TokenPunctuator, Data: "<<"}:
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<<"}) {
 			so = ShiftLeft
-		case parser.Token{Type: TokenPunctuator, Data: ">>"}:
-			so = ShiftRight
-		case parser.Token{Type: TokenPunctuator, Data: ">>>"}:
-			so = ShiftUnsignedRight
-		default:
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+				so = ShiftUnsignedRight
+			} else {
+				so = ShiftRight
+			}
+			if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "="}) {
+				return nil
+			}
+		} else {
 			return nil
 		}
-		g.Skip()
 		g.AcceptRunWhitespace()
 		nse := new(ShiftExpression)
 		*nse = *se

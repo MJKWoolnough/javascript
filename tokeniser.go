@@ -251,7 +251,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			} else {
 				t.Accept(".")
 			}
-		case ';', ',', ':', '~':
+		case ';', ',', ':', '~', '>':
 		case ')', ']':
 			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
 				t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
@@ -282,14 +282,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					Data: t.Get(),
 				}, j.inputElement
 			}
-		case '<', '>', '*':
-			if !t.Accept("=") { //>=, <=, *=
-				if t.Peek() == c { // >>, <<, **
+		case '<', '*':
+			if !t.Accept("=") { // <=, *=
+				if t.Peek() == c { // <<, **
 					t.Except("")
-					if !t.Accept("=") && c == '>' { // >>=, <<=, **=
-						t.Accept(">") // >>>
-						t.Accept("=") /// >>>=
-					}
+					t.Accept("=") // <<=, **=
 				}
 			}
 		case '=':
