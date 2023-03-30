@@ -784,7 +784,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			}
 			j.Score(g)
 			j.AcceptRunWhitespaceNoNewLine()
-			j.SkipColonType()
+			j.SkipReturnType()
 		} else {
 			g := j.NewGoal()
 			if af.BindingIdentifier = g.parseIdentifier(yield, true); af.BindingIdentifier == nil {
@@ -799,7 +799,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			return z.Error("ArrowFunction", err)
 		}
 		j.AcceptRunWhitespaceNoNewLine()
-		j.SkipColonType()
+		j.SkipReturnType()
 	} else {
 		af.BindingIdentifier = pe.IdentifierReference
 	}
