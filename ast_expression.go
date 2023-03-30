@@ -843,6 +843,11 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		if err := me.PrimaryExpression.parse(&g, yield, await); err != nil {
 			return j.Error("MemberExpression", err)
 		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespaceNoNewLine()
+		if h.SkipForce() {
+			g.Score(h)
+		}
 	}
 	j.Score(g)
 	for {
@@ -889,6 +894,11 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				}
 			default:
 				return nil
+			}
+			i := h.NewGoal()
+			i.AcceptRunWhitespaceNoNewLine()
+			if i.SkipForce() {
+				h.Score(i)
 			}
 		default:
 			return nil
@@ -1179,6 +1189,11 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		if err := ce.Arguments.parse(&g, yield, await); err != nil {
 			return j.Error("CallExpression", err)
 		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespaceNoNewLine()
+		if h.SkipForce() {
+			g.Score(h)
+		}
 		j.Score(g)
 	}
 	for {
@@ -1231,6 +1246,11 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				}
 			default:
 				return nil
+			}
+			i := h.NewGoal()
+			i.AcceptRunWhitespaceNoNewLine()
+			if i.SkipForce() {
+				h.Score(i)
 			}
 		default:
 			return nil
