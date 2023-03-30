@@ -1832,6 +1832,440 @@ i <J> () {}
 				Tokens: tk[:21],
 			}
 		}},
+		{`a!`, func(t *test, tk Tokens) { // 48
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[0],
+													Tokens:              tk[:1],
+												},
+												Tokens: tk[:2],
+											}),
+											Tokens: tk[:2],
+										},
+									},
+									Tokens: tk[:2],
+								},
+								Tokens: tk[:2],
+							},
+							Tokens: tk[:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a!.b`, func(t *test, tk Tokens) { // 49
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&MemberExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[0:1],
+													},
+													Tokens: tk[0:2],
+												},
+												IdentifierName: &tk[3],
+												Tokens:         tk[:4],
+											}),
+											Tokens: tk[:4],
+										},
+									},
+									Tokens: tk[:4],
+								},
+								Tokens: tk[:4],
+							},
+							Tokens: tk[:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a!.b!`, func(t *test, tk Tokens) { // 50
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&MemberExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[0:1],
+													},
+													Tokens: tk[0:2],
+												},
+												IdentifierName: &tk[3],
+												Tokens:         tk[:5],
+											}),
+											Tokens: tk[:5],
+										},
+									},
+									Tokens: tk[:5],
+								},
+								Tokens: tk[:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a[0]!`, func(t *test, tk Tokens) { // 51
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&MemberExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Expression: &Expression{
+													Expressions: []AssignmentExpression{
+														{
+															ConditionalExpression: WrapConditional(&PrimaryExpression{
+																Literal: &tk[2],
+																Tokens:  tk[2:3],
+															}),
+															Tokens: tk[2:3],
+														},
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[:5],
+											}),
+											Tokens: tk[:5],
+										},
+									},
+									Tokens: tk[:5],
+								},
+								Tokens: tk[:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a[0]!.b`, func(t *test, tk Tokens) { // 52
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&MemberExpression{
+												MemberExpression: &MemberExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[0],
+															Tokens:              tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Expression: &Expression{
+														Expressions: []AssignmentExpression{
+															{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	Literal: &tk[2],
+																	Tokens:  tk[2:3],
+																}),
+																Tokens: tk[2:3],
+															},
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[:5],
+												},
+												IdentifierName: &tk[6],
+												Tokens:         tk[:7],
+											}),
+											Tokens: tk[:7],
+										},
+									},
+									Tokens: tk[:7],
+								},
+								Tokens: tk[:7],
+							},
+							Tokens: tk[:7],
+						},
+						Tokens: tk[:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a!()`, func(t *test, tk Tokens) { // 53
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[:1],
+													},
+													Tokens: tk[:2],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[2:4],
+												},
+												Tokens: tk[:4],
+											}),
+											Tokens: tk[:4],
+										},
+									},
+									Tokens: tk[:4],
+								},
+								Tokens: tk[:4],
+							},
+							Tokens: tk[:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a!().b`, func(t *test, tk Tokens) { // 54
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												CallExpression: &CallExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[0],
+															Tokens:              tk[:1],
+														},
+														Tokens: tk[:2],
+													},
+													Arguments: &Arguments{
+														Tokens: tk[2:4],
+													},
+													Tokens: tk[:4],
+												},
+												IdentifierName: &tk[5],
+												Tokens:         tk[:6],
+											}),
+											Tokens: tk[:6],
+										},
+									},
+									Tokens: tk[:6],
+								},
+								Tokens: tk[:6],
+							},
+							Tokens: tk[:6],
+						},
+						Tokens: tk[:6],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`a!.b()`, func(t *test, tk Tokens) { // 55
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												MemberExpression: &MemberExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[0],
+															Tokens:              tk[:1],
+														},
+														Tokens: tk[:2],
+													},
+													IdentifierName: &tk[3],
+													Tokens:         tk[:4],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[4:6],
+												},
+												Tokens: tk[:6],
+											}),
+											Tokens: tk[:6],
+										},
+									},
+									Tokens: tk[:6],
+								},
+								Tokens: tk[:6],
+							},
+							Tokens: tk[:6],
+						},
+						Tokens: tk[:6],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`a[0]!()`, func(t *test, tk Tokens) { // 56
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												MemberExpression: &MemberExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[0],
+															Tokens:              tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Expression: &Expression{
+														Expressions: []AssignmentExpression{
+															{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	Literal: &tk[2],
+																	Tokens:  tk[2:3],
+																}),
+																Tokens: tk[2:3],
+															},
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[:5],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[5:7],
+												},
+												Tokens: tk[:7],
+											}),
+											Tokens: tk[:7],
+										},
+									},
+									Tokens: tk[:7],
+								},
+								Tokens: tk[:7],
+							},
+							Tokens: tk[:7],
+						},
+						Tokens: tk[:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a[0]!().b`, func(t *test, tk Tokens) { // 57
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												CallExpression: &CallExpression{
+													MemberExpression: &MemberExpression{
+														MemberExpression: &MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[0],
+																Tokens:              tk[:1],
+															},
+															Tokens: tk[:1],
+														},
+														Expression: &Expression{
+															Expressions: []AssignmentExpression{
+																{
+																	ConditionalExpression: WrapConditional(&PrimaryExpression{
+																		Literal: &tk[2],
+																		Tokens:  tk[2:3],
+																	}),
+																	Tokens: tk[2:3],
+																},
+															},
+															Tokens: tk[2:3],
+														},
+														Tokens: tk[:5],
+													},
+													Arguments: &Arguments{
+														Tokens: tk[5:7],
+													},
+													Tokens: tk[:7],
+												},
+												IdentifierName: &tk[8],
+												Tokens:         tk[:9],
+											}),
+											Tokens: tk[:9],
+										},
+									},
+									Tokens: tk[:9],
+								},
+								Tokens: tk[:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
