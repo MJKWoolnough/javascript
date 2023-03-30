@@ -315,7 +315,73 @@ func (j *jsParser) ReadObjectOrMappedType() bool {
 }
 
 func (j *jsParser) ReadMappedType() bool {
-	return false
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) && (g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "-"})) {
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
+			return false
+		}
+		g.AcceptRunWhitespace()
+	}
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		return false
+	}
+	if j.parseIdentifier(false, false) == nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "in"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+		g.AcceptRunWhitespace()
+		if !g.ReadType() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+	}
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "-"}) {
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+			return false
+		}
+		g.AcceptRunWhitespace()
+	}
+	if !g.ReadTypeAnnotation() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.Accept(TokenRightBracePunctuator) {
+		for {
+			if !g.ReadTypeMember() {
+				return false
+			}
+			g.AcceptRunWhitespace()
+			sep := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","})
+			g.AcceptRunWhitespace()
+			if g.Accept(TokenRightBracePunctuator) {
+				break
+			}
+			if !sep {
+				return false
+			}
+		}
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadObjectType() bool {
