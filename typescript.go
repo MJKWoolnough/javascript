@@ -204,7 +204,7 @@ func (j *jsParser) ReadPrimaryType() bool {
 		(*jsParser).ReadTemplateType,
 		(*jsParser).ReadParenthesizedType,
 		(*jsParser).ReadPredefinedType,
-		(*jsParser).ReadObjectType,
+		(*jsParser).ReadObjectOrMappedType,
 		(*jsParser).ReadTupleType,
 		(*jsParser).ReadThisType,
 		(*jsParser).ReadTypeQuery,
@@ -288,6 +288,33 @@ func (j *jsParser) ReadPredefinedType() bool {
 			return true
 		}
 	}
+	return false
+}
+
+func (j *jsParser) ReadObjectOrMappedType() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	h := g.NewGoal()
+	if (h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"}) || h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"})) && h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
+		return j.ReadMappedType()
+	}
+	h = g.NewGoal()
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		h.AcceptRunWhitespace()
+		if h.parseIdentifier(false, false) != nil {
+			h.AcceptRunWhitespace()
+			if h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+				return j.ReadMappedType()
+			}
+		}
+	}
+	return j.ReadObjectType()
+}
+
+func (j *jsParser) ReadMappedType() bool {
 	return false
 }
 
