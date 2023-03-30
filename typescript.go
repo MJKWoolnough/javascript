@@ -361,6 +361,27 @@ func (j *jsParser) ReadTypeAnnotation() bool {
 	return true
 }
 
+func (j *jsParser) ReadReturnType() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	h := g.NewGoal()
+	if h.parseIdentifier(false, false) != nil {
+		h.AcceptRunWhitespaceNoNewLine()
+		if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "is"}) {
+			h.AcceptRunWhitespace()
+			g.Score(h)
+		}
+	}
+	if !g.ReadType() {
+		return false
+	}
+	j.Score(g)
+	return true
+}
+
 func (j *jsParser) ReadCallSignature() bool {
 	g := j.NewGoal()
 	g.ReadTypeParameters()
@@ -369,7 +390,7 @@ func (j *jsParser) ReadCallSignature() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	g.ReadTypeAnnotation()
+	g.ReadReturnType()
 	j.Score(g)
 	return true
 }
@@ -657,6 +678,17 @@ func (j *jsParser) SkipColonType() bool {
 	return false
 }
 
+func (j *jsParser) SkipReturnType() bool {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		if g.ReadReturnType() {
+			j.Score(g)
+			return true
+		}
+	}
+	return false
+}
+
 func (j *jsParser) SkipOptionalColonType() bool {
 	if j.IsTypescript() {
 		g := j.NewGoal()
@@ -917,7 +949,7 @@ func (j *jsParser) ReadFunctionDeclaration() bool {
 	}
 	h := g.NewGoal()
 	h.AcceptRunWhitespace()
-	if h.ReadTypeAnnotation() {
+	if h.ReadReturnType() {
 		g.Score(h)
 	}
 	j.Score(g)
