@@ -931,6 +931,10 @@ func (j *jsParser) SkipDeclare() bool {
 	return false
 }
 
+func (j *jsParser) SkipForce() bool {
+	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"})
+}
+
 func (j *jsParser) ReadFunctionDeclaration() bool {
 	g := j.NewGoal()
 	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
