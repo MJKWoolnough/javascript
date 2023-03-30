@@ -1787,6 +1787,51 @@ i <J> () {}
 				Tokens: tk[:20],
 			}
 		}},
+		{`const a = (b): b is C => {}`, func(t *test, tk Tokens) { // 47
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ArrowFunction: &ArrowFunction{
+													FormalParameters: &FormalParameters{
+														FormalParameterList: []BindingElement{
+															{
+																SingleNameBinding: &tk[7],
+																Tokens:            tk[7:8],
+															},
+														},
+														Tokens: tk[6:9],
+													},
+													FunctionBody: &Block{
+														Tokens: tk[19:21],
+													},
+													Tokens: tk[6:21],
+												},
+												Tokens: tk[6:21],
+											},
+											Tokens: tk[2:21],
+										},
+									},
+									Tokens: tk[:21],
+								},
+								Tokens: tk[:21],
+							},
+							Tokens: tk[:21],
+						},
+						Tokens: tk[:21],
+					},
+				},
+				Tokens: tk[:21],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
