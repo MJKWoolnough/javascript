@@ -637,7 +637,36 @@ func (j *jsParser) ReadIndexSignature() bool {
 }
 
 func (j *jsParser) ReadParameter() bool {
-	return false
+	g := j.NewGoal()
+	var seenConst, seenStatic bool
+	for {
+		if !seenConst && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "const"}) {
+			seenConst = true
+		} else if !seenStatic && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"}) {
+			seenStatic = true
+		} else {
+			break
+		}
+		g.AcceptRunWhitespace()
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
+		j.Score(g)
+		return true
+	}
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+		g.AcceptRunWhitespace()
+	}
+	if g.parseIdentifier(false, false) == nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.AcceptRunWhitespace()
+	}
+	g.ReadTypeAnnotation()
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadMethodSignature() bool {
