@@ -453,7 +453,24 @@ func (j *jsParser) ReadAccessorDeclaration() bool {
 }
 
 func (j *jsParser) ReadPropertyName() bool {
-	return false
+	if j.Accept(TokenStringLiteral, TokenNumericLiteral, TokenPrivateIdentifier) || j.parseIdentifier(false, false) == nil {
+		return true
+	}
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	var e Expression
+	if e.parse(&g, false, false, false) != nil {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		return false
+	}
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadPropertySignature() bool {
