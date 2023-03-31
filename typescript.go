@@ -122,11 +122,7 @@ func (j *jsParser) ReadType() bool {
 		if !h.ReadType() {
 			return false
 		}
-		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
-			return false
-		}
-		h.AcceptRunWhitespace()
-		if !h.ReadType() {
+		if !h.ReadTypeAnnotation() {
 			return false
 		}
 	}
