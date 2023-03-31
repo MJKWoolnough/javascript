@@ -55,6 +55,13 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 	switch t := g.Peek(); t {
 	case parser.Token{Type: TokenIdentifier, Data: "let"}, parser.Token{Type: TokenKeyword, Data: "const"}:
 		declaration = true
+	case parser.Token{Type: TokenIdentifier, Data: "abstract"}:
+		g.Skip()
+		g.AcceptRunWhitespace()
+		if g.Peek() != (parser.Token{Type: TokenKeyword, Data: "class"}) {
+			break
+		}
+		fallthrough
 	case parser.Token{Type: TokenKeyword, Data: "class"}:
 		g.Skip()
 		g.AcceptRunWhitespace()
