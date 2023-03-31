@@ -57,7 +57,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 		declaration = true
 	case parser.Token{Type: TokenIdentifier, Data: "abstract"}:
 		g.Skip()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoNewLine()
 		if g.Peek() != (parser.Token{Type: TokenKeyword, Data: "class"}) {
 			break
 		}

@@ -79,7 +79,7 @@ func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	h := g.NewGoal()
 	if h.SkipAbstract() {
-		h.AcceptRunWhitespace()
+		h.AcceptRunWhitespaceNoNewLine()
 	}
 	if tk := h.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "class"}) {
 		d.ClassDeclaration = new(ClassDeclaration)
