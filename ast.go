@@ -77,11 +77,16 @@ type Declaration struct {
 
 func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	if tk := g.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+	h := g.NewGoal()
+	if h.SkipAbstract() {
+		h.AcceptRunWhitespace()
+	}
+	if tk := h.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "class"}) {
 		d.ClassDeclaration = new(ClassDeclaration)
-		if err := d.ClassDeclaration.parse(&g, yield, await, false); err != nil {
+		if err := d.ClassDeclaration.parse(&h, yield, await, false); err != nil {
 			return j.Error("Declaration", err)
 		}
+		g.Score(h)
 	} else if tk == (parser.Token{Type: TokenKeyword, Data: "const"}) || tk == (parser.Token{Type: TokenIdentifier, Data: "let"}) {
 		d.LexicalDeclaration = new(LexicalDeclaration)
 		if err := d.LexicalDeclaration.parse(&g, true, yield, await); err != nil {
