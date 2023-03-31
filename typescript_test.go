@@ -2266,7 +2266,7 @@ i <J> () {}
 				Tokens: tk[:9],
 			}
 		}},
-		{`type A = {[B]: any}`, func(t *test, tk Tokens) {
+		{`type A = {[B]: any}`, func(t *test, tk Tokens) { // 58
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -2281,6 +2281,39 @@ i <J> () {}
 					},
 				},
 				Tokens: tk[:14],
+			}
+		}},
+		{`class A {#B: string}`, func(t *test, tk Tokens) { // 59
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PrivateIdentifier: &tk[5],
+													Tokens:            tk[5:6],
+												},
+												Tokens: tk[5:9],
+											},
+											Tokens: tk[5:9],
+										},
+									},
+									Tokens: tk[:10],
+								},
+								Tokens: tk[:10],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
 			}
 		}},
 	}, func(t *test) (Type, error) {
