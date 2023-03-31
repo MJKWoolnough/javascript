@@ -1100,6 +1100,10 @@ func (j *jsParser) SkipForce() bool {
 	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"})
 }
 
+func (j *jsParser) SkipAbstract() bool {
+	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "abstract"})
+}
+
 func (j *jsParser) ReadFunctionDeclaration() bool {
 	g := j.NewGoal()
 	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
