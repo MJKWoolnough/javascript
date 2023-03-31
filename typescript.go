@@ -413,9 +413,10 @@ func (j *jsParser) ReadObjectType() bool {
 func (j *jsParser) ReadTypeMember() bool {
 	for _, fn := range [...]func(*jsParser) bool{
 		(*jsParser).ReadCallSignature,
-		(*jsParser).ReadMethodSignature,
 		(*jsParser).ReadConstructSignature,
+		(*jsParser).ReadAccessorDeclaration,
 		(*jsParser).ReadIndexSignature,
+		(*jsParser).ReadMethodSignature,
 		(*jsParser).ReadPropertySignature,
 	} {
 		g := j.NewGoal()
@@ -424,6 +425,34 @@ func (j *jsParser) ReadTypeMember() bool {
 			return true
 		}
 	}
+	return false
+}
+
+func (j *jsParser) ReadAccessorDeclaration() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) && !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadPropertyName() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.ReadTypeParameters() {
+		g.AcceptRunWhitespace()
+	}
+	if !g.ReadParameterList() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadReturnType() {
+		return false
+	}
+	j.Score(g)
+	return true
+}
+
+func (j *jsParser) ReadPropertyName() bool {
 	return false
 }
 
