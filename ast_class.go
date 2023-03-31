@@ -209,6 +209,11 @@ func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 	}
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
+	if g.SkipOptionalColonType() {
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+	}
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		g.AcceptRunWhitespace()
 		fd.Initializer = new(AssignmentExpression)
