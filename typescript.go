@@ -615,19 +615,16 @@ func (j *jsParser) ReadIndexSignature() bool {
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if g.parseIdentifier(false, false) == nil {
-		return false
+	for {
+		g.AcceptRunWhitespace()
+		if !g.ReadParameter() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			break
+		}
 	}
-	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
-		return false
-	}
-	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "string"}) && !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "number"}) {
-		return false
-	}
-	g.AcceptRunWhitespace()
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		return false
 	}
@@ -637,6 +634,10 @@ func (j *jsParser) ReadIndexSignature() bool {
 	}
 	j.Score(g)
 	return true
+}
+
+func (j *jsParser) ReadParameter() bool {
+	return false
 }
 
 func (j *jsParser) ReadMethodSignature() bool {
