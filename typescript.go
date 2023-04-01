@@ -951,7 +951,7 @@ func (j *jsParser) SkipInterface() bool {
 func (j *jsParser) ParseEnum() {
 }
 
-func (j *jsParser) SkipParameterProperties() {
+func (j *jsParser) SkipParameterProperties() bool {
 	if j.IsTypescript() {
 		if tk := j.Peek(); tk == (parser.Token{Type: TokenIdentifier, Data: "private"}) || tk == (parser.Token{Type: TokenIdentifier, Data: "protected"}) || tk == (parser.Token{Type: TokenIdentifier, Data: "public"}) {
 			g := j.NewGoal()
@@ -959,9 +959,11 @@ func (j *jsParser) SkipParameterProperties() {
 			g.AcceptRunWhitespaceNoNewLine()
 			if tk := g.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
 				j.Score(g)
+				return true
 			}
 		}
 	}
+	return false
 }
 
 func (j *jsParser) SkipTypeArguments() bool {
@@ -1102,6 +1104,20 @@ func (j *jsParser) SkipForce() bool {
 
 func (j *jsParser) SkipAbstract() bool {
 	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "abstract"})
+}
+
+func (j *jsParser) SkipAbstractField() bool {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "abstract"}) {
+			g.AcceptRunWhitespace()
+			if g.ReadTypeMember() {
+				j.Score(g)
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (j *jsParser) ReadFunctionDeclaration() bool {
