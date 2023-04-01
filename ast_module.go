@@ -327,7 +327,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		case "abstract":
 			h := g.NewGoal()
 			if h.SkipAbstract() {
-				h.AcceptRunWhitespace()
+				h.AcceptRunWhitespaceNoNewLine()
 			}
 			if h.Peek() == (parser.Token{Type: TokenKeyword, Data: "class"}) {
 				ed.DefaultClass = new(ClassDeclaration)
