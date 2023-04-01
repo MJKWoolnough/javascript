@@ -2355,6 +2355,42 @@ i <J> () {}
 				Tokens: tk[:12],
 			}
 		}},
+		{`const a = abstract class {}`, func(t *test, tk Tokens) { // 62
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&PrimaryExpression{
+													ClassExpression: &ClassDeclaration{
+														Tokens: tk[6:12],
+													},
+													Tokens: tk[6:12],
+												}),
+												Tokens: tk[6:12],
+											},
+											Tokens: tk[2:12],
+										},
+									},
+									Tokens: tk[:12],
+								},
+								Tokens: tk[:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
