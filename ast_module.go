@@ -310,9 +310,8 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	j.AcceptRunWhitespace()
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
 		j.AcceptRunWhitespace()
-		tk := j.Peek()
 		g := j.NewGoal()
-		switch tk.Data {
+		switch g.Peek().Data {
 		case "async", "function":
 			ed.DefaultFunction = new(FunctionDeclaration)
 			if err := ed.DefaultFunction.parse(&g, false, false, true); err != nil {
@@ -325,6 +324,21 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 				return j.Error("ExportDeclaration", err)
 			}
 			j.Score(g)
+		case "abstract":
+			h := g.NewGoal()
+			if h.SkipAbstract() {
+				h.AcceptRunWhitespace()
+			}
+			if h.Peek() == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+				ed.DefaultClass = new(ClassDeclaration)
+				if err := ed.DefaultClass.parse(&h, false, false, true); err != nil {
+					return j.Error("ExportDeclaration", err)
+				}
+				g.Score(h)
+				j.Score(g)
+				break
+			}
+			fallthrough
 		default:
 			ed.DefaultAssignmentExpression = new(AssignmentExpression)
 			if err := ed.DefaultAssignmentExpression.parse(&g, true, false, false); err != nil {
