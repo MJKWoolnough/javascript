@@ -869,33 +869,35 @@ func (j *jsParser) SkipOptionalColonType() bool {
 }
 
 func (j *jsParser) SkipType() bool {
-	if j.IsTypescript() {
-		g := j.NewGoal()
-		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
-			g.AcceptRunWhitespace()
-			if g.parseIdentifier(false, false) == nil {
-				return false
-			}
-			g.AcceptRunWhitespace()
-			if g.ReadTypeParameters() {
-				g.AcceptRunWhitespace()
-			}
-			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-				return false
-			}
-			g.AcceptRunWhitespace()
-			// TODO: instrinsic check?
-			if !g.ReadType() {
-				return false
-			}
-			h := g.NewGoal()
-			h.AcceptRunWhitespace()
-			if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
-				g.Score(h)
-			}
-			j.Score(g)
-			return true
+	return j.IsTypescript() && j.ReadTypeDeclaration()
+}
+
+func (j *jsParser) ReadTypeDeclaration() bool {
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+		g.AcceptRunWhitespace()
+		if g.parseIdentifier(false, false) == nil {
+			return false
 		}
+		g.AcceptRunWhitespace()
+		if g.ReadTypeParameters() {
+			g.AcceptRunWhitespace()
+		}
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		// TODO: instrinsic check?
+		if !g.ReadType() {
+			return false
+		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			g.Score(h)
+		}
+		j.Score(g)
+		return true
 	}
 	return false
 }
@@ -1006,6 +1008,41 @@ func (j *jsParser) SkipImportType() bool {
 						j.Score(g)
 						return true
 					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (j *jsParser) SkipExportType() bool {
+	if j.IsTypescript() && j.Peek() == (parser.Token{Type: TokenKeyword, Data: "export"}) {
+		g := j.NewGoal()
+		g.Skip()
+		g.AcceptRunWhitespace()
+		if g.ReadTypeDeclaration() {
+			j.Score(g)
+			return true
+		} else if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+			if tk := g.Peek(); tk != (parser.Token{Type: TokenPunctuator, Data: ","}) && tk != (parser.Token{Type: TokenIdentifier, Data: "from"}) {
+				var ec ExportClause
+				err := ec.parse(&g)
+				if err == nil {
+					h := g.NewGoal()
+					h.AcceptRunWhitespace()
+					if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "from"}) {
+						h.AcceptRunWhitespace()
+						if h.Accept(TokenStringLiteral) {
+							g.Score(h)
+						}
+					}
+					h = g.NewGoal()
+					h.AcceptRunWhitespace()
+					if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+						g.Score(h)
+					}
+					j.Score(g)
+					return true
 				}
 			}
 		}
