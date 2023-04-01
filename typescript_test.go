@@ -2391,6 +2391,32 @@ i <J> () {}
 				Tokens: tk[:12],
 			}
 		}},
+		{`abstract class A {
+abstract a(): string;
+abstract b;
+abstract c: number;
+public abstract d;
+}`, func(t *test, tk Tokens) {
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[4],
+									Tokens:            tk[:39],
+								},
+								Tokens: tk[:39],
+							},
+							Tokens: tk[:39],
+						},
+						Tokens: tk[:39],
+					},
+				},
+				Tokens: tk[:39],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
