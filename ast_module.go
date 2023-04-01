@@ -53,6 +53,15 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 	g := j.NewGoal()
 	switch g.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "export"}:
+		if g.SkipExportType() {
+			ml.StatementListItem = &StatementListItem{
+				Statement: &Statement{
+					Tokens: g.ToTokens(),
+				},
+				Tokens: g.ToTokens(),
+			}
+			break
+		}
 		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleItem", err)
