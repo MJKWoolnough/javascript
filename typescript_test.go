@@ -2337,6 +2337,24 @@ i <J> () {}
 				Tokens: tk[:8],
 			}
 		}},
+		{`export default abstract class A {}`, func(t *test, tk Tokens) { // 61
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultClass: &ClassDeclaration{
+								BindingIdentifier: &tk[8],
+								Tokens:            tk[4:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
