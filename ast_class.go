@@ -58,6 +58,13 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 			break
 		}
 		g := j.NewGoal()
+		if g.SkipParameterProperties() {
+			g.AcceptRunWhitespace()
+		}
+		if g.SkipAbstractField() {
+			j.Score(g)
+			continue
+		}
 		md := len(cd.ClassBody)
 		cd.ClassBody = append(cd.ClassBody, ClassElement{})
 		if err := cd.ClassBody[md].parse(&g, yield, await); err != nil {
@@ -85,7 +92,6 @@ type ClassElement struct {
 }
 
 func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
-	j.SkipParameterProperties()
 	if j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "static"}) {
 		g := j.NewGoal()
 		g.Skip()
