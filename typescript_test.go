@@ -2470,6 +2470,32 @@ public abstract d;
 				Tokens: tk[:11],
 			}
 		}},
+		{`export let a: number;`, func(t *test, tk Tokens) { // 66
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[4],
+											Tokens:            tk[4:8],
+										},
+									},
+									Tokens: tk[2:9],
+								},
+								Tokens: tk[2:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
