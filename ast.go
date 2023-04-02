@@ -184,6 +184,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
 	if g.SkipColonType() {
+		j.Score(g)
+		g = j.NewGoal()
 		g.AcceptRunWhitespace()
 	}
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
