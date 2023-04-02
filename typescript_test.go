@@ -2396,7 +2396,7 @@ abstract a(): string;
 abstract b;
 abstract c: number;
 public abstract d;
-}`, func(t *test, tk Tokens) {
+}`, func(t *test, tk Tokens) { // 63
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -2415,6 +2415,23 @@ public abstract d;
 					},
 				},
 				Tokens: tk[:39],
+			}
+		}},
+		{`export type A = B`, func(t *test, tk Tokens) { // 64
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
 			}
 		}},
 	}, func(t *test) (Type, error) {
