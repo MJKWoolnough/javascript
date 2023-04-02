@@ -2523,6 +2523,55 @@ public abstract d;
 				Tokens: tk[:19],
 			}
 		}},
+		{`const a = (b?) => true`, func(t *test, tk Tokens) { // 68
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ArrowFunction: &ArrowFunction{
+													FormalParameters: &FormalParameters{
+														FormalParameterList: []BindingElement{
+															{
+																SingleNameBinding: &tk[7],
+																Tokens:            tk[7:8],
+															},
+														},
+														Tokens: tk[6:10],
+													},
+													AssignmentExpression: &AssignmentExpression{
+														ConditionalExpression: WrapConditional(&PrimaryExpression{
+															Literal: &tk[13],
+															Tokens:  tk[13:14],
+														}),
+														Tokens: tk[13:14],
+													},
+													Tokens: tk[6:14],
+												},
+												Tokens: tk[6:14],
+											},
+											Tokens: tk[2:14],
+										},
+									},
+									Tokens: tk[:14],
+								},
+								Tokens: tk[:14],
+							},
+							Tokens: tk[:14],
+						},
+						Tokens: tk[:14],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
