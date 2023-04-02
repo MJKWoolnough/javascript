@@ -695,17 +695,23 @@ func (j *jsParser) ReadTupleType() bool {
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if !g.ReadType() {
-		return false
-	}
-	g.AcceptRunWhitespace()
-	for g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+	for {
 		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+			g.AcceptRunWhitespace()
+			if !g.ReadType() {
+				return false
+			}
+			g.AcceptRunWhitespace()
+			break
+		}
 		if !g.ReadType() {
 			return false
 		}
 		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			break
+		}
 	}
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		return false
