@@ -171,7 +171,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 				h := g.NewGoal()
 				if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
 					h.AcceptRunWhitespaceNoNewLine()
-					if h.SkipReturnType() {
+					if lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil && h.SkipReturnType() {
 						h.AcceptRunWhitespaceNoNewLine()
 					}
 					if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "=>"}) {
