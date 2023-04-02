@@ -2572,6 +2572,55 @@ public abstract d;
 				Tokens: tk[:14],
 			}
 		}},
+		{`const a = (b: any): b is [string, ...number[]] => false`, func(t *test, tk Tokens) { // 69
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ArrowFunction: &ArrowFunction{
+													FormalParameters: &FormalParameters{
+														FormalParameterList: []BindingElement{
+															{
+																SingleNameBinding: &tk[7],
+																Tokens:            tk[7:8],
+															},
+														},
+														Tokens: tk[6:12],
+													},
+													AssignmentExpression: &AssignmentExpression{
+														ConditionalExpression: WrapConditional(&PrimaryExpression{
+															Literal: &tk[30],
+															Tokens:  tk[30:31],
+														}),
+														Tokens: tk[30:31],
+													},
+													Tokens: tk[6:31],
+												},
+												Tokens: tk[6:31],
+											},
+											Tokens: tk[2:31],
+										},
+									},
+									Tokens: tk[:31],
+								},
+								Tokens: tk[:31],
+							},
+							Tokens: tk[:31],
+						},
+						Tokens: tk[:31],
+					},
+				},
+				Tokens: tk[:31],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
