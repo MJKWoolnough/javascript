@@ -2434,6 +2434,42 @@ public abstract d;
 				Tokens: tk[:9],
 			}
 		}},
+		{`class A {b!: string}`, func(t *test, tk Tokens) { // 65
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[5],
+														Tokens:              tk[5:6],
+													},
+													Tokens: tk[5:6],
+												},
+												Tokens: tk[5:10],
+											},
+											Tokens: tk[5:10],
+										},
+									},
+									Tokens: tk[:11],
+								},
+								Tokens: tk[:11],
+							},
+							Tokens: tk[:11],
+						},
+						Tokens: tk[:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
