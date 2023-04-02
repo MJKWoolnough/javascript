@@ -186,6 +186,9 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 				}
 				if ae.ConditionalExpression != nil {
 					h.AcceptRunWhitespace()
+					if h.SkipOptionalColonType() {
+						h.AcceptRunWhitespace()
+					}
 					if err := ae.AssignmentOperator.parse(&h); err == nil {
 						g.Score(h)
 						g.AcceptRunWhitespace()
