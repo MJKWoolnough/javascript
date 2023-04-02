@@ -1221,3 +1221,15 @@ func (j *jsParser) ReadClassDeclaration() bool {
 	j.Score(g)
 	return true
 }
+
+func (j *jsParser) OnOptionalType() bool {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		g.AcceptRunWhitespace()
+		if g.Accept(TokenPunctuator) {
+			tk := g.GetLastToken()
+			return tk.Data == ")" || tk.Data == ":"
+		}
+	}
+	return false
+}
