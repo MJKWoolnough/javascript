@@ -2512,6 +2512,37 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{`(a = 1) => true`, func(t *test, tk Tokens) { // 63
+			t.Output = AssignmentExpression{
+				ArrowFunction: &ArrowFunction{
+					FormalParameters: &FormalParameters{
+						FormalParameterList: []BindingElement{
+							{
+								SingleNameBinding: &tk[1],
+								Initializer: &AssignmentExpression{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										Literal: &tk[5],
+										Tokens:  tk[5:6],
+									}),
+									Tokens: tk[5:6],
+								},
+								Tokens: tk[1:6],
+							},
+						},
+						Tokens: tk[0:7],
+					},
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: WrapConditional(&PrimaryExpression{
+							Literal: &tk[10],
+							Tokens:  tk[10:11],
+						}),
+						Tokens: tk[10:11],
+					},
+					Tokens: tk[0:11],
+				},
+				Tokens: tk[0:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
