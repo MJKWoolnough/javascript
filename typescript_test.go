@@ -2621,6 +2621,62 @@ public abstract d;
 				Tokens: tk[:31],
 			}
 		}},
+		{`const a = (b: any = 1) => false`, func(t *test, tk Tokens) { // 70
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ArrowFunction: &ArrowFunction{
+													FormalParameters: &FormalParameters{
+														FormalParameterList: []BindingElement{
+															{
+																SingleNameBinding: &tk[7],
+																Initializer: &AssignmentExpression{
+																	ConditionalExpression: WrapConditional(&PrimaryExpression{
+																		Literal: &tk[14],
+																		Tokens:  tk[14:15],
+																	}),
+																	Tokens: tk[14:15],
+																},
+																Tokens: tk[7:15],
+															},
+														},
+														Tokens: tk[6:16],
+													},
+													AssignmentExpression: &AssignmentExpression{
+														ConditionalExpression: WrapConditional(&PrimaryExpression{
+															Literal: &tk[19],
+															Tokens:  tk[19:20],
+														}),
+														Tokens: tk[19:20],
+													},
+													Tokens: tk[6:20],
+												},
+												Tokens: tk[6:20],
+											},
+											Tokens: tk[2:20],
+										},
+									},
+									Tokens: tk[:20],
+								},
+								Tokens: tk[:20],
+							},
+							Tokens: tk[:20],
+						},
+						Tokens: tk[:20],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
