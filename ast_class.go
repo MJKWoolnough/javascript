@@ -215,7 +215,16 @@ func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 	}
 	g := j.NewGoal()
 	g.AcceptRunWhitespace()
-	if g.SkipOptionalColonType() {
+	if g.SkipForce() {
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.SkipColonType() {
+			g.Score(h)
+		}
+		j.Score(g)
+		g = j.NewGoal()
+		g.AcceptRunWhitespace()
+	} else if g.SkipOptionalColonType() {
 		j.Score(g)
 		g = j.NewGoal()
 		g.AcceptRunWhitespace()
