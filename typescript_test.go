@@ -2783,6 +2783,23 @@ case "b":
 				Tokens: tk[:18],
 			}
 		}},
+		{`export type {A, B}`, func(t *test, tk Tokens) { // 73
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:10],
+							},
+							Tokens: tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
