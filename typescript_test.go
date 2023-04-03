@@ -2677,6 +2677,95 @@ public abstract d;
 				Tokens: tk[:20],
 			}
 		}},
+		{`switch (a) {
+case "b":
+	c = 1;
+}`, func(t *test, tk Tokens) { // 71
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								SwitchStatement: &SwitchStatement{
+									Expression: Expression{
+										Expressions: []AssignmentExpression{
+											{
+												ConditionalExpression: WrapConditional(&PrimaryExpression{
+													IdentifierReference: &tk[3],
+													Tokens:              tk[3:4],
+												}),
+												Tokens: tk[3:4],
+											},
+										},
+										Tokens: tk[3:4],
+									},
+									CaseClauses: []CaseClause{
+										{
+											Expression: Expression{
+												Expressions: []AssignmentExpression{
+													{
+														ConditionalExpression: WrapConditional(&PrimaryExpression{
+															Literal: &tk[10],
+															Tokens:  tk[10:11],
+														}),
+														Tokens: tk[10:11],
+													},
+												},
+												Tokens: tk[10:11],
+											},
+											StatementList: []StatementListItem{
+												{
+													Statement: &Statement{
+														ExpressionStatement: &Expression{
+															Expressions: []AssignmentExpression{
+																{
+																	LeftHandSideExpression: &LeftHandSideExpression{
+																		NewExpression: &NewExpression{
+																			MemberExpression: MemberExpression{
+																				PrimaryExpression: &PrimaryExpression{
+																					IdentifierReference: &tk[14],
+																					Tokens:              tk[14:15],
+																				},
+																				Tokens: tk[14:15],
+																			},
+																			Tokens: tk[14:15],
+																		},
+																		Tokens: tk[14:15],
+																	},
+																	AssignmentOperator: AssignmentAssign,
+																	AssignmentExpression: &AssignmentExpression{
+																		ConditionalExpression: WrapConditional(&PrimaryExpression{
+																			Literal: &tk[18],
+																			Tokens:  tk[18:19],
+																		}),
+																		Tokens: tk[18:19],
+																	},
+																	Tokens: tk[14:19],
+																},
+															},
+															Tokens: tk[14:19],
+														},
+														Tokens: tk[14:20],
+													},
+													Tokens: tk[14:20],
+												},
+											},
+											Tokens: tk[8:20],
+										},
+									},
+									Tokens: tk[:22],
+								},
+								Tokens: tk[:22],
+							},
+							Tokens: tk[:22],
+						},
+						Tokens: tk[:22],
+					},
+				},
+				Tokens: tk[:22],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
