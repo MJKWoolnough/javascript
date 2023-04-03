@@ -186,9 +186,6 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 				}
 				if ae.ConditionalExpression != nil {
 					h.AcceptRunWhitespace()
-					if h.SkipOptionalColonType() {
-						h.AcceptRunWhitespace()
-					}
 					if err := ae.AssignmentOperator.parse(&h); err == nil {
 						g.Score(h)
 						g.AcceptRunWhitespace()
@@ -1066,11 +1063,35 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 			if err := cp.Expressions[e].parse(&g, true, yield, await); err != nil {
 				return j.Error("ParenthesizedExpression", err)
 			}
+			if ae := &cp.Expressions[e]; ae.AssignmentOperator == AssignmentNone && g.SkipOptionalColonType() {
+				g.AcceptRunWhitespace()
+				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
+					if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
+						if ae.AssignmentOperator.parse(&g) == nil {
+							g.AcceptRunWhitespace()
+							ae.ConditionalExpression = nil
+							ae.LeftHandSideExpression = lhs
+							if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+								ae.AssignmentPattern = new(AssignmentPattern)
+								if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+									z := jsParser(lhs.Tokens[:0])
+									return z.Error("AssignmentExpression", err)
+								}
+								ae.LeftHandSideExpression = nil
+							}
+							h := g.NewGoal()
+							ae.AssignmentExpression = new(AssignmentExpression)
+							if err := ae.AssignmentExpression.parse(&h, true, yield, await); err != nil {
+								return g.Error("AssignmentExpression", err)
+							}
+							g.Score(h)
+							ae.Tokens = g.ToTokens()
+						}
+					}
+				}
+			}
 			j.Score(g)
 			j.AcceptRunWhitespace()
-			if j.SkipOptionalColonType() {
-				j.AcceptRunWhitespace()
-			}
 			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
