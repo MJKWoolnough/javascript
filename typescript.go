@@ -547,6 +547,7 @@ func (j *jsParser) ReadParameterList() bool {
 	g.AcceptRunWhitespace()
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		optional := false
+		first := true
 		for {
 			g.AcceptRunWhitespace()
 			if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "..."}) {
@@ -564,7 +565,9 @@ func (j *jsParser) ReadParameterList() bool {
 				break
 			}
 			if bi := g.parseIdentifier(false, false); bi == nil {
-				return false
+				if !first || !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
+					return false
+				}
 			} else if bi.Data == "public" || bi.Data == "private" || bi.Data == "protected" {
 				g.AcceptRunWhitespace()
 				g.parseIdentifier(false, false)
@@ -593,6 +596,7 @@ func (j *jsParser) ReadParameterList() bool {
 			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				return false
 			}
+			first = false
 		}
 	}
 	j.Score(g)
