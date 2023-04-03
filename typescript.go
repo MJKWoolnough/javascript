@@ -949,25 +949,34 @@ func (j *jsParser) ReadHeritage() bool {
 func (j *jsParser) SkipInterface() bool {
 	if j.IsTypescript() {
 		g := j.NewGoal()
-		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "interface"}) {
-			g.AcceptRunWhitespace()
-			if g.parseIdentifier(false, false) == nil {
-				return false
-			}
-			g.AcceptRunWhitespace()
-			if g.ReadTypeParameters() {
-				g.AcceptRunWhitespace()
-			}
-			if g.ReadHeritage() {
-				g.AcceptRunWhitespace()
-				return false
-			}
-			if !g.ReadObjectType() {
-				return false
-			}
+		if g.ReadInterface() {
 			j.Score(g)
 			return true
 		}
+	}
+	return false
+}
+
+func (j *jsParser) ReadInterface() bool {
+	g := j.NewGoal()
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "interface"}) {
+		g.AcceptRunWhitespace()
+		if g.parseIdentifier(false, false) == nil {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if g.ReadTypeParameters() {
+			g.AcceptRunWhitespace()
+		}
+		if g.ReadHeritage() {
+			g.AcceptRunWhitespace()
+			return false
+		}
+		if !g.ReadObjectType() {
+			return false
+		}
+		j.Score(g)
+		return true
 	}
 	return false
 }
@@ -1043,6 +1052,9 @@ func (j *jsParser) SkipExportType() bool {
 		g.Skip()
 		g.AcceptRunWhitespace()
 		if g.ReadTypeDeclaration() {
+			j.Score(g)
+			return true
+		} else if g.ReadInterface() {
 			j.Score(g)
 			return true
 		} else if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
