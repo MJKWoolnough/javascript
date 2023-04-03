@@ -1046,6 +1046,7 @@ func (j *jsParser) SkipExportType() bool {
 			j.Score(g)
 			return true
 		} else if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "type"}) {
+			g.AcceptRunWhitespace()
 			if tk := g.Peek(); tk != (parser.Token{Type: TokenPunctuator, Data: ","}) && tk != (parser.Token{Type: TokenIdentifier, Data: "from"}) {
 				var ec ExportClause
 				err := ec.parse(&g)
