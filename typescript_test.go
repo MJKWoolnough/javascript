@@ -2817,6 +2817,23 @@ case "b":
 				Tokens: tk[:8],
 			}
 		}},
+		{`type A = (this: B, c: D) => void;`, func(t *test, tk Tokens) { // 75
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:23],
+							},
+							Tokens: tk[:23],
+						},
+						Tokens: tk[:23],
+					},
+				},
+				Tokens: tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
