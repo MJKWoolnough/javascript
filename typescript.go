@@ -634,6 +634,9 @@ func (j *jsParser) ReadIndexSignature() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.AcceptRunWhitespace()
+	}
 	if !g.ReadTypeAnnotation() {
 		return false
 	}
