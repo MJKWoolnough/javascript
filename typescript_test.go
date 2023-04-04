@@ -2937,6 +2937,38 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadThisType,
 			"this",
 		},
+		{
+			(*jsParser).ReadTupleType,
+			"[any]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[ any ]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[number,bigint]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[ number , bigint ]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[string,1,...symbol]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[ string , 1 , ... symbol ]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[...boolean]",
+		},
+		{
+			(*jsParser).ReadTupleType,
+			"[ ... boolean ]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
