@@ -530,8 +530,9 @@ func (j *jsParser) ReadReturnType() bool {
 
 func (j *jsParser) ReadCallSignature() bool {
 	g := j.NewGoal()
-	g.ReadTypeParameters()
-	g.AcceptRunWhitespace()
+	if g.ReadTypeParameters() {
+		g.AcceptRunWhitespace()
+	}
 	if !g.ReadParameterList() {
 		return false
 	}
