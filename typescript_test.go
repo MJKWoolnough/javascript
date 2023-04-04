@@ -2969,6 +2969,22 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadTupleType,
 			"[ ... boolean ]",
 		},
+		{
+			(*jsParser).ReadTemplateType,
+			"`A${number}B`",
+		},
+		{
+			(*jsParser).ReadTemplateType,
+			"`A${ number }B`",
+		},
+		{
+			(*jsParser).ReadTemplateType,
+			"`A${string}B${boolean}`",
+		},
+		{
+			(*jsParser).ReadTemplateType,
+			"`A${ string }B${ boolean }`",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
