@@ -233,9 +233,11 @@ func (j *jsParser) ReadTemplateType() bool {
 		return false
 	}
 	for {
+		g.AcceptRunWhitespace()
 		if !g.ReadType() {
 			return false
 		}
+		g.AcceptRunWhitespace()
 		if g.Accept(TokenTemplateTail) {
 			break
 		}
@@ -983,9 +985,6 @@ func (j *jsParser) ReadInterface() bool {
 		return true
 	}
 	return false
-}
-
-func (j *jsParser) ParseEnum() {
 }
 
 func (j *jsParser) SkipParameterProperties() bool {
