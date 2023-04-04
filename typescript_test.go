@@ -2849,139 +2849,139 @@ func TestTypescriptTypes(t *testing.T) {
 		Fn    func(*jsParser) bool
 		Input string
 	}{
-		{
+		{ // 1
 			(*jsParser).ReadLiteralType,
 			"1",
 		},
-		{
+		{ // 2
 			(*jsParser).ReadLiteralType,
 			"2",
 		},
-		{
+		{ // 3
 			(*jsParser).ReadLiteralType,
 			"-1",
 		},
-		{
+		{ // 4
 			(*jsParser).ReadLiteralType,
 			"null",
 		},
-		{
+		{ // 5
 			(*jsParser).ReadLiteralType,
 			"true",
 		},
-		{
+		{ // 6
 			(*jsParser).ReadLiteralType,
 			"false",
 		},
-		{
+		{ // 7
 			(*jsParser).ReadLiteralType,
 			"\"\"",
 		},
-		{
+		{ // 8
 			(*jsParser).ReadLiteralType,
 			"\"string\"",
 		},
-		{
+		{ // 9
 			(*jsParser).ReadLiteralType,
 			"``",
 		},
-		{
+		{ // 10
 			(*jsParser).ReadLiteralType,
 			"`template`",
 		},
-		{
+		{ // 11
 			(*jsParser).ReadPredefinedType,
 			"void",
 		},
-		{
+		{ // 12
 			(*jsParser).ReadPredefinedType,
 			"any",
 		},
-		{
+		{ // 13
 			(*jsParser).ReadPredefinedType,
 			"number",
 		},
-		{
+		{ // 14
 			(*jsParser).ReadPredefinedType,
 			"boolean",
 		},
-		{
+		{ // 15
 			(*jsParser).ReadPredefinedType,
 			"string",
 		},
-		{
+		{ // 16
 			(*jsParser).ReadPredefinedType,
 			"symbol",
 		},
-		{
+		{ // 17
 			(*jsParser).ReadPredefinedType,
 			"unknown",
 		},
-		{
+		{ // 18
 			(*jsParser).ReadPredefinedType,
 			"bigint",
 		},
-		{
+		{ // 19
 			(*jsParser).ReadPredefinedType,
 			"undefined",
 		},
-		{
+		{ // 20
 			(*jsParser).ReadPredefinedType,
 			"never",
 		},
-		{
+		{ // 21
 			(*jsParser).ReadPredefinedType,
 			"object",
 		},
-		{
+		{ // 22
 			(*jsParser).ReadThisType,
 			"this",
 		},
-		{
+		{ // 23
 			(*jsParser).ReadTupleType,
 			"[any]",
 		},
-		{
+		{ // 24
 			(*jsParser).ReadTupleType,
 			"[ any ]",
 		},
-		{
+		{ // 25
 			(*jsParser).ReadTupleType,
 			"[number,bigint]",
 		},
-		{
+		{ // 26
 			(*jsParser).ReadTupleType,
 			"[ number , bigint ]",
 		},
-		{
+		{ // 27
 			(*jsParser).ReadTupleType,
 			"[string,1,...symbol]",
 		},
-		{
+		{ // 28
 			(*jsParser).ReadTupleType,
 			"[ string , 1 , ... symbol ]",
 		},
-		{
+		{ // 29
 			(*jsParser).ReadTupleType,
 			"[...boolean]",
 		},
-		{
+		{ // 30
 			(*jsParser).ReadTupleType,
 			"[ ... boolean ]",
 		},
-		{
+		{ // 31
 			(*jsParser).ReadTemplateType,
 			"`A${number}B`",
 		},
-		{
+		{ // 32
 			(*jsParser).ReadTemplateType,
 			"`A${ number }B`",
 		},
-		{
+		{ // 33
 			(*jsParser).ReadTemplateType,
 			"`A${string}B${boolean}`",
 		},
-		{
+		{ // 34
 			(*jsParser).ReadTemplateType,
 			"`A${ string }B${ boolean }`",
 		},
