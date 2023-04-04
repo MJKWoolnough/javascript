@@ -2889,6 +2889,50 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadLiteralType,
 			"`template`",
 		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"void",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"any",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"number",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"boolean",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"string",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"symbol",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"unknown",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"bigint",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"undefined",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"never",
+		},
+		{
+			(*jsParser).ReadPredefinedType,
+			"object",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
