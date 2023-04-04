@@ -2993,6 +2993,54 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadParenthesizedType,
 			"( number )",
 		},
+		{ // 37
+			(*jsParser).ReadObjectType,
+			"{}",
+		},
+		{ // 38
+			(*jsParser).ReadObjectType,
+			"{ }",
+		},
+		{ // 39
+			(*jsParser).ReadObjectType,
+			"{a:number}",
+		},
+		{ // 40
+			(*jsParser).ReadObjectType,
+			"{ a : number }",
+		},
+		{ // 41
+			(*jsParser).ReadObjectType,
+			"{a: number;}",
+		},
+		{ // 42
+			(*jsParser).ReadObjectType,
+			"{a: number,}",
+		},
+		{ // 43
+			(*jsParser).ReadObjectType,
+			"{a: number; }",
+		},
+		{ // 44
+			(*jsParser).ReadObjectType,
+			"{a: number, }",
+		},
+		{ // 45
+			(*jsParser).ReadObjectType,
+			"{a: number;b: string}",
+		},
+		{ // 46
+			(*jsParser).ReadObjectType,
+			"{a: number; b: string}",
+		},
+		{ // 47
+			(*jsParser).ReadObjectType,
+			"{a: number,b: string}",
+		},
+		{ // 48
+			(*jsParser).ReadObjectType,
+			"{a: number, b: string}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
