@@ -2933,6 +2933,10 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadPredefinedType,
 			"object",
 		},
+		{
+			(*jsParser).ReadThisType,
+			"this",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
