@@ -538,7 +538,7 @@ func (j *jsParser) ReadCallSignature() bool {
 	}
 	h := g.NewGoal()
 	h.AcceptRunWhitespace()
-	if !h.ReadColonReturnType() {
+	if h.ReadColonReturnType() {
 		g.Score(h)
 	}
 	j.Score(g)
@@ -615,12 +615,9 @@ func (j *jsParser) ReadConstructSignature() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	g.ReadTypeParameters()
-	if !g.ReadParameterList() {
+	if !g.ReadCallSignature() {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	g.ReadTypeAnnotation()
 	j.Score(g)
 	return true
 }
