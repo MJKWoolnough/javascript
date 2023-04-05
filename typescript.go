@@ -60,18 +60,23 @@ func (j *jsParser) ReadTypeParameter() bool {
 	if g.parseIdentifier(false, false) == nil {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
-		g.AcceptRunWhitespace()
-		if !g.ReadType() {
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	if h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
+		h.AcceptRunWhitespace()
+		if !h.ReadType() {
 			return false
 		}
+		g.Score(h)
+		h = g.NewGoal()
+		h.AcceptRunWhitespace()
 	}
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-		g.AcceptRunWhitespace()
-		if !g.ReadType() {
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		h.AcceptRunWhitespace()
+		if !h.ReadType() {
 			return false
 		}
+		g.Score(h)
 	}
 	j.Score(g)
 	return true
