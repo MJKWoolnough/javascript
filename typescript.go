@@ -641,12 +641,15 @@ func (j *jsParser) ReadIndexSignature() bool {
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
-		g.AcceptRunWhitespace()
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.Score(h)
+		h = g.NewGoal()
+		h.AcceptRunWhitespace()
 	}
-	if !g.ReadTypeAnnotation() {
-		return false
+	if h.ReadTypeAnnotation() {
+		g.Score(h)
 	}
 	j.Score(g)
 	return true
