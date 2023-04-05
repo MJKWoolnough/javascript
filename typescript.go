@@ -442,9 +442,10 @@ func (j *jsParser) ReadAccessorDeclaration() bool {
 	if !g.ReadParameterList() {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if !g.ReadColonReturnType() {
-		return false
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	if h.ReadColonReturnType() {
+		g.Score(h)
 	}
 	j.Score(g)
 	return true
