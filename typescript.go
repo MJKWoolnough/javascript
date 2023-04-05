@@ -113,7 +113,7 @@ func (j *jsParser) ReadType() bool {
 		return false
 	}
 	h := g.NewGoal()
-	h.AcceptRunWhitespace()
+	h.AcceptRunWhitespaceNoNewLine()
 	if h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
 		h.AcceptRunWhitespace()
 		if !h.ReadType() {
