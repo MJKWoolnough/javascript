@@ -130,6 +130,7 @@ func (j *jsParser) ReadType() bool {
 		if !h.ReadTypeAnnotation() {
 			return false
 		}
+		g.Score(h)
 	}
 	j.Score(g)
 	return true
