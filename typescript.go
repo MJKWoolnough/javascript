@@ -679,11 +679,16 @@ func (j *jsParser) ReadParameter() bool {
 	if g.parseIdentifier(false, false) == nil {
 		return false
 	}
-	g.AcceptRunWhitespace()
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
-		g.AcceptRunWhitespace()
+	h := g.NewGoal()
+	h.AcceptRunWhitespace()
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+		g.Score(h)
+		h = g.NewGoal()
+		h.AcceptRunWhitespace()
 	}
-	g.ReadTypeAnnotation()
+	if h.ReadTypeAnnotation() {
+		g.Score(h)
+	}
 	j.Score(g)
 	return true
 }
