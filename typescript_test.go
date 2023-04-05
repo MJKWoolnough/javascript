@@ -3041,6 +3041,22 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadObjectType,
 			"{a: number, b: string}",
 		},
+		{ // 49
+			(*jsParser).ReadObjectType,
+			"{(a: number)}",
+		},
+		{ // 50
+			(*jsParser).ReadObjectType,
+			"{ < B > (a: B)}",
+		},
+		{ // 51
+			(*jsParser).ReadObjectType,
+			"{(a: number) : string}",
+		},
+		{ // 52
+			(*jsParser).ReadObjectType,
+			"{ < B > () : B}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
