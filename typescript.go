@@ -342,7 +342,7 @@ func (j *jsParser) ReadMappedType() bool {
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		return false
 	}
-	if j.parseIdentifier(false, false) == nil {
+	if g.parseIdentifier(false, false) == nil {
 		return false
 	}
 	g.AcceptRunWhitespace()
