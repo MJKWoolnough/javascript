@@ -304,10 +304,16 @@ func (j *jsParser) ReadObjectOrMappedType() bool {
 	}
 	g.AcceptRunWhitespace()
 	h := g.NewGoal()
-	if (h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"}) || h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"})) && h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
-		return j.ReadMappedType()
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "+"}) || h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "-"}) {
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
+			return j.ReadMappedType()
+		}
 	}
 	h = g.NewGoal()
+	if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
+		h.AcceptRunWhitespace()
+	}
 	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		h.AcceptRunWhitespace()
 		if h.parseIdentifier(false, false) != nil {
