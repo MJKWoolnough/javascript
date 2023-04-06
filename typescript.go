@@ -346,7 +346,7 @@ func (j *jsParser) ReadMappedType() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "in"}) {
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
 		return false
 	}
 	g.AcceptRunWhitespace()
