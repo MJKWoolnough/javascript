@@ -372,10 +372,9 @@ func (j *jsParser) ReadMappedType() bool {
 		}
 		g.AcceptRunWhitespace()
 	}
-	if !g.ReadTypeAnnotation() {
-		return false
+	if g.ReadTypeAnnotation() {
+		g.AcceptRunWhitespace()
 	}
-	g.AcceptRunWhitespace()
 	if !g.Accept(TokenRightBracePunctuator) {
 		for {
 			if !g.ReadTypeMember() {
