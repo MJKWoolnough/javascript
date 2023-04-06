@@ -3181,6 +3181,38 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadObjectType,
 			"{ a : boolean ; }",
 		},
+		{ // 84
+			(*jsParser).ReadMappedType,
+			"{readonly [A in B]}",
+		},
+		{ // 85
+			(*jsParser).ReadMappedType,
+			"{+readonly [A in B]}",
+		},
+		{ // 86
+			(*jsParser).ReadMappedType,
+			"{-readonly [A in B]}",
+		},
+		{ // 87
+			(*jsParser).ReadMappedType,
+			"{[A in B]?}",
+		},
+		{ // 88
+			(*jsParser).ReadMappedType,
+			"{[A in B]-?}",
+		},
+		{ // 89
+			(*jsParser).ReadMappedType,
+			"{[A in B]?: string}",
+		},
+		{ // 90
+			(*jsParser).ReadMappedType,
+			"{[A in B]-?: number}",
+		},
+		{ // 91
+			(*jsParser).ReadMappedType,
+			"{[A in B as C]}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
