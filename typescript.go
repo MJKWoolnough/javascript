@@ -760,15 +760,6 @@ func (j *jsParser) ReadTypeQuery() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	if !g.ReadTypeQueryExpression() {
-		return false
-	}
-	j.Score(g)
-	return true
-}
-
-func (j *jsParser) ReadTypeQueryExpression() bool {
-	g := j.NewGoal()
 	if g.parseIdentifier(false, false) == nil {
 		return false
 	}
