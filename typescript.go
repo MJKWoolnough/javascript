@@ -786,20 +786,6 @@ func (j *jsParser) ReadTypeQuery() bool {
 
 func (j *jsParser) ReadTypeReference() bool {
 	g := j.NewGoal()
-	if !g.ReadTypeName() {
-		return false
-	}
-	h := g.NewGoal()
-	h.AcceptRunWhitespaceNoNewLine()
-	if h.ReadTypeArguments() {
-		g.Score(h)
-	}
-	j.Score(g)
-	return true
-}
-
-func (j *jsParser) ReadTypeName() bool {
-	g := j.NewGoal()
 	if g.parseIdentifier(false, false) == nil {
 		return false
 	}
@@ -813,6 +799,11 @@ func (j *jsParser) ReadTypeName() bool {
 		if h.parseIdentifier(false, false) == nil {
 			return false
 		}
+		g.Score(h)
+	}
+	h := g.NewGoal()
+	h.AcceptRunWhitespaceNoNewLine()
+	if h.ReadTypeArguments() {
 		g.Score(h)
 	}
 	j.Score(g)
