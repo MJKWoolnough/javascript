@@ -784,6 +784,11 @@ func (j *jsParser) ReadTypeQueryExpression() bool {
 		}
 		g.Score(h)
 	}
+	h := g.NewGoal()
+	h.AcceptRunWhitespaceNoNewLine()
+	if h.ReadTypeParameters() {
+		g.Score(h)
+	}
 	j.Score(g)
 	return true
 }
