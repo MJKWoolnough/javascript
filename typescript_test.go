@@ -3213,6 +3213,38 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadMappedType,
 			"{[A in B as C]}",
 		},
+		{ // 92
+			(*jsParser).ReadTupleType,
+			"[]",
+		},
+		{ // 93
+			(*jsParser).ReadTupleType,
+			"[ ]",
+		},
+		{ // 94
+			(*jsParser).ReadTupleType,
+			"[number]",
+		},
+		{ // 95
+			(*jsParser).ReadTupleType,
+			"[ number ]",
+		},
+		{ // 96
+			(*jsParser).ReadTupleType,
+			"[number, string]",
+		},
+		{ // 97
+			(*jsParser).ReadTupleType,
+			"[ number, string ]",
+		},
+		{ // 98
+			(*jsParser).ReadTupleType,
+			"[...number]",
+		},
+		{ // 99
+			(*jsParser).ReadTupleType,
+			"[number, ...string]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
