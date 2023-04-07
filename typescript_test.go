@@ -3245,6 +3245,10 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadTupleType,
 			"[number, ...string]",
 		},
+		{ // 100
+			(*jsParser).ReadThisType,
+			"this",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
