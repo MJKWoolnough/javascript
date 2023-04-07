@@ -3249,6 +3249,34 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadThisType,
 			"this",
 		},
+		{ // 101
+			(*jsParser).ReadTypeQuery,
+			"typeof A",
+		},
+		{ // 102
+			(*jsParser).ReadTypeQuery,
+			"typeof A<B>",
+		},
+		{ // 103
+			(*jsParser).ReadTypeQuery,
+			"typeof A.B",
+		},
+		{ // 104
+			(*jsParser).ReadTypeQuery,
+			"typeof A.const",
+		},
+		{ // 105
+			(*jsParser).ReadTypeQuery,
+			"typeof A.#B",
+		},
+		{ // 106
+			(*jsParser).ReadTypeQuery,
+			"typeof A . #B . void",
+		},
+		{ // 107
+			(*jsParser).ReadTypeQuery,
+			"typeof A.#B.void<C, D>",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
