@@ -127,6 +127,7 @@ func (j *jsParser) ReadType() bool {
 		if !h.ReadType() {
 			return false
 		}
+		h.AcceptRunWhitespace()
 		if !h.ReadTypeAnnotation() {
 			return false
 		}
