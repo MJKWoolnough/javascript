@@ -3297,6 +3297,34 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadTypeReference,
 			"A . B < C >",
 		},
+		{ // 113
+			(*jsParser).ReadPostfixType,
+			"number[]",
+		},
+		{ // 114
+			(*jsParser).ReadPostfixType,
+			"`a${string}b` [ ] ",
+		},
+		{ // 115
+			(*jsParser).ReadPostfixType,
+			"(boolean)!",
+		},
+		{ // 116
+			(*jsParser).ReadPostfixType,
+			"(null)!",
+		},
+		{ // 117
+			(*jsParser).ReadPostfixType,
+			"this ! []",
+		},
+		{ // 118
+			(*jsParser).ReadPostfixType,
+			"typeof A [] !",
+		},
+		{ // 119
+			(*jsParser).ReadPostfixType,
+			"A [ B ]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
