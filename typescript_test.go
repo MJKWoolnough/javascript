@@ -3405,9 +3405,25 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadType,
 			"A",
 		},
-		{ // 139
+		{ // 140
 			(*jsParser).ReadType,
 			"()=>void",
+		},
+		{ // 141
+			(*jsParser).ReadType,
+			"<A extends B>()=>void",
+		},
+		{ // 142
+			(*jsParser).ReadType,
+			"<A = B>()=>void",
+		},
+		{ // 143
+			(*jsParser).ReadType,
+			"<A extends B = C>()=>void",
+		},
+		{ // 144
+			(*jsParser).ReadType,
+			"< A, B extends C, D = E, F extends G = H >()=>void",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
