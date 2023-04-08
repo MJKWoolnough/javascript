@@ -3077,7 +3077,7 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadObjectType,
 			"{get(a: number)}",
 		},
-		{ // 57
+		{ // 58
 			(*jsParser).ReadObjectType,
 			"{ get < B > (a: B)}",
 		},
@@ -3289,11 +3289,11 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadTypeReference,
 			"A<B>",
 		},
-		{ // 110
+		{ // 111
 			(*jsParser).ReadTypeReference,
 			"A.B<C>",
 		},
-		{ // 111
+		{ // 112
 			(*jsParser).ReadTypeReference,
 			"A . B < C >",
 		},
