@@ -3373,6 +3373,26 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 			"A | B&C",
 		},
+		{ // 132
+			(*jsParser).ReadFunctionType,
+			"()=>A",
+		},
+		{ // 133
+			(*jsParser).ReadFunctionType,
+			"new()=>A",
+		},
+		{ // 134
+			(*jsParser).ReadFunctionType,
+			"new<A>() => B",
+		},
+		{ // 135
+			(*jsParser).ReadFunctionType,
+			"new < A, B > (B, C) => D",
+		},
+		{ // 136
+			(*jsParser).ReadFunctionType,
+			"<A, B> (B, C) => D",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
