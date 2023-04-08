@@ -3325,6 +3325,38 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadPostfixType,
 			"A [ B ]",
 		},
+		{ // 120
+			(*jsParser).ReadTypeOperator,
+			"infer A",
+		},
+		{ // 121
+			(*jsParser).ReadTypeOperator,
+			"keyof infer A",
+		},
+		{ // 122
+			(*jsParser).ReadTypeOperator,
+			"unique infer A",
+		},
+		{ // 123
+			(*jsParser).ReadTypeOperator,
+			"readonly infer A",
+		},
+		{ // 124
+			(*jsParser).ReadTypeOperator,
+			"keyof keyof infer A",
+		},
+		{ // 125
+			(*jsParser).ReadTypeOperator,
+			"readonly unique infer A",
+		},
+		{ // 126
+			(*jsParser).ReadTypeOperator,
+			"unique readonly infer A",
+		},
+		{ // 127
+			(*jsParser).ReadTypeOperator,
+			"A [ B ]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
