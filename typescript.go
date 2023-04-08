@@ -146,9 +146,9 @@ func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 		h := g.NewGoal()
 		h.AcceptRunWhitespace()
 		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "|"}) && !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "&"}) {
-			g.Score(h)
 			break
 		}
+		g.Score(h)
 		g.AcceptRunWhitespace()
 	}
 	j.Score(g)
