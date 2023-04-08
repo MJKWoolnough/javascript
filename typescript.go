@@ -450,16 +450,8 @@ func (j *jsParser) ReadAccessorDeclaration() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	if g.ReadTypeParameters() {
-		g.AcceptRunWhitespace()
-	}
-	if !g.ReadParameterList() {
+	if !g.ReadCallSignature() {
 		return false
-	}
-	h := g.NewGoal()
-	h.AcceptRunWhitespace()
-	if h.ReadColonReturnType() {
-		g.Score(h)
 	}
 	j.Score(g)
 	return true
