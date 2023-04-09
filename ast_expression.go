@@ -28,6 +28,8 @@ const (
 
 func (ao *AssignmentOperator) parse(j *jsParser) error {
 	g := j.NewGoal()
+	h := j.NewGoal()
+	i := j.NewGoal()
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		*ao = AssignmentAssign
 	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*="}) {
@@ -42,18 +44,12 @@ func (ao *AssignmentOperator) parse(j *jsParser) error {
 		*ao = AssignmentSubtract
 	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<<="}) {
 		*ao = AssignmentLeftShift
-	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
-			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-				*ao = AssignmentSignPropagatingRightShift
-			} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-				*ao = AssignmentZeroFillRightShift
-			} else {
-				return ErrInvalidAssignment
-			}
-		} else {
-			return ErrInvalidAssignment
-		}
+	} else if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		*ao = AssignmentSignPropagatingRightShift
+		g.Score(h)
+	} else if i.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && i.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && i.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) && i.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		*ao = AssignmentZeroFillRightShift
+		g.Score(i)
 	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "&="}) {
 		*ao = AssignmentBitwiseAND
 	} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "^="}) {
