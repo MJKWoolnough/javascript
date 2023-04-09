@@ -2835,6 +2835,68 @@ case "b":
 				Tokens: tk[:23],
 			}
 		}},
+		{`class A {async B <C> (){}async <D> (){}}`, func(t *test, tk Tokens) { // 76
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											MethodDefinition: &MethodDefinition{
+												Type: MethodAsync,
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[7],
+														Tokens:              tk[7:8],
+													},
+													Tokens: tk[7:8],
+												},
+												Params: FormalParameters{
+													Tokens: tk[13:15],
+												},
+												FunctionBody: Block{
+													Tokens: tk[15:17],
+												},
+												Tokens: tk[5:17],
+											},
+											Tokens: tk[5:17],
+										},
+										{
+											MethodDefinition: &MethodDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[17],
+														Tokens:              tk[17:18],
+													},
+													Tokens: tk[17:18],
+												},
+												Params: FormalParameters{
+													Tokens: tk[23:25],
+												},
+												FunctionBody: Block{
+													Tokens: tk[25:27],
+												},
+												Tokens: tk[17:27],
+											},
+											Tokens: tk[17:27],
+										},
+									},
+									Tokens: tk[:28],
+								},
+								Tokens: tk[:28],
+							},
+							Tokens: tk[:28],
+						},
+						Tokens: tk[:28],
+					},
+				},
+				Tokens: tk[:28],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
