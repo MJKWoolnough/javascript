@@ -448,7 +448,7 @@ func (j *jsParser) ReadAccessorDeclaration() bool {
 }
 
 func (j *jsParser) ReadPropertyName() bool {
-	if j.Accept(TokenStringLiteral, TokenNumericLiteral, TokenPrivateIdentifier) || j.parseIdentifier(false, false) == nil {
+	if j.Accept(TokenStringLiteral, TokenNumericLiteral, TokenPrivateIdentifier) || j.parseIdentifier(false, false) != nil {
 		return true
 	}
 	g := j.NewGoal()
