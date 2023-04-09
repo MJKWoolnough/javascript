@@ -2897,6 +2897,42 @@ case "b":
 				Tokens: tk[:28],
 			}
 		}},
+		{`<B>(1)=>{}`, func(t *test, tk Tokens) { // 77
+			t.Typescript = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err:     ErrNoIdentifier,
+											Parsing: "BindingElement",
+											Token:   tk[4],
+										},
+										Parsing: "FormalParameters",
+										Token:   tk[3],
+									},
+									Parsing: "ArrowFunction",
+									Token:   tk[3],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[0],
+							},
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "Statement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
