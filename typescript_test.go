@@ -2933,6 +2933,41 @@ case "b":
 				Token:   tk[0],
 			}
 		}},
+		{`(...a: number[]) => {}`, func(t *test, tk Tokens) { // 78
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													BindingIdentifier: &tk[2],
+													Tokens:            tk[:9],
+												},
+												FunctionBody: &Block{
+													Tokens: tk[12:14],
+												},
+												Tokens: tk[:14],
+											},
+											Tokens: tk[:14],
+										},
+									},
+									Tokens: tk[:14],
+								},
+								Tokens: tk[:14],
+							},
+							Tokens: tk[:14],
+						},
+						Tokens: tk[:14],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
