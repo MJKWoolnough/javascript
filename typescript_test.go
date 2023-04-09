@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"fmt"
 	"testing"
 
 	"vimagination.zapto.org/parser"
@@ -3440,6 +3441,29 @@ func TestTypescriptTypes(t *testing.T) {
 			} else if len(j) != len(g) {
 				t.Errorf("test %d: inconsistant number of tokens read. %d != %d", n+1, len(j), len(g))
 			}
+		}
+	}
+}
+
+func TestAsTypescript(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{
+			"const a = 1;",
+			"const a = 1;",
+		},
+		{
+			"let a: number | null = null",
+			"let a = null;",
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+		m, err := ParseModule(AsTypescript(&tk))
+		if err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		} else if str := fmt.Sprintf("%s", m); str != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, str)
 		}
 	}
 }
