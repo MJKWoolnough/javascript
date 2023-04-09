@@ -3571,6 +3571,10 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadPredefinedType,
 			"object . a . b <C, D>",
 		},
+		{ // 148
+			(*jsParser).ReadObjectType,
+			"{ get [ A ]()}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
