@@ -3559,6 +3559,18 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadType,
 			"< A, B extends C, D = E, F extends G = H >()=>void",
 		},
+		{ // 145
+			(*jsParser).ReadPredefinedType,
+			"object.a",
+		},
+		{ // 146
+			(*jsParser).ReadPredefinedType,
+			"any . a . b",
+		},
+		{ // 147
+			(*jsParser).ReadPredefinedType,
+			"object . a . b <C, D>",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
