@@ -4,30 +4,20 @@ import "vimagination.zapto.org/parser"
 
 const marker = "TS"
 
-func ParseTypescript(t Tokeniser) (*Script, error) {
-	j, err := newJSParser(t)
-	if err != nil {
-		return nil, err
-	}
-	j[len(j)-1].Data = marker
-	s := new(Script)
-	if err := s.parse(&j); err != nil {
-		return nil, err
-	}
-	return s, nil
+type typescript struct {
+	Tokeniser
 }
 
-func ParseTypescriptModule(t Tokeniser) (*Module, error) {
-	j, err := newJSParser(t)
-	if err != nil {
-		return nil, err
+func (t *typescript) GetToken() (parser.Token, error) {
+	tk, err := t.Tokeniser.GetToken()
+	if tk.Type == parser.TokenDone {
+		tk.Data = marker
 	}
-	j[:cap(j)][cap(j)-1].Data = marker
-	m := new(Module)
-	if err := m.parse(&j); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return tk, err
+}
+
+func AsTypescript(t Tokeniser) Tokeniser {
+	return &typescript{Tokeniser: t}
 }
 
 func (j *jsParser) IsTypescript() bool {
