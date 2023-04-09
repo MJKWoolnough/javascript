@@ -122,10 +122,12 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 			h.AcceptRunWhitespaceNoNewLine()
 			tk := h.Peek()
-			if h.SkipGeneric() {
-				h.AcceptRunWhitespace()
-			}
 			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "*"}) || tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier || tk.Type == TokenPrivateIdentifier
+			if !isMethod && h.SkipGeneric() {
+				h.AcceptRunWhitespace()
+				tk := h.Peek()
+				isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "("})
+			}
 		} else if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) || h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 			h.AcceptRunWhitespace()
 			tk := h.Peek()
@@ -281,7 +283,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 			md.Type = MethodSetter
 		case parser.Token{Type: TokenIdentifier, Data: "async"}:
 			g.Skip()
-			if t := g.AcceptRunWhitespaceNoNewLine(); t == TokenLineTerminator || t == TokenSingleLineComment || t == TokenMultiLineComment {
+			if t := g.AcceptRunWhitespaceNoNewLine(); t == TokenLineTerminator || t == TokenSingleLineComment || t == TokenMultiLineComment || g.SkipGeneric() {
 				g = j.NewGoal()
 				break
 			}
