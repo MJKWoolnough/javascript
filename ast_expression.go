@@ -149,7 +149,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 					ParenthesizedExpression: &pe,
 					Tokens:                  pe.Tokens,
 				}, in, yield, await); err != nil {
-					return g.Error("AssignmentExpression", err)
+					return j.Error("AssignmentExpression", err)
 				}
 				j.Score(g)
 				done = true
