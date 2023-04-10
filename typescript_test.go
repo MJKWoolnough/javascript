@@ -2968,6 +2968,27 @@ case "b":
 				Tokens: tk[:14],
 			}
 		}},
+		{`export default abstract`, func(t *test, tk Tokens) { // 79
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultAssignmentExpression: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									IdentifierReference: &tk[4],
+									Tokens:              tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
