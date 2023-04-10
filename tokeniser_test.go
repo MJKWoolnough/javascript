@@ -1122,6 +1122,12 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenPunctuator, Data: ";"},
 			},
 		},
+		{ // 134
+			"`\\x`",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid escape sequence: `\\x`"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
