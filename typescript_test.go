@@ -3266,6 +3266,182 @@ case "b":
 				Token:   tk[0],
 			}
 		}},
+		{`([a]: number = !) => null`, func(t *test, tk Tokens) { // 86
+			t.Typescript = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err: Error{
+																								Err: Error{
+																									Err: Error{
+																										Err: Error{
+																											Err: Error{
+																												Err: Error{
+																													Err: Error{
+																														Err: Error{
+																															Err: Error{
+																																Err: Error{
+																																	Err: Error{
+																																		Err: Error{
+																																			Err: Error{
+																																				Err: Error{
+																																					Err: Error{
+																																						Err: Error{
+																																							Err: Error{
+																																								Err: Error{
+																																									Err: Error{
+																																										Err: Error{
+																																											Err: Error{
+																																												Err: Error{
+																																													Err: Error{
+																																														Err:     ErrNoIdentifier,
+																																														Parsing: "PrimaryExpression",
+																																														Token:   tk[11],
+																																													},
+																																													Parsing: "MemberExpression",
+																																													Token:   tk[11],
+																																												},
+																																												Parsing: "NewExpression",
+																																												Token:   tk[11],
+																																											},
+																																											Parsing: "LeftHandSideExpression",
+																																											Token:   tk[11],
+																																										},
+																																										Parsing: "UpdateExpression",
+																																										Token:   tk[11],
+																																									},
+																																									Parsing: "UnaryExpression",
+																																									Token:   tk[11],
+																																								},
+																																								Parsing: "ExponentiationExpression",
+																																								Token:   tk[10],
+																																							},
+																																							Parsing: "MultiplicativeExpression",
+																																							Token:   tk[10],
+																																						},
+																																						Parsing: "AdditiveExpression",
+																																						Token:   tk[10],
+																																					},
+																																					Parsing: "ShiftExpression",
+																																					Token:   tk[10],
+																																				},
+																																				Parsing: "RelationalExpression",
+																																				Token:   tk[10],
+																																			},
+																																			Parsing: "EqualityExpression",
+																																			Token:   tk[10],
+																																		},
+																																		Parsing: "BitwiseANDExpression",
+																																		Token:   tk[10],
+																																	},
+																																	Parsing: "BitwiseXORExpression",
+																																	Token:   tk[10],
+																																},
+																																Parsing: "BitwiseORExpression",
+																																Token:   tk[10],
+																															},
+																															Parsing: "LogicalANDExpression",
+																															Token:   tk[10],
+																														},
+																														Parsing: "LogicalORExpression",
+																														Token:   tk[10],
+																													},
+																													Parsing: "ConditionalExpression",
+																													Token:   tk[10],
+																												},
+																												Parsing: "AssignmentExpression",
+																												Token:   tk[10],
+																											},
+																											Parsing: "ParenthesizedExpression",
+																											Token:   tk[10],
+																										},
+																										Parsing: "PrimaryExpression",
+																										Token:   tk[0],
+																									},
+																									Parsing: "MemberExpression",
+																									Token:   tk[0],
+																								},
+																								Parsing: "NewExpression",
+																								Token:   tk[0],
+																							},
+																							Parsing: "LeftHandSideExpression",
+																							Token:   tk[0],
+																						},
+																						Parsing: "UpdateExpression",
+																						Token:   tk[0],
+																					},
+																					Parsing: "UnaryExpression",
+																					Token:   tk[0],
+																				},
+																				Parsing: "ExponentiationExpression",
+																				Token:   tk[0],
+																			},
+																			Parsing: "MultiplicativeExpression",
+																			Token:   tk[0],
+																		},
+																		Parsing: "AdditiveExpression",
+																		Token:   tk[0],
+																	},
+																	Parsing: "ShiftExpression",
+																	Token:   tk[0],
+																},
+																Parsing: "RelationalExpression",
+																Token:   tk[0],
+															},
+															Parsing: "EqualityExpression",
+															Token:   tk[0],
+														},
+														Parsing: "BitwiseANDExpression",
+														Token:   tk[0],
+													},
+													Parsing: "BitwiseXORExpression",
+													Token:   tk[0],
+												},
+												Parsing: "BitwiseORExpression",
+												Token:   tk[0],
+											},
+											Parsing: "LogicalANDExpression",
+											Token:   tk[0],
+										},
+										Parsing: "LogicalORExpression",
+										Token:   tk[0],
+									},
+									Parsing: "ConditionalExpression",
+									Token:   tk[0],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[0],
+							},
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "Statement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
