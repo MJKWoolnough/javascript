@@ -3005,6 +3005,44 @@ case "b":
 				Token:   tk[0],
 			}
 		}},
+		{`a()!`, func(t *test, tk Tokens) { // 81
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[1:3],
+												},
+												Tokens: tk[:4],
+											}),
+											Tokens: tk[:4],
+										},
+									},
+									Tokens: tk[:4],
+								},
+								Tokens: tk[:4],
+							},
+							Tokens: tk[:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
