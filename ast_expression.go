@@ -1071,14 +1071,14 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 								ae.AssignmentPattern = new(AssignmentPattern)
 								if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 									z := jsParser(lhs.Tokens[:0])
-									return z.Error("AssignmentExpression", err)
+									return z.Error("ParenthesizedExpression", err)
 								}
 								ae.LeftHandSideExpression = nil
 							}
 							h := g.NewGoal()
 							ae.AssignmentExpression = new(AssignmentExpression)
 							if err := ae.AssignmentExpression.parse(&h, true, yield, await); err != nil {
-								return g.Error("AssignmentExpression", err)
+								return g.Error("ParenthesizedExpression", err)
 							}
 							g.Score(h)
 							ae.Tokens = g.ToTokens()
