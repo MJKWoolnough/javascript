@@ -3085,6 +3085,79 @@ case "b":
 				Tokens: tk[:6],
 			}
 		}},
+		{`([a]: number[] = [0]) => null`, func(t *test, tk Tokens) { // 83
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ArrowFunction: &ArrowFunction{
+												FormalParameters: &FormalParameters{
+													FormalParameterList: []BindingElement{
+														{
+															ArrayBindingPattern: &ArrayBindingPattern{
+																BindingElementList: []BindingElement{
+																	{
+																		SingleNameBinding: &tk[2],
+																		Tokens:            tk[2:3],
+																	},
+																},
+																Tokens: tk[1:4],
+															},
+															Initializer: &AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	ArrayLiteral: &ArrayLiteral{
+																		ElementList: []ArrayElement{
+																			{
+																				AssignmentExpression: AssignmentExpression{
+																					ConditionalExpression: WrapConditional(&PrimaryExpression{
+																						Literal: &tk[13],
+																						Tokens:  tk[13:14],
+																					}),
+																					Tokens: tk[13:14],
+																				},
+																				Tokens: tk[13:14],
+																			},
+																		},
+																		Tokens: tk[12:15],
+																	},
+																	Tokens: tk[12:15],
+																}),
+																Tokens: tk[12:15],
+															},
+															Tokens: tk[1:15],
+														},
+													},
+													Tokens: tk[:16],
+												},
+												AssignmentExpression: &AssignmentExpression{
+													ConditionalExpression: WrapConditional(&PrimaryExpression{
+														Literal: &tk[19],
+														Tokens:  tk[19:20],
+													}),
+													Tokens: tk[19:20],
+												},
+												Tokens: tk[:20],
+											},
+											Tokens: tk[:20],
+										},
+									},
+									Tokens: tk[:20],
+								},
+								Tokens: tk[:20],
+							},
+							Tokens: tk[:20],
+						},
+						Tokens: tk[:20],
+					},
+				},
+				Tokens: tk[:20],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
