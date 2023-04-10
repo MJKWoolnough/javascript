@@ -2989,6 +2989,22 @@ case "b":
 				Tokens: tk[:5],
 			}
 		}},
+		{`export default abstract class!`, func(t *test, tk Tokens) { // 80
+			t.Typescript = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingOpeningBrace,
+						Parsing: "ClassDeclaration",
+						Token:   tk[7],
+					},
+					Parsing: "ExportDeclaration",
+					Token:   tk[4],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
