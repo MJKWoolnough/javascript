@@ -3158,6 +3158,114 @@ case "b":
 				Tokens: tk[:20],
 			}
 		}},
+		{`([...a, ...b]: number[] = [0]) => null`, func(t *test, tk Tokens) { // 84
+			t.Typescript = true
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err: Error{
+																								Err: Error{
+																									Err: Error{
+																										Err: Error{
+																											Err: Error{
+																												Err: Error{
+																													Err:     ErrBadRestElement,
+																													Parsing: "ArrayAssignmentPattern",
+																													Token:   tk[1],
+																												},
+																												Parsing: "AssignmentPattern",
+																												Token:   tk[1],
+																											},
+																											Parsing: "ParenthesizedExpression",
+																											Token:   tk[1],
+																										},
+																										Parsing: "PrimaryExpression",
+																										Token:   tk[0],
+																									},
+																									Parsing: "MemberExpression",
+																									Token:   tk[0],
+																								},
+																								Parsing: "NewExpression",
+																								Token:   tk[0],
+																							},
+																							Parsing: "LeftHandSideExpression",
+																							Token:   tk[0],
+																						},
+																						Parsing: "UpdateExpression",
+																						Token:   tk[0],
+																					},
+																					Parsing: "UnaryExpression",
+																					Token:   tk[0],
+																				},
+																				Parsing: "ExponentiationExpression",
+																				Token:   tk[0],
+																			},
+																			Parsing: "MultiplicativeExpression",
+																			Token:   tk[0],
+																		},
+																		Parsing: "AdditiveExpression",
+																		Token:   tk[0],
+																	},
+																	Parsing: "ShiftExpression",
+																	Token:   tk[0],
+																},
+																Parsing: "RelationalExpression",
+																Token:   tk[0],
+															},
+															Parsing: "EqualityExpression",
+															Token:   tk[0],
+														},
+														Parsing: "BitwiseANDExpression",
+														Token:   tk[0],
+													},
+													Parsing: "BitwiseXORExpression",
+													Token:   tk[0],
+												},
+												Parsing: "BitwiseORExpression",
+												Token:   tk[0],
+											},
+											Parsing: "LogicalANDExpression",
+											Token:   tk[0],
+										},
+										Parsing: "LogicalORExpression",
+										Token:   tk[0],
+									},
+									Parsing: "ConditionalExpression",
+									Token:   tk[0],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[0],
+							},
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "Statement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementListItem",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleItem",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
