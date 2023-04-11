@@ -367,20 +367,7 @@ func (j *jsParser) ReadMappedType() bool {
 		g.AcceptRunWhitespace()
 	}
 	if !g.Accept(TokenRightBracePunctuator) {
-		for {
-			if !g.ReadTypeMember() {
-				return false
-			}
-			g.AcceptRunWhitespace()
-			sep := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","})
-			g.AcceptRunWhitespace()
-			if g.Accept(TokenRightBracePunctuator) {
-				break
-			}
-			if !sep {
-				return false
-			}
-		}
+		return false
 	}
 	j.Score(g)
 	return true
