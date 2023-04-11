@@ -4093,6 +4093,10 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadFunctionType,
 			"(a: string, ...b: number) => C",
 		},
+		{ // 152
+			(*jsParser).ReadFunctionType,
+			"new (private a: string, public b: number, protected c: bigint) => D",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		j, err := newJSParser(&tk)
