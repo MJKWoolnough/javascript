@@ -384,13 +384,16 @@ func (j *jsParser) ReadObjectType() bool {
 			if !g.ReadTypeMember() {
 				return false
 			}
+			g.AcceptRunWhitespaceNoNewLine()
+			tk := g.GetLastToken()
 			g.AcceptRunWhitespace()
 			sep := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","})
+			nl := g.GetLastToken() != tk
 			g.AcceptRunWhitespace()
 			if g.Accept(TokenRightBracePunctuator) {
 				break
 			}
-			if !sep {
+			if !sep && !nl {
 				return false
 			}
 		}
