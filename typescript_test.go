@@ -3756,364 +3756,348 @@ func TestTypescriptTypes(t *testing.T) {
 		},
 		{ // 68
 			(*jsParser).ReadObjectType,
-			"{ [ const A : number ] ? : string ; }",
+			"{a()}",
 		},
 		{ // 69
 			(*jsParser).ReadObjectType,
-			"{ [ static A : number ] ? : string ; }",
+			"{a?(): string}",
 		},
 		{ // 70
 			(*jsParser).ReadObjectType,
-			"{[const static A: number]: string}",
+			"{a<B>(c: D): E}",
 		},
 		{ // 71
 			(*jsParser).ReadObjectType,
-			"{[static const A: number]: string}",
+			"{ a ? < B > ( c : D ) : E ; }",
 		},
 		{ // 72
 			(*jsParser).ReadObjectType,
-			"{a()}",
+			"{'a'()}",
 		},
 		{ // 73
 			(*jsParser).ReadObjectType,
-			"{a?(): string}",
+			"{0()}",
 		},
 		{ // 74
 			(*jsParser).ReadObjectType,
-			"{a<B>(c: D): E}",
+			"{0}",
 		},
 		{ // 75
 			(*jsParser).ReadObjectType,
-			"{ a ? < B > ( c : D ) : E ; }",
+			"{''}",
 		},
 		{ // 76
 			(*jsParser).ReadObjectType,
-			"{'a'()}",
+			"{0?: number}",
 		},
 		{ // 77
 			(*jsParser).ReadObjectType,
-			"{0()}",
+			"{'': string}",
 		},
 		{ // 78
 			(*jsParser).ReadObjectType,
-			"{0}",
+			"{a}",
 		},
 		{ // 79
 			(*jsParser).ReadObjectType,
-			"{''}",
-		},
-		{ // 80
-			(*jsParser).ReadObjectType,
-			"{0?: number}",
-		},
-		{ // 81
-			(*jsParser).ReadObjectType,
-			"{'': string}",
-		},
-		{ // 82
-			(*jsParser).ReadObjectType,
-			"{a}",
-		},
-		{ // 83
-			(*jsParser).ReadObjectType,
 			"{ a : boolean ; }",
 		},
-		{ // 84
+		{ // 80
 			(*jsParser).ReadMappedType,
 			"{readonly [A in B]}",
 		},
-		{ // 85
+		{ // 81
 			(*jsParser).ReadMappedType,
 			"{+readonly [A in B]}",
 		},
-		{ // 86
+		{ // 82
 			(*jsParser).ReadMappedType,
 			"{-readonly [A in B]}",
 		},
-		{ // 87
+		{ // 83
 			(*jsParser).ReadMappedType,
 			"{[A in B]?}",
 		},
-		{ // 88
+		{ // 84
 			(*jsParser).ReadMappedType,
 			"{[A in B]-?}",
 		},
-		{ // 89
+		{ // 85
 			(*jsParser).ReadMappedType,
 			"{[A in B]?: string}",
 		},
-		{ // 90
+		{ // 86
 			(*jsParser).ReadMappedType,
 			"{[A in B]-?: number}",
 		},
-		{ // 91
+		{ // 87
 			(*jsParser).ReadMappedType,
 			"{[A in B as C]}",
 		},
-		{ // 92
+		{ // 88
 			(*jsParser).ReadTupleType,
 			"[]",
 		},
-		{ // 93
+		{ // 89
 			(*jsParser).ReadTupleType,
 			"[ ]",
 		},
-		{ // 94
+		{ // 90
 			(*jsParser).ReadTupleType,
 			"[number]",
 		},
-		{ // 95
+		{ // 91
 			(*jsParser).ReadTupleType,
 			"[ number ]",
 		},
-		{ // 96
+		{ // 92
 			(*jsParser).ReadTupleType,
 			"[number, string]",
 		},
-		{ // 97
+		{ // 93
 			(*jsParser).ReadTupleType,
 			"[ number, string ]",
 		},
-		{ // 98
+		{ // 94
 			(*jsParser).ReadTupleType,
 			"[...number]",
 		},
-		{ // 99
+		{ // 95
 			(*jsParser).ReadTupleType,
 			"[number, ...string]",
 		},
-		{ // 100
+		{ // 96
 			(*jsParser).ReadThisType,
 			"this",
 		},
-		{ // 101
+		{ // 97
 			(*jsParser).ReadTypeQuery,
 			"typeof A",
 		},
-		{ // 102
+		{ // 98
 			(*jsParser).ReadTypeQuery,
 			"typeof A<B>",
 		},
-		{ // 103
+		{ // 99
 			(*jsParser).ReadTypeQuery,
 			"typeof A.B",
 		},
-		{ // 104
+		{ // 100
 			(*jsParser).ReadTypeQuery,
 			"typeof A.const",
 		},
-		{ // 105
+		{ // 101
 			(*jsParser).ReadTypeQuery,
 			"typeof A.#B",
 		},
-		{ // 106
+		{ // 102
 			(*jsParser).ReadTypeQuery,
 			"typeof A . #B . void",
 		},
-		{ // 107
+		{ // 103
 			(*jsParser).ReadTypeQuery,
 			"typeof A.#B.void<C, D>",
 		},
-		{ // 108
+		{ // 104
 			(*jsParser).ReadTypeReference,
 			"A",
 		},
-		{ // 109
+		{ // 105
 			(*jsParser).ReadTypeReference,
 			"A.B",
 		},
-		{ // 110
+		{ // 116
 			(*jsParser).ReadTypeReference,
 			"A<B>",
 		},
-		{ // 111
+		{ // 107
 			(*jsParser).ReadTypeReference,
 			"A.B<C>",
 		},
-		{ // 112
+		{ // 108
 			(*jsParser).ReadTypeReference,
 			"A . B < C >",
 		},
-		{ // 113
+		{ // 109
 			(*jsParser).ReadPostfixType,
 			"number[]",
 		},
-		{ // 114
+		{ // 110
 			(*jsParser).ReadPostfixType,
 			"`a${string}b` [ ] ",
 		},
-		{ // 115
+		{ // 111
 			(*jsParser).ReadPostfixType,
 			"(boolean)!",
 		},
-		{ // 116
+		{ // 112
 			(*jsParser).ReadPostfixType,
 			"(null)!",
 		},
-		{ // 117
+		{ // 113
 			(*jsParser).ReadPostfixType,
 			"this ! []",
 		},
-		{ // 118
+		{ // 114
 			(*jsParser).ReadPostfixType,
 			"typeof A [] !",
 		},
-		{ // 119
+		{ // 115
 			(*jsParser).ReadPostfixType,
 			"A [ B ]",
 		},
-		{ // 120
+		{ // 116
 			(*jsParser).ReadTypeOperator,
 			"infer A",
 		},
-		{ // 121
+		{ // 117
 			(*jsParser).ReadTypeOperator,
 			"keyof infer A",
 		},
-		{ // 122
+		{ // 118
 			(*jsParser).ReadTypeOperator,
 			"unique infer A",
 		},
-		{ // 123
+		{ // 119
 			(*jsParser).ReadTypeOperator,
 			"readonly infer A",
 		},
-		{ // 124
+		{ // 120
 			(*jsParser).ReadTypeOperator,
 			"keyof keyof infer A",
 		},
-		{ // 125
+		{ // 121
 			(*jsParser).ReadTypeOperator,
 			"readonly unique infer A",
 		},
-		{ // 126
+		{ // 122
 			(*jsParser).ReadTypeOperator,
 			"unique readonly infer A",
 		},
-		{ // 127
+		{ // 123
 			(*jsParser).ReadTypeOperator,
 			"A [ B ]",
 		},
-		{ // 128
+		{ // 124
 			(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 			"A",
 		},
-		{ // 129
+		{ // 125
 			(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 			"A|B",
 		},
-		{ // 130
+		{ // 126
 			(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 			"A & B | C",
 		},
-		{ // 131
+		{ // 127
 			(*jsParser).ReadUnionOrIntersectionOrPrimaryType,
 			"A | B&C",
 		},
-		{ // 132
+		{ // 128
 			(*jsParser).ReadFunctionType,
 			"()=>A",
 		},
-		{ // 133
+		{ // 129
 			(*jsParser).ReadFunctionType,
 			"new()=>A",
 		},
-		{ // 134
+		{ // 130
 			(*jsParser).ReadFunctionType,
 			"new<A>() => B",
 		},
-		{ // 135
+		{ // 131
 			(*jsParser).ReadFunctionType,
 			"new < A, B > (B, C) => D",
 		},
-		{ // 136
+		{ // 132
 			(*jsParser).ReadFunctionType,
 			"<A, B> (B, C) => D",
 		},
-		{ // 137
+		{ // 133
 			(*jsParser).ReadType,
 			"A extends B?C:D",
 		},
-		{ // 138
+		{ // 134
 			(*jsParser).ReadType,
 			"A extends B ? C : D",
 		},
-		{ // 139
+		{ // 135
 			(*jsParser).ReadType,
 			"A",
 		},
-		{ // 140
+		{ // 136
 			(*jsParser).ReadType,
 			"()=>void",
 		},
-		{ // 141
+		{ // 137
 			(*jsParser).ReadType,
 			"<A extends B>()=>void",
 		},
-		{ // 142
+		{ // 138
 			(*jsParser).ReadType,
 			"<A = B>()=>void",
 		},
-		{ // 143
+		{ // 139
 			(*jsParser).ReadType,
 			"<A extends B = C>()=>void",
 		},
-		{ // 144
+		{ // 140
 			(*jsParser).ReadType,
 			"< A, B extends C, D = E, F extends G = H >()=>void",
 		},
-		{ // 145
+		{ // 141
 			(*jsParser).ReadPredefinedType,
 			"object.a",
 		},
-		{ // 146
+		{ // 142
 			(*jsParser).ReadPredefinedType,
 			"any . a . b",
 		},
-		{ // 147
+		{ // 143
 			(*jsParser).ReadPredefinedType,
 			"object . a . b <C, D>",
 		},
-		{ // 148
+		{ // 144
 			(*jsParser).ReadObjectType,
 			"{ get [ A ]()}",
 		},
-		{ // 149
+		{ // 145
 			(*jsParser).ReadObjectType,
 			`{
 	a: boolean
 	b: string
 }`,
 		},
-		{ // 150
+		{ // 146
 			(*jsParser).ReadFunctionType,
 			"(...a)=>B",
 		},
-		{ // 151
+		{ // 147
 			(*jsParser).ReadFunctionType,
 			"(a: string, ...b: number) => C",
 		},
-		{ // 152
+		{ // 148
 			(*jsParser).ReadFunctionType,
 			"new (private a: string, public b: number, protected c: bigint) => D",
 		},
-		{ // 153
+		{ // 149
 			(*jsParser).ReadFunctionType,
 			"(a: number = 1) => B",
 		},
-		{ // 154
+		{ // 150
 			(*jsParser).ReadObjectType,
 			"{ get \"a\"(): string}",
 		},
-		{ // 155
+		{ // 151
 			(*jsParser).ReadObjectType,
 			"{ get 0(): number}",
 		},
-		{ // 156
+		{ // 152
 			(*jsParser).ReadObjectType,
 			"{ get #a(): bigint}",
 		},
-		{ // 157
+		{ // 153
 			(*jsParser).ReadObjectType,
 			"{ get other(): boolean}",
 		},
