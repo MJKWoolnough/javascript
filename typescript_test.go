@@ -3266,7 +3266,7 @@ case "b":
 				Token:   tk[0],
 			}
 		}},
-		{`([a]: number = !) => null`, func(t *test, tk Tokens) { // 86
+		{`([a]: number = !) => null`, func(t *test, tk Tokens) { // 85
 			t.Typescript = true
 			t.Err = Error{
 				Err: Error{
@@ -3442,7 +3442,7 @@ case "b":
 				Token:   tk[0],
 			}
 		}},
-		{`abstract`, func(t *test, tk Tokens) { // 87
+		{`abstract`, func(t *test, tk Tokens) { // 86
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3471,7 +3471,7 @@ case "b":
 				Tokens: tk[:1],
 			}
 		}},
-		{`type A<B> = {}`, func(t *test, tk Tokens) { // 88
+		{`type A<B> = {}`, func(t *test, tk Tokens) { // 87
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3488,7 +3488,7 @@ case "b":
 				Tokens: tk[:11],
 			}
 		}},
-		{`interface A {}`, func(t *test, tk Tokens) { // 89
+		{`interface A {}`, func(t *test, tk Tokens) { // 88
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3505,7 +3505,7 @@ case "b":
 				Tokens: tk[:6],
 			}
 		}},
-		{`interface A<B> extends C {}`, func(t *test, tk Tokens) { // 90
+		{`interface A<B> extends C {}`, func(t *test, tk Tokens) { // 89
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3522,7 +3522,7 @@ case "b":
 				Tokens: tk[:13],
 			}
 		}},
-		{`export type {A} from './b';`, func(t *test, tk Tokens) { // 91
+		{`export type {A} from './b';`, func(t *test, tk Tokens) { // 90
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3539,7 +3539,7 @@ case "b":
 				Tokens: tk[:12],
 			}
 		}},
-		{`import {type A as B} from './c';`, func(t *test, tk Tokens) { // 92
+		{`import {type A as B} from './c';`, func(t *test, tk Tokens) { // 91
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
