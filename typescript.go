@@ -1168,7 +1168,10 @@ func (j *jsParser) ReadFunctionDeclaration() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
-	if !g.ReadTypeParameters() {
+	if g.ReadTypeParameters() {
+		g.AcceptRunWhitespace()
+	}
+	if !g.ReadParameterList() {
 		return false
 	}
 	h := g.NewGoal()
