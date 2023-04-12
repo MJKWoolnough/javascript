@@ -1071,7 +1071,7 @@ func (j *jsParser) SkipTypeImport() bool {
 			if i.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
 				i.AcceptRunWhitespace()
 				if i.parseIdentifier(false, false) != nil {
-					h.Score(h)
+					h.Score(i)
 					g.Score(h)
 					j.Score(g)
 					return true
