@@ -1114,7 +1114,7 @@ func (j *jsParser) SkipDeclare() bool {
 				j.Score(g)
 				return true
 			}
-		case parser.Token{Type: TokenKeyword, Data: "async"}:
+		case parser.Token{Type: TokenIdentifier, Data: "async"}:
 			g.Skip()
 			g.AcceptRunWhitespace()
 			fallthrough
