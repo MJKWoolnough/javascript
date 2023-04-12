@@ -3539,6 +3539,30 @@ case "b":
 				Tokens: tk[:12],
 			}
 		}},
+		{`import {type A as B} from './c';`, func(t *test, tk Tokens) { // 92
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ImportDeclaration: &ImportDeclaration{
+							ImportClause: &ImportClause{
+								NamedImports: &NamedImports{
+									Tokens: tk[2:11],
+								},
+								Tokens: tk[2:11],
+							},
+							FromClause: FromClause{
+								ModuleSpecifier: &tk[14],
+								Tokens:          tk[12:15],
+							},
+							Tokens: tk[:16],
+						},
+						Tokens: tk[:16],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
