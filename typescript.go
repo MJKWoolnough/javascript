@@ -1105,11 +1105,13 @@ func (j *jsParser) SkipDeclare() bool {
 		case parser.Token{Type: TokenKeyword, Data: "var"}:
 			var vd VariableStatement
 			if vd.parse(&g, false, false) == nil {
+				j.Score(g)
 				return true
 			}
 		case parser.Token{Type: TokenKeyword, Data: "const"}, parser.Token{Type: TokenIdentifier, Data: "let"}:
 			var ld LexicalDeclaration
 			if ld.parse(&g, true, false, false) == nil {
+				j.Score(g)
 				return true
 			}
 		case parser.Token{Type: TokenKeyword, Data: "async"}:
@@ -1118,10 +1120,12 @@ func (j *jsParser) SkipDeclare() bool {
 			fallthrough
 		case parser.Token{Type: TokenKeyword, Data: "function"}:
 			if g.ReadFunctionDeclaration() {
+				j.Score(g)
 				return true
 			}
 		case parser.Token{Type: TokenKeyword, Data: "class"}:
 			if g.ReadClassDeclaration() {
+				j.Score(g)
 				return true
 			}
 		}
