@@ -1100,7 +1100,7 @@ func (j *jsParser) SkipThisParam() bool {
 func (j *jsParser) SkipDeclare() bool {
 	g := j.NewGoal()
 	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "declare"}) {
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoNewLine()
 		switch g.Peek() {
 		case parser.Token{Type: TokenKeyword, Data: "var"}:
 			var vd VariableStatement
