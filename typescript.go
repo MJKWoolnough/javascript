@@ -933,7 +933,6 @@ func (j *jsParser) ReadInterface() bool {
 		}
 		if g.ReadHeritage() {
 			g.AcceptRunWhitespace()
-			return false
 		}
 		if !g.ReadObjectType() {
 			return false
