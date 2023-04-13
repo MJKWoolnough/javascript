@@ -3665,6 +3665,23 @@ case "b":
 				Tokens: tk[:8],
 			}
 		}},
+		{`declare class A extends B {C(): void}`, func(t *test, tk Tokens) { // 98
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:18],
+							},
+							Tokens: tk[:18],
+						},
+						Tokens: tk[:18],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
