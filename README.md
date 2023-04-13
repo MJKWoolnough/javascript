@@ -395,7 +395,7 @@ const (
 	AssignmentAdd
 	AssignmentSubtract
 	AssignmentLeftShift
-	AssignmentSignPropagatinRightShift
+	AssignmentSignPropagatingRightShift
 	AssignmentZeroFillRightShift
 	AssignmentBitwiseAND
 	AssignmentBitwiseXOR
@@ -2315,6 +2315,20 @@ type Tokeniser interface {
 ```
 
 Tokeniser is an interface representing a tokeniser
+
+#### func  AsTypescript
+
+```go
+func AsTypescript(t Tokeniser) Tokeniser
+```
+AsTypescript converts the tokeniser to one that reads Typescript.
+
+When used with ParseScript or ParseModule, will produce Javascript AST from most
+valid Typescript files, though it may also parse invalid Typescript.
+
+Currently does not support any Typescript feature that requires codegen or
+lookahead/lookback, such as the Typescript 'private' modifier, or the 'enum' and
+'namespace' declarations.
 
 #### type Tokens
 
