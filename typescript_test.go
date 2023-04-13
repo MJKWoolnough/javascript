@@ -3563,6 +3563,108 @@ case "b":
 				Tokens: tk[:16],
 			}
 		}},
+		{`declare var a: number;`, func(t *test, tk Tokens) { // 92
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`declare let a: number;`, func(t *test, tk Tokens) { // 93
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`declare const a: number;`, func(t *test, tk Tokens) { // 94
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:9],
+							},
+							Tokens: tk[:9],
+						},
+						Tokens: tk[:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`declare async function A<B>(): string`, func(t *test, tk Tokens) { // 95
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:15],
+							},
+							Tokens: tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{`declare function* A(): number`, func(t *test, tk Tokens) { // 96
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:11],
+							},
+							Tokens: tk[:11],
+						},
+						Tokens: tk[:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`declare class A {}`, func(t *test, tk Tokens) { // 97
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:8],
+							},
+							Tokens: tk[:8],
+						},
+						Tokens: tk[:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
