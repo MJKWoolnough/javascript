@@ -25,6 +25,21 @@ func ParseScript(t Tokeniser) (*Script, error) {
 	return s, nil
 }
 
+// ScriptToModule converts a Script type to a Module type
+func ScriptToModule(s *Script) *Module {
+	m := &Module{
+		ModuleListItems: make([]ModuleItem, len(s.StatementList)),
+		Tokens:          s.Tokens,
+	}
+	for n := range s.StatementList {
+		m.ModuleListItems[n] = ModuleItem{
+			StatementListItem: &s.StatementList[n],
+			Tokens:            s.StatementList[n].Tokens,
+		}
+	}
+	return m
+}
+
 func (s *Script) parse(j *jsParser) error {
 	for j.AcceptRunWhitespace() != parser.TokenDone {
 		g := j.NewGoal()
