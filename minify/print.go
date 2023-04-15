@@ -94,7 +94,22 @@ func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
 func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
 }
 
-func (w *writer) WriteImportDeclaration(ed *javascript.ImportDeclaration) {
+func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
+	if id.ImportClause == nil && id.FromClause.ModuleSpecifier == nil {
+		return
+	}
+	w.WriteString("import")
+	if id.ImportClause != nil {
+		w.WriteImportClause(id.ImportClause)
+		w.WriteFromClause(&id.FromClause)
+	} else if id.FromClause.ModuleSpecifier != nil {
+		w.WriteString(" ")
+		w.WriteString(id.FromClause.ModuleSpecifier.Data)
+	}
+	w.WriteString(";")
+}
+
+func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
 }
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
