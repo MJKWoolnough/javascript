@@ -12,10 +12,10 @@ type writer struct {
 	err   error
 }
 
-func (w *writer) Write(p []byte) {
+func (w *writer) WriteString(str string) {
 	if w.err == nil {
 		var n int
-		n, w.err = w.Writer.Write(p)
+		n, w.err = io.WriteString(w.Writer, str)
 		w.count += int64(n)
 	}
 }
