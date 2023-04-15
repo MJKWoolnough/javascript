@@ -69,8 +69,8 @@ func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
 	} else if ed.DefaultAssignmentExpression != nil {
 		w.WriteString(" default ")
 		w.WriteAssignmentExpression(ed.DefaultAssignmentExpression)
+		w.WriteString(";")
 	}
-	w.WriteString(";")
 }
 
 func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
@@ -105,8 +105,8 @@ func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 	} else if id.FromClause.ModuleSpecifier != nil {
 		w.WriteString(" ")
 		w.WriteString(id.FromClause.ModuleSpecifier.Data)
+		w.WriteString(";")
 	}
-	w.WriteString(";")
 }
 
 func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
