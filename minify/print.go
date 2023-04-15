@@ -39,6 +39,59 @@ func (w *writer) WriteModuleListItem(mi javascript.ModuleItem) {
 }
 
 func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
+	w.WriteString("export")
+	if ed.FromClause != nil {
+		if ed.ExportClause != nil {
+			w.WriteExportClause(ed.ExportClause)
+		} else {
+			w.WriteString("*")
+			if ed.ExportClause != nil {
+				w.WriteString("as ")
+				w.WriteString(ed.ExportFromClause.Data)
+				w.WriteString(" ")
+			}
+		}
+		w.WriteFromClause(ed.FromClause)
+	} else if ed.ExportClause != nil {
+		w.WriteExportClause(ed.ExportClause)
+	} else if ed.VariableStatement != nil {
+		w.WriteString(" ")
+		w.WriteVariableStatement(ed.VariableStatement)
+	} else if ed.Declaration != nil {
+		w.WriteString(" ")
+		w.WriteDeclaration(ed.Declaration)
+	} else if ed.DefaultFunction != nil {
+		w.WriteString(" default ")
+		w.WriteFunctionDeclaration(ed.DefaultFunction)
+	} else if ed.DefaultClass != nil {
+		w.WriteString(" default ")
+		w.WriteClassDeclaration(ed.DefaultClass)
+	} else if ed.DefaultAssignmentExpression != nil {
+		w.WriteString(" default ")
+		w.WriteAssignmentExpression(ed.DefaultAssignmentExpression)
+	}
+	w.WriteString(";")
+}
+
+func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
+}
+
+func (w *writer) WriteFromClause(fc *javascript.FromClause) {
+}
+
+func (w *writer) WriteVariableStatement(vd *javascript.VariableStatement) {
+}
+
+func (w *writer) WriteDeclaration(d *javascript.Declaration) {
+}
+
+func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
+}
+
+func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
+}
+
+func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
 }
 
 func (w *writer) WriteImportDeclaration(ed *javascript.ImportDeclaration) {
