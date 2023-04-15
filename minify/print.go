@@ -77,6 +77,9 @@ func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
 }
 
 func (w *writer) WriteFromClause(fc *javascript.FromClause) {
+	w.WriteString("from ")
+	w.WriteString(fc.ModuleSpecifier.Data)
+	w.WriteString(";")
 }
 
 func (w *writer) WriteVariableStatement(vd *javascript.VariableStatement) {
