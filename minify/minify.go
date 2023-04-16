@@ -6,7 +6,7 @@ import (
 )
 
 type Minifier struct {
-	literals bool
+	literals, numbers bool
 }
 
 func New(opts ...Option) *Minifier {
