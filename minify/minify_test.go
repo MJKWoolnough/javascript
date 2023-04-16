@@ -22,7 +22,7 @@ func TestTransforms(t *testing.T) {
 		Options       []Option
 		Input, Output javascript.Type
 	}{
-		{
+		{ // 1
 			[]Option{Literals()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenIdentifier, "false"),
@@ -31,7 +31,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenIdentifier, "!1"),
 			},
 		},
-		{
+		{ // 2
 			[]Option{Literals()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenIdentifier, "true"),
@@ -40,7 +40,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenIdentifier, "!0"),
 			},
 		},
-		{
+		{ // 3
 			[]Option{Literals()},
 			&javascript.PrimaryExpression{
 				IdentifierReference: makeToken(javascript.TokenIdentifier, "undefined"),
@@ -49,7 +49,7 @@ func TestTransforms(t *testing.T) {
 				IdentifierReference: makeToken(javascript.TokenIdentifier, "void 0"),
 			},
 		},
-		{
+		{ // 4
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "100"),
@@ -58,7 +58,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "100"),
 			},
 		},
-		{
+		{ // 5
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000"),
@@ -67,7 +67,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "1e3"),
 			},
 		},
-		{
+		{ // 6
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "123450000"),
@@ -76,7 +76,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "12345e4"),
 			},
 		},
-		{
+		{ // 7
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.01"),
@@ -85,7 +85,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.01"),
 			},
 		},
-		{
+		{ // 8
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.001"),
@@ -94,7 +94,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "1e-3"),
 			},
 		},
-		{
+		{ // 9
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.00123400"),
@@ -103,7 +103,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "1234e-6"),
 			},
 		},
-		{
+		{ // 10
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0xff"),
@@ -112,7 +112,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "255"),
 			},
 		},
-		{
+		{ // 11
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "999999999999"),
@@ -121,7 +121,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "999999999999"),
 			},
 		},
-		{
+		{ // 12
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000000"),
@@ -130,7 +130,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "1e12"),
 			},
 		},
-		{
+		{ // 13
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000001"),
@@ -139,7 +139,7 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "0xe8d4a51001"),
 			},
 		},
-		{
+		{ // 14
 			[]Option{Numbers()},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0o7"),
