@@ -49,6 +49,105 @@ func TestTransforms(t *testing.T) {
 				IdentifierReference: makeToken(javascript.TokenIdentifier, "void 0"),
 			},
 		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "100"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "100"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1000"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1e3"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "123450000"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "12345e4"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0.01"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0.01"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0.001"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1e-3"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0.00123400"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1234e-6"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0xff"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "255"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "999999999999"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "999999999999"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000000"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1e12"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000001"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0xe8d4a51001"),
+			},
+		},
+		{
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0o7"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "7"),
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
