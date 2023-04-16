@@ -1668,6 +1668,13 @@ func ParseModule(t Tokeniser) (*Module, error)
 ```
 ParseModule parses a javascript module
 
+#### func  ScriptToModule
+
+```go
+func ScriptToModule(s *Script) *Module
+```
+ScriptToModule converts a Script type to a Module type
+
 #### func (Module) Format
 
 ```go
