@@ -148,6 +148,24 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenNumericLiteral, "7"),
 			},
 		},
+		{ // 15
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "0b10"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+			},
+		},
+		{ // 16
+			[]Option{Numbers()},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "123_456"),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenNumericLiteral, "123456"),
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
