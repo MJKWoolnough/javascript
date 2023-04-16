@@ -5,7 +5,9 @@ import (
 	"vimagination.zapto.org/javascript/walk"
 )
 
-type Minifier struct{}
+type Minifier struct {
+	literals bool
+}
 
 func New(opts ...Option) *Minifier {
 	m := new(Minifier)
