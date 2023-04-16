@@ -22,9 +22,28 @@ type walker struct {
 }
 
 func (w *walker) Handle(t javascript.Type) error {
-	return nil
+	switch t := t.(type) {
+	case *javascript.PrimaryExpression:
+		w.minifyLiterals(t)
+	}
+	return walk.Walk(t, w)
 }
 
 func (m *Minifier) Process(jm *javascript.Module) {
 	walk.Walk(jm, &walker{Minifier: m})
+}
+
+func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
+	if m.literals {
+		if pe.Literal != nil {
+			switch pe.Literal.Data {
+			case "true":
+				pe.Literal.Data = "!0"
+			case "false":
+				pe.Literal.Data = "!1"
+			}
+		} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == "undefined" {
+			pe.IdentifierReference.Data = "void 0"
+		}
+	}
 }
