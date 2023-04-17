@@ -428,8 +428,25 @@ func (j *jsParser) ReadTypeMember() bool {
 	return false
 }
 
+func (j *jsParser) ReadModifiers() {
+	var seenConst, seenStatic bool
+	g := j.NewGoal()
+	for {
+		g.AcceptRunWhitespace()
+		if !seenConst && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "const"}) {
+			seenConst = true
+		} else if !seenStatic && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"}) {
+			seenStatic = true
+		} else if !(g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "abstract"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "const"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "public"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "private"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "protected"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "readonly"}) || g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"})) {
+			break
+		}
+	}
+	j.Score(g)
+}
+
 func (j *jsParser) ReadAccessorDeclaration() bool {
 	g := j.NewGoal()
+	g.ReadModifiers()
 	if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "get"}) && !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "set"}) {
 		return false
 	}
@@ -468,6 +485,7 @@ func (j *jsParser) ReadPropertyName() bool {
 
 func (j *jsParser) ReadPropertySignature() bool {
 	g := j.NewGoal()
+	g.ReadModifiers()
 	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
 		return false
 	}
@@ -619,6 +637,7 @@ func (j *jsParser) ReadConstructSignature() bool {
 
 func (j *jsParser) ReadIndexSignature() bool {
 	g := j.NewGoal()
+	g.ReadModifiers()
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		return false
 	}
@@ -660,6 +679,7 @@ func (j *jsParser) ReadParameter() bool {
 
 func (j *jsParser) ReadMethodSignature() bool {
 	g := j.NewGoal()
+	g.ReadModifiers()
 	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
 		return false
 	}
