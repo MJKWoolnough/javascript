@@ -74,6 +74,17 @@ func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
 }
 
 func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
+	w.WriteString("{")
+	for n := range ec.ExportList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteExportSpecifier(&ec.ExportList[n])
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
 }
 
 func (w *writer) WriteFromClause(fc *javascript.FromClause) {
