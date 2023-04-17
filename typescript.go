@@ -597,7 +597,7 @@ func (j *jsParser) ReadParameterList() bool {
 			g.ReadTypeAnnotation()
 			g.AcceptRunWhitespace()
 			init := g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="})
-			if optional && (!opt || !init) {
+			if optional && !opt && !init {
 				return false
 			}
 			if init {
