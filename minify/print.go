@@ -88,6 +88,7 @@ func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
 func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
 	if es.IdentifierName == nil {
 		w.err = ErrInvalidAST
+		return
 	}
 	w.WriteString(es.IdentifierName.Data)
 	if es.EIdentifierName != nil && es.EIdentifierName.Data != es.IdentifierName.Data {
@@ -159,6 +160,15 @@ func (w *writer) WriteNamedImports(ni *javascript.NamedImports) {
 }
 
 func (w *writer) WriteImportSpecifier(is *javascript.ImportSpecifier) {
+	if is.IdentifierName == nil {
+		w.err = ErrInvalidAST
+		return
+	}
+	if is.IdentifierName != nil && is.IdentifierName.Data != is.ImportedBinding.Data {
+		w.WriteString(is.IdentifierName.Data)
+		w.WriteString(" as ")
+	}
+	w.WriteString(is.ImportedBinding.Data)
 }
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
