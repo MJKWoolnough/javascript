@@ -148,6 +148,17 @@ func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
 }
 
 func (w *writer) WriteNamedImports(ni *javascript.NamedImports) {
+	w.WriteString("{")
+	for n := range ni.ImportList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteImportSpecifier(&ni.ImportList[n])
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteImportSpecifier(is *javascript.ImportSpecifier) {
 }
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
