@@ -1,6 +1,7 @@
 package minify
 
 import (
+	"errors"
 	"io"
 
 	"vimagination.zapto.org/javascript"
@@ -85,6 +86,14 @@ func (w *writer) WriteExportClause(ec *javascript.ExportClause) {
 }
 
 func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
+	if es.IdentifierName == nil {
+		w.err = ErrInvalidAST
+	}
+	w.WriteString(es.IdentifierName.Data)
+	if es.EIdentifierName != nil && es.EIdentifierName.Data != es.IdentifierName.Data {
+		w.WriteString(" as ")
+		w.WriteString(es.EIdentifierName.Data)
+	}
 }
 
 func (w *writer) WriteFromClause(fc *javascript.FromClause) {
@@ -128,3 +137,5 @@ func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
 }
+
+var ErrInvalidAST = errors.New("invalid AST")
