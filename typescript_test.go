@@ -3682,6 +3682,23 @@ case "b":
 				Tokens: tk[:18],
 			}
 		}},
+		{`interface A {readonly B: C;}`, func(t *test, tk Tokens) { // 99
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:13],
+							},
+							Tokens: tk[:13],
+						},
+						Tokens: tk[:13],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
