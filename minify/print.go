@@ -133,6 +133,21 @@ func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 }
 
 func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
+	if ic.ImportedDefaultBinding != nil {
+		w.WriteString(ic.ImportedDefaultBinding.Data)
+		if ic.NameSpaceImport != nil || ic.NamedImports != nil {
+			w.WriteString(",")
+		}
+	}
+	if ic.NameSpaceImport != nil {
+		w.WriteString("*as ")
+		w.WriteString(ic.NameSpaceImport.Data)
+	} else if ic.NamedImports != nil {
+		w.WriteNamedImports(ic.NamedImports)
+	}
+}
+
+func (w *writer) WriteNamedImports(ni *javascript.NamedImports) {
 }
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
