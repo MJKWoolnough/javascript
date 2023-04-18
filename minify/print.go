@@ -270,6 +270,14 @@ func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
 }
 
 func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
+	w.WriteString("do")
+	if i.Statement.BlockStatement == nil {
+		w.WriteString(" ")
+	}
+	w.WriteEOS()
+	w.WriteString("while(")
+	w.WriteExpressionStatement(&i.Expression)
+	w.WriteString(")")
 }
 
 func (w *writer) WriteIterationStatementWhile(i *javascript.IterationStatementWhile) {
