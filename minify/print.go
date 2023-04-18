@@ -172,6 +172,14 @@ func (w *writer) WriteImportSpecifier(is *javascript.ImportSpecifier) {
 }
 
 func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
+	if si.Statement != nil {
+		w.WriteStatement(si.Statement)
+	} else if si.Declaration != nil {
+		w.WriteDeclaration(si.Declaration)
+	}
+}
+
+func (w *writer) WriteStatement(s *javascript.Statement) {
 }
 
 var ErrInvalidAST = errors.New("invalid AST")
