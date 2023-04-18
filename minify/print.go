@@ -288,6 +288,118 @@ func (w *writer) WriteIterationStatementWhile(i *javascript.IterationStatementWh
 }
 
 func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor) {
+	switch i.Type {
+	case javascript.ForNormal:
+		if i.InitVar != nil || i.InitLexical != nil || i.InitExpression != nil {
+			return
+		}
+	case javascript.ForNormalVar:
+		if len(i.InitVar) == 0 {
+			return
+		}
+	case javascript.ForNormalLexicalDeclaration:
+		if i.InitLexical == nil {
+			return
+		}
+	case javascript.ForNormalExpression:
+		if i.InitExpression == nil {
+			return
+		}
+	case javascript.ForInLeftHandSide, javascript.ForOfLeftHandSide, javascript.ForAwaitOfLeftHandSide:
+		if i.LeftHandSideExpression == nil {
+			return
+		}
+	case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar, javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet, javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfConst:
+		if i.ForBindingIdentifier == nil && i.ForBindingPatternObject == nil && i.ForBindingPatternArray == nil {
+			return
+		}
+	default:
+		return
+	}
+	switch i.Type {
+	case javascript.ForInLeftHandSide, javascript.ForInVar, javascript.ForInLet, javascript.ForInConst:
+		if i.In == nil {
+			return
+		}
+	case javascript.ForOfLeftHandSide, javascript.ForOfVar, javascript.ForOfLet, javascript.ForOfConst, javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
+		if i.Of == nil {
+			return
+		}
+	}
+	switch i.Type {
+	case javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
+		w.WriteString("for await(")
+	default:
+		w.WriteString("for(")
+	}
+	switch i.Type {
+	case javascript.ForNormal:
+		w.WriteString(";")
+	case javascript.ForNormalVar:
+		w.WriteString("var ")
+		w.WriteLexicalBinding((*javascript.LexicalBinding)(&i.InitVar[0]))
+		for n := range i.InitVar[1:] {
+			w.WriteString(",")
+			w.WriteLexicalBinding((*javascript.LexicalBinding)(&i.InitVar[n]))
+		}
+		w.WriteString(";")
+	case javascript.ForNormalLexicalDeclaration:
+		w.WriteLexicalDeclaration(i.InitLexical)
+	case javascript.ForNormalExpression:
+		w.WriteExpressionStatement(i.InitExpression)
+		w.WriteString(";")
+	case javascript.ForInLeftHandSide, javascript.ForOfLeftHandSide, javascript.ForAwaitOfLeftHandSide:
+		w.WriteLeftHandSideExpression(i.LeftHandSideExpression)
+	default:
+		switch i.Type {
+		case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar:
+			w.WriteString("var ")
+		case javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet:
+			w.WriteString("let ")
+		case javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfConst:
+			w.WriteString("const ")
+		}
+		if i.ForBindingIdentifier != nil {
+			w.WriteString(i.ForBindingIdentifier.Data)
+		} else if i.ForBindingPatternObject != nil {
+			w.WriteObjectBindingPattern(i.ForBindingPatternObject)
+		} else {
+			w.WriteArrayBindingPattern(i.ForBindingPatternArray)
+		}
+	}
+	switch i.Type {
+	case javascript.ForNormal, javascript.ForNormalVar, javascript.ForNormalLexicalDeclaration, javascript.ForNormalExpression:
+		if i.Conditional != nil {
+			w.WriteExpressionStatement(i.Conditional)
+		}
+		w.WriteString(";")
+		if i.Afterthought != nil {
+			w.WriteExpressionStatement(i.Afterthought)
+		}
+	case javascript.ForInLeftHandSide, javascript.ForInVar, javascript.ForInLet, javascript.ForInConst:
+		w.WriteString(" in ")
+		w.WriteExpressionStatement(i.In)
+	case javascript.ForOfLeftHandSide, javascript.ForOfVar, javascript.ForOfLet, javascript.ForOfConst, javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
+		w.WriteString(" of ")
+		w.WriteAssignmentExpression(i.Of)
+	}
+	w.WriteString(")")
+	w.WriteStatement(&i.Statement)
+}
+
+func (w *writer) WriteLexicalBinding(lb *javascript.LexicalBinding) {
+}
+
+func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
+}
+
+func (w *writer) WriteLeftHandSideExpression(lhs *javascript.LeftHandSideExpression) {
+}
+
+func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) {
+}
+
+func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
 }
 
 func (w *writer) WriteSwitchStatement(i *javascript.SwitchStatement) {
