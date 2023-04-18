@@ -9,8 +9,9 @@ import (
 
 type writer struct {
 	io.Writer
-	count int64
-	err   error
+	count    int64
+	err      error
+	lastChar byte
 }
 
 func (w *writer) WriteString(str string) {
@@ -18,12 +19,24 @@ func (w *writer) WriteString(str string) {
 		var n int
 		n, w.err = io.WriteString(w.Writer, str)
 		w.count += int64(n)
+		if len(str) > 0 {
+			w.lastChar = str[len(str)-1]
+		}
+	}
+}
+
+func (w *writer) WriteEOS() {
+	if w.err == nil && w.lastChar != '}' {
+		w.WriteString(";")
 	}
 }
 
 func Print(w io.Writer, m *javascript.Module) (int64, error) {
 	wr := writer{Writer: w}
-	for _, mi := range m.ModuleListItems {
+	for n, mi := range m.ModuleListItems {
+		if n > 0 {
+			wr.WriteEOS()
+		}
 		wr.WriteModuleListItem(mi)
 	}
 	return wr.count, wr.err
@@ -70,7 +83,6 @@ func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
 	} else if ed.DefaultAssignmentExpression != nil {
 		w.WriteString(" default ")
 		w.WriteAssignmentExpression(ed.DefaultAssignmentExpression)
-		w.WriteString(";")
 	}
 }
 
@@ -100,7 +112,6 @@ func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
 func (w *writer) WriteFromClause(fc *javascript.FromClause) {
 	w.WriteString("from ")
 	w.WriteString(fc.ModuleSpecifier.Data)
-	w.WriteString(";")
 }
 
 func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
@@ -114,7 +125,6 @@ func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 	} else if id.FromClause.ModuleSpecifier != nil {
 		w.WriteString(" ")
 		w.WriteString(id.FromClause.ModuleSpecifier.Data)
-		w.WriteString(";")
 	}
 }
 
@@ -173,7 +183,6 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 			w.WriteVariableStatement(s.VariableStatement)
 		} else if s.ExpressionStatement != nil {
 			w.WriteExpressionStatement(s.ExpressionStatement)
-			w.WriteString(";")
 		} else if s.IfStatement != nil {
 			w.WriteIfStatement(s.IfStatement)
 		} else if s.IterationStatementDo != nil {
@@ -199,36 +208,32 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 		}
 	case javascript.StatementContinue:
 		if s.LabelIdentifier == nil {
-			w.WriteString("continue;")
+			w.WriteString("continue")
 		} else {
 			w.WriteString("continue ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.WriteString(";")
 		}
 	case javascript.StatementBreak:
 		if s.LabelIdentifier == nil {
-			w.WriteString("break;")
+			w.WriteString("break")
 		} else {
 			w.WriteString("break ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.WriteString(";")
 		}
 	case javascript.StatementReturn:
 		if s.ExpressionStatement == nil {
-			w.WriteString("return;")
+			w.WriteString("return")
 		} else {
 			w.WriteString("return ")
 			w.WriteExpressionStatement(s.ExpressionStatement)
-			w.WriteString(";")
 		}
 	case javascript.StatementThrow:
 		if s.ExpressionStatement != nil {
 			w.WriteString("throw ")
 			w.WriteExpressionStatement(s.ExpressionStatement)
-			w.WriteString(";")
 		}
 	case javascript.StatementDebugger:
-		w.WriteString("debugger;")
+		w.WriteString("debugger")
 	}
 }
 
