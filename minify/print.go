@@ -103,21 +103,6 @@ func (w *writer) WriteFromClause(fc *javascript.FromClause) {
 	w.WriteString(";")
 }
 
-func (w *writer) WriteVariableStatement(vd *javascript.VariableStatement) {
-}
-
-func (w *writer) WriteDeclaration(d *javascript.Declaration) {
-}
-
-func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
-}
-
-func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
-}
-
-func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
-}
-
 func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 	if id.ImportClause == nil && id.FromClause.ModuleSpecifier == nil {
 		return
@@ -180,6 +165,113 @@ func (w *writer) WriteStatementListItem(si *javascript.StatementListItem) {
 }
 
 func (w *writer) WriteStatement(s *javascript.Statement) {
+	switch s.Type {
+	case javascript.StatementNormal:
+		if s.BlockStatement != nil {
+			w.WriteBlockStatement(s.BlockStatement)
+		} else if s.VariableStatement != nil {
+			w.WriteVariableStatement(s.VariableStatement)
+		} else if s.ExpressionStatement != nil {
+			w.WriteExpressionStatement(s.ExpressionStatement)
+			w.WriteString(";")
+		} else if s.IfStatement != nil {
+			w.WriteIfStatement(s.IfStatement)
+		} else if s.IterationStatementDo != nil {
+			w.WriteIterationStatementDo(s.IterationStatementDo)
+		} else if s.IterationStatementWhile != nil {
+			w.WriteIterationStatementWhile(s.IterationStatementWhile)
+		} else if s.IterationStatementFor != nil {
+			w.WriteIterationStatementFor(s.IterationStatementFor)
+		} else if s.SwitchStatement != nil {
+			w.WriteSwitchStatement(s.SwitchStatement)
+		} else if s.WithStatement != nil {
+			w.WriteWithStatement(s.WithStatement)
+		} else if s.LabelIdentifier != nil {
+			w.WriteString(s.LabelIdentifier.Data)
+			w.WriteString(":")
+			if s.LabelledItemFunction != nil {
+				w.WriteFunctionDeclaration(s.LabelledItemFunction)
+			} else if s.LabelledItemStatement != nil {
+				w.WriteStatement(s.LabelledItemStatement)
+			}
+		} else if s.TryStatement != nil {
+			w.WriteTryStatement(s.TryStatement)
+		}
+	case javascript.StatementContinue:
+		if s.LabelIdentifier == nil {
+			w.WriteString("continue;")
+		} else {
+			w.WriteString("continue ")
+			w.WriteString(s.LabelIdentifier.Data)
+			w.WriteString(";")
+		}
+	case javascript.StatementBreak:
+		if s.LabelIdentifier == nil {
+			w.WriteString("break;")
+		} else {
+			w.WriteString("break ")
+			w.WriteString(s.LabelIdentifier.Data)
+			w.WriteString(";")
+		}
+	case javascript.StatementReturn:
+		if s.ExpressionStatement == nil {
+			w.WriteString("return;")
+		} else {
+			w.WriteString("return ")
+			w.WriteExpressionStatement(s.ExpressionStatement)
+			w.WriteString(";")
+		}
+	case javascript.StatementThrow:
+		if s.ExpressionStatement != nil {
+			w.WriteString("throw ")
+			w.WriteExpressionStatement(s.ExpressionStatement)
+			w.WriteString(";")
+		}
+	case javascript.StatementDebugger:
+		w.WriteString("debugger;")
+	}
+}
+
+func (w *writer) WriteBlockStatement(b *javascript.Block) {
+}
+
+func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
+}
+
+func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
+}
+
+func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
+}
+
+func (w *writer) WriteIterationStatementWhile(i *javascript.IterationStatementWhile) {
+}
+
+func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor) {
+}
+
+func (w *writer) WriteSwitchStatement(i *javascript.SwitchStatement) {
+}
+
+func (w *writer) WriteWithStatement(i *javascript.WithStatement) {
+}
+
+func (w *writer) WriteTryStatement(i *javascript.TryStatement) {
+}
+
+func (w *writer) WriteVariableStatement(vd *javascript.VariableStatement) {
+}
+
+func (w *writer) WriteDeclaration(d *javascript.Declaration) {
+}
+
+func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
+}
+
+func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
+}
+
+func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
 }
 
 var ErrInvalidAST = errors.New("invalid AST")
