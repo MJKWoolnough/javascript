@@ -238,6 +238,14 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 }
 
 func (w *writer) WriteBlockStatement(b *javascript.Block) {
+	w.WriteString("{")
+	for n := range b.StatementList {
+		if n > 0 {
+			w.WriteEOS()
+		}
+		w.WriteStatementListItem(&b.StatementList[n])
+	}
+	w.WriteString("}")
 }
 
 func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
