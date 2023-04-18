@@ -33,16 +33,16 @@ func (w *writer) WriteEOS() {
 
 func Print(w io.Writer, m *javascript.Module) (int64, error) {
 	wr := writer{Writer: w}
-	for n, mi := range m.ModuleListItems {
+	for n := range m.ModuleListItems {
 		if n > 0 {
 			wr.WriteEOS()
 		}
-		wr.WriteModuleListItem(mi)
+		wr.WriteModuleListItem(&m.ModuleListItems[n])
 	}
 	return wr.count, wr.err
 }
 
-func (w *writer) WriteModuleListItem(mi javascript.ModuleItem) {
+func (w *writer) WriteModuleListItem(mi *javascript.ModuleItem) {
 	if mi.ExportDeclaration != nil {
 		w.WriteExportDeclaration(mi.ExportDeclaration)
 	} else if mi.ImportDeclaration != nil {
