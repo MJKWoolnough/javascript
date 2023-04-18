@@ -258,6 +258,15 @@ func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
 }
 
 func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
+	w.WriteString("if (")
+	w.WriteExpressionStatement(&i.Expression)
+	w.WriteString(")")
+	w.WriteStatement(&i.Statement)
+	if i.ElseStatement != nil {
+		w.WriteEOS()
+		w.WriteString("else ")
+		w.WriteStatement(i.ElseStatement)
+	}
 }
 
 func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
