@@ -249,6 +249,12 @@ func (w *writer) WriteBlockStatement(b *javascript.Block) {
 }
 
 func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
+	for n := range e.Expressions {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteAssignmentExpression(&e.Expressions[n])
+	}
 }
 
 func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
