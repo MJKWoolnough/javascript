@@ -281,6 +281,10 @@ func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
 }
 
 func (w *writer) WriteIterationStatementWhile(i *javascript.IterationStatementWhile) {
+	w.WriteString("while(")
+	w.WriteExpressionStatement(&i.Expression)
+	w.WriteString(")")
+	w.WriteStatement(&i.Statement)
 }
 
 func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor) {
