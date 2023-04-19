@@ -500,6 +500,17 @@ func (w *writer) WriteArgument(a *javascript.Argument) {
 }
 
 func (w *writer) WriteTemplateLiteral(tl *javascript.TemplateLiteral) {
+	if tl.NoSubstitutionTemplate != nil {
+		w.WriteString(tl.NoSubstitutionTemplate.Data)
+	} else if tl.TemplateHead != nil && tl.TemplateTail != nil && len(tl.Expressions) == len(tl.TemplateMiddleList)+1 {
+		w.WriteString(tl.TemplateHead.Data)
+		w.WriteExpressionStatement(&tl.Expressions[0])
+		for n := range tl.TemplateMiddleList {
+			w.WriteString(tl.TemplateMiddleList[n].Data)
+			w.WriteExpressionStatement(&tl.Expressions[n+1])
+		}
+		w.WriteString(tl.TemplateTail.Data)
+	}
 }
 
 func (w *writer) WritePrimaryExpression(pr *javascript.PrimaryExpression) {
