@@ -482,6 +482,17 @@ func (w *writer) WriteMemberExpression(me *javascript.MemberExpression) {
 }
 
 func (w *writer) WriteArguments(a *javascript.Arguments) {
+	w.WriteString("(")
+	for n := range a.ArgumentList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteArgument(&a.ArgumentList[n])
+	}
+	w.WriteString(")")
+}
+
+func (w *writer) WriteArgument(a *javascript.Argument) {
 }
 
 func (w *writer) WriteTemplateLiteral(tl *javascript.TemplateLiteral) {
