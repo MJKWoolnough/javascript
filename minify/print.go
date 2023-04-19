@@ -513,7 +513,35 @@ func (w *writer) WriteTemplateLiteral(tl *javascript.TemplateLiteral) {
 	}
 }
 
-func (w *writer) WritePrimaryExpression(pr *javascript.PrimaryExpression) {
+func (w *writer) WritePrimaryExpression(pe *javascript.PrimaryExpression) {
+	if pe.This != nil {
+		w.WriteString("this")
+	} else if pe.IdentifierReference != nil {
+		w.WriteString(pe.IdentifierReference.Data)
+	} else if pe.Literal != nil {
+		w.WriteString(pe.Literal.Data)
+	} else if pe.ArrayLiteral != nil {
+		w.WriteArrayLiteral(pe.ArrayLiteral)
+	} else if pe.ObjectLiteral != nil {
+		w.WriteObjectLiteral(pe.ObjectLiteral)
+	} else if pe.FunctionExpression != nil {
+		w.WriteFunctionDeclaration(pe.FunctionExpression)
+	} else if pe.ClassExpression != nil {
+		w.WriteClassDeclaration(pe.ClassExpression)
+	} else if pe.TemplateLiteral != nil {
+		w.WriteTemplateLiteral(pe.TemplateLiteral)
+	} else if pe.ParenthesizedExpression != nil {
+		w.WriteParenthesizedExpression(pe.ParenthesizedExpression)
+	}
+}
+
+func (w *writer) WriteArrayLiteral(al *javascript.ArrayLiteral) {
+}
+
+func (w *writer) WriteObjectLiteral(al *javascript.ObjectLiteral) {
+}
+
+func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
 }
 
 func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
