@@ -388,6 +388,19 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 }
 
 func (w *writer) WriteLexicalBinding(lb *javascript.LexicalBinding) {
+	if lb.BindingIdentifier != nil {
+		w.WriteString(lb.BindingIdentifier.Data)
+	} else if lb.ArrayBindingPattern != nil {
+		w.WriteArrayBindingPattern(lb.ArrayBindingPattern)
+	} else if lb.ObjectBindingPattern != nil {
+		w.WriteObjectBindingPattern(lb.ObjectBindingPattern)
+	} else {
+		return
+	}
+	if lb.Initializer != nil {
+		w.WriteString("=")
+		w.WriteAssignmentExpression(lb.Initializer)
+	}
 }
 
 func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
