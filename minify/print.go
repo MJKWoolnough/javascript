@@ -536,6 +536,17 @@ func (w *writer) WritePrimaryExpression(pe *javascript.PrimaryExpression) {
 }
 
 func (w *writer) WriteArrayLiteral(al *javascript.ArrayLiteral) {
+	w.WriteString("[")
+	for n := range al.ElementList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteArrayElement(&al.ElementList[n])
+	}
+	w.WriteString("]")
+}
+
+func (w *writer) WriteArrayElement(ae *javascript.ArrayElement) {
 }
 
 func (w *writer) WriteObjectLiteral(al *javascript.ObjectLiteral) {
