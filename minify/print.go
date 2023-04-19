@@ -424,6 +424,22 @@ func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
 }
 
 func (w *writer) WriteLeftHandSideExpression(lhs *javascript.LeftHandSideExpression) {
+	if lhs.NewExpression != nil {
+		w.WriteNewExpression(lhs.NewExpression)
+	} else if lhs.CallExpression != nil {
+		w.WriteCallExpression(lhs.CallExpression)
+	} else if lhs.OptionalExpression != nil {
+		w.WriteOptionalExpression(lhs.OptionalExpression)
+	}
+}
+
+func (w *writer) WriteNewExpression(ne *javascript.NewExpression) {
+}
+
+func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
+}
+
+func (w *writer) WriteOptionalExpression(oe *javascript.OptionalExpression) {
 }
 
 func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) {
