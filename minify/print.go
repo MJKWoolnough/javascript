@@ -434,6 +434,13 @@ func (w *writer) WriteLeftHandSideExpression(lhs *javascript.LeftHandSideExpress
 }
 
 func (w *writer) WriteNewExpression(ne *javascript.NewExpression) {
+	for i := uint(0); i < ne.News; i++ {
+		w.WriteString("new ")
+	}
+	w.WriteMemberExpression(&ne.MemberExpression)
+}
+
+func (w *writer) WriteMemberExpression(me *javascript.MemberExpression) {
 }
 
 func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
