@@ -404,6 +404,23 @@ func (w *writer) WriteLexicalBinding(lb *javascript.LexicalBinding) {
 }
 
 func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
+	if len(ld.BindingList) == 0 {
+		return
+	}
+	if ld.LetOrConst == javascript.Let {
+		w.WriteString("let")
+	} else {
+		w.WriteString("const")
+	}
+	if ld.BindingList[0].BindingIdentifier != nil {
+		w.WriteString(" ")
+	}
+	for n := range ld.BindingList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteLexicalBinding(&ld.BindingList[n])
+	}
 }
 
 func (w *writer) WriteLeftHandSideExpression(lhs *javascript.LeftHandSideExpression) {
