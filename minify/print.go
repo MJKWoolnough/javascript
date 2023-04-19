@@ -493,6 +493,10 @@ func (w *writer) WriteArguments(a *javascript.Arguments) {
 }
 
 func (w *writer) WriteArgument(a *javascript.Argument) {
+	if a.Spread {
+		w.WriteString("...")
+	}
+	w.WriteAssignmentExpression(&a.AssignmentExpression)
 }
 
 func (w *writer) WriteTemplateLiteral(tl *javascript.TemplateLiteral) {
