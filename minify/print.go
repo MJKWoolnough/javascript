@@ -441,6 +441,53 @@ func (w *writer) WriteNewExpression(ne *javascript.NewExpression) {
 }
 
 func (w *writer) WriteMemberExpression(me *javascript.MemberExpression) {
+	if me.MemberExpression != nil {
+		if me.Arguments != nil {
+			w.WriteString("new ")
+			w.WriteMemberExpression(me.MemberExpression)
+			w.WriteArguments(me.Arguments)
+		} else if me.Expression != nil {
+			w.WriteMemberExpression(me.MemberExpression)
+			w.WriteString("[")
+			w.WriteExpressionStatement(me.Expression)
+			w.WriteString("]")
+		} else if me.IdentifierName != nil {
+			w.WriteMemberExpression(me.MemberExpression)
+			w.WriteString(".")
+			w.WriteString(me.IdentifierName.Data)
+		} else if me.PrivateIdentifier != nil {
+			w.WriteMemberExpression(me.MemberExpression)
+			w.WriteString(".")
+			w.WriteString(me.PrivateIdentifier.Data)
+		} else if me.TemplateLiteral != nil {
+			w.WriteMemberExpression(me.MemberExpression)
+			w.WriteTemplateLiteral(me.TemplateLiteral)
+		}
+	} else if me.PrimaryExpression != nil {
+		w.WritePrimaryExpression(me.PrimaryExpression)
+	} else if me.SuperProperty {
+		if me.Expression != nil {
+			w.WriteString("super[")
+			w.WriteExpressionStatement(me.Expression)
+			w.WriteString("]")
+		} else if me.IdentifierName != nil {
+			w.WriteString("super.")
+			w.WriteString(me.IdentifierName.Data)
+		}
+	} else if me.NewTarget {
+		w.WriteString("new.target")
+	} else if me.ImportMeta {
+		w.WriteString("import.meta")
+	}
+}
+
+func (w *writer) WriteArguments(a *javascript.Arguments) {
+}
+
+func (w *writer) WriteTemplateLiteral(tl *javascript.TemplateLiteral) {
+}
+
+func (w *writer) WritePrimaryExpression(pr *javascript.PrimaryExpression) {
 }
 
 func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
