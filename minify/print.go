@@ -685,6 +685,14 @@ func (w *writer) WriteBlock(b *javascript.Block) {
 }
 
 func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
+	w.WriteString("(")
+	for n := range pe.Expressions {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteAssignmentExpression(&pe.Expressions[n])
+	}
+	w.WriteString(")")
 }
 
 func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
