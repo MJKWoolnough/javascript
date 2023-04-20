@@ -565,6 +565,37 @@ func (w *writer) WriteObjectLiteral(ol *javascript.ObjectLiteral) {
 }
 
 func (w *writer) WritePropertyDefinition(pd *javascript.PropertyDefinition) {
+	if pd.AssignmentExpression != nil {
+		if pd.PropertyName != nil {
+			w.WritePropertyName(pd.PropertyName)
+			var done bool
+			if !pd.IsCoverInitializedName && pd.PropertyName.LiteralPropertyName != nil && pd.AssignmentExpression.ConditionalExpression != nil {
+				c := javascript.UnwrapConditional(pd.AssignmentExpression.ConditionalExpression)
+				if pe, ok := c.(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil {
+					done = pe.IdentifierReference.Type == pd.PropertyName.LiteralPropertyName.Type && pe.IdentifierReference.Data == pd.PropertyName.LiteralPropertyName.Data
+				}
+			}
+			if !done {
+				if pd.IsCoverInitializedName {
+					w.WriteString("=")
+				} else {
+					w.WriteString(":")
+				}
+				w.WriteAssignmentExpression(pd.AssignmentExpression)
+			}
+		} else {
+			w.WriteString("...")
+			w.WriteAssignmentExpression(pd.AssignmentExpression)
+		}
+	} else if pd.MethodDefinition != nil {
+		w.WriteMethodDefinition(pd.MethodDefinition)
+	}
+}
+
+func (w *writer) WritePropertyName(pn *javascript.PropertyName) {
+}
+
+func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
 }
 
 func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
