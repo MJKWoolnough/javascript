@@ -624,6 +624,11 @@ func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
 }
 
 func (w *writer) WriteClassElementName(cem *javascript.ClassElementName) {
+	if cem.PropertyName != nil {
+		w.WritePropertyName(cem.PropertyName)
+	} else if cem.PrivateIdentifier != nil {
+		w.WriteString(cem.PrivateIdentifier.Data)
+	}
 }
 
 func (w *writer) WriteFormalParameters(fp *javascript.FormalParameters) {
