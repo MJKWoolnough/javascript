@@ -547,6 +547,10 @@ func (w *writer) WriteArrayLiteral(al *javascript.ArrayLiteral) {
 }
 
 func (w *writer) WriteArrayElement(ae *javascript.ArrayElement) {
+	if ae.Spread {
+		w.WriteString("...")
+	}
+	w.WriteAssignmentExpression(&ae.AssignmentExpression)
 }
 
 func (w *writer) WriteObjectLiteral(al *javascript.ObjectLiteral) {
