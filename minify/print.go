@@ -658,6 +658,19 @@ func (w *writer) WriteFormalParameters(fp *javascript.FormalParameters) {
 }
 
 func (w *writer) WriteBindingElement(be *javascript.BindingElement) {
+	if be.SingleNameBinding != nil {
+		w.WriteString(be.SingleNameBinding.Data)
+	} else if be.ArrayBindingPattern != nil {
+		w.WriteArrayBindingPattern(be.ArrayBindingPattern)
+	} else if be.ObjectBindingPattern != nil {
+		w.WriteObjectBindingPattern(be.ObjectBindingPattern)
+	} else {
+		return
+	}
+	if be.Initializer != nil {
+		w.WriteString("=")
+		w.WriteAssignmentExpression(be.Initializer)
+	}
 }
 
 func (w *writer) WriteBlock(b *javascript.Block) {
