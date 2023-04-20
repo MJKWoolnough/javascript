@@ -632,6 +632,32 @@ func (w *writer) WriteClassElementName(cem *javascript.ClassElementName) {
 }
 
 func (w *writer) WriteFormalParameters(fp *javascript.FormalParameters) {
+	w.WriteString("(")
+	for n := range fp.FormalParameterList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteBindingElement(&fp.FormalParameterList[n])
+	}
+	if fp.BindingIdentifier != nil || fp.ArrayBindingPattern != nil || fp.ObjectBindingPattern != nil {
+		if len(fp.FormalParameterList) > 0 {
+			w.WriteString(",")
+		}
+		if fp.BindingIdentifier != nil {
+			w.WriteString("...")
+			w.WriteString(fp.BindingIdentifier.Data)
+		} else if fp.ArrayBindingPattern != nil {
+			w.WriteString("...")
+			w.WriteArrayBindingPattern(fp.ArrayBindingPattern)
+		} else if fp.ObjectBindingPattern != nil {
+			w.WriteString("...")
+			w.WriteObjectBindingPattern(fp.ObjectBindingPattern)
+		}
+	}
+	w.WriteString(")")
+}
+
+func (w *writer) WriteBindingElement(be *javascript.BindingElement) {
 }
 
 func (w *writer) WriteBlock(b *javascript.Block) {
