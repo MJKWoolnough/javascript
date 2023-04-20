@@ -593,6 +593,13 @@ func (w *writer) WritePropertyDefinition(pd *javascript.PropertyDefinition) {
 }
 
 func (w *writer) WritePropertyName(pn *javascript.PropertyName) {
+	if pn.LiteralPropertyName != nil {
+		w.WriteString(pn.LiteralPropertyName.Data)
+	} else if pn.ComputedPropertyName != nil {
+		w.WriteString("[")
+		w.WriteAssignmentExpression(pn.ComputedPropertyName)
+		w.WriteString("]")
+	}
 }
 
 func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
