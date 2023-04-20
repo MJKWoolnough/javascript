@@ -553,7 +553,18 @@ func (w *writer) WriteArrayElement(ae *javascript.ArrayElement) {
 	w.WriteAssignmentExpression(&ae.AssignmentExpression)
 }
 
-func (w *writer) WriteObjectLiteral(al *javascript.ObjectLiteral) {
+func (w *writer) WriteObjectLiteral(ol *javascript.ObjectLiteral) {
+	w.WriteString("{")
+	for n := range ol.PropertyDefinitionList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WritePropertyDefinition(&ol.PropertyDefinitionList[n])
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WritePropertyDefinition(pd *javascript.PropertyDefinition) {
 }
 
 func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
