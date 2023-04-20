@@ -603,6 +603,33 @@ func (w *writer) WritePropertyName(pn *javascript.PropertyName) {
 }
 
 func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
+	switch md.Type {
+	case javascript.MethodNormal:
+	case javascript.MethodGenerator:
+		w.WriteString("*")
+	case javascript.MethodAsync:
+		w.WriteString("async ")
+	case javascript.MethodAsyncGenerator:
+		w.WriteString("async*")
+	case javascript.MethodGetter:
+		w.WriteString("get ")
+	case javascript.MethodSetter:
+		w.WriteString("set ")
+	default:
+		return
+	}
+	w.WriteClassElementName(&md.ClassElementName)
+	w.WriteFormalParameters(&md.Params)
+	w.WriteBlock(&md.FunctionBody)
+}
+
+func (w *writer) WriteClassElementName(cem *javascript.ClassElementName) {
+}
+
+func (w *writer) WriteFormalParameters(fp *javascript.FormalParameters) {
+}
+
+func (w *writer) WriteBlock(b *javascript.Block) {
 }
 
 func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
