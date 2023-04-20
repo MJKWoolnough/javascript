@@ -674,6 +674,14 @@ func (w *writer) WriteBindingElement(be *javascript.BindingElement) {
 }
 
 func (w *writer) WriteBlock(b *javascript.Block) {
+	w.WriteString("{")
+	for n := range b.StatementList {
+		if n > 0 {
+			w.WriteEOS()
+		}
+		w.WriteStatementListItem(&b.StatementList[n])
+	}
+	w.WriteString("}")
 }
 
 func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpression) {
