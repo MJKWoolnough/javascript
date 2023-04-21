@@ -852,7 +852,11 @@ func (w *writer) WriteCaseClause(cc *javascript.CaseClause) {
 	}
 }
 
-func (w *writer) WriteWithStatement(i *javascript.WithStatement) {
+func (w *writer) WriteWithStatement(ws *javascript.WithStatement) {
+	w.WriteString("with(")
+	w.WriteExpressionStatement(&ws.Expression)
+	w.WriteString(")")
+	w.WriteStatement(&ws.Statement)
 }
 
 func (w *writer) WriteTryStatement(i *javascript.TryStatement) {
