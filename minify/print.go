@@ -783,6 +783,13 @@ func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) 
 }
 
 func (w *writer) WriteBindingProperty(bp *javascript.BindingProperty) {
+	if bp.PropertyName.LiteralPropertyName != nil && bp.BindingElement.SingleNameBinding != nil && bp.PropertyName.LiteralPropertyName.Data == bp.BindingElement.SingleNameBinding.Data {
+		w.WriteBindingElement(&bp.BindingElement)
+	} else {
+		w.WritePropertyName(&bp.PropertyName)
+		w.WriteString(":")
+		w.WriteBindingElement(&bp.BindingElement)
+	}
 }
 
 func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
