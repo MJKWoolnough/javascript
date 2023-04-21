@@ -793,6 +793,20 @@ func (w *writer) WriteBindingProperty(bp *javascript.BindingProperty) {
 }
 
 func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
+	w.WriteString("[")
+	for n := range ab.BindingElementList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteBindingElement(&ab.BindingElementList[n])
+	}
+	if ab.BindingRestElement != nil {
+		if len(ab.BindingElementList) > 0 {
+			w.WriteString(",")
+		}
+		w.WriteBindingElement(ab.BindingRestElement)
+	}
+	w.WriteString("]")
 }
 
 func (w *writer) WriteSwitchStatement(i *javascript.SwitchStatement) {
