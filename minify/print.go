@@ -841,6 +841,15 @@ func (w *writer) WriteSwitchStatement(s *javascript.SwitchStatement) {
 }
 
 func (w *writer) WriteCaseClause(cc *javascript.CaseClause) {
+	w.WriteString("case")
+	w.WriteExpressionStatement(&cc.Expression)
+	w.WriteString(":")
+	for n := range cc.StatementList {
+		if n > 0 {
+			w.WriteEOS()
+		}
+		w.WriteStatementListItem(&cc.StatementList[n])
+	}
 }
 
 func (w *writer) WriteWithStatement(i *javascript.WithStatement) {
