@@ -809,7 +809,38 @@ func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
 	w.WriteString("]")
 }
 
-func (w *writer) WriteSwitchStatement(i *javascript.SwitchStatement) {
+func (w *writer) WriteSwitchStatement(s *javascript.SwitchStatement) {
+	w.WriteString("switch(")
+	w.WriteExpressionStatement(&s.Expression)
+	w.WriteString("){")
+	for n := range s.CaseClauses {
+		if n > 0 {
+			w.WriteEOS()
+		}
+		w.WriteCaseClause(&s.CaseClauses[n])
+	}
+	if len(s.DefaultClause) > 0 {
+		if len(s.CaseClauses) > 0 {
+			w.WriteEOS()
+		}
+		w.WriteString("default:")
+		for n := range s.DefaultClause {
+			if n > 0 {
+				w.WriteEOS()
+			}
+			w.WriteStatementListItem(&s.DefaultClause[n])
+		}
+	}
+	for n := range s.PostDefaultCaseClauses {
+		if n > 0 || len(s.DefaultClause) > 0 {
+			w.WriteEOS()
+		}
+		w.WriteCaseClause(&s.PostDefaultCaseClauses[n])
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteCaseClause(cc *javascript.CaseClause) {
 }
 
 func (w *writer) WriteWithStatement(i *javascript.WithStatement) {
