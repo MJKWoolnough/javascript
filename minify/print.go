@@ -727,6 +727,17 @@ func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
 }
 
 func (w *writer) WriteOptionalExpression(oe *javascript.OptionalExpression) {
+	if oe.MemberExpression != nil {
+		w.WriteMemberExpression(oe.MemberExpression)
+	} else if oe.CallExpression != nil {
+		w.WriteCallExpression(oe.CallExpression)
+	} else if oe.OptionalExpression != nil {
+		w.WriteOptionalExpression(oe.OptionalExpression)
+	}
+	w.WriteOptionalChain(&oe.OptionalChain)
+}
+
+func (w *writer) WriteOptionalChain(oc *javascript.OptionalChain) {
 }
 
 func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) {
