@@ -738,6 +738,30 @@ func (w *writer) WriteOptionalExpression(oe *javascript.OptionalExpression) {
 }
 
 func (w *writer) WriteOptionalChain(oc *javascript.OptionalChain) {
+	if oc.OptionalChain != nil {
+		w.WriteOptionalChain(oc.OptionalChain)
+	} else {
+		w.WriteString("?.")
+	}
+	if oc.Arguments != nil {
+		w.WriteArguments(oc.Arguments)
+	} else if oc.Expression != nil {
+		w.WriteString("[")
+		w.WriteExpressionStatement(oc.Expression)
+		w.WriteString("]")
+	} else if oc.IdentifierName != nil {
+		if oc.OptionalChain != nil {
+			w.WriteString(".")
+		}
+		w.WriteString(oc.IdentifierName.Data)
+	} else if oc.TemplateLiteral != nil {
+		w.WriteTemplateLiteral(oc.TemplateLiteral)
+	} else if oc.PrivateIdentifier != nil {
+		if oc.OptionalChain != nil {
+			w.WriteString(".")
+		}
+		w.WriteString(oc.PrivateIdentifier.Data)
+	}
 }
 
 func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) {
