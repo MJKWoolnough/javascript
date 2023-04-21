@@ -765,6 +765,24 @@ func (w *writer) WriteOptionalChain(oc *javascript.OptionalChain) {
 }
 
 func (w *writer) WriteObjectBindingPattern(ob *javascript.ObjectBindingPattern) {
+	w.WriteString("{")
+	for n := range ob.BindingPropertyList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteBindingProperty(&ob.BindingPropertyList[n])
+	}
+	if ob.BindingRestProperty != nil {
+		if len(ob.BindingPropertyList) > 0 {
+			w.WriteString(",")
+		}
+		w.WriteString("...")
+		w.WriteString(ob.BindingRestProperty.Data)
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteBindingProperty(bp *javascript.BindingProperty) {
 }
 
 func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
