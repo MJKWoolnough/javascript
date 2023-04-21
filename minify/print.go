@@ -178,7 +178,7 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 	switch s.Type {
 	case javascript.StatementNormal:
 		if s.BlockStatement != nil {
-			w.WriteBlockStatement(s.BlockStatement)
+			w.WriteBlock(s.BlockStatement)
 		} else if s.VariableStatement != nil {
 			w.WriteVariableStatement(s.VariableStatement)
 		} else if s.ExpressionStatement != nil {
@@ -235,17 +235,6 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 	case javascript.StatementDebugger:
 		w.WriteString("debugger")
 	}
-}
-
-func (w *writer) WriteBlockStatement(b *javascript.Block) {
-	w.WriteString("{")
-	for n := range b.StatementList {
-		if n > 0 {
-			w.WriteEOS()
-		}
-		w.WriteStatementListItem(&b.StatementList[n])
-	}
-	w.WriteString("}")
 }
 
 func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
