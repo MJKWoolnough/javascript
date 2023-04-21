@@ -696,6 +696,34 @@ func (w *writer) WriteParenthesizedExpression(pe *javascript.ParenthesizedExpres
 }
 
 func (w *writer) WriteCallExpression(ce *javascript.CallExpression) {
+	if ce.SuperCall && ce.Arguments != nil {
+		w.WriteString("super")
+		w.WriteArguments(ce.Arguments)
+	} else if ce.ImportCall != nil {
+		w.WriteString("import(")
+		w.WriteAssignmentExpression(ce.ImportCall)
+		w.WriteString(")")
+	} else if ce.MemberExpression != nil && ce.Arguments != nil {
+		w.WriteMemberExpression(ce.MemberExpression)
+		w.WriteArguments(ce.Arguments)
+	} else if ce.CallExpression != nil {
+		w.WriteCallExpression(ce.CallExpression)
+		if ce.Arguments != nil {
+			w.WriteArguments(ce.Arguments)
+		} else if ce.Expression != nil {
+			w.WriteString("[")
+			w.WriteExpressionStatement(ce.Expression)
+			w.WriteString("]")
+		} else if ce.IdentifierName != nil {
+			w.WriteString(".")
+			w.WriteString(ce.IdentifierName.Data)
+		} else if ce.TemplateLiteral != nil {
+			w.WriteTemplateLiteral(ce.TemplateLiteral)
+		} else if ce.PrivateIdentifier != nil {
+			w.WriteString(".")
+			w.WriteString(ce.PrivateIdentifier.Data)
+		}
+	}
 }
 
 func (w *writer) WriteOptionalExpression(oe *javascript.OptionalExpression) {
