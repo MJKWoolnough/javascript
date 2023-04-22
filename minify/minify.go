@@ -9,7 +9,7 @@ import (
 )
 
 type Minifier struct {
-	literals, numbers, arrowFn bool
+	literals, numbers, arrowFn, ifToConditional bool
 }
 
 func New(opts ...Option) *Minifier {

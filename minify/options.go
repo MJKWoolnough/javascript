@@ -19,3 +19,9 @@ func ArrowFn() func(m *Minifier) {
 		m.arrowFn = true
 	}
 }
+
+func IfToConditional() func(m *Minifier) {
+	return func(m *Minifier) {
+		m.ifToConditional = true
+	}
+}
