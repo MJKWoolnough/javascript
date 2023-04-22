@@ -29,6 +29,8 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.PrimaryExpression:
 		w.minifyLiterals(t)
 		w.minifyNumbers(t)
+	case *javascript.ArrowFunction:
+		w.minifyArrowFunc(t)
 	}
 	return walk.Walk(t, w)
 }
@@ -114,4 +116,46 @@ func (m *Minifier) minifyNumbers(pe *javascript.PrimaryExpression) {
 			pe.Literal.Data = d
 		}
 	}
+}
+
+func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
+	if af.FunctionBody != nil {
+		hasReturn := false
+		expressions := make([]javascript.AssignmentExpression, 0)
+		for _, s := range af.FunctionBody.StatementList {
+			if s.Declaration != nil {
+				return
+			} else if s.Statement != nil {
+				if s.Statement.Type == javascript.StatementReturn {
+					hasReturn = true
+					expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
+					break
+				} else if s.Statement.ExpressionStatement == nil {
+					if isEmptyStatement(s.Statement) {
+						continue
+					}
+					return
+				}
+				expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
+			}
+		}
+		if hasReturn {
+			if len(expressions) == 1 {
+				af.FunctionBody = nil
+				af.AssignmentExpression = &expressions[0]
+			} else if len(expressions) != 0 {
+				af.AssignmentExpression = &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: expressions,
+						Tokens:      af.FunctionBody.Tokens,
+					}),
+				}
+				af.FunctionBody = nil
+			}
+		}
+	}
+}
+
+func isEmptyStatement(s *javascript.Statement) bool {
+	return s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && s.ExpressionStatement == nil && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
 }
