@@ -415,6 +415,116 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 21
+			[]Option{ArrowFn()},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					FunctionBody:      &javascript.Block{},
+				},
+			},
+		},
+		{ // 22
+			[]Option{ArrowFn()},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+							},
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "b"),
+							},
+						},
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+							},
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "b"),
+							},
+						},
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+		},
+		{ // 23
+			[]Option{ArrowFn()},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+								Initializer: &javascript.AssignmentExpression{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+									}),
+								},
+							},
+						},
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+								Initializer: &javascript.AssignmentExpression{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+									}),
+								},
+							},
+						},
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+		},
+		{ // 24
+			[]Option{ArrowFn()},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					FormalParameters: &javascript.FormalParameters{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					},
+					FunctionBody: &javascript.Block{},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
