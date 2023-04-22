@@ -128,22 +128,21 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 		}
 		hasReturn := false
 		var expressions []javascript.AssignmentExpression
-		for _, s := range af.FunctionBody.StatementList {
-			if s.Declaration != nil {
-				return
-			} else if s.Statement != nil {
-				if s.Statement.Type == javascript.StatementReturn {
-					hasReturn = true
-					expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
-					break
-				} else if s.Statement.ExpressionStatement == nil {
+		for n := range af.FunctionBody.StatementList {
+			s := &af.FunctionBody.StatementList[n]
+			if !isExpression(s) {
+				if s.Statement != nil {
 					if isEmptyStatement(s.Statement) {
 						continue
+					} else if s.Statement.Type == javascript.StatementReturn {
+						hasReturn = true
+						expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
+						break
 					}
-					return
 				}
-				expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
+				return
 			}
+			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 		}
 		if hasReturn {
 			if len(expressions) == 1 {
@@ -160,6 +159,10 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 			}
 		}
 	}
+}
+
+func isExpression(s *javascript.StatementListItem) bool {
+	return s.Declaration == nil && s.Statement != nil && s.Statement.Type == javascript.StatementNormal && s.Statement.ExpressionStatement != nil
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
