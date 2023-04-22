@@ -120,6 +120,12 @@ func (m *Minifier) minifyNumbers(pe *javascript.PrimaryExpression) {
 
 func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 	if m.arrowFn && af.FunctionBody != nil {
+		if af.FormalParameters != nil {
+			if len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.FormalParameterList[0].SingleNameBinding != nil && af.FormalParameters.FormalParameterList[0].Initializer == nil && af.FormalParameters.BindingIdentifier == nil && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil {
+				af.BindingIdentifier = af.FormalParameters.FormalParameterList[0].SingleNameBinding
+				af.FormalParameters = nil
+			}
+		}
 		hasReturn := false
 		expressions := make([]javascript.AssignmentExpression, 0)
 		for _, s := range af.FunctionBody.StatementList {
