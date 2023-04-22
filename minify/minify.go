@@ -127,7 +127,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 			}
 		}
 		hasReturn := false
-		expressions := make([]javascript.AssignmentExpression, 0)
+		var expressions []javascript.AssignmentExpression
 		for _, s := range af.FunctionBody.StatementList {
 			if s.Declaration != nil {
 				return
