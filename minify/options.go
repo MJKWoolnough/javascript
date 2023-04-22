@@ -13,3 +13,9 @@ func Numbers() func(m *Minifier) {
 		m.numbers = true
 	}
 }
+
+func ArrowFn() func(m *Minifier) {
+	return func(m *Minifier) {
+		m.arrowFn = true
+	}
+}

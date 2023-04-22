@@ -9,7 +9,7 @@ import (
 )
 
 type Minifier struct {
-	literals, numbers bool
+	literals, numbers, arrowFn bool
 }
 
 func New(opts ...Option) *Minifier {
@@ -119,7 +119,7 @@ func (m *Minifier) minifyNumbers(pe *javascript.PrimaryExpression) {
 }
 
 func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
-	if af.FunctionBody != nil {
+	if m.arrowFn && af.FunctionBody != nil {
 		hasReturn := false
 		expressions := make([]javascript.AssignmentExpression, 0)
 		for _, s := range af.FunctionBody.StatementList {
