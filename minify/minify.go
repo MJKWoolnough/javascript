@@ -31,6 +31,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyNumbers(t)
 	case *javascript.ArrowFunction:
 		w.minifyArrowFunc(t)
+	case *javascript.Statement:
+		w.minifyIfToConditional(t)
 	}
 	return walk.Walk(t, w)
 }
@@ -130,7 +132,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 		var expressions []javascript.AssignmentExpression
 		for n := range af.FunctionBody.StatementList {
 			s := &af.FunctionBody.StatementList[n]
-			if !isExpression(s) {
+			if !isSLIExpression(s) {
 				if s.Statement != nil {
 					if isEmptyStatement(s.Statement) {
 						continue
@@ -161,8 +163,68 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 	}
 }
 
-func isExpression(s *javascript.StatementListItem) bool {
-	return s.Declaration == nil && s.Statement != nil && s.Statement.Type == javascript.StatementNormal && s.Statement.ExpressionStatement != nil
+func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
+	if s.IfStatement != nil && s.IfStatement.ElseStatement != nil {
+		last := s.IfStatement.Expression.Expressions[len(s.IfStatement.Expression.Expressions)-1]
+		if last.AssignmentOperator != javascript.AssignmentNone || last.ConditionalExpression == nil || last.ArrowFunction != nil || last.AssignmentExpression != nil || last.AssignmentPattern != nil || last.Delegate || last.LeftHandSideExpression != nil || last.Yield {
+			return
+		}
+		var ifExpressions, elseExpressions []javascript.AssignmentExpression
+		if isStatementExpression(&s.IfStatement.Statement) {
+			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
+		} else if s.IfStatement.Statement.BlockStatement != nil {
+			ifExpressions = statementsListItemsAsExpressions(s.IfStatement.Statement.BlockStatement.StatementList)
+		}
+		if len(ifExpressions) == 0 {
+			return
+		}
+		if isStatementExpression(s.IfStatement.ElseStatement) {
+			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
+		} else if s.IfStatement.ElseStatement.BlockStatement != nil {
+			elseExpressions = statementsListItemsAsExpressions(s.IfStatement.ElseStatement.BlockStatement.StatementList)
+		}
+		if len(elseExpressions) == 0 {
+			return
+		} else if len(elseExpressions) == 1 {
+			last.ConditionalExpression.False = &elseExpressions[0]
+		} else {
+			last.ConditionalExpression.False = &javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+					Expressions: elseExpressions,
+				}),
+			}
+		}
+		if len(ifExpressions) == 1 {
+			last.ConditionalExpression.True = &ifExpressions[0]
+		} else {
+			last.ConditionalExpression.True = &javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+					Expressions: ifExpressions,
+				}),
+			}
+		}
+		s.ExpressionStatement = &s.IfStatement.Expression
+		s.IfStatement = nil
+	}
+}
+
+func statementsListItemsAsExpressions(sli []javascript.StatementListItem) []javascript.AssignmentExpression {
+	var expressions []javascript.AssignmentExpression
+	for n := range sli {
+		if !isSLIExpression(&sli[n]) {
+			return nil
+		}
+		expressions = append(expressions, sli[n].Statement.ExpressionStatement.Expressions...)
+	}
+	return expressions
+}
+
+func isSLIExpression(s *javascript.StatementListItem) bool {
+	return s.Declaration == nil && isStatementExpression(s.Statement)
+}
+
+func isStatementExpression(s *javascript.Statement) bool {
+	return s != nil && s.Type == javascript.StatementNormal && s.ExpressionStatement != nil
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
