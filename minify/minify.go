@@ -9,7 +9,7 @@ import (
 )
 
 type Minifier struct {
-	literals, numbers, arrowFn, ifToConditional bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger bool
 }
 
 func New(opts ...Option) *Minifier {
@@ -257,7 +257,7 @@ func isHoistable(s *javascript.StatementListItem) bool {
 }
 
 func (m *Minifier) removeDebugger(s *javascript.Statement) {
-	if s.Type == javascript.StatementDebugger {
+	if m.rmDebugger && s.Type == javascript.StatementDebugger {
 		s.Type = javascript.StatementNormal
 	}
 }

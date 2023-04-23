@@ -25,3 +25,9 @@ func IfToConditional() func(m *Minifier) {
 		m.ifToConditional = true
 	}
 }
+
+func RemoveDebugger() func(m *Minifier) {
+	return func(m *Minifier) {
+		m.removeDebugger = true
+	}
+}
