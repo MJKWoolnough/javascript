@@ -36,6 +36,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyArrowFunc(t)
 	case *javascript.Statement:
 		w.minifyIfToConditional(t)
+		w.removeDebugger(t)
 	}
 	return nil
 }
@@ -253,4 +254,10 @@ func isEmptyStatement(s *javascript.Statement) bool {
 
 func isHoistable(s *javascript.StatementListItem) bool {
 	return (s.Statement != nil && (s.Statement.VariableStatement.VariableDeclarationList != nil || s.Statement.LabelledItemFunction != nil)) || (s.Declaration != nil && (s.Declaration.FunctionDeclaration != nil || s.Declaration.ClassDeclaration != nil))
+}
+
+func (m *Minifier) removeDebugger(s *javascript.Statement) {
+	if s.Type == javascript.StatementDebugger {
+		s.Type = javascript.StatementNormal
+	}
 }
