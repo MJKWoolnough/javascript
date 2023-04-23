@@ -1077,6 +1077,13 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 32
+			[]Option{RemoveDebugger()},
+			&javascript.Statement{
+				Type: javascript.StatementDebugger,
+			},
+			&javascript.Statement{},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
