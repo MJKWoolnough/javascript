@@ -25,6 +25,9 @@ type walker struct {
 }
 
 func (w *walker) Handle(t javascript.Type) error {
+	if err := walk.Walk(t, w); err != nil {
+		return err
+	}
 	switch t := t.(type) {
 	case *javascript.PrimaryExpression:
 		w.minifyLiterals(t)
@@ -34,7 +37,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.Statement:
 		w.minifyIfToConditional(t)
 	}
-	return walk.Walk(t, w)
+	return nil
 }
 
 func (m *Minifier) Process(jm *javascript.Module) {
