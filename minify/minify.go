@@ -220,17 +220,21 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 	)
 	for n := range sli {
 		s := &sli[n]
-		if isReturnStatement(s.Statement) {
+		if hasReturn {
+			if isHoistable(s) {
+				return nil, true
+			}
+		} else if isReturnStatement(s.Statement) {
 			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 			hasReturn = true
-			break
 		} else if !isSLIExpression(s) {
 			if s.Statement != nil && isEmptyStatement(s.Statement) {
 				continue
 			}
 			return nil, false
+		} else {
+			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 		}
-		expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 	}
 	return expressions, hasReturn
 }
@@ -245,4 +249,8 @@ func isStatementExpression(s *javascript.Statement) bool {
 
 func isEmptyStatement(s *javascript.Statement) bool {
 	return s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && s.ExpressionStatement == nil && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
+}
+
+func isHoistable(s *javascript.StatementListItem) bool {
+	return (s.Statement != nil && (s.Statement.VariableStatement.VariableDeclarationList != nil || s.Statement.LabelledItemFunction != nil)) || (s.Declaration != nil && (s.Declaration.FunctionDeclaration != nil || s.Declaration.ClassDeclaration != nil))
 }
