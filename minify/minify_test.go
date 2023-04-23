@@ -23,7 +23,7 @@ func TestTransforms(t *testing.T) {
 		Input, Output javascript.Type
 	}{
 		{ // 1
-			[]Option{Literals()},
+			[]Option{Literals},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenIdentifier, "false"),
 			},
@@ -32,7 +32,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 2
-			[]Option{Literals()},
+			[]Option{Literals},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenIdentifier, "true"),
 			},
@@ -41,7 +41,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 3
-			[]Option{Literals()},
+			[]Option{Literals},
 			&javascript.PrimaryExpression{
 				IdentifierReference: makeToken(javascript.TokenIdentifier, "undefined"),
 			},
@@ -50,7 +50,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 4
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "100"),
 			},
@@ -59,7 +59,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 5
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000"),
 			},
@@ -68,7 +68,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 6
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "123450000"),
 			},
@@ -77,7 +77,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 7
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.01"),
 			},
@@ -86,7 +86,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 8
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.001"),
 			},
@@ -95,7 +95,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 9
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0.00123400"),
 			},
@@ -104,7 +104,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 10
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0xff"),
 			},
@@ -113,7 +113,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 11
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "999999999999"),
 			},
@@ -122,7 +122,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 12
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000000"),
 			},
@@ -131,7 +131,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 13
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "1000000000001"),
 			},
@@ -140,7 +140,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 14
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0o7"),
 			},
@@ -149,7 +149,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 15
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "0b10"),
 			},
@@ -158,7 +158,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 16
-			[]Option{Numbers()},
+			[]Option{Numbers},
 			&javascript.PrimaryExpression{
 				Literal: makeToken(javascript.TokenNumericLiteral, "123_456"),
 			},
@@ -167,7 +167,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 17
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
@@ -203,7 +203,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 18
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
@@ -276,7 +276,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 19
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
@@ -323,7 +323,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 20
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
@@ -416,7 +416,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 21
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					FormalParameters: &javascript.FormalParameters{
@@ -437,7 +437,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 22
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					FormalParameters: &javascript.FormalParameters{
@@ -470,7 +470,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 23
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					FormalParameters: &javascript.FormalParameters{
@@ -507,7 +507,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 24
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					FormalParameters: &javascript.FormalParameters{
@@ -526,7 +526,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 25
-			[]Option{IfToConditional()},
+			[]Option{IfToConditional},
 			&javascript.Statement{
 				IfStatement: &javascript.IfStatement{
 					Expression: javascript.Expression{
@@ -587,7 +587,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 26
-			[]Option{IfToConditional()},
+			[]Option{IfToConditional},
 			&javascript.Statement{
 				IfStatement: &javascript.IfStatement{
 					Expression: javascript.Expression{
@@ -638,7 +638,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 27
-			[]Option{IfToConditional()},
+			[]Option{IfToConditional},
 			&javascript.Statement{
 				IfStatement: &javascript.IfStatement{
 					Expression: javascript.Expression{
@@ -729,7 +729,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 28
-			[]Option{IfToConditional()},
+			[]Option{IfToConditional},
 			&javascript.Statement{
 				IfStatement: &javascript.IfStatement{
 					Expression: javascript.Expression{
@@ -822,7 +822,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 29
-			[]Option{IfToConditional()},
+			[]Option{IfToConditional},
 			&javascript.Statement{
 				IfStatement: &javascript.IfStatement{
 					Expression: javascript.Expression{
@@ -886,7 +886,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 30
-			[]Option{ArrowFn(), IfToConditional()},
+			[]Option{ArrowFn, IfToConditional},
 			&javascript.Statement{
 				ExpressionStatement: &javascript.Expression{
 					Expressions: []javascript.AssignmentExpression{
@@ -971,7 +971,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 31
-			[]Option{ArrowFn()},
+			[]Option{ArrowFn},
 			&javascript.AssignmentExpression{
 				ArrowFunction: &javascript.ArrowFunction{
 					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
@@ -1078,7 +1078,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 32
-			[]Option{RemoveDebugger()},
+			[]Option{RemoveDebugger},
 			&javascript.Statement{
 				Type: javascript.StatementDebugger,
 			},

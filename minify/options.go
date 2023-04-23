@@ -1,33 +1,23 @@
 package minify
 
-type Option func(*Minifier)
+type Option func(*minifier)
 
-func Literals() func(m *Minifier) {
-	return func(m *Minifier) {
-		m.literals = true
-	}
+func Literals(m *minifier) {
+	m.literals = true
 }
 
-func Numbers() func(m *Minifier) {
-	return func(m *Minifier) {
-		m.numbers = true
-	}
+func Numbers(m *minifier) {
+	m.numbers = true
 }
 
-func ArrowFn() func(m *Minifier) {
-	return func(m *Minifier) {
-		m.arrowFn = true
-	}
+func ArrowFn(m *minifier) {
+	m.arrowFn = true
 }
 
-func IfToConditional() func(m *Minifier) {
-	return func(m *Minifier) {
-		m.ifToConditional = true
-	}
+func IfToConditional(m *minifier) {
+	m.ifToConditional = true
 }
 
-func RemoveDebugger() func(m *Minifier) {
-	return func(m *Minifier) {
-		m.removeDebugger = true
-	}
+func RemoveDebugger(m *minifier) {
+	m.rmDebugger = true
 }
