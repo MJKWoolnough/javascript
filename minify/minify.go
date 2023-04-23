@@ -128,24 +128,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 				af.FormalParameters = nil
 			}
 		}
-		hasReturn := false
-		var expressions []javascript.AssignmentExpression
-		for n := range af.FunctionBody.StatementList {
-			s := &af.FunctionBody.StatementList[n]
-			if !isSLIExpression(s) {
-				if s.Statement != nil {
-					if isEmptyStatement(s.Statement) {
-						continue
-					} else if s.Statement.Type == javascript.StatementReturn {
-						hasReturn = true
-						expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
-						break
-					}
-				}
-				return
-			}
-			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
-		}
+		expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(af.FunctionBody.StatementList)
 		if hasReturn {
 			if len(expressions) == 1 {
 				af.FunctionBody = nil
@@ -169,19 +152,31 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 		if last.AssignmentOperator != javascript.AssignmentNone || last.ConditionalExpression == nil || last.ArrowFunction != nil || last.AssignmentExpression != nil || last.AssignmentPattern != nil || last.Delegate || last.LeftHandSideExpression != nil || last.Yield {
 			return
 		}
-		var ifExpressions, elseExpressions []javascript.AssignmentExpression
-		if isStatementExpression(&s.IfStatement.Statement) {
+		var (
+			ifExpressions, elseExpressions []javascript.AssignmentExpression
+			ifReturn, elseReturn           bool
+		)
+		if isReturnStatement(&s.IfStatement.Statement) {
+			ifReturn = true
+			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
+		} else if isStatementExpression(&s.IfStatement.Statement) {
 			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
 		} else if s.IfStatement.Statement.BlockStatement != nil {
-			ifExpressions = statementsListItemsAsExpressions(s.IfStatement.Statement.BlockStatement.StatementList)
+			ifExpressions, ifReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.Statement.BlockStatement.StatementList)
 		}
 		if len(ifExpressions) == 0 {
 			return
 		}
-		if isStatementExpression(s.IfStatement.ElseStatement) {
+		if isReturnStatement(s.IfStatement.ElseStatement) {
+			elseReturn = true
+			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
+		} else if isStatementExpression(s.IfStatement.ElseStatement) {
 			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
 		} else if s.IfStatement.ElseStatement.BlockStatement != nil {
-			elseExpressions = statementsListItemsAsExpressions(s.IfStatement.ElseStatement.BlockStatement.StatementList)
+			elseExpressions, elseReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.ElseStatement.BlockStatement.StatementList)
+		}
+		if ifReturn != elseReturn {
+			return
 		}
 		if len(elseExpressions) == 0 {
 			return
@@ -203,20 +198,38 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 				}),
 			}
 		}
+		if ifReturn {
+			s.Type = javascript.StatementReturn
+		}
 		s.ExpressionStatement = &s.IfStatement.Expression
 		s.IfStatement = nil
 	}
 }
 
-func statementsListItemsAsExpressions(sli []javascript.StatementListItem) []javascript.AssignmentExpression {
-	var expressions []javascript.AssignmentExpression
+func isReturnStatement(s *javascript.Statement) bool {
+	return s != nil && s.Type == javascript.StatementReturn && s.ExpressionStatement != nil
+}
+
+func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListItem) ([]javascript.AssignmentExpression, bool) {
+	var (
+		expressions []javascript.AssignmentExpression
+		hasReturn   bool
+	)
 	for n := range sli {
-		if !isSLIExpression(&sli[n]) {
-			return nil
+		s := &sli[n]
+		if isReturnStatement(s.Statement) {
+			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
+			hasReturn = true
+			break
+		} else if !isSLIExpression(s) {
+			if s.Statement != nil && isEmptyStatement(s.Statement) {
+				continue
+			}
+			return nil, false
 		}
-		expressions = append(expressions, sli[n].Statement.ExpressionStatement.Expressions...)
+		expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 	}
-	return expressions
+	return expressions, hasReturn
 }
 
 func isSLIExpression(s *javascript.StatementListItem) bool {
