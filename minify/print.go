@@ -909,7 +909,24 @@ func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
 	w.WriteBlock(&f.FunctionBody)
 }
 
-func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
+func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
+	w.WriteString("class")
+	if cd.BindingIdentifier != nil {
+		w.WriteString(" ")
+		w.WriteString(cd.BindingIdentifier.Data)
+	}
+	if cd.ClassHeritage != nil {
+		w.WriteString(" extends ")
+		w.WriteLeftHandSideExpression(cd.ClassHeritage)
+	}
+	w.WriteString("{")
+	for n := range cd.ClassBody {
+		w.WriteClassElement(&cd.ClassBody[n])
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteClassElement(ce *javascript.ClassElement) {
 }
 
 func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
