@@ -922,6 +922,7 @@ func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
 	w.WriteString("{")
 	for n := range cd.ClassBody {
 		w.WriteClassElement(&cd.ClassBody[n])
+		w.WriteEOS()
 	}
 	w.WriteString("}")
 }
@@ -946,6 +947,11 @@ func (w *writer) WriteClassElement(ce *javascript.ClassElement) {
 }
 
 func (w *writer) WriteFieldDefinition(fd *javascript.FieldDefinition) {
+	w.WriteClassElementName(&fd.ClassElementName)
+	if fd.Initializer != nil {
+		w.WriteString("=")
+		w.WriteAssignmentExpression(fd.Initializer)
+	}
 }
 
 func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
