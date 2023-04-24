@@ -895,6 +895,18 @@ func (w *writer) WriteDeclaration(d *javascript.Declaration) {
 }
 
 func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
+	if f.Type == javascript.FunctionAsync || f.Type == javascript.FunctionAsyncGenerator {
+		w.WriteString("async ")
+	}
+	w.WriteString("function")
+	if f.Type == javascript.FunctionGenerator || f.Type == javascript.FunctionAsyncGenerator {
+		w.WriteString("*")
+	} else if f.BindingIdentifier != nil {
+		w.WriteString(" ")
+		w.WriteString(f.BindingIdentifier.Data)
+	}
+	w.WriteFormalParameters(&f.FormalParameters)
+	w.WriteBlock(&f.FunctionBody)
 }
 
 func (w *writer) WriteClassDeclaration(c *javascript.ClassDeclaration) {
