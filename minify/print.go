@@ -885,6 +885,13 @@ func (w *writer) WriteVariableStatement(vs *javascript.VariableStatement) {
 }
 
 func (w *writer) WriteDeclaration(d *javascript.Declaration) {
+	if d.ClassDeclaration != nil {
+		w.WriteClassDeclaration(d.ClassDeclaration)
+	} else if d.FunctionDeclaration != nil {
+		w.WriteFunctionDeclaration(d.FunctionDeclaration)
+	} else if d.LexicalDeclaration != nil {
+		w.WriteLexicalDeclaration(d.LexicalDeclaration)
+	}
 }
 
 func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
