@@ -1016,6 +1016,23 @@ func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) 
 }
 
 func (w *writer) WriteArrowFunction(af *javascript.ArrowFunction) {
+	if af.FunctionBody == nil && af.AssignmentExpression == nil || (af.BindingIdentifier == nil && af.FormalParameters == nil) {
+		return
+	}
+	if af.Async {
+		w.WriteString("async ")
+	}
+	if af.BindingIdentifier != nil {
+		w.WriteString(af.BindingIdentifier.Data)
+	} else if af.FormalParameters != nil {
+		w.WriteFormalParameters(af.FormalParameters)
+	}
+	w.WriteString("=>")
+	if af.FunctionBody != nil {
+		w.WriteBlock(af.FunctionBody)
+	} else {
+		w.WriteAssignmentExpression(af.AssignmentExpression)
+	}
 }
 
 func (w *writer) WriteAssignmentPattern(ap *javascript.AssignmentPattern) {
