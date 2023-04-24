@@ -955,6 +955,73 @@ func (w *writer) WriteFieldDefinition(fd *javascript.FieldDefinition) {
 }
 
 func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
+	if ae.Yield && ae.AssignmentExpression != nil {
+		w.WriteString("yield")
+		if ae.Delegate {
+			w.WriteString("*")
+		} else {
+			w.WriteString(" ")
+		}
+		w.WriteAssignmentExpression(ae.AssignmentExpression)
+	} else if ae.ArrowFunction != nil {
+		w.WriteArrowFunction(ae.ArrowFunction)
+	} else if ae.LeftHandSideExpression != nil && ae.AssignmentExpression != nil {
+		var ao string
+		switch ae.AssignmentOperator {
+		case javascript.AssignmentAssign:
+			ao = "="
+		case javascript.AssignmentMultiply:
+			ao = "*="
+		case javascript.AssignmentDivide:
+			ao = "/="
+		case javascript.AssignmentRemainder:
+			ao = "%="
+		case javascript.AssignmentAdd:
+			ao = "+="
+		case javascript.AssignmentSubtract:
+			ao = "-="
+		case javascript.AssignmentLeftShift:
+			ao = "<<="
+		case javascript.AssignmentSignPropagatingRightShift:
+			ao = ">>="
+		case javascript.AssignmentZeroFillRightShift:
+			ao = ">>>="
+		case javascript.AssignmentBitwiseAND:
+			ao = "&="
+		case javascript.AssignmentBitwiseXOR:
+			ao = "^="
+		case javascript.AssignmentBitwiseOR:
+			ao = "|="
+		case javascript.AssignmentExponentiation:
+			ao = "**="
+		case javascript.AssignmentLogicalAnd:
+			ao = "&&="
+		case javascript.AssignmentLogicalOr:
+			ao = "||="
+		case javascript.AssignmentNullish:
+			ao = "??="
+		default:
+			return
+		}
+		w.WriteLeftHandSideExpression(ae.LeftHandSideExpression)
+		w.WriteString(ao)
+		w.WriteAssignmentExpression(ae.AssignmentExpression)
+	} else if ae.AssignmentPattern != nil && ae.AssignmentExpression != nil && ae.AssignmentOperator == javascript.AssignmentAssign {
+		w.WriteAssignmentPattern(ae.AssignmentPattern)
+		w.WriteString("=")
+		w.WriteAssignmentExpression(ae.AssignmentExpression)
+	} else if ae.ConditionalExpression != nil {
+		w.WriteConditionalExpression(ae.ConditionalExpression)
+	}
+}
+
+func (w *writer) WriteArrowFunction(af *javascript.ArrowFunction) {
+}
+
+func (w *writer) WriteAssignmentPattern(ap *javascript.AssignmentPattern) {
+}
+
+func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression) {
 }
 
 var ErrInvalidAST = errors.New("invalid AST")
