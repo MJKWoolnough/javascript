@@ -869,7 +869,19 @@ func (w *writer) WriteTryStatement(t *javascript.TryStatement) {
 	w.WriteString("}")
 }
 
-func (w *writer) WriteVariableStatement(vd *javascript.VariableStatement) {
+func (w *writer) WriteVariableStatement(vs *javascript.VariableStatement) {
+	if len(vs.VariableDeclarationList) > 0 {
+		w.WriteString("var")
+		if vs.VariableDeclarationList[0].BindingIdentifier != nil {
+			w.WriteString(" ")
+		}
+		for n := range vs.VariableDeclarationList {
+			if n > 0 {
+				w.WriteString(",")
+			}
+			w.WriteLexicalBinding((*javascript.LexicalBinding)(&vs.VariableDeclarationList[n]))
+		}
+	}
 }
 
 func (w *writer) WriteDeclaration(d *javascript.Declaration) {
