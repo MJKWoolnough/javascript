@@ -1036,6 +1036,17 @@ func (w *writer) WriteArrowFunction(af *javascript.ArrowFunction) {
 }
 
 func (w *writer) WriteAssignmentPattern(ap *javascript.AssignmentPattern) {
+	if ap.ArrayAssignmentPattern != nil {
+		w.WriteArrayAssignmentPattern(ap.ArrayAssignmentPattern)
+	} else if ap.ObjectAssignmentPattern != nil {
+		w.WriteObjectAssignmentPattern(ap.ObjectAssignmentPattern)
+	}
+}
+
+func (w *writer) WriteArrayAssignmentPattern(aa *javascript.ArrayAssignmentPattern) {
+}
+
+func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPattern) {
 }
 
 func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression) {
