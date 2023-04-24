@@ -927,6 +927,25 @@ func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
 }
 
 func (w *writer) WriteClassElement(ce *javascript.ClassElement) {
+	if ce.Static {
+		w.WriteString("static")
+	}
+	if ce.MethodDefinition != nil {
+		if ce.Static && ce.MethodDefinition.ClassElementName.PropertyName != nil && ce.MethodDefinition.ClassElementName.PropertyName.LiteralPropertyName != nil {
+			w.WriteString(" ")
+		}
+		w.WriteMethodDefinition(ce.MethodDefinition)
+	} else if ce.FieldDefinition != nil {
+		if ce.Static && ce.FieldDefinition.ClassElementName.PropertyName != nil && ce.FieldDefinition.ClassElementName.PropertyName.LiteralPropertyName != nil {
+			w.WriteString(" ")
+		}
+		w.WriteFieldDefinition(ce.FieldDefinition)
+	} else if ce.ClassStaticBlock != nil {
+		w.WriteBlock(ce.ClassStaticBlock)
+	}
+}
+
+func (w *writer) WriteFieldDefinition(fd *javascript.FieldDefinition) {
 }
 
 func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) {
