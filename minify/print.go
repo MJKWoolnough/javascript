@@ -1131,6 +1131,14 @@ func (w *writer) WriteLogicalORExpression(lo *javascript.LogicalORExpression) {
 }
 
 func (w *writer) WriteLogicalANDExpression(la *javascript.LogicalANDExpression) {
+	if la.LogicalANDExpression != nil {
+		w.WriteLogicalANDExpression(la.LogicalANDExpression)
+		w.WriteString("&&")
+	}
+	w.WriteBitwiseORExpression(&la.BitwiseORExpression)
+}
+
+func (w *writer) WriteBitwiseORExpression(bo *javascript.BitwiseORExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
