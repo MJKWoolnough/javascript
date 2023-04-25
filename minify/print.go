@@ -1070,6 +1070,11 @@ func (w *writer) WriteAssignmentElement(ae *javascript.AssignmentElement) {
 }
 
 func (w *writer) WriteDestructuringAssignmentTarget(da *javascript.DestructuringAssignmentTarget) {
+	if da.LeftHandSideExpression != nil {
+		w.WriteLeftHandSideExpression(da.LeftHandSideExpression)
+	} else if da.AssignmentPattern != nil {
+		w.WriteAssignmentPattern(da.AssignmentPattern)
+	}
 }
 
 func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPattern) {
