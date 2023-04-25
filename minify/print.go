@@ -1044,6 +1044,24 @@ func (w *writer) WriteAssignmentPattern(ap *javascript.AssignmentPattern) {
 }
 
 func (w *writer) WriteArrayAssignmentPattern(aa *javascript.ArrayAssignmentPattern) {
+	w.WriteString("[")
+	for n := range aa.AssignmentElements {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteAssignmentElement(&aa.AssignmentElements[n])
+	}
+	if aa.AssignmentRestElement != nil {
+		if len(aa.AssignmentElements) > 0 {
+			w.WriteString(",")
+		}
+		w.WriteString("...")
+		w.WriteLeftHandSideExpression(aa.AssignmentRestElement)
+	}
+	w.WriteString("]")
+}
+
+func (w *writer) WriteAssignmentElement(ae *javascript.AssignmentElement) {
 }
 
 func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPattern) {
