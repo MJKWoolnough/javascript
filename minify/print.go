@@ -1062,6 +1062,14 @@ func (w *writer) WriteArrayAssignmentPattern(aa *javascript.ArrayAssignmentPatte
 }
 
 func (w *writer) WriteAssignmentElement(ae *javascript.AssignmentElement) {
+	w.WriteDestructuringAssignmentTarget(&ae.DestructuringAssignmentTarget)
+	if ae.Initializer != nil {
+		w.WriteString("=")
+		w.WriteAssignmentExpression(ae.Initializer)
+	}
+}
+
+func (w *writer) WriteDestructuringAssignmentTarget(da *javascript.DestructuringAssignmentTarget) {
 }
 
 func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPattern) {
