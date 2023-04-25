@@ -1123,6 +1123,14 @@ func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression
 }
 
 func (w *writer) WriteLogicalORExpression(lo *javascript.LogicalORExpression) {
+	if lo.LogicalORExpression != nil {
+		w.WriteLogicalORExpression(lo.LogicalORExpression)
+		w.WriteString("||")
+	}
+	w.WriteLogicalANDExpression(&lo.LogicalANDExpression)
+}
+
+func (w *writer) WriteLogicalANDExpression(la *javascript.LogicalANDExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
