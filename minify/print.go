@@ -1078,6 +1078,23 @@ func (w *writer) WriteDestructuringAssignmentTarget(da *javascript.Destructuring
 }
 
 func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPattern) {
+	w.WriteString("{")
+	for n := range oa.AssignmentPropertyList {
+		if n > 0 {
+			w.WriteString(",")
+		}
+		w.WriteAssignmentProperty(&oa.AssignmentPropertyList[n])
+	}
+	if oa.AssignmentRestElement != nil {
+		if len(oa.AssignmentPropertyList) > 0 {
+			w.WriteString(",")
+		}
+		w.WriteLeftHandSideExpression(oa.AssignmentRestElement)
+	}
+	w.WriteString("}")
+}
+
+func (w *writer) WriteAssignmentProperty(ap *javascript.AssignmentProperty) {
 }
 
 func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression) {
