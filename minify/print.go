@@ -1110,6 +1110,22 @@ func (w *writer) WriteAssignmentProperty(ap *javascript.AssignmentProperty) {
 }
 
 func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression) {
+	if ce.LogicalORExpression != nil {
+		w.WriteLogicalORExpression(ce.LogicalORExpression)
+	} else if ce.CoalesceExpression != nil {
+		w.WriteCoalesceExpression(ce.CoalesceExpression)
+	} else if ce.True != nil && ce.False != nil {
+		w.WriteString("?")
+		w.WriteAssignmentExpression(ce.True)
+		w.WriteString(":")
+		w.WriteAssignmentExpression(ce.False)
+	}
+}
+
+func (w *writer) WriteLogicalORExpression(lo *javascript.LogicalORExpression) {
+}
+
+func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
 }
 
 var ErrInvalidAST = errors.New("invalid AST")
