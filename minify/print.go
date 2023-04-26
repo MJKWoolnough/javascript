@@ -1184,6 +1184,34 @@ func (w *writer) WriteEqualityExpression(ee *javascript.EqualityExpression) {
 }
 
 func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) {
+	if re.PrivateIdentifier != nil {
+		w.WriteString(re.PrivateIdentifier.Data)
+		w.WriteString(" in ")
+	} else if re.RelationalExpression != nil {
+		var ro string
+		switch re.RelationshipOperator {
+		case javascript.RelationshipLessThan:
+			ro = "<"
+		case javascript.RelationshipGreaterThan:
+			ro = ">"
+		case javascript.RelationshipLessThanEqual:
+			ro = "<="
+		case javascript.RelationshipGreaterThanEqual:
+			ro = ">="
+		case javascript.RelationshipInstanceOf:
+			ro = " instanceof "
+		case javascript.RelationshipIn:
+			ro = " in "
+		default:
+			return
+		}
+		w.WriteRelationalExpression(re.RelationalExpression)
+		w.WriteString(ro)
+	}
+	w.WriteShiftExpression(&re.ShiftExpression)
+}
+
+func (w *writer) WriteShiftExpression(se *javascript.ShiftExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
