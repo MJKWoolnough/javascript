@@ -1328,6 +1328,11 @@ func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
+	if ce.CoalesceExpressionHead != nil {
+		w.WriteCoalesceExpression(ce.CoalesceExpressionHead)
+		w.WriteString("??")
+	}
+	w.WriteBitwiseORExpression(&ce.BitwiseORExpression)
 }
 
 var ErrInvalidAST = errors.New("invalid AST")
