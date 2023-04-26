@@ -1212,6 +1212,25 @@ func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) 
 }
 
 func (w *writer) WriteShiftExpression(se *javascript.ShiftExpression) {
+	if se.ShiftExpression != nil {
+		var so string
+		switch se.ShiftOperator {
+		case javascript.ShiftLeft:
+			so = "<<"
+		case javascript.ShiftRight:
+			so = ">>"
+		case javascript.ShiftUnsignedRight:
+			so = ">>>"
+		default:
+			return
+		}
+		w.WriteShiftExpression(se.ShiftExpression)
+		w.WriteString(so)
+	}
+	w.WriteAdditiveExpression(&se.AdditiveExpression)
+}
+
+func (w *writer) WriteAdditiveExpression(ae *javascript.AdditiveExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
