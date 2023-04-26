@@ -1155,6 +1155,14 @@ func (w *writer) WriteBitwiseXORExpression(bx *javascript.BitwiseXORExpression) 
 }
 
 func (w *writer) WriteBitwiseANDExpression(ba *javascript.BitwiseANDExpression) {
+	if ba.BitwiseANDExpression != nil {
+		w.WriteBitwiseANDExpression(ba.BitwiseANDExpression)
+		w.WriteString("&")
+	}
+	w.WriteEqualityExpression(&ba.EqualityExpression)
+}
+
+func (w *writer) WriteEqualityExpression(ee *javascript.EqualityExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
