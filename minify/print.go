@@ -1231,6 +1231,23 @@ func (w *writer) WriteShiftExpression(se *javascript.ShiftExpression) {
 }
 
 func (w *writer) WriteAdditiveExpression(ae *javascript.AdditiveExpression) {
+	if ae.AdditiveExpression != nil {
+		var ao string
+		switch ae.AdditiveOperator {
+		case javascript.AdditiveAdd:
+			ao = "+"
+		case javascript.AdditiveMinus:
+			ao = "-"
+		default:
+			return
+		}
+		w.WriteAdditiveExpression(ae.AdditiveExpression)
+		w.WriteString(ao)
+	}
+	w.WriteMultiplicativeExpression(&ae.MultiplicativeExpression)
+}
+
+func (w *writer) WriteMultiplicativeExpression(me *javascript.MultiplicativeExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
