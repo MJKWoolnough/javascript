@@ -1163,6 +1163,27 @@ func (w *writer) WriteBitwiseANDExpression(ba *javascript.BitwiseANDExpression) 
 }
 
 func (w *writer) WriteEqualityExpression(ee *javascript.EqualityExpression) {
+	if ee.EqualityExpression != nil {
+		var eo string
+		switch ee.EqualityOperator {
+		case javascript.EqualityEqual:
+			eo = "=="
+		case javascript.EqualityNotEqual:
+			eo = "!="
+		case javascript.EqualityStrictEqual:
+			eo = "==="
+		case javascript.EqualityStrictNotEqual:
+			eo = "!=="
+		default:
+			return
+		}
+		w.WriteEqualityExpression(ee.EqualityExpression)
+		w.WriteString(eo)
+	}
+	w.WriteRelationalExpression(&ee.RelationalExpression)
+}
+
+func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
