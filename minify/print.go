@@ -1248,6 +1248,25 @@ func (w *writer) WriteAdditiveExpression(ae *javascript.AdditiveExpression) {
 }
 
 func (w *writer) WriteMultiplicativeExpression(me *javascript.MultiplicativeExpression) {
+	if me.MultiplicativeExpression != nil {
+		var mo string
+		switch me.MultiplicativeOperator {
+		case javascript.MultiplicativeMultiply:
+			mo = "*"
+		case javascript.MultiplicativeDivide:
+			mo = "/"
+		case javascript.MultiplicativeRemainder:
+			mo = "%"
+		default:
+			return
+		}
+		w.WriteMultiplicativeExpression(me.MultiplicativeExpression)
+		w.WriteString(mo)
+	}
+	w.WriteExponentiationExpression(&me.ExponentiationExpression)
+}
+
+func (w *writer) WriteExponentiationExpression(ee *javascript.ExponentiationExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
