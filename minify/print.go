@@ -1275,6 +1275,30 @@ func (w *writer) WriteExponentiationExpression(ee *javascript.ExponentiationExpr
 }
 
 func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
+	for _, uo := range ue.UnaryOperators {
+		switch uo {
+		case javascript.UnaryDelete:
+			w.WriteString("delete ")
+		case javascript.UnaryVoid:
+			w.WriteString("void ")
+		case javascript.UnaryTypeOf:
+			w.WriteString("typeof ")
+		case javascript.UnaryAdd:
+			w.WriteString("+")
+		case javascript.UnaryMinus:
+			w.WriteString("-")
+		case javascript.UnaryBitwiseNot:
+			w.WriteString("~")
+		case javascript.UnaryLogicalNot:
+			w.WriteString("!")
+		case javascript.UnaryAwait:
+			w.WriteString("await ")
+		}
+	}
+	w.WriteUpdateExpression(&ue.UpdateExpression)
+}
+
+func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
