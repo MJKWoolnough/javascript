@@ -1267,6 +1267,14 @@ func (w *writer) WriteMultiplicativeExpression(me *javascript.MultiplicativeExpr
 }
 
 func (w *writer) WriteExponentiationExpression(ee *javascript.ExponentiationExpression) {
+	if ee.ExponentiationExpression != nil {
+		w.WriteExponentiationExpression(ee.ExponentiationExpression)
+		w.WriteString("**")
+	}
+	w.WriteUnaryExpression(&ee.UnaryExpression)
+}
+
+func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
