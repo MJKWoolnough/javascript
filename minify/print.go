@@ -1299,6 +1299,32 @@ func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
 }
 
 func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
+	if ue.LeftHandSideExpression != nil {
+		var uo string
+		switch ue.UpdateOperator {
+		case javascript.UpdatePostIncrement:
+			uo = "++"
+		case javascript.UpdatePostDecrement:
+			uo = "--"
+		case javascript.UpdatePreIncrement, javascript.UpdatePreDecrement:
+			return
+		default:
+		}
+		w.WriteLeftHandSideExpression(ue.LeftHandSideExpression)
+		if len(uo) > 0 {
+			w.WriteString(uo)
+		}
+	} else if ue.UnaryExpression != nil {
+		switch ue.UpdateOperator {
+		case javascript.UpdatePreIncrement:
+			w.WriteString("++")
+		case javascript.UpdatePreDecrement:
+			w.WriteString("--")
+		default:
+			return
+		}
+		w.WriteUnaryExpression(ue.UnaryExpression)
+	}
 }
 
 func (w *writer) WriteCoalesceExpression(ce *javascript.CoalesceExpression) {
