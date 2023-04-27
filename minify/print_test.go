@@ -44,6 +44,22 @@ func TestPrint(t *testing.T) {
 			"export {a, b as c, d} from 'f';",
 			"export{a,b as c,d}from'f'",
 		},
+		{
+			"import * as a from 'b';",
+			"import*as a from'b'",
+		},
+		{
+			"import {a, b as c, d} from 'e';",
+			"import{a,b as c,d}from'e'",
+		},
+		{
+			"import a from 'b';",
+			"import a from'b'",
+		},
+		{
+			"import a, {b, c} from 'e';",
+			"import a,{b,c}from'e'",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
