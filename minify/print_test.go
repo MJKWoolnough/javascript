@@ -16,6 +16,14 @@ func TestPrint(t *testing.T) {
 			"var a = 1;",
 			"var a=1",
 		},
+		{
+			"var [a] = 1;",
+			"var[a]=1",
+		},
+		{
+			"async function a(){}",
+			"async function a(){}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
