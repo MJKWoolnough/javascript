@@ -105,7 +105,7 @@ func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
 			w.WriteExportClause(ed.ExportClause)
 		} else {
 			w.WriteString("*")
-			if ed.ExportClause != nil {
+			if ed.ExportFromClause != nil {
 				w.WriteString("as")
 				w.WriteString(ed.ExportFromClause.Data)
 			}
