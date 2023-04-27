@@ -153,7 +153,7 @@ func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
 }
 
 func (w *writer) WriteFromClause(fc *javascript.FromClause) {
-	w.WriteString("from ")
+	w.WriteString("from")
 	w.WriteString(fc.ModuleSpecifier.Data)
 }
 
