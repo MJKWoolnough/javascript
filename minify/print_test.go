@@ -24,6 +24,14 @@ func TestPrint(t *testing.T) {
 			"async function a(){}",
 			"async function a(){}",
 		},
+		{
+			"typeof []",
+			"typeof[]",
+		},
+		{
+			"[] instanceof [].prototype",
+			"[]instanceof[].prototype",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
