@@ -106,28 +106,25 @@ func (w *writer) WriteExportDeclaration(ed *javascript.ExportDeclaration) {
 		} else {
 			w.WriteString("*")
 			if ed.ExportClause != nil {
-				w.WriteString("as ")
+				w.WriteString("as")
 				w.WriteString(ed.ExportFromClause.Data)
-				w.WriteString(" ")
 			}
 		}
 		w.WriteFromClause(ed.FromClause)
 	} else if ed.ExportClause != nil {
 		w.WriteExportClause(ed.ExportClause)
 	} else if ed.VariableStatement != nil {
-		w.WriteString(" ")
 		w.WriteVariableStatement(ed.VariableStatement)
 	} else if ed.Declaration != nil {
-		w.WriteString(" ")
 		w.WriteDeclaration(ed.Declaration)
 	} else if ed.DefaultFunction != nil {
-		w.WriteString(" default ")
+		w.WriteString("default")
 		w.WriteFunctionDeclaration(ed.DefaultFunction)
 	} else if ed.DefaultClass != nil {
-		w.WriteString(" default ")
+		w.WriteString("default")
 		w.WriteClassDeclaration(ed.DefaultClass)
 	} else if ed.DefaultAssignmentExpression != nil {
-		w.WriteString(" default ")
+		w.WriteString("default")
 		w.WriteAssignmentExpression(ed.DefaultAssignmentExpression)
 	}
 }
@@ -150,7 +147,7 @@ func (w *writer) WriteExportSpecifier(es *javascript.ExportSpecifier) {
 	}
 	w.WriteString(es.IdentifierName.Data)
 	if es.EIdentifierName != nil && es.EIdentifierName.Data != es.IdentifierName.Data {
-		w.WriteString(" as ")
+		w.WriteString("as")
 		w.WriteString(es.EIdentifierName.Data)
 	}
 }
@@ -169,7 +166,6 @@ func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 		w.WriteImportClause(id.ImportClause)
 		w.WriteFromClause(&id.FromClause)
 	} else if id.FromClause.ModuleSpecifier != nil {
-		w.WriteString(" ")
 		w.WriteString(id.FromClause.ModuleSpecifier.Data)
 	}
 }
@@ -182,7 +178,7 @@ func (w *writer) WriteImportClause(ic *javascript.ImportClause) {
 		}
 	}
 	if ic.NameSpaceImport != nil {
-		w.WriteString("*as ")
+		w.WriteString("*as")
 		w.WriteString(ic.NameSpaceImport.Data)
 	} else if ic.NamedImports != nil {
 		w.WriteNamedImports(ic.NamedImports)
@@ -253,29 +249,23 @@ func (w *writer) WriteStatement(s *javascript.Statement) {
 			w.WriteTryStatement(s.TryStatement)
 		}
 	case javascript.StatementContinue:
-		if s.LabelIdentifier == nil {
-			w.WriteString("continue")
-		} else {
-			w.WriteString("continue ")
+		w.WriteString("continue")
+		if s.LabelIdentifier != nil {
 			w.WriteString(s.LabelIdentifier.Data)
 		}
 	case javascript.StatementBreak:
-		if s.LabelIdentifier == nil {
-			w.WriteString("break")
-		} else {
-			w.WriteString("break ")
+		w.WriteString("break")
+		if s.LabelIdentifier != nil {
 			w.WriteString(s.LabelIdentifier.Data)
 		}
 	case javascript.StatementReturn:
-		if s.ExpressionStatement == nil {
-			w.WriteString("return")
-		} else {
-			w.WriteString("return ")
+		w.WriteString("return")
+		if s.ExpressionStatement != nil {
 			w.WriteExpressionStatement(s.ExpressionStatement)
 		}
 	case javascript.StatementThrow:
 		if s.ExpressionStatement != nil {
-			w.WriteString("throw ")
+			w.WriteString("throw")
 			w.WriteExpressionStatement(s.ExpressionStatement)
 		}
 	case javascript.StatementDebugger:
@@ -293,22 +283,19 @@ func (w *writer) WriteExpressionStatement(e *javascript.Expression) {
 }
 
 func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
-	w.WriteString("if (")
+	w.WriteString("if(")
 	w.WriteExpressionStatement(&i.Expression)
 	w.WriteString(")")
 	w.WriteStatement(&i.Statement)
 	if i.ElseStatement != nil {
 		w.WriteEOS()
-		w.WriteString("else ")
+		w.WriteString("else")
 		w.WriteStatement(i.ElseStatement)
 	}
 }
 
 func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
 	w.WriteString("do")
-	if i.Statement.BlockStatement == nil {
-		w.WriteString(" ")
-	}
 	w.WriteEOS()
 	w.WriteString("while(")
 	w.WriteExpressionStatement(&i.Expression)
@@ -388,11 +375,11 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 	default:
 		switch i.Type {
 		case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar:
-			w.WriteString("var ")
+			w.WriteString("var")
 		case javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet:
-			w.WriteString("let ")
+			w.WriteString("let")
 		case javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfConst:
-			w.WriteString("const ")
+			w.WriteString("const")
 		}
 		if i.ForBindingIdentifier != nil {
 			w.WriteString(i.ForBindingIdentifier.Data)
@@ -412,10 +399,10 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 			w.WriteExpressionStatement(i.Afterthought)
 		}
 	case javascript.ForInLeftHandSide, javascript.ForInVar, javascript.ForInLet, javascript.ForInConst:
-		w.WriteString(" in ")
+		w.WriteString("in")
 		w.WriteExpressionStatement(i.In)
 	case javascript.ForOfLeftHandSide, javascript.ForOfVar, javascript.ForOfLet, javascript.ForOfConst, javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
-		w.WriteString(" of ")
+		w.WriteString("of")
 		w.WriteAssignmentExpression(i.Of)
 	}
 	w.WriteString(")")
@@ -447,9 +434,6 @@ func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
 	} else {
 		w.WriteString("const")
 	}
-	if ld.BindingList[0].BindingIdentifier != nil {
-		w.WriteString(" ")
-	}
 	for n := range ld.BindingList {
 		if n > 0 {
 			w.WriteString(",")
@@ -478,7 +462,7 @@ func (w *writer) WriteNewExpression(ne *javascript.NewExpression) {
 func (w *writer) WriteMemberExpression(me *javascript.MemberExpression) {
 	if me.MemberExpression != nil {
 		if me.Arguments != nil {
-			w.WriteString("new ")
+			w.WriteString("new")
 			w.WriteMemberExpression(me.MemberExpression)
 			w.WriteArguments(me.Arguments)
 		} else if me.Expression != nil {
@@ -643,13 +627,13 @@ func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
 	case javascript.MethodGenerator:
 		w.WriteString("*")
 	case javascript.MethodAsync:
-		w.WriteString("async ")
+		w.WriteString("async")
 	case javascript.MethodAsyncGenerator:
 		w.WriteString("async*")
 	case javascript.MethodGetter:
-		w.WriteString("get ")
+		w.WriteString("get")
 	case javascript.MethodSetter:
-		w.WriteString("set ")
+		w.WriteString("set")
 	default:
 		return
 	}
@@ -958,7 +942,6 @@ func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
 func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
 	w.WriteString("class")
 	if cd.BindingIdentifier != nil {
-		w.WriteString(" ")
 		w.WriteString(cd.BindingIdentifier.Data)
 	}
 	if cd.ClassHeritage != nil {
@@ -1005,8 +988,6 @@ func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) 
 		w.WriteString("yield")
 		if ae.Delegate {
 			w.WriteString("*")
-		} else {
-			w.WriteString(" ")
 		}
 		w.WriteAssignmentExpression(ae.AssignmentExpression)
 	} else if ae.ArrowFunction != nil {
@@ -1066,7 +1047,7 @@ func (w *writer) WriteArrowFunction(af *javascript.ArrowFunction) {
 		return
 	}
 	if af.Async {
-		w.WriteString("async ")
+		w.WriteString("async")
 	}
 	if af.BindingIdentifier != nil {
 		w.WriteString(af.BindingIdentifier.Data)
@@ -1245,9 +1226,9 @@ func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) 
 		case javascript.RelationshipGreaterThanEqual:
 			ro = ">="
 		case javascript.RelationshipInstanceOf:
-			ro = " instanceof "
+			ro = "instanceof"
 		case javascript.RelationshipIn:
-			ro = " in "
+			ro = "in"
 		default:
 			return
 		}
@@ -1324,11 +1305,11 @@ func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
 	for _, uo := range ue.UnaryOperators {
 		switch uo {
 		case javascript.UnaryDelete:
-			w.WriteString("delete ")
+			w.WriteString("delete")
 		case javascript.UnaryVoid:
-			w.WriteString("void ")
+			w.WriteString("void")
 		case javascript.UnaryTypeOf:
-			w.WriteString("typeof ")
+			w.WriteString("typeof")
 		case javascript.UnaryAdd:
 			w.WriteString("+")
 		case javascript.UnaryMinus:
@@ -1338,7 +1319,7 @@ func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
 		case javascript.UnaryLogicalNot:
 			w.WriteString("!")
 		case javascript.UnaryAwait:
-			w.WriteString("await ")
+			w.WriteString("await")
 		}
 	}
 	w.WriteUpdateExpression(&ue.UpdateExpression)
