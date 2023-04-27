@@ -32,6 +32,18 @@ func TestPrint(t *testing.T) {
 			"[] instanceof [].prototype",
 			"[]instanceof[].prototype",
 		},
+		{
+			"export * from 'a';",
+			"export*from'a'",
+		},
+		{
+			"export * as a from 'b';",
+			"export*as a from'b'",
+		},
+		{
+			"export {a, b as c, d} from 'f';",
+			"export{a,b as c,d}from'f'",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
