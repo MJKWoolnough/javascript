@@ -852,7 +852,7 @@ func (w *writer) WriteSwitchStatement(s *javascript.SwitchStatement) {
 		}
 	}
 	for n := range s.PostDefaultCaseClauses {
-		if n > 0 || len(s.DefaultClause) > 0 {
+		if n > 0 || len(s.CaseClauses) > 0 || len(s.DefaultClause) > 0 {
 			w.WriteEOS()
 		}
 		w.WriteCaseClause(&s.PostDefaultCaseClauses[n])
