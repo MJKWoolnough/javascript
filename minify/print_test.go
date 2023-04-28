@@ -104,6 +104,10 @@ func TestPrint(t *testing.T) {
 			"switch(a){default:\na\ncase b: c}",
 			"switch(a){default:a;case b:c}",
 		},
+		{ // 23
+			"switch ( a ) { case []:\n1\ncase b: 2}",
+			"switch(a){case[]:1;case b:2}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
