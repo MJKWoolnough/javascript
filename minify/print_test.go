@@ -76,6 +76,14 @@ func TestPrint(t *testing.T) {
 			"{a\n{}\nb}",
 			"{a;{}b}",
 		},
+		{ // 16
+			"if (a) b\nelse c",
+			"if(a)b;else c",
+		},
+		{ // 17
+			"if (a){\nb\n}\nelse{\nc\n}",
+			"if(a){b}else{c}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
