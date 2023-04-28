@@ -92,6 +92,18 @@ func TestPrint(t *testing.T) {
 			"do{\na()\n}\nwhile (1)",
 			"do{a()}while(1)",
 		},
+		{ // 20
+			"switch(a){case a:\nb\ncase b:\n{}\ncase c: c}",
+			"switch(a){case a:b;case b:{}case c:c}",
+		},
+		{ // 21
+			"switch(a){case a:\nb\ndefault:\nc}",
+			"switch(a){case a:b;default:c}",
+		},
+		{ // 22
+			"switch(a){default:\na\ncase b: c}",
+			"switch(a){default:a;case b:c}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
