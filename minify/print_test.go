@@ -84,6 +84,14 @@ func TestPrint(t *testing.T) {
 			"if (a){\nb\n}\nelse{\nc\n}",
 			"if(a){b}else{c}",
 		},
+		{ // 18
+			"do a()\nwhile (1)",
+			"do a();while(1)",
+		},
+		{ // 19
+			"do{\na()\n}\nwhile (1)",
+			"do{a()}while(1)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
