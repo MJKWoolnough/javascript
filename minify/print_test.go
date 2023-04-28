@@ -68,6 +68,14 @@ func TestPrint(t *testing.T) {
 			"a\n{}\nb",
 			"a;{}b",
 		},
+		{ // 14
+			"{a\nb\nc}",
+			"{a;b;c}",
+		},
+		{ // 15
+			"{a\n{}\nb}",
+			"{a;{}b}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
