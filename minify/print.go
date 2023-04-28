@@ -951,8 +951,10 @@ func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
 	}
 	w.WriteString("{")
 	for n := range cd.ClassBody {
+		if n > 0 {
+			w.WriteEOS()
+		}
 		w.WriteClassElement(&cd.ClassBody[n])
-		w.WriteEOS()
 	}
 	w.WriteString("}")
 }
