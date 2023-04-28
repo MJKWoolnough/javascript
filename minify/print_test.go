@@ -60,6 +60,14 @@ func TestPrint(t *testing.T) {
 			"import a, {b, c} from 'e';",
 			"import a,{b,c}from'e'",
 		},
+		{ // 12
+			"a\nb\nc",
+			"a;b;c",
+		},
+		{ // 13
+			"a\n{}\nb",
+			"a;{}b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
