@@ -296,6 +296,7 @@ func (w *writer) WriteIfStatement(i *javascript.IfStatement) {
 
 func (w *writer) WriteIterationStatementDo(i *javascript.IterationStatementDo) {
 	w.WriteString("do")
+	w.WriteStatement(&i.Statement)
 	w.WriteEOS()
 	w.WriteString("while(")
 	w.WriteExpressionStatement(&i.Expression)
