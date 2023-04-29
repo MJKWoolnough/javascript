@@ -2948,6 +2948,55 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 6
+			`globalThis.console;window;let a = 1;{a;window}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         map[javascript.Type]*Scope{},
+					Bindings:       map[string][]Binding{},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[3].StatementListItem.Statement.BlockStatement: bscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"globalThis": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.MemberExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+					"window": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       bscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[3].StatementListItem.Statement.BlockStatement.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"a": {
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       m.ModuleListItems[2].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       bscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[3].StatementListItem.Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		source, err := javascript.ParseModule(&tk)
