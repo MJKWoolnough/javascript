@@ -21,6 +21,9 @@ func ordererScope(s *scope.Scope) []binding {
 
 func walkScope(s *scope.Scope, b []binding) []binding {
 	for name := range s.Bindings {
+		if name == "this" || name == "arguments" {
+			continue
+		}
 		b = append(b, binding{
 			Name:  name,
 			Scope: s,
