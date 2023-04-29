@@ -2796,7 +2796,8 @@ func TestScriptScope(t *testing.T) {
 			},
 		},
 	} {
-		source, err := javascript.ParseScript(parser.NewStringTokeniser(test.Input))
+		tk := parser.NewStringTokeniser(test.Input)
+		source, err := javascript.ParseScript(&tk)
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
@@ -2948,7 +2949,8 @@ func TestModuleScope(t *testing.T) {
 			},
 		},
 	} {
-		source, err := javascript.ParseModule(parser.NewStringTokeniser(test.Input))
+		tk := parser.NewStringTokeniser(test.Input)
+		source, err := javascript.ParseModule(&tk)
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
