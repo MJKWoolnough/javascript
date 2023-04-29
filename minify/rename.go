@@ -21,7 +21,7 @@ func orderedScope(s *scope.Scope) []binding {
 
 func walkScope(s *scope.Scope, b []binding) []binding {
 	for name := range s.Bindings {
-		if name == "this" || name == "arguments" {
+		if name == "this" || name == "arguments" || s.Bindings[name][0].BindingType == scope.BindingRef {
 			continue
 		}
 		b = append(b, binding{
