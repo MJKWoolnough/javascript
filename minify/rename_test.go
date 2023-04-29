@@ -38,6 +38,14 @@ func TestOrdererScope(t *testing.T) {
 				"a",
 			},
 		},
+		{
+			"function b() { a()} function c() {b()} function a(){} b()",
+			[]string{
+				"b",
+				"a",
+				"c",
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
