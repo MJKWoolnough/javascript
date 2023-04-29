@@ -11,7 +11,7 @@ type binding struct {
 	Scope *scope.Scope
 }
 
-func ordererScope(s *scope.Scope) []binding {
+func orderedScope(s *scope.Scope) []binding {
 	b := walkScope(s, nil)
 	sort.Slice(b, func(i, j int) bool {
 		return len(b[i].Scope.Bindings[b[i].Name]) > len(b[j].Scope.Bindings[b[j].Name])

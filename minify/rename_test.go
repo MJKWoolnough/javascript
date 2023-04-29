@@ -54,7 +54,7 @@ func TestOrdererScope(t *testing.T) {
 		} else if s, err := scope.ModuleScope(m, nil); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
-			bs := ordererScope(s)
+			bs := orderedScope(s)
 			bindings := make([]string, len(bs))
 			for n := range bs {
 				bindings[n] = bs[n].Name
