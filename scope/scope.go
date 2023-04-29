@@ -2,8 +2,6 @@
 package scope // import "vimagination.zapto.org/javascript/scope"
 
 import (
-	"fmt"
-
 	"vimagination.zapto.org/javascript"
 )
 
@@ -43,7 +41,7 @@ type Binding struct {
 type Scope struct {
 	IsLexicalScope bool
 	Parent         *Scope
-	Scopes         map[fmt.Formatter]*Scope
+	Scopes         map[javascript.Type]*Scope
 	Bindings       map[string][]Binding
 }
 
@@ -118,18 +116,18 @@ func (s *Scope) addBinding(t *javascript.Token, bindingType BindingType) {
 // NewScope returns a init'd Scope type
 func NewScope() *Scope {
 	return &Scope{
-		Scopes:   make(map[fmt.Formatter]*Scope),
+		Scopes:   make(map[javascript.Type]*Scope),
 		Bindings: make(map[string][]Binding),
 	}
 }
 
-func (s *Scope) newFunctionScope(js fmt.Formatter) *Scope {
+func (s *Scope) newFunctionScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
 	ns := &Scope{
 		Parent: s,
-		Scopes: make(map[fmt.Formatter]*Scope),
+		Scopes: make(map[javascript.Type]*Scope),
 		Bindings: map[string][]Binding{
 			"this":      {},
 			"arguments": {},
@@ -139,27 +137,27 @@ func (s *Scope) newFunctionScope(js fmt.Formatter) *Scope {
 	return ns
 }
 
-func (s *Scope) newArrowFunctionScope(js fmt.Formatter) *Scope {
+func (s *Scope) newArrowFunctionScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
 	ns := &Scope{
 		Parent:   s,
-		Scopes:   make(map[fmt.Formatter]*Scope),
+		Scopes:   make(map[javascript.Type]*Scope),
 		Bindings: make(map[string][]Binding),
 	}
 	s.Scopes[js] = ns
 	return ns
 }
 
-func (s *Scope) newLexicalScope(js fmt.Formatter) *Scope {
+func (s *Scope) newLexicalScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
 	ns := &Scope{
 		Parent:         s,
 		IsLexicalScope: true,
-		Scopes:         make(map[fmt.Formatter]*Scope),
+		Scopes:         make(map[javascript.Type]*Scope),
 		Bindings:       make(map[string][]Binding),
 	}
 	s.Scopes[js] = ns
