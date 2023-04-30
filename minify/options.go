@@ -21,3 +21,7 @@ func IfToConditional(m *minifier) {
 func RemoveDebugger(m *minifier) {
 	m.rmDebugger = true
 }
+
+func RenameIdentifiers(m *minifier) {
+	m.rename = true
+}
