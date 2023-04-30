@@ -1,6 +1,7 @@
 package minify
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -112,6 +113,10 @@ func TestPrint(t *testing.T) {
 			"switch ( a ) { case a:\na\nb\nc }",
 			"switch(a){case a:a;b;c}",
 		},
+		{ // 25
+			"class A {a\nb\nc\nd(){}\ne\n}",
+			"class A{a;b;c;d(){}e}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
@@ -120,9 +125,18 @@ func TestPrint(t *testing.T) {
 		} else {
 			var sb strings.Builder
 			if _, err := Print(&sb, m); err != nil {
-				t.Errorf("test %d: unexpected error: %s", n+1, err)
+				t.Errorf("test %d.1: unexpected error: %s", n+1, err)
 			} else if str := sb.String(); str != test.Output {
-				t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, str)
+				t.Errorf("test %d.1: expecting output %q, got %q", n+1, test.Output, str)
+			} else {
+				normalStr := fmt.Sprint(m)
+				tk = parser.NewStringTokeniser(str)
+				m, err := javascript.ParseModule(&tk)
+				if err != nil {
+					t.Errorf("test %d.2: unexpected error: %s", n+1, err)
+				} else if otherStr := fmt.Sprint(m); normalStr != otherStr {
+					t.Errorf("test %d.2: normal output not equal, expecting %s, got %s", n+1, normalStr, otherStr)
+				}
 			}
 		}
 	}
