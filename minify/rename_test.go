@@ -63,9 +63,11 @@ func TestOrdererScope(t *testing.T) {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
 			bs := orderedScope(s)
-			bindings := make([]string, len(bs))
-			for n := range bs {
-				bindings[n] = bs[n].Name
+			bindings := make([]string, 0, len(bs))
+			for _, b := range bs {
+				if !b.NameSet {
+					bindings = append(bindings, b.Name)
+				}
 			}
 			if !reflect.DeepEqual(bindings, test.Bindings) {
 				t.Errorf("test %d: expecting bindings: %v, got %v", n+1, test.Bindings, bindings)
