@@ -43,3 +43,40 @@ func walkScope(s *scope.Scope, b []binding) []binding {
 	}
 	return b
 }
+
+var (
+	extraChars = []byte("0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$")
+	startChars = extraChars[10:]
+)
+
+func makeUniqueName(exclude map[string]struct{}) string {
+	name := make([]byte, 8)
+	parts := make([][]byte, 8)
+	for l := 0; ; l++ {
+		parts = parts[:1]
+		parts[0] = startChars
+		for n := 0; n < l; n++ {
+			parts = append(parts, extraChars)
+		}
+	L:
+		for {
+			name = name[:0]
+			for i := 0; i <= l; i++ {
+				name = append(name, parts[i][0])
+			}
+			if _, ok := exclude[string(name)]; !ok {
+				return string(name)
+			}
+			for i := l; i >= 0; i-- {
+				parts[i] = parts[i][1:]
+				if len(parts[i]) > 0 {
+					break
+				}
+				if i == 0 {
+					break L
+				}
+				parts[i] = extraChars
+			}
+		}
+	}
+}
