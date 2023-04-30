@@ -75,3 +75,53 @@ func TestOrdererScope(t *testing.T) {
 		}
 	}
 }
+
+func init() {
+	startChars = []byte{'_', '$'}
+	extraChars = []byte{'a', 'b'}
+}
+
+func TestUniqueName(t *testing.T) {
+	for n, test := range [...]struct {
+		Existing []string
+		Expected string
+	}{
+		{
+			[]string{},
+			"_",
+		},
+		{
+			[]string{"_"},
+			"$",
+		},
+		{
+			[]string{"_", "$"},
+			"_a",
+		},
+		{
+			[]string{"_", "$", "_a"},
+			"_b",
+		},
+		{
+			[]string{"_", "$", "_a", "_b"},
+			"$a",
+		},
+		{
+			[]string{"_", "$", "_a", "_b", "$a"},
+			"$b",
+		},
+		{
+			[]string{"_", "$", "_a", "_b", "$a", "$b"},
+			"_aa",
+		},
+	} {
+		me := make(map[string]struct{})
+		for _, e := range test.Existing {
+			me[e] = struct{}{}
+		}
+		name := makeUniqueName(me)
+		if name != test.Expected {
+			t.Errorf("test %d: expecting name %s, got %s", n+1, test.Expected, name)
+		}
+	}
+}
