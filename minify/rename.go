@@ -3,6 +3,7 @@ package minify
 import (
 	"sort"
 
+	"vimagination.zapto.org/javascript"
 	"vimagination.zapto.org/javascript/scope"
 )
 
@@ -42,6 +43,59 @@ func walkScope(s *scope.Scope, b []binding) []binding {
 		b = walkScope(cs, b)
 	}
 	return b
+}
+
+func renameIdentifiers(m *javascript.Module) error {
+	s, err := scope.ModuleScope(m, nil)
+	if err != nil {
+		return err
+	}
+	bindings := orderedScope(s)
+	for n, binding := range bindings {
+		if binding.NameSet {
+			break
+		}
+		identifiersInScope := make(map[string]struct{})
+		for _, checkBinding := range bindings {
+			if !checkBinding.NameSet {
+				continue
+			}
+			if binding.Scope == checkBinding.Scope {
+				identifiersInScope[checkBinding.Name] = struct{}{}
+			} else if isParentScope(binding.Scope, checkBinding.Scope) {
+				for _, scope := range binding.Scope.Scopes {
+					if isParentScope(checkBinding.Scope, scope) {
+						identifiersInScope[checkBinding.Name] = struct{}{}
+						break
+					}
+				}
+			} else {
+				for _, scope := range checkBinding.Scope.Scopes {
+					if isParentScope(binding.Scope, scope) {
+						identifiersInScope[checkBinding.Name] = struct{}{}
+						break
+					}
+				}
+			}
+		}
+		name := makeUniqueName(identifiersInScope)
+		for _, b := range binding.Scope.Bindings[binding.Name] {
+			b.Data = name
+		}
+		bindings[n].Name = name
+		bindings[n].NameSet = true
+	}
+	return nil
+}
+
+func isParentScope(a, b *scope.Scope) bool {
+	for b != nil {
+		if b == a {
+			return true
+		}
+		b = b.Parent
+	}
+	return false
 }
 
 var (
