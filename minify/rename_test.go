@@ -1,6 +1,7 @@
 package minify
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -122,6 +123,32 @@ func TestUniqueName(t *testing.T) {
 		name := makeUniqueName(me)
 		if name != test.Expected {
 			t.Errorf("test %d: expecting name %s, got %s", n+1, test.Expected, name)
+		}
+	}
+}
+
+func TestRename(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{},
+		{
+			"let value = 1;",
+			"let _ = 1;",
+		},
+		{
+			"let value = 1, anotherValue = 2;",
+			"let _ = 1, $ = 2;",
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+		m, err := javascript.ParseModule(&tk)
+		if err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		} else if err = renameIdentifiers(m); err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		} else if str := fmt.Sprintf("%s", m); str != test.Output {
+			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, str)
 		}
 	}
 }
