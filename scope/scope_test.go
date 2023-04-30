@@ -2997,6 +2997,65 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 7
+			`{a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         map[javascript.Type]*Scope{},
+					Bindings:       map[string][]Binding{},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[0].StatementListItem.Statement.BlockStatement: bscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingRef,
+							Scope:       bscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 8
+			`function b() {a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[javascript.Type]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		source, err := javascript.ParseModule(&tk)
