@@ -9,7 +9,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename bool
 }
 
 type Minifier minifier
@@ -45,6 +45,9 @@ func (w *walker) Handle(t javascript.Type) error {
 
 func (m *Minifier) Process(jm *javascript.Module) {
 	walk.Walk(jm, &walker{Minifier: m})
+	if m.rename {
+		renameIdentifiers(jm)
+	}
 }
 
 func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
