@@ -3056,6 +3056,54 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 9
+			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         map[javascript.Type]*Scope{},
+					Bindings:       map[string][]Binding{},
+				}
+				bbscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         bscope,
+					Scopes:         map[javascript.Type]*Scope{},
+					Bindings:       map[string][]Binding{},
+				}
+				bscope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[1].StatementListItem.Statement.BlockStatement.StatementList[1].Statement.BlockStatement: bbscope,
+				}
+				bscope.Bindings = map[string][]Binding{
+					"bValue": {
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       bscope,
+							Token:       m.ModuleListItems[1].StatementListItem.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[1].StatementListItem.Statement.BlockStatement: bscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"aValue": {
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+						{
+							BindingType: BindingBare,
+							Scope:       bbscope,
+							Token:       m.ModuleListItems[1].StatementListItem.Statement.BlockStatement.StatementList[1].Statement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		source, err := javascript.ParseModule(&tk)
