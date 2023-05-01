@@ -63,21 +63,21 @@ func renameIdentifiers(m *javascript.Module) error {
 		}
 		identifiersInScope := make(map[string]struct{})
 		for _, checkBinding := range bindings {
-			if !checkBinding.NameSet {
+			if !checkBinding.NameSet || checkBinding == binding {
 				continue
 			}
 			if binding.Scope == checkBinding.Scope {
 				identifiersInScope[checkBinding.Name] = struct{}{}
 			} else if isParentScope(binding.Scope, checkBinding.Scope) {
-				for _, scope := range binding.Scope.Scopes {
-					if isParentScope(checkBinding.Scope, scope) {
+				for _, scope := range binding.Scope.Bindings[binding.Name] {
+					if isParentScope(checkBinding.Scope, scope.Scope) {
 						identifiersInScope[checkBinding.Name] = struct{}{}
 						break
 					}
 				}
 			} else {
-				for _, scope := range checkBinding.Scope.Scopes {
-					if isParentScope(binding.Scope, scope) {
+				for _, scope := range checkBinding.Scope.Bindings[checkBinding.Name] {
+					if isParentScope(binding.Scope, scope.Scope) {
 						identifiersInScope[checkBinding.Name] = struct{}{}
 						break
 					}
