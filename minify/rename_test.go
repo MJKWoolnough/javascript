@@ -130,7 +130,7 @@ func TestRename(t *testing.T) {
 		} else if err = renameIdentifiers(m); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if str := fmt.Sprintf("%s", m); str != test.Output {
-			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, str)
+			t.Errorf("test %d: expecting output:\n%s\n, got:\n%s", n+1, test.Output, str)
 		}
 	}
 }
