@@ -103,7 +103,7 @@ func TestRename(t *testing.T) {
 		},
 		{
 			"let value = 1, anotherValue = 2;",
-			"let _ = 1, $ = 2;",
+			"let $ = 1, _ = 2;",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
