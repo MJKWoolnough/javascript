@@ -8,9 +8,9 @@ import (
 )
 
 type binding struct {
-	Name    string
-	Scope   *scope.Scope
-	NameSet bool
+	Name, OriginalName string
+	Scope              *scope.Scope
+	NameSet            bool
 }
 
 func orderedScope(s *scope.Scope) []binding {
@@ -40,9 +40,10 @@ func walkScope(s *scope.Scope, b []binding) []binding {
 			continue
 		}
 		b = append(b, binding{
-			Name:    name,
-			Scope:   s,
-			NameSet: s.Bindings[name][0].BindingType == scope.BindingRef,
+			Name:         name,
+			OriginalName: name,
+			Scope:        s,
+			NameSet:      s.Bindings[name][0].BindingType == scope.BindingRef,
 		})
 	}
 	for _, cs := range s.Scopes {
@@ -69,14 +70,14 @@ func renameIdentifiers(m *javascript.Module) error {
 			if binding.Scope == checkBinding.Scope {
 				identifiersInScope[checkBinding.Name] = struct{}{}
 			} else if isParentScope(binding.Scope, checkBinding.Scope) {
-				for _, scope := range binding.Scope.Bindings[binding.Name] {
+				for _, scope := range binding.Scope.Bindings[binding.OriginalName] {
 					if isParentScope(checkBinding.Scope, scope.Scope) {
 						identifiersInScope[checkBinding.Name] = struct{}{}
 						break
 					}
 				}
-			} else {
-				for _, scope := range checkBinding.Scope.Bindings[checkBinding.Name] {
+			} else if isParentScope(checkBinding.Scope, binding.Scope) {
+				for _, scope := range checkBinding.Scope.Bindings[checkBinding.OriginalName] {
 					if isParentScope(binding.Scope, scope.Scope) {
 						identifiersInScope[checkBinding.Name] = struct{}{}
 						break
