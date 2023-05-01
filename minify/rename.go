@@ -23,7 +23,13 @@ func orderedScope(s *scope.Scope) []binding {
 		} else if b[j].NameSet {
 			return true
 		}
-		return len(b[i].Scope.Bindings[b[i].Name]) > len(b[j].Scope.Bindings[b[j].Name])
+		il := len(b[i].Scope.Bindings[b[i].Name])
+		jl := len(b[j].Scope.Bindings[b[j].Name])
+
+		if il == jl {
+			return b[i].Name < b[j].Name
+		}
+		return il > jl
 	})
 	return b
 }
