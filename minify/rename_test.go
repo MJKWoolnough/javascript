@@ -105,6 +105,10 @@ func TestRename(t *testing.T) {
 			"let value = 1, anotherValue = 2;",
 			"let $ = 1, _ = 2;",
 		},
+		{
+			"const bValue = 1;function aFunction(aValue, bValue) {aValue}",
+			"const $ = 1;\n\nfunction _(_, $) {\n	_;\n}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
