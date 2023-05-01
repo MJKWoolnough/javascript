@@ -96,28 +96,29 @@ func TestRename(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
 	}{
-		{},
-		{
+		{ // 1
+		},
+		{ // 2
 			"let value = 1;",
 			"let _ = 1;",
 		},
-		{
+		{ // 3
 			"let value = 1, anotherValue = 2;",
 			"let $ = 1, _ = 2;",
 		},
-		{
+		{ // 4
 			"const bValue = 1;function aFunction(aValue, bValue) {aValue}",
 			"const $ = 1;\n\nfunction _(_, $) {\n	_;\n}",
 		},
-		{
+		{ // 5
 			"const aValue = 1;aValue;aValue;function aFunction(aValue, bValue){aValue}",
 			"const _ = 1;\n\n_;\n\n_;\n\nfunction $(_, $) {\n	_;\n}",
 		},
-		{
+		{ // 6
 			"const aValue = 1;{const aValue = 2;{const aValue = 3}}",
 			"const _ = 1;\n\n{\n	const _ = 2;\n	{\n		const _ = 3;\n	}\n}",
 		},
-		{
+		{ // 7
 			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
 			"let _ = 1;\n\n{\n	let $ = 2;\n	{\n		_ = 3;\n	}\n}",
 		},
