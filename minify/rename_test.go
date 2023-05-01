@@ -109,6 +109,18 @@ func TestRename(t *testing.T) {
 			"const bValue = 1;function aFunction(aValue, bValue) {aValue}",
 			"const $ = 1;\n\nfunction _(_, $) {\n	_;\n}",
 		},
+		{
+			"const aValue = 1;aValue;aValue;function aFunction(aValue, bValue){aValue}",
+			"const _ = 1;\n\n_;\n\n_;\n\nfunction $(_, $) {\n	_;\n}",
+		},
+		{
+			"const aValue = 1;{const aValue = 2;{const aValue = 3}}",
+			"const _ = 1;\n\n{\n	const _ = 2;\n	{\n		const _ = 3;\n	}\n}",
+		},
+		{
+			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
+			"let _ = 1;\n\n{\n	let $ = 2;\n	{\n		_ = 3;\n	}\n}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
