@@ -83,47 +83,12 @@ func init() {
 }
 
 func TestUniqueName(t *testing.T) {
-	for n, test := range [...]struct {
-		Existing []string
-		Expected string
-	}{
-		{
-			[]string{},
-			"_",
-		},
-		{
-			[]string{"_"},
-			"$",
-		},
-		{
-			[]string{"_", "$"},
-			"_a",
-		},
-		{
-			[]string{"_", "$", "_a"},
-			"_b",
-		},
-		{
-			[]string{"_", "$", "_a", "_b"},
-			"$a",
-		},
-		{
-			[]string{"_", "$", "_a", "_b", "$a"},
-			"$b",
-		},
-		{
-			[]string{"_", "$", "_a", "_b", "$a", "$b"},
-			"_aa",
-		},
-	} {
-		me := make(map[string]struct{})
-		for _, e := range test.Existing {
-			me[e] = struct{}{}
+	used := make(map[string]struct{})
+	for n, next := range []string{"_", "$", "_a", "_b", "$a", "$b", "_aa"} {
+		if name := makeUniqueName(used); name != next {
+			t.Errorf("test %d: expecting name %s, got %s", n+1, next, name)
 		}
-		name := makeUniqueName(me)
-		if name != test.Expected {
-			t.Errorf("test %d: expecting name %s, got %s", n+1, test.Expected, name)
-		}
+		used[next] = struct{}{}
 	}
 }
 
