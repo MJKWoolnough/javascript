@@ -203,7 +203,7 @@ func (w *writer) WriteImportSpecifier(is *javascript.ImportSpecifier) {
 	}
 	if is.IdentifierName != nil && is.IdentifierName.Data != is.ImportedBinding.Data {
 		w.WriteString(is.IdentifierName.Data)
-		w.WriteString(" as ")
+		w.WriteString("as")
 	}
 	w.WriteString(is.ImportedBinding.Data)
 }
