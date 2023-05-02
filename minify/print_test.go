@@ -117,6 +117,14 @@ func TestPrint(t *testing.T) {
 			"class A {a\nb\nc\nd(){}\ne\n}",
 			"class A{a;b;c;d(){}e}",
 		},
+		{ // 26
+			"class A {static a = 1;static b(){}}",
+			"class A{static a=1;static b(){}}",
+		},
+		{ // 27
+			"class A {static [a] = 1;static [b](){}}",
+			"class A{static[a]=1;static[b](){}}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
