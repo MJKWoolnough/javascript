@@ -125,6 +125,14 @@ func TestPrint(t *testing.T) {
 			"class A {static [a] = 1;static [b](){}}",
 			"class A{static[a]=1;static[b](){}}",
 		},
+		{ // 28
+			"#a in b;",
+			"#a in b",
+		},
+		{ // 28
+			"#a in[b];",
+			"#a in[b]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
