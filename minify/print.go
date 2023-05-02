@@ -903,9 +903,6 @@ func (w *writer) WriteTryStatement(t *javascript.TryStatement) {
 func (w *writer) WriteVariableStatement(vs *javascript.VariableStatement) {
 	if len(vs.VariableDeclarationList) > 0 {
 		w.WriteString("var")
-		if vs.VariableDeclarationList[0].BindingIdentifier != nil {
-			w.WriteString(" ")
-		}
 		for n := range vs.VariableDeclarationList {
 			if n > 0 {
 				w.WriteString(",")
