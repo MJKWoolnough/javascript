@@ -1210,7 +1210,7 @@ func (w *writer) WriteEqualityExpression(ee *javascript.EqualityExpression) {
 func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) {
 	if re.PrivateIdentifier != nil {
 		w.WriteString(re.PrivateIdentifier.Data)
-		w.WriteString(" in ")
+		w.WriteString("in")
 	} else if re.RelationalExpression != nil {
 		var ro string
 		switch re.RelationshipOperator {
