@@ -137,6 +137,10 @@ func TestPrint(t *testing.T) {
 			"import {a as b} from './c';",
 			"import{a as b}from'./c'",
 		},
+		{ // 30
+			"import * as a from './b';",
+			"import*as a from'./b'",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
