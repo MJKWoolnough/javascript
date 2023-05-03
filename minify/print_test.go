@@ -169,6 +169,14 @@ func TestPrint(t *testing.T) {
 			"(class extends (a){})",
 			"(class extends(a){})",
 		},
+		{ // 40
+			"for (var a = 1;;){}",
+			"for(var a=1;;){}",
+		},
+		{ // 41
+			"for (var [a] = [1];;){}",
+			"for(var[a]=[1];;){}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
