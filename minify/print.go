@@ -359,7 +359,7 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 	case javascript.ForNormal:
 		w.WriteString(";")
 	case javascript.ForNormalVar:
-		w.WriteString("var ")
+		w.WriteString("var")
 		w.WriteLexicalBinding((*javascript.LexicalBinding)(&i.InitVar[0]))
 		for n := range i.InitVar[1:] {
 			w.WriteString(",")
