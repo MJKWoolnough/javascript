@@ -157,6 +157,10 @@ func TestPrint(t *testing.T) {
 			"(function (){})",
 			"(function(){})",
 		},
+		{ // 35
+			"async function a(){}",
+			"async function a(){}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
