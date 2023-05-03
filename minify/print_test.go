@@ -177,6 +177,22 @@ func TestPrint(t *testing.T) {
 			"for (var [a] = [1];;){}",
 			"for(var[a]=[1];;){}",
 		},
+		{ // 42
+			"new a();",
+			"new a()",
+		},
+		{ // 43
+			"new (a)();",
+			"new(a)()",
+		},
+		{ // 44
+			"new a;",
+			"new a",
+		},
+		{ // 45
+			"new (a);",
+			"new(a)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
