@@ -942,7 +942,7 @@ func (w *writer) WriteClassDeclaration(cd *javascript.ClassDeclaration) {
 		w.WriteString(cd.BindingIdentifier.Data)
 	}
 	if cd.ClassHeritage != nil {
-		w.WriteString(" extends ")
+		w.WriteString("extends")
 		w.WriteLeftHandSideExpression(cd.ClassHeritage)
 	}
 	w.WriteString("{")
