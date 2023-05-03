@@ -29,135 +29,135 @@ func TestPrint(t *testing.T) {
 			"typeof []",
 			"typeof[]",
 		},
-		{ // 4
+		{ // 5
 			"[] instanceof [].prototype",
 			"[]instanceof[].prototype",
 		},
-		{ // 5
+		{ // 6
 			"export * from 'a';",
 			"export*from'a'",
 		},
-		{ // 6
+		{ // 7
 			"export * as a from 'b';",
 			"export*as a from'b'",
 		},
-		{ // 7
+		{ // 8
 			"export {a, b as c, d} from 'f';",
 			"export{a,b as c,d}from'f'",
 		},
-		{ // 8
+		{ // 9
 			"import * as a from 'b';",
 			"import*as a from'b'",
 		},
-		{ // 9
+		{ // 10
 			"import {a, b as c, d} from 'e';",
 			"import{a,b as c,d}from'e'",
 		},
-		{ // 10
+		{ // 11
 			"import a from 'b';",
 			"import a from'b'",
 		},
-		{ // 11
+		{ // 12
 			"import a, {b, c} from 'e';",
 			"import a,{b,c}from'e'",
 		},
-		{ // 12
+		{ // 13
 			"a\nb\nc",
 			"a;b;c",
 		},
-		{ // 13
+		{ // 14
 			"a\n{}\nb",
 			"a;{}b",
 		},
-		{ // 14
+		{ // 15
 			"{a\nb\nc}",
 			"{a;b;c}",
 		},
-		{ // 15
+		{ // 16
 			"{a\n{}\nb}",
 			"{a;{}b}",
 		},
-		{ // 16
+		{ // 17
 			"if (a) b\nelse c",
 			"if(a)b;else c",
 		},
-		{ // 17
+		{ // 18
 			"if (a){\nb\n}\nelse{\nc\n}",
 			"if(a){b}else{c}",
 		},
-		{ // 18
+		{ // 19
 			"do a()\nwhile (1)",
 			"do a();while(1)",
 		},
-		{ // 19
+		{ // 20
 			"do{\na()\n}\nwhile (1)",
 			"do{a()}while(1)",
 		},
-		{ // 20
+		{ // 21
 			"switch(a){case a:\nb\ncase b:\n{}\ncase c: c}",
 			"switch(a){case a:b;case b:{}case c:c}",
 		},
-		{ // 21
+		{ // 22
 			"switch(a){case a:\nb\ndefault:\nc}",
 			"switch(a){case a:b;default:c}",
 		},
-		{ // 22
+		{ // 23
 			"switch(a){default:\na\ncase b: c}",
 			"switch(a){default:a;case b:c}",
 		},
-		{ // 23
+		{ // 24
 			"switch ( a ) { case []:\n1\ncase b: 2}",
 			"switch(a){case[]:1;case b:2}",
 		},
-		{ // 24
+		{ // 25
 			"switch ( a ) { case a:\na\nb\nc }",
 			"switch(a){case a:a;b;c}",
 		},
-		{ // 25
+		{ // 26
 			"class A {a\nb\nc\nd(){}\ne\n}",
 			"class A{a;b;c;d(){}e}",
 		},
-		{ // 26
+		{ // 27
 			"class A {static a = 1;static b(){}}",
 			"class A{static a=1;static b(){}}",
 		},
-		{ // 27
+		{ // 28
 			"class A {static [a] = 1;static [b](){}}",
 			"class A{static[a]=1;static[b](){}}",
 		},
-		{ // 28
+		{ // 29
 			"#a in b;",
 			"#a in b",
 		},
-		{ // 28
+		{ // 30
 			"#a in[b];",
 			"#a in[b]",
 		},
-		{ // 29
+		{ // 31
 			"import {a as b} from './c';",
 			"import{a as b}from'./c'",
 		},
-		{ // 30
+		{ // 32
 			"import * as a from './b';",
 			"import*as a from'./b'",
 		},
-		{ // 31
+		{ // 33
 			"var a = 1;",
 			"var a=1",
 		},
-		{ // 32
+		{ // 34
 			"var [a] = [1];",
 			"var[a]=[1]",
 		},
-		{ // 33
+		{ // 35
 			"function a(){}",
 			"function a(){}",
 		},
-		{ // 34
+		{ // 36
 			"(function (){})",
 			"(function(){})",
 		},
-		{ // 35
+		{ // 37
 			"async function a(){}",
 			"async function a(){}",
 		},
