@@ -161,6 +161,14 @@ func TestPrint(t *testing.T) {
 			"async function a(){}",
 			"async function a(){}",
 		},
+		{ // 38
+			"class a extends (b) {}",
+			"class a extends(b){}",
+		},
+		{ // 39
+			"(class extends (a){})",
+			"(class extends(a){})",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
