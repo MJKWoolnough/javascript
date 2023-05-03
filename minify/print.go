@@ -924,7 +924,7 @@ func (w *writer) WriteDeclaration(d *javascript.Declaration) {
 
 func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
 	if f.Type == javascript.FunctionAsync || f.Type == javascript.FunctionAsyncGenerator {
-		w.WriteString("async ")
+		w.WriteString("async")
 	}
 	w.WriteString("function")
 	if f.Type == javascript.FunctionGenerator || f.Type == javascript.FunctionAsyncGenerator {
