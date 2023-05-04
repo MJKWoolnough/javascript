@@ -205,6 +205,18 @@ func TestPrint(t *testing.T) {
 			"var {a: b, c: c, d, ...e} = {a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}, {g} = {g: 4}, h = 5;",
 			"var{a:b,c,d,...e}={a:1,b:2,c:3,d:4,e:5,f:6},{g}={g:4},h=5",
 		},
+		{ // 49
+			"let a = 1, b = 2, c = 3;",
+			"let a=1,b=2,c=3",
+		},
+		{ // 50
+			"let [a, b, c, ...d] = [1, 2, 3, 4, 5], e = 4;",
+			"let[a,b,c,...d]=[1,2,3,4,5],e=4",
+		},
+		{ // 51
+			"let {a: b, c: c, d, ...e} = {a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}, {g} = {g: 4}, h = 5;",
+			"let{a:b,c,d,...e}={a:1,b:2,c:3,d:4,e:5,f:6},{g}={g:4},h=5",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
