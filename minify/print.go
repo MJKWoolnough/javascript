@@ -379,6 +379,7 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 		w.WriteString(";")
 	case javascript.ForNormalLexicalDeclaration:
 		w.WriteLexicalDeclaration(i.InitLexical)
+		w.WriteString(";")
 	case javascript.ForNormalExpression:
 		w.WriteExpressionStatement(i.InitExpression)
 		w.WriteString(";")
