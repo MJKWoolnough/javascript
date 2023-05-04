@@ -159,6 +159,7 @@ func (w *writer) WriteFromClause(fc *javascript.FromClause) {
 
 func (w *writer) WriteImportDeclaration(id *javascript.ImportDeclaration) {
 	if id.ImportClause == nil && id.FromClause.ModuleSpecifier == nil {
+		w.err = ErrInvalidAST
 		return
 	}
 	w.WriteString("import")
@@ -314,38 +315,47 @@ func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor)
 	switch i.Type {
 	case javascript.ForNormal:
 		if i.InitVar != nil || i.InitLexical != nil || i.InitExpression != nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForNormalVar:
 		if len(i.InitVar) == 0 {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForNormalLexicalDeclaration:
 		if i.InitLexical == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForNormalExpression:
 		if i.InitExpression == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForInLeftHandSide, javascript.ForOfLeftHandSide, javascript.ForAwaitOfLeftHandSide:
 		if i.LeftHandSideExpression == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar, javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet, javascript.ForInConst, javascript.ForOfConst, javascript.ForAwaitOfConst:
 		if i.ForBindingIdentifier == nil && i.ForBindingPatternObject == nil && i.ForBindingPatternArray == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	default:
+		w.err = ErrInvalidAST
 		return
 	}
 	switch i.Type {
 	case javascript.ForInLeftHandSide, javascript.ForInVar, javascript.ForInLet, javascript.ForInConst:
 		if i.In == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	case javascript.ForOfLeftHandSide, javascript.ForOfVar, javascript.ForOfLet, javascript.ForOfConst, javascript.ForAwaitOfLeftHandSide, javascript.ForAwaitOfVar, javascript.ForAwaitOfLet, javascript.ForAwaitOfConst:
 		if i.Of == nil {
+			w.err = ErrInvalidAST
 			return
 		}
 	}
@@ -418,6 +428,7 @@ func (w *writer) WriteLexicalBinding(lb *javascript.LexicalBinding) {
 	} else if lb.ObjectBindingPattern != nil {
 		w.WriteObjectBindingPattern(lb.ObjectBindingPattern)
 	} else {
+		w.err = ErrInvalidAST
 		return
 	}
 	if lb.Initializer != nil {
@@ -428,6 +439,7 @@ func (w *writer) WriteLexicalBinding(lb *javascript.LexicalBinding) {
 
 func (w *writer) WriteLexicalDeclaration(ld *javascript.LexicalDeclaration) {
 	if len(ld.BindingList) == 0 {
+		w.err = ErrInvalidAST
 		return
 	}
 	if ld.LetOrConst == javascript.Let {
@@ -636,6 +648,7 @@ func (w *writer) WriteMethodDefinition(md *javascript.MethodDefinition) {
 	case javascript.MethodSetter:
 		w.WriteString("set")
 	default:
+		w.err = ErrInvalidAST
 		return
 	}
 	w.WriteClassElementName(&md.ClassElementName)
@@ -685,6 +698,7 @@ func (w *writer) WriteBindingElement(be *javascript.BindingElement) {
 	} else if be.ObjectBindingPattern != nil {
 		w.WriteObjectBindingPattern(be.ObjectBindingPattern)
 	} else {
+		w.err = ErrInvalidAST
 		return
 	}
 	if be.Initializer != nil {
@@ -1021,6 +1035,7 @@ func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) 
 		case javascript.AssignmentNullish:
 			ao = "??="
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteLeftHandSideExpression(ae.LeftHandSideExpression)
@@ -1037,6 +1052,7 @@ func (w *writer) WriteAssignmentExpression(ae *javascript.AssignmentExpression) 
 
 func (w *writer) WriteArrowFunction(af *javascript.ArrowFunction) {
 	if af.FunctionBody == nil && af.AssignmentExpression == nil || (af.BindingIdentifier == nil && af.FormalParameters == nil) {
+		w.err = ErrInvalidAST
 		return
 	}
 	if af.Async {
@@ -1118,6 +1134,7 @@ func (w *writer) WriteAssignmentProperty(ap *javascript.AssignmentProperty) {
 	w.WritePropertyName(&ap.PropertyName)
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.PropertyName.LiteralPropertyName != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News == 0 && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == ap.PropertyName.LiteralPropertyName.Data {
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteString(":")
@@ -1195,6 +1212,7 @@ func (w *writer) WriteEqualityExpression(ee *javascript.EqualityExpression) {
 		case javascript.EqualityStrictNotEqual:
 			eo = "!=="
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteEqualityExpression(ee.EqualityExpression)
@@ -1223,6 +1241,7 @@ func (w *writer) WriteRelationalExpression(re *javascript.RelationalExpression) 
 		case javascript.RelationshipIn:
 			ro = "in"
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteRelationalExpression(re.RelationalExpression)
@@ -1242,6 +1261,7 @@ func (w *writer) WriteShiftExpression(se *javascript.ShiftExpression) {
 		case javascript.ShiftUnsignedRight:
 			so = ">>>"
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteShiftExpression(se.ShiftExpression)
@@ -1259,6 +1279,7 @@ func (w *writer) WriteAdditiveExpression(ae *javascript.AdditiveExpression) {
 		case javascript.AdditiveMinus:
 			ao = "-"
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteAdditiveExpression(ae.AdditiveExpression)
@@ -1278,6 +1299,7 @@ func (w *writer) WriteMultiplicativeExpression(me *javascript.MultiplicativeExpr
 		case javascript.MultiplicativeRemainder:
 			mo = "%"
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteMultiplicativeExpression(me.MultiplicativeExpression)
@@ -1327,6 +1349,7 @@ func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
 		case javascript.UpdatePostDecrement:
 			uo = "--"
 		case javascript.UpdatePreIncrement, javascript.UpdatePreDecrement:
+			w.err = ErrInvalidAST
 			return
 		default:
 		}
@@ -1341,6 +1364,7 @@ func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
 		case javascript.UpdatePreDecrement:
 			w.WriteString("--")
 		default:
+			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteUnaryExpression(ue.UnaryExpression)
