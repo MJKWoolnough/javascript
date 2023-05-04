@@ -253,6 +253,138 @@ func TestPrint(t *testing.T) {
 			"while (a && b || c)[a]=runMe();",
 			"while(a&&b||c)[a]=runMe()",
 		},
+		{ // 61
+			"for (a = 1; b < 2; c++) {}",
+			"for(a=1;b<2;c++){}",
+		},
+		{ // 62
+			"for (a = 1, b = 2, [c] = [3]; b && c; c++) run();",
+			"for(a=1,b=2,[c]=[3];b&&c;c++)run()",
+		},
+		{ // 63
+			"for ( var a = 1, b = 2; b < 6; b++) {a(), b()}",
+			"for(var a=1,b=2;b<6;b++){a(),b()}",
+		},
+		{ // 64
+			"for ( var [a] = [1]; !a; a++) {a(); b()}",
+			"for(var[a]=[1];!a;a++){a();b()}",
+		},
+		{ // 65
+			"for ( let a = 1, b = 2; b < 6; b++) {a(), b()}",
+			"for(let a=1,b=2;b<6;b++){a(),b()}",
+		},
+		{ // 66
+			"for ( let [a] = [1]; !a; a++) {a(); b()}",
+			"for(let[a]=[1];!a;a++){a();b()}",
+		},
+		{ // 67
+			"for ( const a = 1, b = 2; b < 6; b++) {a(), b()}",
+			"for(const a=1,b=2;b<6;b++){a(),b()}",
+		},
+		{ // 68
+			"for ( const [a] = [1]; !a; a++) {a(); b()}",
+			"for(const[a]=[1];!a;a++){a();b()}",
+		},
+		{ // 69
+			"for ( a of b ){}",
+			"for(a of b){}",
+		},
+		{ // 70
+			"for ( [a, b] of c ){}",
+			"for([a,b]of c){}",
+		},
+		{ // 71
+			"for ( [a, b] of [c] ){}",
+			"for([a,b]of[c]){}",
+		},
+		{ // 72
+			"for ( a in b ){}",
+			"for(a in b){}",
+		},
+		{ // 73
+			"for ( {a: a, b} in c ){}",
+			"for({a,b}in c){}",
+		},
+		{ // 74
+			"for ( {a, b: d} of {c} ){}",
+			"for({a,b:d}of{c}){}",
+		},
+		{ // 75
+			"for ( var a of b ){}",
+			"for(var a of b){}",
+		},
+		{ // 76
+			"for ( var [a, b] of c ){}",
+			"for(var[a,b]of c){}",
+		},
+		{ // 77
+			"for ( var [a, b] of [c] ){}",
+			"for(var[a,b]of[c]){}",
+		},
+		{ // 78
+			"for ( var a in b ){}",
+			"for(var a in b){}",
+		},
+		{ // 79
+			"for ( var {a: a, b} in c ){}",
+			"for(var{a,b}in c){}",
+		},
+		{ // 80
+			"for ( var {a, b: d} of {c} ){}",
+			"for(var{a,b:d}of{c}){}",
+		},
+		{ // 81
+			"for ( let a of b ){}",
+			"for(let a of b){}",
+		},
+		{ // 82
+			"for ( let [a, b] of c ){}",
+			"for(let[a,b]of c){}",
+		},
+		{ // 83
+			"for ( let [a, b] of [c] ){}",
+			"for(let[a,b]of[c]){}",
+		},
+		{ // 84
+			"for ( let a in b ){}",
+			"for(let a in b){}",
+		},
+		{ // 85
+			"for ( let {a: a, b} in c ){}",
+			"for(let{a,b}in c){}",
+		},
+		{ // 86
+			"for ( let {a, b: d} of {c} ){}",
+			"for(let{a,b:d}of{c}){}",
+		},
+		{ // 87
+			"for ( const a of b ){}",
+			"for(const a of b){}",
+		},
+		{ // 88
+			"for ( const [a, b] of c ){}",
+			"for(const[a,b]of c){}",
+		},
+		{ // 89
+			"for ( const [a, b] of [c] ){}",
+			"for(const[a,b]of[c]){}",
+		},
+		{ // 90
+			"for ( const a in b ){}",
+			"for(const a in b){}",
+		},
+		{ // 91
+			"for ( const {a: a, b} in c ){}",
+			"for(const{a,b}in c){}",
+		},
+		{ // 92
+			"for ( const {a, b: d} of {c} ){}",
+			"for(const{a,b:d}of{c}){}",
+		},
+		{ // 93
+			"for await ( const a of b) {}",
+			"for await(const a of b){}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
