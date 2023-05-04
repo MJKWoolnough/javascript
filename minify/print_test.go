@@ -229,6 +229,18 @@ func TestPrint(t *testing.T) {
 			"const {a: b, c: c, d, ...e} = {a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}, {g} = {g: 4}, h = 5;",
 			"const{a:b,c,d,...e}={a:1,b:2,c:3,d:4,e:5,f:6},{g}={g:4},h=5",
 		},
+		{ // 55
+			"do {aThing()} while (a == 1);",
+			"do{aThing()}while(a==1)",
+		},
+		{ // 56
+			"do aThing()\nwhile (a);",
+			"do aThing();while(a)",
+		},
+		{ // 57
+			"do [a] = next(); while(a);",
+			"do[a]=next();while(a)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
