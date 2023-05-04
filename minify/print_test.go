@@ -241,6 +241,18 @@ func TestPrint(t *testing.T) {
 			"do [a] = next(); while(a);",
 			"do[a]=next();while(a)",
 		},
+		{ // 58
+			"while ( true ) run();",
+			"while(true)run()",
+		},
+		{ // 59
+			"while ( a = someThing()) {doAThing()}",
+			"while(a=someThing()){doAThing()}",
+		},
+		{ // 60
+			"while (a && b || c)[a]=runMe();",
+			"while(a&&b||c)[a]=runMe()",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
