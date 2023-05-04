@@ -838,6 +838,7 @@ func (w *writer) WriteArrayBindingPattern(ab *javascript.ArrayBindingPattern) {
 		if len(ab.BindingElementList) > 0 {
 			w.WriteString(",")
 		}
+		w.WriteString("...")
 		w.WriteBindingElement(ab.BindingRestElement)
 	}
 	w.WriteString("]")
