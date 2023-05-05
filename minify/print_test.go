@@ -393,6 +393,14 @@ func TestPrint(t *testing.T) {
 			"with ( a ) b;",
 			"with(a)b",
 		},
+		{ // 96
+			"label: function a(){}",
+			"label:function a(){}",
+		},
+		{ // 97
+			"label: a++",
+			"label:a++",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
