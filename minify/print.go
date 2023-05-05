@@ -20,8 +20,7 @@ var (
 		unicode.Pc,
 		unicode.Other_ID_Continue,
 	}
-	idStart = idContinue[:3]
-	notID   = []*unicode.RangeTable{
+	notID = []*unicode.RangeTable{
 		unicode.Pattern_Syntax,
 		unicode.Pattern_White_Space,
 	}
@@ -31,13 +30,6 @@ const (
 	zwnj rune = 8204
 	zwj  rune = 8205
 )
-
-func isIDStart(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' {
-		return true
-	}
-	return unicode.In(c, idStart...) && !unicode.In(c, notID...)
-}
 
 func isIDContinue(c rune) bool {
 	if c == '$' || c == '_' || c == '\\' || c == zwnj || c == zwj {
@@ -58,7 +50,7 @@ func (w *writer) WriteString(str string) {
 		var n int
 		if isIDContinue(w.lastChar) {
 			r, _ := utf8.DecodeRuneInString(str)
-			if isIDStart(r) {
+			if isIDContinue(r) {
 				n, w.err = io.WriteString(w.Writer, " ")
 				w.count += int64(n)
 			}
