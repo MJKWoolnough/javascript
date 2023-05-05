@@ -429,6 +429,18 @@ func TestPrint(t *testing.T) {
 			"break Label;",
 			"break Label",
 		},
+		{ // 105
+			"() => {return;}",
+			"()=>{return}",
+		},
+		{ // 106
+			"() => {return a;}",
+			"()=>{return a}",
+		},
+		{ // 107
+			"() => {return [a];}",
+			"()=>{return[a]}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
