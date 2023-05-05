@@ -897,10 +897,10 @@ func (w *writer) WriteWithStatement(ws *javascript.WithStatement) {
 }
 
 func (w *writer) WriteTryStatement(t *javascript.TryStatement) {
-	w.WriteString("try{")
+	w.WriteString("try")
 	w.WriteBlock(&t.TryBlock)
 	if t.CatchBlock != nil {
-		w.WriteString("}catch(")
+		w.WriteString("catch(")
 		if t.CatchParameterBindingIdentifier != nil {
 			w.WriteString(t.CatchParameterBindingIdentifier.Data)
 		} else if t.CatchParameterArrayBindingPattern != nil {
@@ -908,13 +908,13 @@ func (w *writer) WriteTryStatement(t *javascript.TryStatement) {
 		} else if t.CatchParameterObjectBindingPattern != nil {
 			w.WriteObjectBindingPattern(t.CatchParameterObjectBindingPattern)
 		}
-		w.WriteString("){")
+		w.WriteString(")")
+		w.WriteBlock(t.CatchBlock)
 	}
 	if t.FinallyBlock != nil {
-		w.WriteString("}finally{")
+		w.WriteString("finally")
 		w.WriteBlock(t.FinallyBlock)
 	}
-	w.WriteString("}")
 }
 
 func (w *writer) WriteVariableStatement(vs *javascript.VariableStatement) {
