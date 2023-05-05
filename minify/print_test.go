@@ -421,6 +421,14 @@ func TestPrint(t *testing.T) {
 			"continue Label;",
 			"continue Label",
 		},
+		{ // 103
+			"break;",
+			"break",
+		},
+		{ // 104
+			"break Label;",
+			"break Label",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
