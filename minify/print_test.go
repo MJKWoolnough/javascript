@@ -401,6 +401,18 @@ func TestPrint(t *testing.T) {
 			"label: a++",
 			"label:a++",
 		},
+		{ // 98
+			"try { a(); b() } catch ( e ) {}",
+			"try{a();b()}catch(e){}",
+		},
+		{ // 99
+			"try { a(); } finally { something() }",
+			"try{a()}finally{something()}",
+		},
+		{ // 100
+			"try { a(); } catch ( e ) { e(); } finally { something(); }",
+			"try{a()}catch(e){e()}finally{something()}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
