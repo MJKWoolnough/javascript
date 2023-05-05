@@ -385,6 +385,14 @@ func TestPrint(t *testing.T) {
 			"for await ( const a of b) {}",
 			"for await(const a of b){}",
 		},
+		{ // 94
+			"with ( a ) {}",
+			"with(a){}",
+		},
+		{ // 95
+			"with ( a ) b;",
+			"with(a)b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
