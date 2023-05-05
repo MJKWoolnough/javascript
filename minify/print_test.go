@@ -449,6 +449,10 @@ func TestPrint(t *testing.T) {
 			"throw [a];",
 			"throw[a]",
 		},
+		{ // 110
+			"debugger;",
+			"debugger",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
