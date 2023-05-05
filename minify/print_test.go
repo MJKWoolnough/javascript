@@ -413,6 +413,14 @@ func TestPrint(t *testing.T) {
 			"try { a(); } catch ( e ) { e(); } finally { something(); }",
 			"try{a()}catch(e){e()}finally{something()}",
 		},
+		{ // 101
+			"continue;",
+			"continue",
+		},
+		{ // 102
+			"continue Label;",
+			"continue Label",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
