@@ -25,3 +25,7 @@ func RemoveDebugger(m *minifier) {
 func RenameIdentifiers(m *minifier) {
 	m.rename = true
 }
+
+func BlocksToStatement(m *minifier) {
+	m.blocks = true
+}
