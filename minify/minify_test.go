@@ -1084,6 +1084,133 @@ func TestTransforms(t *testing.T) {
 			},
 			&javascript.Statement{},
 		},
+		{ // 33
+			[]Option{BlocksToStatement},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{},
+			},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{},
+			},
+		},
+		{ // 34
+			[]Option{BlocksToStatement},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{
+					StatementList: []javascript.StatementListItem{
+						{
+							Statement: &javascript.Statement{
+								Type: javascript.StatementContinue,
+							},
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				Type: javascript.StatementContinue,
+			},
+		},
+		{ // 35
+			[]Option{BlocksToStatement},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{
+					StatementList: []javascript.StatementListItem{
+						{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{
+									StatementList: []javascript.StatementListItem{
+										{
+											Statement: &javascript.Statement{
+												Type: javascript.StatementContinue,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				Type: javascript.StatementContinue,
+			},
+		},
+		{ // 36
+			[]Option{BlocksToStatement},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{
+					StatementList: []javascript.StatementListItem{
+						{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{
+									StatementList: []javascript.StatementListItem{
+										{
+											Statement: &javascript.Statement{
+												Type: javascript.StatementContinue,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				Type: javascript.StatementContinue,
+			},
+		},
+		{ // 37
+			[]Option{BlocksToStatement},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{
+					StatementList: []javascript.StatementListItem{
+						{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "hello"),
+											}),
+										},
+									},
+								},
+							},
+						},
+						{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "world"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "hello"),
+							}),
+						},
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "world"),
+							}),
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
