@@ -1128,6 +1128,12 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid escape sequence: `\\x`"},
 			},
 		},
+		{ // 135
+			".123_456",
+			[]parser.Token{
+				{Type: TokenNumericLiteral, Data: "0.123_456"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)
