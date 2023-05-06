@@ -9,7 +9,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks bool
 }
 
 type Minifier minifier
@@ -37,6 +37,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.ArrowFunction:
 		w.minifyArrowFunc(t)
 	case *javascript.Statement:
+		w.minifyBlockToStatement(t)
 		w.minifyIfToConditional(t)
 		w.removeDebugger(t)
 	}
@@ -264,5 +265,25 @@ func isHoistable(s *javascript.StatementListItem) bool {
 func (m *Minifier) removeDebugger(s *javascript.Statement) {
 	if m.rmDebugger && s.Type == javascript.StatementDebugger {
 		s.Type = javascript.StatementNormal
+	}
+}
+
+func (m *Minifier) minifyBlockToStatement(s *javascript.Statement) {
+	if m.blocks && s.BlockStatement != nil {
+		if l := len(s.BlockStatement.StatementList); l == 1 {
+			if s.BlockStatement.StatementList[0].Statement != nil {
+				*s = *s.BlockStatement.StatementList[0].Statement
+			}
+		} else if l > 1 {
+			if expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(s.BlockStatement.StatementList); !hasReturn && len(expressions) > 0 {
+				*s = javascript.Statement{
+					ExpressionStatement: &javascript.Expression{
+						Expressions: expressions,
+						Tokens:      s.Tokens,
+					},
+					Tokens: s.Tokens,
+				}
+			}
+		}
 	}
 }
