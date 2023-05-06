@@ -1219,3 +1219,55 @@ func TestTransforms(t *testing.T) {
 		}
 	}
 }
+
+func TestIsNumber(t *testing.T) {
+	for n, test := range [...]struct {
+		Input    string
+		IsNumber bool
+	}{
+		{ // 1
+			"0",
+			true,
+		},
+		{ // 2
+			"a",
+			false,
+		},
+		{ // 3
+			"0x001",
+			true,
+		},
+		{ // 4
+			"0x0af",
+			true,
+		},
+		{ // 5
+			"0x0afg",
+			false,
+		},
+		{ // 6
+			"0x0af.1",
+			false,
+		},
+		{ // 7
+			"1_123.44",
+			true,
+		},
+		{ // 8
+			".123_456",
+			true,
+		},
+		{ // 9
+			"0.123_456",
+			true,
+		},
+		{ // 10
+			"0b11n",
+			true,
+		},
+	} {
+		if in := isNumber(test.Input); in != test.IsNumber {
+			t.Errorf("test %d: for input %s, expecting `isNumber` to return %v, got %v", n+1, test.Input, test.IsNumber, in)
+		}
+	}
+}
