@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys bool
 }
 
 type Minifier minifier

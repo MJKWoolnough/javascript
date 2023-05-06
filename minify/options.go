@@ -29,3 +29,7 @@ func RenameIdentifiers(m *minifier) {
 func BlocksToStatement(m *minifier) {
 	m.blocks = true
 }
+
+func Keys(m *minifier) {
+	m.keys = true
+}
