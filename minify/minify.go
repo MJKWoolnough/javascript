@@ -289,6 +289,15 @@ func (m *Minifier) minifyBlockToStatement(s *javascript.Statement) {
 	}
 }
 
+func isIdentifier(str string) bool {
+	for n, r := range str {
+		if (n == 0 && !isIDStart(r)) || (n > 0 && !isIDContinue(r)) {
+			return false
+		}
+	}
+	return true
+}
+
 var (
 	hexNums = "0123456789aAbBcCdDeEfF"
 	decNums = hexNums[:10]
