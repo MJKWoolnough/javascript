@@ -1211,6 +1211,182 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 38
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"a\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "a"),
+			},
+		},
+		{ // 39
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"ab\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "ab"),
+			},
+		},
+		{ // 40
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"&\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"&\""),
+			},
+		},
+		{ // 41
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"Infinity\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "Infinity"),
+			},
+		},
+		{ // 42
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"123\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenNumericLiteral, "123"),
+			},
+		},
+		{ // 43
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"true\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "true"),
+			},
+		},
+		{ // 44
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"false\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "false"),
+			},
+		},
+		{ // 45
+			[]Option{Keys},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"null\""),
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "null"),
+			},
+		},
+		{ // 46
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"a\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "a"),
+			},
+		},
+		{ // 47
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"ab\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "ab"),
+			},
+		},
+		{ // 48
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"&\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenStringLiteral, "\"&\""),
+			},
+		},
+		{ // 49
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"Infinity\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "Infinity"),
+			},
+		},
+		{ // 50
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"123\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenNumericLiteral, "123"),
+			},
+		},
+		{ // 51
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"true\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "true"),
+			},
+		},
+		{ // 52
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"false\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "false"),
+			},
+		},
+		{ // 53
+			[]Option{Keys},
+			&javascript.PropertyName{
+				ComputedPropertyName: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenStringLiteral, "\"null\""),
+					}),
+				},
+			},
+			&javascript.PropertyName{
+				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "null"),
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
