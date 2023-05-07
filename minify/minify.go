@@ -305,6 +305,23 @@ var (
 	binNums = hexNums[:2]
 )
 
+const maxSafeInt = "9007199254740991"
+
+func isSimpleNumber(str string) bool {
+	if str == "0" {
+		return true
+	}
+	if len(str) == 0 || len(str) > len(maxSafeInt) || strings.IndexByte(decNums[1:], str[0]) < 0 {
+		return false
+	}
+	for _, r := range str[1:] {
+		if !strings.ContainsRune(decNums, r) {
+			return false
+		}
+	}
+	return len(str) < len(maxSafeInt) || str <= maxSafeInt
+}
+
 func numberRun(t *parser.Tokeniser, digits string) bool {
 	for {
 		if !t.Accept(digits) {
