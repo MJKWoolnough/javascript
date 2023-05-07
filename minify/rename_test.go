@@ -10,7 +10,7 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-func TestOrdererScope(t *testing.T) {
+func TestOrderedScope(t *testing.T) {
 	for n, test := range [...]struct {
 		Input    string
 		Bindings []string
