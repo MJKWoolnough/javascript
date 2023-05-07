@@ -122,6 +122,18 @@ func TestRename(t *testing.T) {
 			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
 			"let _ = 1;\n\n{\n	let $ = 2;\n	{\n		_ = 3;\n	}\n}",
 		},
+		{ // 8
+			"function aFunction(){}",
+			"function _() {}",
+		},
+		{ // 9
+			"class aClass {}",
+			"class _ {}",
+		},
+		{ // 9
+			"class aClass {}\nclass bClass extends aClass {}",
+			"class _ {}\n\nclass $ extends _ {}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
