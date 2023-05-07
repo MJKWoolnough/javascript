@@ -1396,6 +1396,46 @@ func TestTransforms(t *testing.T) {
 	}
 }
 
+func TestIsIdentifier(t *testing.T) {
+	for n, test := range [...]struct {
+		Input        string
+		IsIdentifier bool
+	}{
+		{
+			"a",
+			true,
+		},
+		{
+			"aa",
+			true,
+		},
+		{
+			"_",
+			true,
+		},
+		{
+			"__",
+			true,
+		},
+		{
+			"0",
+			false,
+		},
+		{
+			"true",
+			true,
+		},
+		{
+			"a a",
+			false,
+		},
+	} {
+		if ii := isIdentifier(test.Input); ii != test.IsIdentifier {
+			t.Errorf("test %d: for input %q, expecting IsIdentifier to return %v, got %v", n+1, test.Input, test.IsIdentifier, ii)
+		}
+	}
+}
+
 func TestIsSimpleNumber(t *testing.T) {
 	for n, test := range [...]struct {
 		Input          string
