@@ -3,48 +3,10 @@ package minify
 import (
 	"errors"
 	"io"
-	"unicode"
 	"unicode/utf8"
 
 	"vimagination.zapto.org/javascript"
 )
-
-var (
-	idContinue = []*unicode.RangeTable{
-		unicode.L,
-		unicode.Nl,
-		unicode.Other_ID_Start,
-		unicode.Mn,
-		unicode.Mc,
-		unicode.Nd,
-		unicode.Pc,
-		unicode.Other_ID_Continue,
-	}
-	idStart = idContinue[:3]
-	notID   = []*unicode.RangeTable{
-		unicode.Pattern_Syntax,
-		unicode.Pattern_White_Space,
-	}
-)
-
-const (
-	zwnj rune = 8204
-	zwj  rune = 8205
-)
-
-func isIDStart(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' {
-		return true
-	}
-	return unicode.In(c, idStart...) && !unicode.In(c, notID...)
-}
-
-func isIDContinue(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' || c == zwnj || c == zwj {
-		return true
-	}
-	return unicode.In(c, idContinue...) && !unicode.In(c, notID...)
-}
 
 type writer struct {
 	io.Writer
