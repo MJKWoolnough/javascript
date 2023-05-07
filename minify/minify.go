@@ -297,20 +297,17 @@ func isIdentifier(str string) bool {
 	return true
 }
 
-const (
-	decNums    = "0123456789"
-	maxSafeInt = "9007199254740991"
-)
+const maxSafeInt = "9007199254740991"
 
 func isSimpleNumber(str string) bool {
 	if str == "0" {
 		return true
 	}
-	if len(str) == 0 || len(str) > len(maxSafeInt) || strings.IndexByte(decNums[1:], str[0]) < 0 {
+	if len(str) == 0 || len(str) > len(maxSafeInt) || str[0] < '1' || str[0] > '9' {
 		return false
 	}
 	for _, r := range str[1:] {
-		if !strings.ContainsRune(decNums, r) {
+		if r < '0' || r > '9' {
 			return false
 		}
 	}
