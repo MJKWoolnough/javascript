@@ -6,7 +6,6 @@ import (
 
 	"vimagination.zapto.org/javascript"
 	"vimagination.zapto.org/javascript/walk"
-	"vimagination.zapto.org/parser"
 )
 
 type minifier struct {
@@ -298,14 +297,10 @@ func isIdentifier(str string) bool {
 	return true
 }
 
-var (
-	hexNums = "0123456789aAbBcCdDeEfF"
-	decNums = hexNums[:10]
-	octNums = hexNums[:8]
-	binNums = hexNums[:2]
+const (
+	decNums    = "0123456789"
+	maxSafeInt = "9007199254740991"
 )
-
-const maxSafeInt = "9007199254740991"
 
 func isSimpleNumber(str string) bool {
 	if str == "0" {
@@ -320,73 +315,4 @@ func isSimpleNumber(str string) bool {
 		}
 	}
 	return len(str) < len(maxSafeInt) || str <= maxSafeInt
-}
-
-func numberRun(t *parser.Tokeniser, digits string) bool {
-	for {
-		if !t.Accept(digits) {
-			return false
-		}
-		t.AcceptRun(digits)
-		if !t.Accept("_") {
-			break
-		}
-	}
-	return true
-}
-
-func isNumber(str string) bool {
-	if str == "Infinity" {
-		return true
-	}
-	t := parser.NewStringTokeniser(str)
-	if t.Accept("0") {
-		if t.Accept("bB") {
-			if !numberRun(&t, binNums) {
-				return false
-			}
-			t.Accept("n")
-		} else if t.Accept("oO") {
-			if !numberRun(&t, octNums) {
-				return false
-			}
-			t.Accept("n")
-		} else if t.Accept("xX") {
-			if !numberRun(&t, hexNums) {
-				return false
-			}
-			t.Accept("n")
-		} else if t.Accept(".") {
-			if !numberRun(&t, decNums) {
-				return false
-			}
-			if t.Accept("eE") {
-				t.Accept("+-")
-				if !numberRun(&t, decNums) {
-					return false
-				}
-			}
-		} else {
-			t.Accept("n")
-		}
-	} else {
-		if !numberRun(&t, decNums) {
-			return false
-		}
-		if !t.Accept("n") {
-			if t.Accept(".") {
-				if !numberRun(&t, decNums) {
-					return false
-				}
-			}
-			if t.Accept("eE") {
-				t.Accept("+-")
-				if !numberRun(&t, decNums) {
-					return false
-				}
-			}
-		}
-	}
-	t.Get()
-	return !t.Except("")
 }

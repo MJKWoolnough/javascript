@@ -1220,54 +1220,58 @@ func TestTransforms(t *testing.T) {
 	}
 }
 
-func TestIsNumber(t *testing.T) {
+func TestIsSimpleNumber(t *testing.T) {
 	for n, test := range [...]struct {
-		Input    string
-		IsNumber bool
+		Input          string
+		IsSimpleNumber bool
 	}{
-		{ // 1
-			"0",
-			true,
+		{
+			"",
+			false,
 		},
-		{ // 2
+		{
 			"a",
 			false,
 		},
-		{ // 3
-			"0x001",
+		{
+			"0",
 			true,
 		},
-		{ // 4
-			"0x0af",
-			true,
-		},
-		{ // 5
-			"0x0afg",
+		{
+			"01",
 			false,
 		},
-		{ // 6
-			"0x0af.1",
+		{
+			"1",
+			true,
+		},
+		{
+			"1234567890",
+			true,
+		},
+		{
+			"1234567890a",
 			false,
 		},
-		{ // 7
-			"1_123.44",
+		{
+			"9007199254740990",
 			true,
 		},
-		{ // 8
-			".123_456",
+		{
+			"9007199254740991",
 			true,
 		},
-		{ // 9
-			"0.123_456",
-			true,
+		{
+			"9007199254740992",
+			false,
 		},
-		{ // 10
-			"0b11n",
-			true,
+		{
+			"19007199254740992",
+			false,
 		},
 	} {
-		if in := isNumber(test.Input); in != test.IsNumber {
-			t.Errorf("test %d: for input %s, expecting `isNumber` to return %v, got %v", n+1, test.Input, test.IsNumber, in)
+		if isn := isSimpleNumber(test.Input); isn != test.IsSimpleNumber {
+			t.Errorf("test %d: for input %s, got %v, when expecting %v", n+1, test.Input, test.IsSimpleNumber, isn)
 		}
 	}
 }
