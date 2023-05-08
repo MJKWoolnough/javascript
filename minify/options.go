@@ -37,3 +37,7 @@ func Keys(m *minifier) {
 func RemoveExpressionNames(m *minifier) {
 	m.nonHoistableNames = true
 }
+
+func FunctionExpressionToArrowFunc(m *minifier) {
+	m.replaceFEWithAF = true
+}
