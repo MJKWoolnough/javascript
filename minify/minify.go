@@ -137,26 +137,34 @@ func (m *Minifier) minifyNumbers(pe *javascript.PrimaryExpression) {
 }
 
 func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
-	if m.arrowFn && af.FunctionBody != nil {
-		if af.FormalParameters != nil {
-			if len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.FormalParameterList[0].SingleNameBinding != nil && af.FormalParameters.FormalParameterList[0].Initializer == nil && af.FormalParameters.BindingIdentifier == nil && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil {
-				af.BindingIdentifier = af.FormalParameters.FormalParameterList[0].SingleNameBinding
+	if m.arrowFn {
+		if af.FormalParameters != nil && len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil && af.FormalParameters.BindingIdentifier == nil {
+			if fp := af.FormalParameters.FormalParameterList[0]; fp.Initializer == nil && fp.SingleNameBinding != nil && fp.ArrayBindingPattern == nil && fp.ObjectBindingPattern == nil {
+				af.BindingIdentifier = fp.SingleNameBinding
 				af.FormalParameters = nil
 			}
 		}
-		expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(af.FunctionBody.StatementList)
-		if hasReturn {
-			if len(expressions) == 1 {
-				af.FunctionBody = nil
-				af.AssignmentExpression = &expressions[0]
-			} else if len(expressions) != 0 {
-				af.AssignmentExpression = &javascript.AssignmentExpression{
-					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-						Expressions: expressions,
-						Tokens:      af.FunctionBody.Tokens,
-					}),
+		if af.FunctionBody != nil {
+			if af.FormalParameters != nil {
+				if len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.FormalParameterList[0].SingleNameBinding != nil && af.FormalParameters.FormalParameterList[0].Initializer == nil && af.FormalParameters.BindingIdentifier == nil && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil {
+					af.BindingIdentifier = af.FormalParameters.FormalParameterList[0].SingleNameBinding
+					af.FormalParameters = nil
 				}
-				af.FunctionBody = nil
+			}
+			expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(af.FunctionBody.StatementList)
+			if hasReturn {
+				if len(expressions) == 1 {
+					af.FunctionBody = nil
+					af.AssignmentExpression = &expressions[0]
+				} else if len(expressions) != 0 {
+					af.AssignmentExpression = &javascript.AssignmentExpression{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: expressions,
+							Tokens:      af.FunctionBody.Tokens,
+						}),
+					}
+					af.FunctionBody = nil
+				}
 			}
 		}
 	}
