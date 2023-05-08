@@ -356,6 +356,7 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 				FunctionBody:     &fe.FunctionBody,
 			}
 			ae.ConditionalExpression = nil
+			m.minifyArrowFunc(ae.ArrowFunction)
 		}
 	}
 }
