@@ -3104,6 +3104,51 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 10
+			"const aFunc = function b() {}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[javascript.Type]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.FunctionDeclaration): fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"aFunc": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
+		{ // 10
+			"const aClass = class b {}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[javascript.Type]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"aClass": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+				}
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		source, err := javascript.ParseModule(&tk)
