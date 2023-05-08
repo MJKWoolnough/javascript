@@ -5,11 +5,12 @@ import (
 	"strings"
 
 	"vimagination.zapto.org/javascript"
+	"vimagination.zapto.org/javascript/scope"
 	"vimagination.zapto.org/javascript/walk"
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF bool
 }
 
 type Minifier minifier
@@ -43,6 +44,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.removeDebugger(t)
 	case *javascript.PropertyName:
 		w.minifyObjectKeys(t)
+	case *javascript.AssignmentExpression:
+		w.minifyFunctionExpressionAsArrowFunc(t)
 	}
 	return nil
 }
@@ -321,6 +324,30 @@ func (m *Minifier) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
 			pe.FunctionExpression.BindingIdentifier = nil
 		} else if pe.ClassExpression != nil {
 			pe.ClassExpression.BindingIdentifier = nil
+		}
+	}
+}
+
+func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.AssignmentExpression) {
+	if m.replaceFEWithAF && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil {
+		if fe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.FunctionDeclaration); ok && (fe.Type == javascript.FunctionAsync || fe.Type == javascript.FunctionNormal) {
+			s, err := scope.ScriptScope(&javascript.Script{
+				StatementList: fe.FunctionBody.StatementList,
+			}, nil)
+			if err != nil {
+				return
+			}
+			_, hasArguments := s.Bindings["arguments"]
+			_, hasThis := s.Bindings["this"]
+			if hasArguments || hasThis {
+				return
+			}
+			ae.ArrowFunction = &javascript.ArrowFunction{
+				Async:            fe.Type == javascript.FunctionAsync,
+				FormalParameters: &fe.FormalParameters,
+				FunctionBody:     &fe.FunctionBody,
+			}
+			ae.ConditionalExpression = nil
 		}
 	}
 }
