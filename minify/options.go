@@ -33,3 +33,7 @@ func BlocksToStatement(m *minifier) {
 func Keys(m *minifier) {
 	m.keys = true
 }
+
+func RemoveExpressionNames(m *minifier) {
+	m.nonHoistableNames = true
+}
