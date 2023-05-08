@@ -1387,6 +1387,28 @@ func TestTransforms(t *testing.T) {
 				LiteralPropertyName: makeToken(javascript.TokenIdentifier, "null"),
 			},
 		},
+		{ // 54
+			[]Option{RemoveExpressionNames},
+			&javascript.PrimaryExpression{
+				FunctionExpression: &javascript.FunctionDeclaration{
+					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				},
+			},
+			&javascript.PrimaryExpression{
+				FunctionExpression: &javascript.FunctionDeclaration{},
+			},
+		},
+		{ // 55
+			[]Option{RemoveExpressionNames},
+			&javascript.PrimaryExpression{
+				ClassExpression: &javascript.ClassDeclaration{
+					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				},
+			},
+			&javascript.PrimaryExpression{
+				ClassExpression: &javascript.ClassDeclaration{},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
