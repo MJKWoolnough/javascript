@@ -9,7 +9,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames bool
 }
 
 type Minifier minifier
@@ -34,6 +34,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.PrimaryExpression:
 		w.minifyLiterals(t)
 		w.minifyNumbers(t)
+		w.minifyNonHoistableNames(t)
 	case *javascript.ArrowFunction:
 		w.minifyArrowFunc(t)
 	case *javascript.Statement:
@@ -310,6 +311,16 @@ func (m *Minifier) minifyObjectKeys(p *javascript.PropertyName) {
 					p.LiteralPropertyName.Type = javascript.TokenNumericLiteral
 				}
 			}
+		}
+	}
+}
+
+func (m *Minifier) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
+	if m.nonHoistableNames {
+		if pe.FunctionExpression != nil {
+			pe.FunctionExpression.BindingIdentifier = nil
+		} else if pe.ClassExpression != nil {
+			pe.ClassExpression.BindingIdentifier = nil
 		}
 	}
 }
