@@ -613,6 +613,38 @@ func TestPrint(t *testing.T) {
 			"[a, b = c, d] = e",
 			"[a,b=c,d]=e",
 		},
+		{ // 151
+			"({a} = b)",
+			"({a}=b)",
+		},
+		{ // 152
+			"({a, b} = c)",
+			"({a,b}=c)",
+		},
+		{ // 153
+			"({a, b, c} = d)",
+			"({a,b,c}=d)",
+		},
+		{ // 154
+			"({a,...b} = c)",
+			"({a,...b}=c)",
+		},
+		{ // 155
+			"({a: b, c} = d)",
+			"({a:b,c}=d)",
+		},
+		{ // 156
+			"({a: b = c, d: e} = f)",
+			"({a:b=c,d:e}=f)",
+		},
+		{ // 157
+			"({a = b, c: d, e} = f)",
+			"({a=b,c:d,e}=f)",
+		},
+		{ // 158
+			"({a = b, c: d, e} = f)",
+			"({a=b,c:d,e}=f)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
