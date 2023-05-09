@@ -577,6 +577,42 @@ func TestPrint(t *testing.T) {
 			"a ??= 1",
 			"a??=1",
 		},
+		{ // 142
+			"[a] = b",
+			"[a]=b",
+		},
+		{ // 143
+			"[a, b] = c",
+			"[a,b]=c",
+		},
+		{ // 144
+			"[a, b, c] = d",
+			"[a,b,c]=d",
+		},
+		{ // 145
+			"[a, ...b] = c",
+			"[a,...b]=c",
+		},
+		{ // 146
+			"[...a] = b",
+			"[...a]=b",
+		},
+		{ // 147
+			"[a = b] = c",
+			"[a=b]=c",
+		},
+		{ // 148
+			"[a,b = c] = d",
+			"[a,b=c]=d",
+		},
+		{ // 149
+			"[a=b,c] = d",
+			"[a=b,c]=d",
+		},
+		{ // 150
+			"[a, b = c, d] = e",
+			"[a,b=c,d]=e",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
