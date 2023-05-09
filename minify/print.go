@@ -1047,7 +1047,11 @@ func (w *writer) WriteAssignmentPattern(ap *javascript.AssignmentPattern) {
 
 func (w *writer) WriteArrayAssignmentPattern(aa *javascript.ArrayAssignmentPattern) {
 	w.WriteString("[")
-	for n := range aa.AssignmentElements {
+	ae := aa.AssignmentElements
+	for len(ae) > 0 && ae[len(ae)-1].DestructuringAssignmentTarget.AssignmentPattern == nil && ae[len(ae)-1].DestructuringAssignmentTarget.LeftHandSideExpression == nil {
+		ae = ae[:len(ae)-1]
+	}
+	for n := range ae {
 		if n > 0 {
 			w.WriteString(",")
 		}
