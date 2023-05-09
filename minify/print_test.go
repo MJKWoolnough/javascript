@@ -473,6 +473,46 @@ func TestPrint(t *testing.T) {
 			"function* a(){yield * [a];}",
 			"function*a(){yield*[a]}",
 		},
+		{ // 116
+			"(a) => b;",
+			"(a)=>b",
+		},
+		{ // 117
+			"(a, b) => c;",
+			"(a,b)=>c",
+		},
+		{ // 118
+			"(a, b, ...c) => d;",
+			"(a,b,...c)=>d",
+		},
+		{ // 119
+			"(a, b) =>{c;\nd;}",
+			"(a,b)=>{c;d}",
+		},
+		{ // 120
+			"(a, b) => c;",
+			"(a,b)=>c",
+		},
+		{ // 121
+			"a => b;",
+			"a=>b",
+		},
+		{ // 122
+			"a => {b;c;}",
+			"a=>{b;c}",
+		},
+		{ // 123
+			"async (a) => b;",
+			"async(a)=>b",
+		},
+		{ // 124
+			"async (a, b) => c;",
+			"async(a,b)=>c",
+		},
+		{ // 125
+			"async a => b;",
+			"async a=>b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
