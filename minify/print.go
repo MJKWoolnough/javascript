@@ -1101,7 +1101,6 @@ func (w *writer) WriteAssignmentProperty(ap *javascript.AssignmentProperty) {
 	w.WritePropertyName(&ap.PropertyName)
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.PropertyName.LiteralPropertyName != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News == 0 && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == ap.PropertyName.LiteralPropertyName.Data {
-			w.err = ErrInvalidAST
 			return
 		}
 		w.WriteString(":")
