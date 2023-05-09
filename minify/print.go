@@ -1091,6 +1091,7 @@ func (w *writer) WriteObjectAssignmentPattern(oa *javascript.ObjectAssignmentPat
 		if len(oa.AssignmentPropertyList) > 0 {
 			w.WriteString(",")
 		}
+		w.WriteString("...")
 		w.WriteLeftHandSideExpression(oa.AssignmentRestElement)
 	}
 	w.WriteString("}")
