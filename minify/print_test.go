@@ -457,6 +457,22 @@ func TestPrint(t *testing.T) {
 			"a, b, c;",
 			"a,b,c",
 		},
+		{ // 112
+			"function* a(){yield a;}",
+			"function*a(){yield a}",
+		},
+		{ // 113
+			"function* a(){yield [a];}",
+			"function*a(){yield[a]}",
+		},
+		{ // 114
+			"function* a(){yield * a;}",
+			"function*a(){yield*a}",
+		},
+		{ // 115
+			"function* a(){yield * [a];}",
+			"function*a(){yield*[a]}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
