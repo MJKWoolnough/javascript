@@ -908,7 +908,8 @@ func (w *writer) WriteFunctionDeclaration(f *javascript.FunctionDeclaration) {
 	w.WriteString("function")
 	if f.Type == javascript.FunctionGenerator || f.Type == javascript.FunctionAsyncGenerator {
 		w.WriteString("*")
-	} else if f.BindingIdentifier != nil {
+	}
+	if f.BindingIdentifier != nil {
 		w.WriteString(f.BindingIdentifier.Data)
 	}
 	w.WriteFormalParameters(&f.FormalParameters)
