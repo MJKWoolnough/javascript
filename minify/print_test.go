@@ -693,6 +693,18 @@ func TestPrint(t *testing.T) {
 			"a && b || c",
 			"a&&b||c",
 		},
+		{ // 171
+			"a | b",
+			"a|b",
+		},
+		{ // 172
+			"a | b | c",
+			"a|b|c",
+		},
+		{ // 173
+			"a | b | c && d || e ? f : g",
+			"a|b|c&&d||e?f:g",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
