@@ -653,6 +653,10 @@ func TestPrint(t *testing.T) {
 			"({a = b, c: d, e} = f)",
 			"({a=b,c:d,e}=f)",
 		},
+		{ // 161
+			"a ? b : c",
+			"a?b:c",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
