@@ -1712,6 +1712,26 @@ func TestTransforms(t *testing.T) {
 				FunctionBody: &javascript.Block{},
 			},
 		},
+		{ // 66
+			[]Option{ArrowFn, FunctionExpressionToArrowFunc},
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.FunctionDeclaration{
+					FormalParameters: javascript.FormalParameters{
+						FormalParameterList: []javascript.BindingElement{
+							{
+								SingleNameBinding: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+					},
+				}),
+			},
+			&javascript.AssignmentExpression{
+				ArrowFunction: &javascript.ArrowFunction{
+					BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					FunctionBody:      &javascript.Block{},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
