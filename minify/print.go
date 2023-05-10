@@ -1121,7 +1121,11 @@ func (w *writer) WriteConditionalExpression(ce *javascript.ConditionalExpression
 		w.WriteLogicalORExpression(ce.LogicalORExpression)
 	} else if ce.CoalesceExpression != nil {
 		w.WriteCoalesceExpression(ce.CoalesceExpression)
-	} else if ce.True != nil && ce.False != nil {
+	} else {
+		w.err = ErrInvalidAST
+		return
+	}
+	if ce.True != nil && ce.False != nil {
 		w.WriteString("?")
 		w.WriteAssignmentExpression(ce.True)
 		w.WriteString(":")
