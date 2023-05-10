@@ -610,38 +610,46 @@ func TestPrint(t *testing.T) {
 			"[a=b,c]=d",
 		},
 		{ // 150
+			"[a,,b] = c",
+			"[a,,b]=c",
+		},
+		{ // 151
+			"[,a ,,b ,,c ,,,] = d",
+			"[,a,,b,,c]=d",
+		},
+		{ // 152
 			"[a, b = c, d] = e",
 			"[a,b=c,d]=e",
 		},
-		{ // 151
+		{ // 153
 			"({a} = b)",
 			"({a}=b)",
 		},
-		{ // 152
+		{ // 154
 			"({a, b} = c)",
 			"({a,b}=c)",
 		},
-		{ // 153
+		{ // 155
 			"({a, b, c} = d)",
 			"({a,b,c}=d)",
 		},
-		{ // 154
+		{ // 156
 			"({a,...b} = c)",
 			"({a,...b}=c)",
 		},
-		{ // 155
+		{ // 157
 			"({a: b, c} = d)",
 			"({a:b,c}=d)",
 		},
-		{ // 156
+		{ // 158
 			"({a: b = c, d: e} = f)",
 			"({a:b=c,d:e}=f)",
 		},
-		{ // 157
+		{ // 159
 			"({a = b, c: d, e} = f)",
 			"({a=b,c:d,e}=f)",
 		},
-		{ // 158
+		{ // 160
 			"({a = b, c: d, e} = f)",
 			"({a=b,c:d,e}=f)",
 		},
@@ -657,6 +665,10 @@ func TestPrint(t *testing.T) {
 			} else if str := sb.String(); str != test.Output {
 				t.Errorf("test %d.1: expecting output %q, got %q", n+1, test.Output, str)
 			} else {
+				if n == 150 {
+					aap := m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern
+					aap.AssignmentElements = aap.AssignmentElements[:6]
+				}
 				normalStr := fmt.Sprint(m)
 				tk = parser.NewStringTokeniser(str)
 				m, err := javascript.ParseModule(&tk)
