@@ -745,6 +745,42 @@ func TestPrint(t *testing.T) {
 			"a !== b",
 			"a!==b",
 		},
+		{ // 184
+			"#a in b",
+			"#a in b",
+		},
+		{ // 185
+			"a < b",
+			"a<b",
+		},
+		{ // 186
+			"a > b",
+			"a>b",
+		},
+		{ // 187
+			"a <= b",
+			"a<=b",
+		},
+		{ // 188
+			"a >= b",
+			"a>=b",
+		},
+		{ // 189
+			"a instanceof b",
+			"a instanceof b",
+		},
+		{ // 190
+			"[a] instanceof [b]",
+			"[a]instanceof[b]",
+		},
+		{ // 191
+			"a in b",
+			"a in b",
+		},
+		{ // 192
+			"[a] in [b]",
+			"[a]in[b]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
