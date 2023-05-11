@@ -781,6 +781,18 @@ func TestPrint(t *testing.T) {
 			"[a] in [b]",
 			"[a]in[b]",
 		},
+		{ // 193
+			"a << b",
+			"a<<b",
+		},
+		{ // 194
+			"a >> b",
+			"a>>b",
+		},
+		{ // 195
+			"a >>> b",
+			"a>>>b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
