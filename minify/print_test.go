@@ -921,6 +921,22 @@ func TestPrint(t *testing.T) {
 			"new new new [a]",
 			"new new new[a]",
 		},
+		{ // 228
+			"a [ 0 ]",
+			"a[0]",
+		},
+		{ // 229
+			"a [ 0 ] . b",
+			"a[0].b",
+		},
+		{ // 230
+			"a [ 0 ] . #b",
+			"a[0].#b",
+		},
+		{ // 231
+			"a `b`",
+			"a`b`",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
