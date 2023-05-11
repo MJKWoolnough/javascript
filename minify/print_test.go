@@ -817,6 +817,70 @@ func TestPrint(t *testing.T) {
 			"a ** b",
 			"a**b",
 		},
+		{ // 202
+			"delete a",
+			"delete a",
+		},
+		{ // 203
+			"delete [a]",
+			"delete[a]",
+		},
+		{ // 204
+			"void a",
+			"void a",
+		},
+		{ // 205
+			"void [a]",
+			"void[a]",
+		},
+		{ // 206
+			"typeof a",
+			"typeof a",
+		},
+		{ // 207
+			"typeof [a]",
+			"typeof[a]",
+		},
+		{ // 208
+			"+a",
+			"+a",
+		},
+		{ // 209
+			"+ a",
+			"+a",
+		},
+		{ // 210
+			"-a",
+			"-a",
+		},
+		{ // 211
+			"- a",
+			"-a",
+		},
+		{ // 212
+			"~a",
+			"~a",
+		},
+		{ // 213
+			"~ a",
+			"~a",
+		},
+		{ // 214
+			"!a",
+			"!a",
+		},
+		{ // 215
+			"! a",
+			"!a",
+		},
+		{ // 216
+			"await a",
+			"await a",
+		},
+		{ // 217
+			"await [a]",
+			"await[a]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
