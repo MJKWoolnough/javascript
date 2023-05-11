@@ -729,6 +729,22 @@ func TestPrint(t *testing.T) {
 			"a & b & c ^ d | e ? f : g",
 			"a&b&c^d|e?f:g",
 		},
+		{ // 180
+			"a == b",
+			"a==b",
+		},
+		{ // 181
+			"a != b",
+			"a!=b",
+		},
+		{ // 182
+			"a === b",
+			"a===b",
+		},
+		{ // 183
+			"a !== b",
+			"a!==b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
