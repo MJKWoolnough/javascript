@@ -913,6 +913,14 @@ func TestPrint(t *testing.T) {
 			"a --",
 			"a--",
 		},
+		{ // 226
+			"new new new a",
+			"new new new a",
+		},
+		{ // 227
+			"new new new [a]",
+			"new new new[a]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
