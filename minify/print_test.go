@@ -881,6 +881,38 @@ func TestPrint(t *testing.T) {
 			"await [a]",
 			"await[a]",
 		},
+		{ // 218
+			"++a",
+			"++a",
+		},
+		{ // 219
+			"++ a",
+			"++a",
+		},
+		{ // 220
+			"--a",
+			"--a",
+		},
+		{ // 221
+			"-- a",
+			"--a",
+		},
+		{ // 222
+			"a++",
+			"a++",
+		},
+		{ // 223
+			"a ++",
+			"a++",
+		},
+		{ // 224
+			"a--",
+			"a--",
+		},
+		{ // 225
+			"a --",
+			"a--",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
