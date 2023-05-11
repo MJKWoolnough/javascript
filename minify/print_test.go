@@ -793,6 +793,14 @@ func TestPrint(t *testing.T) {
 			"a >>> b",
 			"a>>>b",
 		},
+		{ // 196
+			"a + b",
+			"a+b",
+		},
+		{ // 197
+			"a - b",
+			"a-b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
