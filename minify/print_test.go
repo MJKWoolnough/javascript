@@ -961,6 +961,18 @@ func TestPrint(t *testing.T) {
 			"this;",
 			"this",
 		},
+		{ // 238
+			"\"a\"",
+			"\"a\"",
+		},
+		{ // 239
+			"\"a\" . indexOf",
+			"\"a\".indexOf",
+		},
+		{ // 240
+			"\"a\" [0]",
+			"\"a\"[0]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)

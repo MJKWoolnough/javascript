@@ -1131,7 +1131,7 @@ func TestTokeniser(t *testing.T) {
 		{ // 135
 			".123_456",
 			[]parser.Token{
-				{Type: TokenNumericLiteral, Data: "0.123_456"},
+				{Type: TokenNumericLiteral, Data: ".123_456"},
 			},
 		},
 	} {
