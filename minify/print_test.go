@@ -953,6 +953,10 @@ func TestPrint(t *testing.T) {
 			"new . target",
 			"new.target",
 		},
+		{ // 236
+			"import . meta",
+			"import.meta",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
