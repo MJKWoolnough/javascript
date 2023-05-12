@@ -973,6 +973,30 @@ func TestPrint(t *testing.T) {
 			"\"a\" [0]",
 			"\"a\"[0]",
 		},
+		{ // 241
+			"1",
+			"1",
+		},
+		{ // 242
+			"true",
+			"true",
+		},
+		{ // 243
+			"false",
+			"false",
+		},
+		{ // 244
+			"null",
+			"null",
+		},
+		{ // 245
+			"/a/",
+			"/a/",
+		},
+		{ // 246
+			"/a/.b",
+			"/a/.b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
