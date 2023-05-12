@@ -997,6 +997,18 @@ func TestPrint(t *testing.T) {
 			"/a/.b",
 			"/a/.b",
 		},
+		{ // 247
+			"a",
+			"a",
+		},
+		{ // 248
+			"undefined",
+			"undefined",
+		},
+		{ // 249
+			"yield",
+			"yield",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
