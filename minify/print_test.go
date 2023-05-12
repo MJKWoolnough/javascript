@@ -1009,6 +1009,22 @@ func TestPrint(t *testing.T) {
 			"yield",
 			"yield",
 		},
+		{ // 250
+			"[ a ]",
+			"[a]",
+		},
+		{ // 251
+			"[ a , b ]",
+			"[a,b]",
+		},
+		{ // 253
+			"[ a ] . length",
+			"[a].length",
+		},
+		{ // 253
+			"[ a ] [ 0 ]",
+			"[a][0]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
