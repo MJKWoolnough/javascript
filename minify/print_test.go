@@ -949,6 +949,10 @@ func TestPrint(t *testing.T) {
 			"super [ a ] . b",
 			"super[a].b",
 		},
+		{ // 235
+			"new . target",
+			"new.target",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
