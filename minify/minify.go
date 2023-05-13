@@ -46,6 +46,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyObjectKeys(t)
 	case *javascript.AssignmentExpression:
 		w.minifyFunctionExpressionAsArrowFunc(t)
+		w.minifyAEParens(t)
 	case *javascript.ParenthesizedExpression:
 		w.minifyParenthsizedExpressionParens(t)
 	case *javascript.Expression:
@@ -380,7 +381,7 @@ func (m *Minifier) minifyParenthsizedExpressionParens(pe *javascript.Parenthesiz
 }
 
 func aeAsParen(ae *javascript.AssignmentExpression) (*javascript.ParenthesizedExpression, bool) {
-	if ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
+	if ae != nil && ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
 		pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression)
 		return pe, ok
 	}
@@ -404,6 +405,14 @@ func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
 	if m.unwrapParens {
 		if pe, ok := aeAsParen(&a.AssignmentExpression); ok && len(pe.Expressions) == 1 {
 			a.AssignmentExpression = pe.Expressions[0]
+		}
+	}
+}
+
+func (m *Minifier) minifyAEParens(ae *javascript.AssignmentExpression) {
+	if m.unwrapParens {
+		if pe, ok := aeAsParen(ae.AssignmentExpression); ok && len(pe.Expressions) == 1 {
+			ae.AssignmentExpression = &pe.Expressions[0]
 		}
 	}
 }
