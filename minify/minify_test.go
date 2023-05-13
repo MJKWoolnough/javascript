@@ -2077,6 +2077,80 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 74
+			[]Option{UnwrapParens},
+			&javascript.Argument{},
+			&javascript.Argument{},
+		},
+		{ // 75
+			[]Option{UnwrapParens},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+		},
+		{ // 76
+			[]Option{UnwrapParens},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+								}),
+							},
+						},
+					}),
+				},
+			},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+		},
+		{ // 77
+			[]Option{UnwrapParens},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+											}),
+										},
+									},
+								}),
+							},
+						},
+					}),
+				},
+			},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
