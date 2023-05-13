@@ -41,3 +41,7 @@ func RemoveExpressionNames(m *minifier) {
 func FunctionExpressionToArrowFunc(m *minifier) {
 	m.replaceFEWithAF = true
 }
+
+func UnwrapParens(m *minifier) {
+	m.unwrapParens = true
+}
