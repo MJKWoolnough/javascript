@@ -1732,6 +1732,351 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 67
+			[]Option{UnwrapParens},
+			&javascript.Expression{},
+			&javascript.Expression{},
+		},
+		{ // 68
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 69
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+									}),
+								},
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 70
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+									}),
+								},
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+									}),
+								},
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 71
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+									}),
+								},
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+										Expressions: []javascript.AssignmentExpression{
+											{
+												ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+													Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+												}),
+											},
+										},
+									}),
+								},
+							},
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+										Expressions: []javascript.AssignmentExpression{
+											{
+												ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+													Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+												}),
+											},
+										},
+									}),
+								},
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 72
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 73
+			[]Option{UnwrapParens},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						Yield: true,
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						Yield: true,
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+						}),
+					},
+					{
+						Yield: true,
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
+									}),
+								},
+							},
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
+						}),
+					},
+					{
+						Yield: true,
+						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
+									}),
+								},
+							},
+						}),
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
