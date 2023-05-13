@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens bool
 }
 
 type Minifier minifier
@@ -46,6 +46,10 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyObjectKeys(t)
 	case *javascript.AssignmentExpression:
 		w.minifyFunctionExpressionAsArrowFunc(t)
+	case *javascript.ParenthesizedExpression:
+		w.minifyParenthsizedExpressionParens(t)
+	case *javascript.Expression:
+		w.minifyExpressionParens(t)
 	}
 	return nil
 }
@@ -359,4 +363,31 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 			m.minifyArrowFunc(ae.ArrowFunction)
 		}
 	}
+}
+
+func (w *Minifier) minifyExpressionParens(e *javascript.Expression) {
+	if w.unwrapParens {
+		e.Expressions = w.minifyParens(e.Expressions)
+	}
+}
+
+func (w *Minifier) minifyParenthsizedExpressionParens(pe *javascript.ParenthesizedExpression) {
+	if w.unwrapParens {
+		pe.Expressions = w.minifyParens(pe.Expressions)
+	}
+}
+
+func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascript.AssignmentExpression {
+	for i := 0; i < len(e); i++ {
+		if ae := e[i]; ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
+			if pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression); ok {
+				add := make([]javascript.AssignmentExpression, 0, len(pe.Expressions)+len(e)-i-1)
+				add = append(add, pe.Expressions...)
+				add = append(add, e[i+1:]...)
+				e = append(e[:i], add...)
+				i += len(pe.Expressions) - 1
+			}
+		}
+	}
+	return e
 }
