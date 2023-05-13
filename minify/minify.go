@@ -50,6 +50,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyParenthsizedExpressionParens(t)
 	case *javascript.Expression:
 		w.minifyExpressionParens(t)
+	case *javascript.Argument:
+		w.minifyArgumentParens(t)
 	}
 	return nil
 }
@@ -365,29 +367,43 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 	}
 }
 
-func (w *Minifier) minifyExpressionParens(e *javascript.Expression) {
-	if w.unwrapParens {
-		e.Expressions = w.minifyParens(e.Expressions)
+func (m *Minifier) minifyExpressionParens(e *javascript.Expression) {
+	if m.unwrapParens {
+		e.Expressions = m.minifyParens(e.Expressions)
 	}
 }
 
-func (w *Minifier) minifyParenthsizedExpressionParens(pe *javascript.ParenthesizedExpression) {
-	if w.unwrapParens {
-		pe.Expressions = w.minifyParens(pe.Expressions)
+func (m *Minifier) minifyParenthsizedExpressionParens(pe *javascript.ParenthesizedExpression) {
+	if m.unwrapParens {
+		pe.Expressions = m.minifyParens(pe.Expressions)
 	}
+}
+
+func aeAsParen(ae *javascript.AssignmentExpression) (*javascript.ParenthesizedExpression, bool) {
+	if ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
+		pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression)
+		return pe, ok
+	}
+	return nil, false
 }
 
 func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascript.AssignmentExpression {
 	for i := 0; i < len(e); i++ {
-		if ae := e[i]; ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
-			if pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression); ok {
-				add := make([]javascript.AssignmentExpression, 0, len(pe.Expressions)+len(e)-i-1)
-				add = append(add, pe.Expressions...)
-				add = append(add, e[i+1:]...)
-				e = append(e[:i], add...)
-				i += len(pe.Expressions) - 1
-			}
+		if pe, ok := aeAsParen(&e[i]); ok {
+			add := make([]javascript.AssignmentExpression, 0, len(pe.Expressions)+len(e)-i-1)
+			add = append(add, pe.Expressions...)
+			add = append(add, e[i+1:]...)
+			e = append(e[:i], add...)
+			i += len(pe.Expressions) - 1
 		}
 	}
 	return e
+}
+
+func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
+	if m.unwrapParens {
+		if pe, ok := aeAsParen(&a.AssignmentExpression); ok && len(pe.Expressions) == 1 {
+			a.AssignmentExpression = pe.Expressions[0]
+		}
+	}
 }
