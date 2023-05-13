@@ -2151,6 +2151,31 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 78
+			[]Option{UnwrapParens},
+			&javascript.AssignmentExpression{
+				Yield: true,
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+								}),
+							},
+						},
+					}),
+				},
+			},
+			&javascript.AssignmentExpression{
+				Yield: true,
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
