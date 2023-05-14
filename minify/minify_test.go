@@ -1988,118 +1988,27 @@ func TestTransforms(t *testing.T) {
 		},
 		{ // 73
 			[]Option{UnwrapParens},
-			&javascript.Expression{
-				Expressions: []javascript.AssignmentExpression{
-					{
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "1"),
-									}),
-								},
-							},
-						}),
-					},
-					{
-						Yield: true,
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
-									}),
-								},
-							},
-						}),
-					},
-					{
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "3"),
-									}),
-								},
-							},
-						}),
-					},
-					{
-						Yield: true,
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
-									}),
-								},
-							},
-						}),
-					},
-				},
-			},
-			&javascript.Expression{
-				Expressions: []javascript.AssignmentExpression{
-					{
-						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-							Literal: makeToken(javascript.TokenNumericLiteral, "1"),
-						}),
-					},
-					{
-						Yield: true,
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "2"),
-									}),
-								},
-							},
-						}),
-					},
-					{
-						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-							Literal: makeToken(javascript.TokenNumericLiteral, "3"),
-						}),
-					},
-					{
-						Yield: true,
-						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
-							Expressions: []javascript.AssignmentExpression{
-								{
-									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-										Literal: makeToken(javascript.TokenNumericLiteral, "4"),
-									}),
-								},
-							},
-						}),
-					},
-				},
-			},
+			&javascript.Argument{},
+			&javascript.Argument{},
 		},
 		{ // 74
 			[]Option{UnwrapParens},
-			&javascript.Argument{},
-			&javascript.Argument{},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
+			&javascript.Argument{
+				AssignmentExpression: javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+					}),
+				},
+			},
 		},
 		{ // 75
-			[]Option{UnwrapParens},
-			&javascript.Argument{
-				AssignmentExpression: javascript.AssignmentExpression{
-					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
-					}),
-				},
-			},
-			&javascript.Argument{
-				AssignmentExpression: javascript.AssignmentExpression{
-					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-						Literal: makeToken(javascript.TokenNumericLiteral, "1"),
-					}),
-				},
-			},
-		},
-		{ // 76
 			[]Option{UnwrapParens},
 			&javascript.Argument{
 				AssignmentExpression: javascript.AssignmentExpression{
@@ -2122,7 +2031,7 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 77
+		{ // 76
 			[]Option{UnwrapParens},
 			&javascript.Argument{
 				AssignmentExpression: javascript.AssignmentExpression{
@@ -2151,7 +2060,7 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 78
+		{ // 77
 			[]Option{UnwrapParens},
 			&javascript.AssignmentExpression{
 				Yield: true,
@@ -2176,12 +2085,12 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 79
+		{ // 78
 			[]Option{UnwrapParens},
 			&javascript.MemberExpression{},
 			&javascript.MemberExpression{},
 		},
-		{ // 80
+		{ // 79
 			[]Option{UnwrapParens},
 			&javascript.MemberExpression{
 				MemberExpression: &javascript.MemberExpression{
@@ -2208,7 +2117,7 @@ func TestTransforms(t *testing.T) {
 				IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
 			},
 		},
-		{ // 81
+		{ // 80
 			[]Option{UnwrapParens},
 			&javascript.MemberExpression{
 				MemberExpression: &javascript.MemberExpression{
@@ -2253,7 +2162,7 @@ func TestTransforms(t *testing.T) {
 				IdentifierName: makeToken(javascript.TokenIdentifier, "c"),
 			},
 		},
-		{ // 82
+		{ // 81
 			[]Option{UnwrapParens},
 			&javascript.MemberExpression{
 				MemberExpression: &javascript.MemberExpression{
@@ -2280,7 +2189,7 @@ func TestTransforms(t *testing.T) {
 				IdentifierName: makeToken(javascript.TokenIdentifier, "length"),
 			},
 		},
-		{ // 83
+		{ // 82
 			[]Option{UnwrapParens},
 			&javascript.MemberExpression{
 				MemberExpression: &javascript.MemberExpression{
