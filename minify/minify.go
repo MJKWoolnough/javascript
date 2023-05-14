@@ -53,6 +53,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyExpressionParens(t)
 	case *javascript.Argument:
 		w.minifyArgumentParens(t)
+	case *javascript.MemberExpression:
+		w.minifyMemberExpressionParens(t)
 	}
 	return nil
 }
@@ -380,8 +382,12 @@ func (m *Minifier) minifyParenthsizedExpressionParens(pe *javascript.Parenthesiz
 	}
 }
 
+func aeIsCE(ae *javascript.AssignmentExpression) bool {
+	return ae != nil && ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield
+}
+
 func aeAsParen(ae *javascript.AssignmentExpression) (*javascript.ParenthesizedExpression, bool) {
-	if ae != nil && ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield {
+	if aeIsCE(ae) {
 		pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression)
 		return pe, ok
 	}
@@ -413,6 +419,27 @@ func (m *Minifier) minifyAEParens(ae *javascript.AssignmentExpression) {
 	if m.unwrapParens {
 		if pe, ok := aeAsParen(ae.AssignmentExpression); ok && len(pe.Expressions) == 1 {
 			ae.AssignmentExpression = &pe.Expressions[0]
+		}
+	}
+}
+
+func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression) {
+	if m.unwrapParens && me.PrimaryExpression != nil && me.PrimaryExpression.ParenthesizedExpression != nil && len(me.PrimaryExpression.ParenthesizedExpression.Expressions) == 1 && aeIsCE(&me.PrimaryExpression.ParenthesizedExpression.Expressions[0]) {
+		switch e := javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(type) {
+		case *javascript.PrimaryExpression:
+			me.PrimaryExpression = e
+		case *javascript.ArrayLiteral:
+			me.PrimaryExpression = &javascript.PrimaryExpression{
+				ArrayLiteral: e,
+				Tokens:       e.Tokens,
+			}
+		case *javascript.TemplateLiteral:
+			me.PrimaryExpression = &javascript.PrimaryExpression{
+				TemplateLiteral: e,
+				Tokens:          e.Tokens,
+			}
+		case *javascript.MemberExpression:
+			*me = *e
 		}
 	}
 }
