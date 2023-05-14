@@ -59,6 +59,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyCallExpressionParens(t)
 	case *javascript.LeftHandSideExpression:
 		w.minifyLHSExpressionParens(t)
+	case *javascript.Block:
+		w.minifyEmptyStatementInBlock(t)
 	}
 
 	return nil
@@ -489,6 +491,15 @@ func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpress
 		if ce != nil {
 			lhs.CallExpression = ce
 			lhs.NewExpression = nil
+		}
+	}
+}
+
+func (m *Minifier) minifyEmptyStatementInBlock(b *javascript.Block) {
+	for i := 0; i < len(b.StatementList); i++ {
+		if b.StatementList[i].Statement != nil && isEmptyStatement(b.StatementList[i].Statement) {
+			b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
+			i--
 		}
 	}
 }
