@@ -55,6 +55,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyArgumentParens(t)
 	case *javascript.MemberExpression:
 		w.minifyMemberExpressionParens(t)
+	case *javascript.CallExpression:
+		w.minifyCallExpressionParens(t)
 	}
 	return nil
 }
@@ -423,8 +425,12 @@ func (m *Minifier) minifyAEParens(ae *javascript.AssignmentExpression) {
 	}
 }
 
+func meIsSinglePe(me *javascript.MemberExpression) bool {
+	return me != nil && me.PrimaryExpression != nil && me.PrimaryExpression.ParenthesizedExpression != nil && len(me.PrimaryExpression.ParenthesizedExpression.Expressions) == 1 && aeIsCE(&me.PrimaryExpression.ParenthesizedExpression.Expressions[0])
+}
+
 func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression) {
-	if m.unwrapParens && me.PrimaryExpression != nil && me.PrimaryExpression.ParenthesizedExpression != nil && len(me.PrimaryExpression.ParenthesizedExpression.Expressions) == 1 && aeIsCE(&me.PrimaryExpression.ParenthesizedExpression.Expressions[0]) {
+	if m.unwrapParens && meIsSinglePe(me) {
 		switch e := javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(type) {
 		case *javascript.PrimaryExpression:
 			me.PrimaryExpression = e
@@ -440,6 +446,16 @@ func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression)
 			}
 		case *javascript.MemberExpression:
 			*me = *e
+		}
+	}
+}
+
+func (m *Minifier) minifyCallExpressionParens(ce *javascript.CallExpression) {
+	if m.unwrapParens && meIsSinglePe(ce.MemberExpression) {
+		switch e := javascript.UnwrapConditional(ce.MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(type) {
+		case *javascript.CallExpression:
+			ce.CallExpression = e
+			ce.MemberExpression = nil
 		}
 	}
 }
