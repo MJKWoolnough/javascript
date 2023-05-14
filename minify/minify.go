@@ -61,6 +61,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLHSExpressionParens(t)
 	case *javascript.Block:
 		w.minifyEmptyStatementInBlock(t)
+	case *javascript.Module:
+		w.minifyEmptyStatementInModule(t)
 	}
 
 	return nil
@@ -265,7 +267,7 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 			hasReturn = true
 		} else if !isSLIExpression(s) {
-			if s.Statement != nil && isEmptyStatement(s.Statement) {
+			if isEmptyStatement(s.Statement) {
 				continue
 			}
 			return nil, false
@@ -285,7 +287,7 @@ func isStatementExpression(s *javascript.Statement) bool {
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
-	return s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && s.ExpressionStatement == nil && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
+	return s != nil && s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && s.ExpressionStatement == nil && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
 }
 
 func isHoistable(s *javascript.StatementListItem) bool {
@@ -497,8 +499,17 @@ func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpress
 
 func (m *Minifier) minifyEmptyStatementInBlock(b *javascript.Block) {
 	for i := 0; i < len(b.StatementList); i++ {
-		if b.StatementList[i].Statement != nil && isEmptyStatement(b.StatementList[i].Statement) {
+		if isEmptyStatement(b.StatementList[i].Statement) {
 			b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
+			i--
+		}
+	}
+}
+
+func (m *Minifier) minifyEmptyStatementInModule(jm *javascript.Module) {
+	for i := 0; i < len(jm.ModuleListItems); i++ {
+		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
+			jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 			i--
 		}
 	}
