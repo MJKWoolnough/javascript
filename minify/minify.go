@@ -57,7 +57,10 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyMemberExpressionParens(t)
 	case *javascript.CallExpression:
 		w.minifyCallExpressionParens(t)
+	case *javascript.LeftHandSideExpression:
+		w.minifyLHSExpressionParens(t)
 	}
+
 	return nil
 }
 
@@ -456,6 +459,36 @@ func (m *Minifier) minifyCallExpressionParens(ce *javascript.CallExpression) {
 		case *javascript.CallExpression:
 			ce.CallExpression = e
 			ce.MemberExpression = nil
+		}
+	}
+}
+
+func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
+	var ce *javascript.CallExpression
+	if meIsSinglePe(me) {
+		ce, _ = javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(*javascript.CallExpression)
+	} else if me.MemberExpression != nil && me.Arguments == nil {
+		ce = meAsCE(me.MemberExpression)
+		if ce != nil {
+			ce = &javascript.CallExpression{
+				CallExpression:    ce,
+				IdentifierName:    me.IdentifierName,
+				Expression:        me.Expression,
+				TemplateLiteral:   me.TemplateLiteral,
+				PrivateIdentifier: me.PrivateIdentifier,
+				Tokens:            me.Tokens,
+			}
+		}
+	}
+	return ce
+}
+
+func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpression) {
+	if m.unwrapParens && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
+		ce := meAsCE(&lhs.NewExpression.MemberExpression)
+		if ce != nil {
+			lhs.CallExpression = ce
+			lhs.NewExpression = nil
 		}
 	}
 }
