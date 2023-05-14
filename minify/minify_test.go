@@ -2291,6 +2291,332 @@ func TestTransforms(t *testing.T) {
 				IdentifierName: makeToken(javascript.TokenIdentifier, "a"),
 			},
 		},
+		{ // 86
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{},
+			&javascript.LeftHandSideExpression{},
+		},
+		{ // 87
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							ParenthesizedExpression: &javascript.ParenthesizedExpression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+											MemberExpression: &javascript.MemberExpression{
+												PrimaryExpression: &javascript.PrimaryExpression{
+													IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+												},
+											},
+											Arguments: &javascript.Arguments{},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{
+					MemberExpression: &javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						},
+					},
+					Arguments: &javascript.Arguments{},
+				},
+			},
+		},
+		{ // 88
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					News: 1,
+					MemberExpression: javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							ParenthesizedExpression: &javascript.ParenthesizedExpression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+											MemberExpression: &javascript.MemberExpression{
+												PrimaryExpression: &javascript.PrimaryExpression{
+													IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+												},
+											},
+											Arguments: &javascript.Arguments{},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					News: 1,
+					MemberExpression: javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							ParenthesizedExpression: &javascript.ParenthesizedExpression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+											MemberExpression: &javascript.MemberExpression{
+												PrimaryExpression: &javascript.PrimaryExpression{
+													IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+												},
+											},
+											Arguments: &javascript.Arguments{},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 89
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{
+					CallExpression: &javascript.CallExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+					IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
+				},
+			},
+		},
+		{ // 90
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						Expression: &javascript.Expression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+									}),
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{
+					CallExpression: &javascript.CallExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+					Expression: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}),
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 91
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						TemplateLiteral: &javascript.TemplateLiteral{
+							NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`b`"),
+						},
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{
+					CallExpression: &javascript.CallExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+					TemplateLiteral: &javascript.TemplateLiteral{
+						NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`b`"),
+					},
+				},
+			},
+		},
+		{ // 92
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						PrivateIdentifier: makeToken(javascript.TokenPrivateIdentifier, "#b"),
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{
+					CallExpression: &javascript.CallExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+					PrivateIdentifier: makeToken(javascript.TokenPrivateIdentifier, "#b"),
+				},
+			},
+		},
+		{ // 93
+			[]Option{UnwrapParens},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+				},
+			},
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{
+					MemberExpression: javascript.MemberExpression{
+						MemberExpression: &javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+												MemberExpression: &javascript.MemberExpression{
+													PrimaryExpression: &javascript.PrimaryExpression{
+														IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+													},
+												},
+												Arguments: &javascript.Arguments{},
+											}),
+										},
+									},
+								},
+							},
+						},
+						Arguments: &javascript.Arguments{},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
