@@ -79,7 +79,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 		h := g.NewGoal()
 		h.Skip()
 		h.AcceptRunWhitespace()
-		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) && !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 			ml.ImportDeclaration = new(ImportDeclaration)
 			if err := ml.ImportDeclaration.parse(&g); err != nil {
 				return j.Error("ModuleItem", err)
