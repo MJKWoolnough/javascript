@@ -1077,6 +1077,14 @@ func TestPrint(t *testing.T) {
 			"({ a = b , c = d })",
 			"({a=b,c=d})",
 		},
+		{ // 267
+			"( function ( ) { } )",
+			"(function(){})",
+		},
+		{ // 268
+			"( function a (b, c) { d(); } )",
+			"(function a(b,c){d()})",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
