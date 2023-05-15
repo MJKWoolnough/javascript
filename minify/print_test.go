@@ -1141,6 +1141,18 @@ func TestPrint(t *testing.T) {
 			"import ( a ) ; ",
 			"import(a)",
 		},
+		{ // 283
+			"a . b ( c ) ;",
+			"a.b(c)",
+		},
+		{ // 284
+			"a [ b ] ( c ) ;",
+			"a[b](c)",
+		},
+		{ // 284
+			"a . #b  ( c ) ;",
+			"a.#b(c)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
