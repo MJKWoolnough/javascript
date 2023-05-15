@@ -1109,6 +1109,22 @@ func TestPrint(t *testing.T) {
 			"`abc${ def }ghi${ jkl + mno }`",
 			"`abc${def}ghi${jkl+mno}`",
 		},
+		{ // 275
+			"( )",
+			"()",
+		},
+		{ // 276
+			"( a )",
+			"(a)",
+		},
+		{ // 277
+			"( a , b )",
+			"(a,b)",
+		},
+		{ // 278
+			"( a , b , c )",
+			"(a,b,c)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
