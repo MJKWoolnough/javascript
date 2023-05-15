@@ -1125,6 +1125,18 @@ func TestPrint(t *testing.T) {
 			"( a , b , c )",
 			"(a,b,c)",
 		},
+		{ // 279
+			"super ();",
+			"super()",
+		},
+		{ // 280
+			"super() . a;",
+			"super().a",
+		},
+		{ // 281
+			"super() [ a ];",
+			"super()[a]",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
