@@ -1093,6 +1093,22 @@ func TestPrint(t *testing.T) {
 			"( class a extends [b]{ #a; get a() { return this.#a; } } )",
 			"(class a extends[b]{#a;get a(){return this.#a}})",
 		},
+		{ // 271
+			"`abc`",
+			"`abc`",
+		},
+		{ // 272
+			"tag `abc`",
+			"tag`abc`",
+		},
+		{ // 273
+			"`abc${ def }ghi`",
+			"`abc${def}ghi`",
+		},
+		{ // 274
+			"`abc${ def }ghi${ jkl + mno }`",
+			"`abc${def}ghi${jkl+mno}`",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
