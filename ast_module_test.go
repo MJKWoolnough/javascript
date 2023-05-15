@@ -827,6 +827,35 @@ func TestModuleItem(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"import(a)", func(t *test, tk Tokens) { // 9
+			t.Output = ModuleItem{
+				StatementListItem: &StatementListItem{
+					Statement: &Statement{
+						ExpressionStatement: &Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: WrapConditional(&CallExpression{
+										ImportCall: &AssignmentExpression{
+											ConditionalExpression: WrapConditional(&PrimaryExpression{
+												IdentifierReference: &tk[2],
+												Tokens:              tk[2:3],
+											}),
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[:4],
+									}),
+									Tokens: tk[:4],
+								},
+							},
+							Tokens: tk[:4],
+						},
+						Tokens: tk[:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var mi ModuleItem
 		err := mi.parse(&t.Tokens)
