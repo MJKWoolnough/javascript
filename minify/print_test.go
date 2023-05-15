@@ -1085,6 +1085,14 @@ func TestPrint(t *testing.T) {
 			"( function a (b, c) { d(); } )",
 			"(function a(b,c){d()})",
 		},
+		{ // 269
+			"( class { } )",
+			"(class{})",
+		},
+		{ // 270
+			"( class a extends [b]{ #a; get a() { return this.#a; } } )",
+			"(class a extends[b]{#a;get a(){return this.#a}})",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
