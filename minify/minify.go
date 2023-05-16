@@ -250,8 +250,12 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 	}
 }
 
+func isReturnStatement(s *javascript.Statement) bool {
+	return s != nil && s.Type == javascript.StatementReturn
+}
+
 func isNonEmptyReturnStatement(s *javascript.Statement) bool {
-	return s != nil && s.Type == javascript.StatementReturn && s.ExpressionStatement != nil
+	return isReturnStatement(s) && s.ExpressionStatement != nil
 }
 
 func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListItem) ([]javascript.AssignmentExpression, bool) {
@@ -521,7 +525,7 @@ func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) 
 	if m.removeLastReturn {
 		if len(f.FunctionBody.StatementList) > 0 {
 			s := f.FunctionBody.StatementList[len(f.FunctionBody.StatementList)-1].Statement
-			if s != nil && s.Type == javascript.StatementReturn && s.ExpressionStatement == nil {
+			if isReturnStatement(s) && s.ExpressionStatement == nil {
 				f.FunctionBody.StatementList = f.FunctionBody.StatementList[:len(f.FunctionBody.StatementList)-1]
 			}
 		}
