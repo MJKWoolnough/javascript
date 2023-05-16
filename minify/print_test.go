@@ -1181,6 +1181,28 @@ func TestPrint(t *testing.T) {
 			"a . b ?. c() ?. #d",
 			"a.b?.c()?.#d",
 		},
+		{ // 293
+			`class a extends b {
+	static {
+		c();
+	}
+	d = e;
+	#f;
+	#g = h;
+
+	constructor() {
+	}
+
+	get i() {
+	}
+
+	set j(k) {}
+	[l](){}
+
+	static m() {}
+}`,
+			"class a extends b{static{c()}d=e;#f;#g=h;constructor(){}get i(){}set j(k){}[l](){}static m(){}}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
