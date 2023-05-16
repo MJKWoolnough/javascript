@@ -45,3 +45,7 @@ func FunctionExpressionToArrowFunc(m *minifier) {
 func UnwrapParens(m *minifier) {
 	m.unwrapParens = true
 }
+
+func RemoveLastEmptyReturn(m *minifier) {
+	m.removeLastReturn = true
+}
