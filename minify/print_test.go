@@ -1153,6 +1153,22 @@ func TestPrint(t *testing.T) {
 			"a . #b  ( c ) ;",
 			"a.#b(c)",
 		},
+		{ // 286
+			"a ( ) . b;",
+			"a().b",
+		},
+		{ // 287
+			"a ( ) [ b ];",
+			"a()[b]",
+		},
+		{ // 288
+			"a ( ) `b`;",
+			"a()`b`",
+		},
+		{ // 289
+			"a ( ) . #b;",
+			"a().#b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
