@@ -1149,7 +1149,7 @@ func TestPrint(t *testing.T) {
 			"a [ b ] ( c ) ;",
 			"a[b](c)",
 		},
-		{ // 284
+		{ // 285
 			"a . #b  ( c ) ;",
 			"a.#b(c)",
 		},
