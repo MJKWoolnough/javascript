@@ -200,7 +200,7 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 			ifExpressions, elseExpressions []javascript.AssignmentExpression
 			ifReturn, elseReturn           bool
 		)
-		if isReturnStatement(&s.IfStatement.Statement) {
+		if isNonEmptyReturnStatement(&s.IfStatement.Statement) {
 			ifReturn = true
 			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
 		} else if isStatementExpression(&s.IfStatement.Statement) {
@@ -211,7 +211,7 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 		if len(ifExpressions) == 0 {
 			return
 		}
-		if isReturnStatement(s.IfStatement.ElseStatement) {
+		if isNonEmptyReturnStatement(s.IfStatement.ElseStatement) {
 			elseReturn = true
 			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
 		} else if isStatementExpression(s.IfStatement.ElseStatement) {
@@ -250,7 +250,7 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 	}
 }
 
-func isReturnStatement(s *javascript.Statement) bool {
+func isNonEmptyReturnStatement(s *javascript.Statement) bool {
 	return s != nil && s.Type == javascript.StatementReturn && s.ExpressionStatement != nil
 }
 
@@ -265,7 +265,7 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 			if isHoistable(s) {
 				return nil, true
 			}
-		} else if isReturnStatement(s.Statement) {
+		} else if isNonEmptyReturnStatement(s.Statement) {
 			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 			hasReturn = true
 		} else if !isSLIExpression(s) {
