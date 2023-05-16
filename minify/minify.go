@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn bool
 }
 
 type Minifier minifier
@@ -63,6 +63,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyEmptyStatementInBlock(t)
 	case *javascript.Module:
 		w.minifyEmptyStatementInModule(t)
+	case *javascript.FunctionDeclaration:
+		w.minifyLastReturnStatement(t)
 	}
 
 	return nil
@@ -511,6 +513,17 @@ func (m *Minifier) minifyEmptyStatementInModule(jm *javascript.Module) {
 		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
 			jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 			i--
+		}
+	}
+}
+
+func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) {
+	if m.removeLastReturn {
+		if len(f.FunctionBody.StatementList) > 0 {
+			s := f.FunctionBody.StatementList[len(f.FunctionBody.StatementList)-1].Statement
+			if s != nil && s.Type == javascript.StatementReturn && s.ExpressionStatement == nil {
+				f.FunctionBody.StatementList = f.FunctionBody.StatementList[:len(f.FunctionBody.StatementList)-1]
+			}
 		}
 	}
 }
