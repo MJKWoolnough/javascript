@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
 }
 
 type Minifier minifier
@@ -61,8 +61,10 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLHSExpressionParens(t)
 	case *javascript.Block:
 		w.minifyEmptyStatementInBlock(t)
+		w.minifyExpressionRunInBlock(t)
 	case *javascript.Module:
 		w.minifyEmptyStatementInModule(t)
+		w.minifyExpressionRunInModule(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
@@ -631,6 +633,23 @@ func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) 
 			s := f.FunctionBody.StatementList[len(f.FunctionBody.StatementList)-1].Statement
 			if isReturnStatement(s) && s.ExpressionStatement == nil {
 				f.FunctionBody.StatementList = f.FunctionBody.StatementList[:len(f.FunctionBody.StatementList)-1]
+			}
+		}
+	}
+}
+
+func (m *Minifier) minifyExpressionRunInBlock(b *javascript.Block) {
+	if m.combineExpressions && len(b.StatementList) > 1 {
+		lastWasExpression := isStatementExpression(b.StatementList[0].Statement)
+		for i := 1; i < len(b.StatementList); i++ {
+			isExpression := isStatementExpression(b.StatementList[i].Statement)
+			if isExpression && lastWasExpression {
+				e := b.StatementList[i-1].Statement.ExpressionStatement
+				e.Expressions = append(e.Expressions, b.StatementList[i].Statement.ExpressionStatement.Expressions...)
+				b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
+				i--
+			} else {
+				lastWasExpression = isExpression
 			}
 		}
 	}
