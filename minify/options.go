@@ -49,3 +49,7 @@ func UnwrapParens(m *minifier) {
 func RemoveLastEmptyReturn(m *minifier) {
 	m.removeLastReturn = true
 }
+
+func CombineExpressionRuns(m *minifier) {
+	m.combineExpressions = true
+}
