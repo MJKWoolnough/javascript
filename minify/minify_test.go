@@ -3212,6 +3212,41 @@ func TestTransforms(t *testing.T) {
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
 			}),
 		},
+		{ // 109
+			[]Option{UnwrapParens},
+			javascript.WrapConditional(&javascript.UpdateExpression{
+				LeftHandSideExpression: &javascript.LeftHandSideExpression{
+					NewExpression: &javascript.NewExpression{
+						MemberExpression: javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				UpdateOperator: javascript.UpdatePostIncrement,
+			}),
+			javascript.WrapConditional(&javascript.UpdateExpression{
+				LeftHandSideExpression: &javascript.LeftHandSideExpression{
+					NewExpression: &javascript.NewExpression{
+						MemberExpression: javascript.MemberExpression{
+							PrimaryExpression: &javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							},
+						},
+					},
+				},
+				UpdateOperator: javascript.UpdatePostIncrement,
+			}),
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
