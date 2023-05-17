@@ -3074,7 +3074,7 @@ func TestTransforms(t *testing.T) {
 				}).LogicalORExpression.LogicalANDExpression,
 			}),
 		},
-		{ // 104
+		{ // 105
 			[]Option{UnwrapParens},
 			javascript.WrapConditional(&javascript.LogicalANDExpression{
 				LogicalANDExpression: &javascript.WrapConditional(&javascript.ParenthesizedExpression{
@@ -3099,7 +3099,7 @@ func TestTransforms(t *testing.T) {
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
 			}),
 		},
-		{ // 105
+		{ // 106
 			[]Option{UnwrapParens},
 			javascript.WrapConditional(&javascript.LogicalORExpression{
 				LogicalORExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
@@ -3136,7 +3136,7 @@ func TestTransforms(t *testing.T) {
 				}).LogicalORExpression.LogicalANDExpression,
 			}),
 		},
-		{ // 106
+		{ // 107
 			[]Option{UnwrapParens},
 			javascript.WrapConditional(&javascript.LogicalORExpression{
 				LogicalORExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
