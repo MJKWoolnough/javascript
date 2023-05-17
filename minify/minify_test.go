@@ -3171,6 +3171,47 @@ func TestTransforms(t *testing.T) {
 				}).LogicalORExpression.LogicalANDExpression,
 			}),
 		},
+		{ // 108
+			[]Option{UnwrapParens},
+			javascript.WrapConditional(&javascript.LogicalANDExpression{
+				LogicalANDExpression: &javascript.WrapConditional(&javascript.ParenthesizedExpression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.LogicalORExpression{
+								LogicalORExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}).LogicalORExpression,
+								LogicalANDExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}).LogicalORExpression.LogicalANDExpression,
+							}),
+						},
+					},
+				}).LogicalORExpression.LogicalANDExpression,
+				BitwiseORExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+			}),
+			javascript.WrapConditional(&javascript.LogicalANDExpression{
+				LogicalANDExpression: &javascript.WrapConditional(&javascript.ParenthesizedExpression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.LogicalORExpression{
+								LogicalORExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}).LogicalORExpression,
+								LogicalANDExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}).LogicalORExpression.LogicalANDExpression,
+							}),
+						},
+					},
+				}).LogicalORExpression.LogicalANDExpression,
+				BitwiseORExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+			}),
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
