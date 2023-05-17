@@ -65,6 +65,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyEmptyStatementInModule(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
+	case *javascript.ConditionalExpression:
+		w.minifyConditionExpressionParens(t)
 	}
 
 	return nil
@@ -491,6 +493,108 @@ func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
 		}
 	}
 	return ce
+}
+
+func (m *Minifier) minifyConditionExpressionParens(ce *javascript.ConditionalExpression) {
+	if m.unwrapParens {
+		w := javascript.UnwrapConditional(ce)
+		switch w := w.(type) {
+		case *javascript.LogicalORExpression:
+			if ce := isConditionalWrappingAConditional(w.LogicalORExpression, w); ce != nil {
+				w.LogicalORExpression = ce.LogicalORExpression
+			}
+		case *javascript.LogicalANDExpression:
+			if ce := isConditionalWrappingAConditional(w.LogicalANDExpression, w); ce != nil {
+				w.LogicalANDExpression = &ce.LogicalORExpression.LogicalANDExpression
+			}
+		case *javascript.BitwiseORExpression:
+			if ce := isConditionalWrappingAConditional(w.BitwiseORExpression, w); ce != nil {
+				w.BitwiseORExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression
+			}
+		case *javascript.BitwiseXORExpression:
+			if ce := isConditionalWrappingAConditional(w.BitwiseXORExpression, w); ce != nil {
+				w.BitwiseXORExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression
+			}
+		case *javascript.BitwiseANDExpression:
+			if ce := isConditionalWrappingAConditional(w.BitwiseANDExpression, w); ce != nil {
+				w.BitwiseANDExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression
+			}
+		case *javascript.EqualityExpression:
+			if ce := isConditionalWrappingAConditional(w.EqualityExpression, w); ce != nil {
+				w.EqualityExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression
+			}
+		case *javascript.RelationalExpression:
+			if ce := isConditionalWrappingAConditional(w.RelationalExpression, w); ce != nil {
+				w.RelationalExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression
+			}
+		case *javascript.ShiftExpression:
+			if ce := isConditionalWrappingAConditional(w.ShiftExpression, w); ce != nil {
+				w.ShiftExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression
+			}
+		case *javascript.AdditiveExpression:
+			if ce := isConditionalWrappingAConditional(w.AdditiveExpression, w); ce != nil {
+				w.AdditiveExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression
+			}
+		case *javascript.MultiplicativeExpression:
+			if ce := isConditionalWrappingAConditional(w.MultiplicativeExpression, w); ce != nil {
+				w.MultiplicativeExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression
+			}
+		case *javascript.ExponentiationExpression:
+			if ce := isConditionalWrappingAConditional(w.ExponentiationExpression, w); ce != nil {
+				w.ExponentiationExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression
+			}
+		case *javascript.UpdateExpression:
+			if w.UnaryExpression != nil {
+				if ce := isConditionalWrappingAConditional(w.UnaryExpression, w); ce != nil {
+					w.UnaryExpression = &ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression
+				}
+			}
+		}
+	}
+}
+
+func scoreCE(ce javascript.ConditionalWrappable) int {
+	switch ce.(type) {
+	case *javascript.LogicalORExpression:
+		return 1
+	case *javascript.LogicalANDExpression:
+		return 2
+	case *javascript.BitwiseORExpression:
+		return 3
+	case *javascript.BitwiseXORExpression:
+		return 4
+	case *javascript.BitwiseANDExpression:
+		return 5
+	case *javascript.EqualityExpression:
+		return 6
+	case *javascript.RelationalExpression:
+		return 7
+	case *javascript.ShiftExpression:
+		return 8
+	case *javascript.AdditiveExpression:
+		return 9
+	case *javascript.MultiplicativeExpression:
+		return 10
+	case *javascript.ExponentiationExpression:
+		return 11
+	case *javascript.UnaryExpression:
+		return 12
+	case *javascript.UpdateExpression:
+		return 13
+	}
+	return -1
+}
+
+func isConditionalWrappingAConditional(w javascript.ConditionalWrappable, below javascript.ConditionalWrappable) *javascript.ConditionalExpression {
+	pe, ok := javascript.UnwrapConditional(javascript.WrapConditional(w)).(*javascript.ParenthesizedExpression)
+	if !ok || len(pe.Expressions) != 1 || !aeIsCE(&pe.Expressions[0]) {
+		return nil
+	}
+	uw := javascript.UnwrapConditional(pe.Expressions[0].ConditionalExpression)
+	if scoreCE(uw) < scoreCE(below) {
+		return nil
+	}
+	return pe.Expressions[0].ConditionalExpression
 }
 
 func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpression) {
