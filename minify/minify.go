@@ -654,3 +654,24 @@ func (m *Minifier) minifyExpressionRunInBlock(b *javascript.Block) {
 		}
 	}
 }
+
+func isStatementListItemExpression(s *javascript.StatementListItem) bool {
+	return s != nil && isStatementExpression(s.Statement)
+}
+
+func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
+	if m.combineExpressions && len(jm.ModuleListItems) > 1 {
+		lastWasExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
+		for i := 1; i < len(jm.ModuleListItems); i++ {
+			isExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
+			if isExpression && lastWasExpression {
+				e := jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement
+				e.Expressions = append(e.Expressions, jm.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions...)
+				jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
+				i--
+			} else {
+				lastWasExpression = isExpression
+			}
+		}
+	}
+}
