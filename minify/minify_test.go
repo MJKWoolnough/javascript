@@ -4196,6 +4196,180 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 125
+			[]Option{UnwrapParens},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.ObjectLiteral{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.ObjectLiteral{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 126
+			[]Option{UnwrapParens},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.ArrayLiteral{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ArrayLiteral{}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 127
+			[]Option{UnwrapParens},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.FunctionDeclaration{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.FunctionDeclaration{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 128
+			[]Option{UnwrapParens},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.ClassDeclaration{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+											Expressions: []javascript.AssignmentExpression{
+												{
+													ConditionalExpression: javascript.WrapConditional(&javascript.ClassDeclaration{}),
+												},
+											},
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
