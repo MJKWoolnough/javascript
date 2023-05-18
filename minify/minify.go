@@ -693,11 +693,11 @@ func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
 	}
 }
 
-func (m *Minifier) fixFirstExpressionInBlock(jm *javascript.Block) {
+func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
 	if m.unwrapParens {
-		for n := range jm.StatementList {
-			if isStatementListItemExpression(&jm.StatementList[n]) && aeIsCE(&jm.StatementList[n].Statement.ExpressionStatement.Expressions[0]) {
-				ae := &jm.StatementList[n].Statement.ExpressionStatement.Expressions[0]
+		for n := range b.StatementList {
+			if isStatementListItemExpression(&b.StatementList[n]) && aeIsCE(&b.StatementList[n].Statement.ExpressionStatement.Expressions[0]) {
+				ae := &b.StatementList[n].Statement.ExpressionStatement.Expressions[0]
 				switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
 				case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
 					ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
