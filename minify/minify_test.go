@@ -3717,6 +3717,485 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 118
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{},
+			&javascript.Module{},
+		},
+		{ // 119
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 120
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 121
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 122
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "d"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "d"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 123
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 124
+			[]Option{CombineExpressionRuns},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Module{
+				ModuleListItems: []javascript.ModuleItem{
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								BlockStatement: &javascript.Block{},
+							},
+						},
+					},
+					{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								ExpressionStatement: &javascript.Expression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
