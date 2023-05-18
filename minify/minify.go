@@ -693,17 +693,23 @@ func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
 	}
 }
 
+func fixWrapping(s *javascript.Statement) {
+	if aeIsCE(&s.ExpressionStatement.Expressions[0]) {
+		ae := &s.ExpressionStatement.Expressions[0]
+		switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
+		case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
+			ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
+				Expressions: []javascript.AssignmentExpression{*ae},
+			})
+		}
+	}
+}
+
 func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
 	if m.unwrapParens {
 		for n := range b.StatementList {
-			if isStatementListItemExpression(&b.StatementList[n]) && aeIsCE(&b.StatementList[n].Statement.ExpressionStatement.Expressions[0]) {
-				ae := &b.StatementList[n].Statement.ExpressionStatement.Expressions[0]
-				switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
-				case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
-					ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
-						Expressions: []javascript.AssignmentExpression{*ae},
-					})
-				}
+			if isStatementListItemExpression(&b.StatementList[n]) {
+				fixWrapping(b.StatementList[n].Statement)
 			}
 		}
 	}
@@ -712,14 +718,8 @@ func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
 func (m *Minifier) fixFirstExpressionInModule(jm *javascript.Module) {
 	if m.unwrapParens {
 		for n := range jm.ModuleListItems {
-			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) && aeIsCE(&jm.ModuleListItems[n].StatementListItem.Statement.ExpressionStatement.Expressions[0]) {
-				ae := &jm.ModuleListItems[n].StatementListItem.Statement.ExpressionStatement.Expressions[0]
-				switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
-				case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
-					ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
-						Expressions: []javascript.AssignmentExpression{*ae},
-					})
-				}
+			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
+				fixWrapping(jm.ModuleListItems[n].StatementListItem.Statement)
 			}
 		}
 	}
