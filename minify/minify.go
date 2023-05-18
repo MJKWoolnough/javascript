@@ -62,6 +62,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.Block:
 		w.minifyEmptyStatementInBlock(t)
 		w.minifyExpressionRunInBlock(t)
+		w.fixFirstExpressionInBlock(t)
 	case *javascript.Module:
 		w.minifyEmptyStatementInModule(t)
 		w.minifyExpressionRunInModule(t)
@@ -456,6 +457,21 @@ func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression)
 				ArrayLiteral: e,
 				Tokens:       e.Tokens,
 			}
+		case *javascript.ObjectLiteral:
+			me.PrimaryExpression = &javascript.PrimaryExpression{
+				ObjectLiteral: e,
+				Tokens:        e.Tokens,
+			}
+		case *javascript.FunctionDeclaration:
+			me.PrimaryExpression = &javascript.PrimaryExpression{
+				FunctionExpression: e,
+				Tokens:             e.Tokens,
+			}
+		case *javascript.ClassDeclaration:
+			me.PrimaryExpression = &javascript.PrimaryExpression{
+				ClassExpression: e,
+				Tokens:          e.Tokens,
+			}
 		case *javascript.TemplateLiteral:
 			me.PrimaryExpression = &javascript.PrimaryExpression{
 				TemplateLiteral: e,
@@ -671,6 +687,22 @@ func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
 				i--
 			} else {
 				lastWasExpression = isExpression
+			}
+		}
+	}
+}
+
+func (m *Minifier) fixFirstExpressionInBlock(jm *javascript.Block) {
+	if m.unwrapParens {
+		for n := range jm.StatementList {
+			if isStatementListItemExpression(&jm.StatementList[n]) && aeIsCE(&jm.StatementList[n].Statement.ExpressionStatement.Expressions[0]) {
+				ae := &jm.StatementList[n].Statement.ExpressionStatement.Expressions[0]
+				switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
+				case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
+					ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{*ae},
+					})
+				}
 			}
 		}
 	}
