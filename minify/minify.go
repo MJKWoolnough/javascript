@@ -663,7 +663,7 @@ func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
 	if m.combineExpressions && len(jm.ModuleListItems) > 1 {
 		lastWasExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
 		for i := 1; i < len(jm.ModuleListItems); i++ {
-			isExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
+			isExpression := isStatementListItemExpression(jm.ModuleListItems[i].StatementListItem)
 			if isExpression && lastWasExpression {
 				e := jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement
 				e.Expressions = append(e.Expressions, jm.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions...)
