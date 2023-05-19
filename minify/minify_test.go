@@ -4748,6 +4748,27 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 137
+			[]Option{RemoveLastEmptyReturn},
+			&javascript.ArrowFunction{
+				BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				FunctionBody: &javascript.Block{
+					StatementList: []javascript.StatementListItem{
+						{
+							Statement: &javascript.Statement{
+								Type: javascript.StatementReturn,
+							},
+						},
+					},
+				},
+			},
+			&javascript.ArrowFunction{
+				BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				FunctionBody: &javascript.Block{
+					StatementList: []javascript.StatementListItem{},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
