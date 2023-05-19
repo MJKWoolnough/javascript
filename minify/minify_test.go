@@ -4717,6 +4717,37 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 133
+			[]Option{UnwrapParens},
+			&javascript.ArrowFunction{
+				BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									ObjectLiteral: &javascript.ObjectLiteral{},
+								}),
+							},
+						},
+					}),
+				},
+			},
+			&javascript.ArrowFunction{
+				BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									ObjectLiteral: &javascript.ObjectLiteral{},
+								}),
+							},
+						},
+					}),
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
