@@ -4609,7 +4609,7 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 133
+		{ // 134
 			[]Option{UnwrapParens},
 			&javascript.Module{
 				ModuleListItems: []javascript.ModuleItem{
@@ -4662,7 +4662,7 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 133
+		{ // 135
 			[]Option{UnwrapParens},
 			&javascript.Block{
 				StatementList: []javascript.StatementListItem{
@@ -4717,7 +4717,7 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
-		{ // 133
+		{ // 136
 			[]Option{UnwrapParens},
 			&javascript.ArrowFunction{
 				BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
