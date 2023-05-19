@@ -4662,6 +4662,61 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 133
+			[]Option{UnwrapParens},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.LogicalORExpression{
+											LogicalORExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+												Expressions: []javascript.AssignmentExpression{
+													{
+														ConditionalExpression: javascript.WrapConditional(javascript.ObjectLiteral{}),
+													},
+												},
+											}).LogicalORExpression,
+											LogicalANDExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}).LogicalORExpression.LogicalANDExpression,
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.LogicalORExpression{
+											LogicalORExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+												Expressions: []javascript.AssignmentExpression{
+													{
+														ConditionalExpression: javascript.WrapConditional(javascript.ObjectLiteral{}),
+													},
+												},
+											}).LogicalORExpression,
+											LogicalANDExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											}).LogicalORExpression.LogicalANDExpression,
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
