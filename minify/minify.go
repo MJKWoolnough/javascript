@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
+	literals, templates, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
 }
 
 type Minifier minifier
@@ -73,6 +73,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
 		w.minifyConditionExpressionParens(t)
+		w.minifyTemplates(t)
 	}
 
 	return nil
@@ -861,5 +862,15 @@ func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
 				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
 			},
 		})
+	}
+}
+
+func (m *Minifier) minifyTemplates(ce *javascript.ConditionalExpression) {
+	if m.templates {
+		switch t := javascript.UnwrapConditional(ce).(type) {
+		case *javascript.TemplateLiteral:
+			if t.NoSubstitutionTemplate != nil {
+			}
+		}
 	}
 }
