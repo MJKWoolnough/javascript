@@ -38,6 +38,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyNonHoistableNames(t)
 	case *javascript.ArrowFunction:
 		w.minifyArrowFunc(t)
+		w.minifyLastReturnStatementInArrowFn(t)
 		w.fixFirstArrowFuncExpression(t)
 	case *javascript.Statement:
 		w.minifyBlockToStatement(t)
@@ -651,14 +652,24 @@ func (m *Minifier) minifyEmptyStatementInModule(jm *javascript.Module) {
 	}
 }
 
+func removeLastReturnStatement(b *javascript.Block) {
+	if len(b.StatementList) > 0 {
+		s := b.StatementList[len(b.StatementList)-1].Statement
+		if isReturnStatement(s) && s.ExpressionStatement == nil {
+			b.StatementList = b.StatementList[:len(b.StatementList)-1]
+		}
+	}
+}
+
 func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) {
 	if m.removeLastReturn {
-		if len(f.FunctionBody.StatementList) > 0 {
-			s := f.FunctionBody.StatementList[len(f.FunctionBody.StatementList)-1].Statement
-			if isReturnStatement(s) && s.ExpressionStatement == nil {
-				f.FunctionBody.StatementList = f.FunctionBody.StatementList[:len(f.FunctionBody.StatementList)-1]
-			}
-		}
+		removeLastReturnStatement(&f.FunctionBody)
+	}
+}
+
+func (m *Minifier) minifyLastReturnStatementInArrowFn(af *javascript.ArrowFunction) {
+	if m.removeLastReturn && af.FunctionBody != nil {
+		removeLastReturnStatement(af.FunctionBody)
 	}
 }
 
