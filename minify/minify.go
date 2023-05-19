@@ -693,9 +693,119 @@ func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
 	}
 }
 
+func leftMostLHS(c javascript.ConditionalWrappable) *javascript.LeftHandSideExpression {
+	for {
+		switch t := c.(type) {
+		case *javascript.ConditionalExpression:
+			if t.CoalesceExpression != nil {
+				ce := t.CoalesceExpression
+				for ce.CoalesceExpressionHead != nil {
+					ce = ce.CoalesceExpressionHead
+				}
+				c = &ce.BitwiseORExpression
+			} else if t.LogicalORExpression != nil {
+				c = t.LogicalORExpression
+			} else {
+				return nil
+			}
+		case *javascript.LogicalORExpression:
+			if t.LogicalORExpression != nil {
+				c = t.LogicalORExpression
+			} else {
+				c = &t.LogicalANDExpression
+			}
+		case *javascript.LogicalANDExpression:
+			if t.LogicalANDExpression != nil {
+				c = t.LogicalANDExpression
+			} else {
+				c = &t.BitwiseORExpression
+			}
+		case *javascript.BitwiseORExpression:
+			if t.BitwiseORExpression != nil {
+				c = t.BitwiseORExpression
+			} else {
+				c = &t.BitwiseXORExpression
+			}
+		case *javascript.BitwiseXORExpression:
+			if t.BitwiseXORExpression != nil {
+				c = t.BitwiseXORExpression
+			} else {
+				c = &t.BitwiseANDExpression
+			}
+		case *javascript.BitwiseANDExpression:
+			if t.BitwiseANDExpression != nil {
+				c = t.BitwiseANDExpression
+			} else {
+				c = &t.EqualityExpression
+			}
+		case *javascript.EqualityExpression:
+			if t.EqualityExpression != nil {
+				c = t.EqualityExpression
+			} else {
+				c = &t.RelationalExpression
+			}
+		case *javascript.RelationalExpression:
+			if t.RelationalExpression != nil {
+				c = t.RelationalExpression
+			} else {
+				c = &t.ShiftExpression
+			}
+		case *javascript.ShiftExpression:
+			if t.ShiftExpression != nil {
+				c = t.ShiftExpression
+			} else {
+				c = &t.AdditiveExpression
+			}
+		case *javascript.AdditiveExpression:
+			if t.AdditiveExpression != nil {
+				c = t.AdditiveExpression
+			} else {
+				c = &t.MultiplicativeExpression
+			}
+		case *javascript.MultiplicativeExpression:
+			if t.MultiplicativeExpression != nil {
+				c = t.MultiplicativeExpression
+			} else {
+				c = &t.ExponentiationExpression
+			}
+		case *javascript.ExponentiationExpression:
+			if t.ExponentiationExpression != nil {
+				c = t.ExponentiationExpression
+			} else {
+				c = &t.UnaryExpression.UpdateExpression
+			}
+		case *javascript.UpdateExpression:
+			if t.LeftHandSideExpression != nil {
+				return t.LeftHandSideExpression
+			}
+			c = &t.UnaryExpression.UpdateExpression
+		}
+	}
+}
+
 func fixWrapping(s *javascript.Statement) {
-	if aeIsCE(&s.ExpressionStatement.Expressions[0]) {
-		ae := &s.ExpressionStatement.Expressions[0]
+	ae := &s.ExpressionStatement.Expressions[0]
+	if aeIsCE(ae) {
+		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
+			me := &lhs.NewExpression.MemberExpression
+			for me.MemberExpression != nil {
+				me = me.MemberExpression
+			}
+			if me.PrimaryExpression.ObjectLiteral != nil || me.PrimaryExpression.FunctionExpression != nil || me.PrimaryExpression.ClassExpression != nil {
+				me.PrimaryExpression = &javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(me.PrimaryExpression),
+								Tokens:                me.PrimaryExpression.Tokens,
+							},
+						},
+						Tokens: me.PrimaryExpression.Tokens,
+					},
+					Tokens: me.PrimaryExpression.Tokens,
+				}
+			}
+		}
 		switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
 		case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
 			ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
