@@ -189,6 +189,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 							Expressions: expressions,
 							Tokens:      af.FunctionBody.Tokens,
 						}),
+						Tokens: af.FunctionBody.Tokens,
 					}
 					af.FunctionBody = nil
 				}
@@ -237,7 +238,9 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 			last.ConditionalExpression.False = &javascript.AssignmentExpression{
 				ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
 					Expressions: elseExpressions,
+					Tokens:      s.IfStatement.ElseStatement.Tokens,
 				}),
+				Tokens: s.IfStatement.ElseStatement.Tokens,
 			}
 		}
 		if len(ifExpressions) == 1 {
@@ -246,7 +249,9 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 			last.ConditionalExpression.True = &javascript.AssignmentExpression{
 				ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
 					Expressions: ifExpressions,
+					Tokens:      s.IfStatement.Statement.Tokens,
 				}),
+				Tokens: s.IfStatement.Statement.Tokens,
 			}
 		}
 		if ifReturn {
@@ -385,6 +390,7 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 				Async:            fe.Type == javascript.FunctionAsync,
 				FormalParameters: &fe.FormalParameters,
 				FunctionBody:     &fe.FunctionBody,
+				Tokens:           fe.Tokens,
 			}
 			ae.ConditionalExpression = nil
 			m.minifyArrowFunc(ae.ArrowFunction)
@@ -811,6 +817,7 @@ func fixWrapping(s *javascript.Statement) {
 		case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
 			ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
 				Expressions: []javascript.AssignmentExpression{*ae},
+				Tokens:      ae.Tokens,
 			})
 		}
 	}
