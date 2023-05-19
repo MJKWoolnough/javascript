@@ -38,6 +38,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyNonHoistableNames(t)
 	case *javascript.ArrowFunction:
 		w.minifyArrowFunc(t)
+		w.fixFirstArrowFuncExpression(t)
 	case *javascript.Statement:
 		w.minifyBlockToStatement(t)
 		w.minifyIfToConditional(t)
@@ -832,5 +833,15 @@ func (m *Minifier) fixFirstExpressionInModule(jm *javascript.Module) {
 				fixWrapping(jm.ModuleListItems[n].StatementListItem.Statement)
 			}
 		}
+	}
+}
+
+func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
+	if m.unwrapParens && af.AssignmentExpression != nil {
+		fixWrapping(&javascript.Statement{
+			ExpressionStatement: &javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
+			},
+		})
 	}
 }
