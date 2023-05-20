@@ -130,87 +130,87 @@ func TestUnquote(t *testing.T) {
 			"'\"\\\b\f\n\r\t\v",
 			nil,
 		},
-		{ // 6
+		{ // 25
 			"'\x41'",
 			"A",
 			nil,
 		},
-		{ // 8
+		{ // 26
 			"'\\x41'",
 			"A",
 			nil,
 		},
-		{ // 9
+		{ // 27
 			"'\\x4G'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 10
+		{ // 28
 			"'\\xG1'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 11
+		{ // 29
 			"'\\u0041'",
 			"A",
 			nil,
 		},
-		{ // 12
+		{ // 30
 			"'\\u004G'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 13
+		{ // 31
 			"'\\u00G1'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 14
+		{ // 32
 			"'\\u0G41'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 15
+		{ // 33
 			"'\\uG041'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 16
+		{ // 34
 			"'\\c'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 17
+		{ // 35
 			"'\n'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 18
+		{ // 36
 			"'\\0'",
 			"\000",
 			nil,
 		},
-		{ // 19
+		{ // 37
 			"'\\01'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 20
+		{ // 38
 			"'\\u{41}'",
 			"A",
 			nil,
 		},
-		{ // 21
+		{ // 39
 			"'\\u{}'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 22
+		{ // 40
 			"'\\u{41G}'",
 			"",
 			ErrInvalidQuoted,
 		},
-		{ // 23
+		{ // 41
 			"'\\u{41'",
 			"",
 			ErrInvalidQuoted,
