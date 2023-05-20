@@ -230,92 +230,92 @@ func TestUnquoteTemplate(t *testing.T) {
 		Input, Output string
 		Err           error
 	}{
-		{
+		{ // 1
 			"``",
 			"",
 			nil,
 		},
-		{
+		{ // 2
 			"}`",
 			"",
 			nil,
 		},
-		{
+		{ // 3
 			"`${",
 			"",
 			nil,
 		},
-		{
+		{ // 4
 			"}${",
 			"",
 			nil,
 		},
-		{
+		{ // 5
 			"`",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 6
 			"}",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 7
 			"${",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 8
 			"`a`",
 			"a",
 			nil,
 		},
-		{
+		{ // 9
 			"`\\'\\\"\\\\\\b\\f\\n\\r\\t\\v`",
 			"'\"\\\b\f\n\r\t\v",
 			nil,
 		},
-		{
+		{ // 10
 			"`\x41`",
 			"A",
 			nil,
 		},
-		{
+		{ // 11
 			"`\n`",
 			"\n",
 			nil,
 		},
-		{
+		{ // 12
 			"`\\x4G`",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 13
 			"`\\u0041`",
 			"A",
 			nil,
 		},
-		{
+		{ // 14
 			"`\\u00G1`",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 15
 			"`\\c`",
 			"",
 			ErrInvalidQuoted,
 		},
-		{
+		{ // 16
 			"`\\0`",
 			"\000",
 			nil,
 		},
-		{
+		{ // 17
 			"`\\u{41}`",
 			"A",
 			nil,
 		},
-		{
+		{ // 18
 			"`\\u{}`",
 			"",
 			ErrInvalidQuoted,
