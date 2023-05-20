@@ -104,6 +104,7 @@ func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 			asStrLit := strconv.Quote(str)
 			if len(asStrLit) < len(pe.TemplateLiteral.NoSubstitutionTemplate.Data) {
 				tk := pe.TemplateLiteral.NoSubstitutionTemplate
+				tk.Data = asStrLit
 				tk.Type = javascript.TokenStringLiteral
 				pe.TemplateLiteral = nil
 				pe.Literal = tk
