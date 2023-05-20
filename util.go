@@ -2,9 +2,74 @@ package javascript
 
 import (
 	"strconv"
+	"strings"
 
 	"vimagination.zapto.org/parser"
 )
+
+func unquoteEscape(ret string, s *parser.Tokeniser) (string, bool) {
+	ret += s.Get()
+	s.Accept("\\")
+	s.Get()
+	if s.Accept("x") {
+		s.Get()
+		if !s.Accept(hexDigit) || !s.Accept(hexDigit) {
+			return "", false
+		}
+		c, _ := strconv.ParseUint(s.Get(), 16, 8)
+		ret += string(rune(c))
+	} else if s.Accept("u") {
+		s.Get()
+		if s.Accept("{") {
+			s.Get()
+			if !s.Accept(hexDigit) {
+				return "", false
+			}
+			s.AcceptRun(hexDigit)
+			c, _ := strconv.ParseUint(s.Get(), 16, 8)
+			ret += string(rune(c))
+			if !s.Accept("}") {
+				return "", false
+			}
+			s.Get()
+		} else if !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) {
+			return "", false
+		} else {
+			c, _ := strconv.ParseUint(s.Get(), 16, 8)
+			ret += string(rune(c))
+		}
+	} else if s.Accept("0") {
+		if s.Accept(decimalDigit) {
+			return "", false
+		}
+		s.Get()
+		ret += "\000"
+	} else if s.Accept(singleEscapeChar) {
+		switch s.Get() {
+		case "'":
+			ret += singleEscapeChar[0:1]
+		case "\"":
+			ret += singleEscapeChar[1:2]
+		case "\\":
+			ret += singleEscapeChar[2:3]
+		case "b":
+			ret += "\b"
+		case "f":
+			ret += "\f"
+		case "n":
+			ret += "\n"
+		case "r":
+			ret += "\r"
+		case "t":
+			ret += "\t"
+		case "v":
+			ret += "\v"
+		}
+	} else {
+		return "", false
+	}
+	return ret, true
+}
 
 // Unquote parses a javascript quoted string and produces the unquoted version
 func Unquote(str string) (string, error) {
@@ -26,68 +91,51 @@ Loop:
 			ret += s.Get()
 			return ret, nil
 		case '\\':
-			ret += s.Get()
-			s.Accept("\\")
-			s.Get()
-			if s.Accept("x") {
-				s.Get()
-				if !s.Accept(hexDigit) || !s.Accept(hexDigit) {
-					break Loop
-				}
-				c, _ := strconv.ParseUint(s.Get(), 16, 8)
-				ret += string(rune(c))
-			} else if s.Accept("u") {
-				s.Get()
-				if s.Accept("{") {
-					s.Get()
-					if !s.Accept(hexDigit) {
-						break Loop
-					}
-					s.AcceptRun(hexDigit)
-					c, _ := strconv.ParseUint(s.Get(), 16, 8)
-					ret += string(rune(c))
-					if !s.Accept("}") {
-						break Loop
-					}
-					s.Get()
-				} else if !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) {
-					break Loop
-				} else {
-					c, _ := strconv.ParseUint(s.Get(), 16, 8)
-					ret += string(rune(c))
-				}
-			} else if s.Accept("0") {
-				if s.Accept(decimalDigit) {
-					break Loop
-				}
-				s.Get()
-				ret += "\000"
-			} else if s.Accept(singleEscapeChar) {
-				switch s.Get() {
-				case "'":
-					ret += singleEscapeChar[0:1]
-				case "\"":
-					ret += singleEscapeChar[1:2]
-				case "\\":
-					ret += singleEscapeChar[2:3]
-				case "b":
-					ret += "\b"
-				case "f":
-					ret += "\f"
-				case "n":
-					ret += "\n"
-				case "r":
-					ret += "\r"
-				case "t":
-					ret += "\t"
-				case "v":
-					ret += "\v"
-				}
-			} else {
+			var ok bool
+			ret, ok = unquoteEscape(ret, &s)
+			if !ok {
 				break Loop
 			}
 		default:
 			break Loop
+		}
+	}
+	return "", ErrInvalidQuoted
+}
+
+func UnquoteTemplate(t string) (string, error) {
+	if strings.HasPrefix(t, "`") || strings.HasPrefix(t, "}") {
+		t = t[1:]
+	} else {
+		return "", ErrInvalidQuoted
+	}
+	if strings.HasSuffix(t, "`") {
+		t = t[:len(t)-1]
+	} else if strings.HasSuffix(t, "${") {
+		t = t[:len(t)-2]
+	} else {
+		return "", ErrInvalidQuoted
+	}
+	s := parser.NewStringTokeniser(t)
+	var ret string
+Loop:
+	for {
+		switch s.ExceptRun("$`\\") {
+		case '$':
+			s.Except("")
+			if s.Accept("{") {
+				break Loop
+			}
+		case '\\':
+			var ok bool
+			ret, ok = unquoteEscape(ret, &s)
+			if !ok {
+				break Loop
+			}
+		case '`':
+			break Loop
+		default:
+			return ret + s.Get(), nil
 		}
 	}
 	return "", ErrInvalidQuoted
