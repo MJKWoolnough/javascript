@@ -53,7 +53,3 @@ func RemoveLastEmptyReturn(m *minifier) {
 func CombineExpressionRuns(m *minifier) {
 	m.combineExpressions = true
 }
-
-func TemplateString(m *minifier) {
-	m.templates = true
-}
