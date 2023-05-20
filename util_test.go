@@ -1,7 +1,7 @@
 package javascript
 
 import (
-	"reflect"
+	"errors"
 	"testing"
 )
 
@@ -217,7 +217,7 @@ func TestUnquote(t *testing.T) {
 		},
 	} {
 		o, err := Unquote(test.Input)
-		if !reflect.DeepEqual(err, test.Err) {
+		if !errors.Is(err, test.Err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
 		} else if o != test.Output {
 			t.Errorf("test %d: from %s, expecting output %q, got %q", n+1, test.Input, test.Output, o)
