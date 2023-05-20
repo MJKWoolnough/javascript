@@ -87,8 +87,8 @@ func TestUnquote(t *testing.T) {
 		},
 		{ // 16
 			"\"\\c\"",
-			"",
-			ErrInvalidQuoted,
+			"c",
+			nil,
 		},
 		{ // 17
 			"\"\n\"",
@@ -177,8 +177,8 @@ func TestUnquote(t *testing.T) {
 		},
 		{ // 34
 			"'\\c'",
-			"",
-			ErrInvalidQuoted,
+			"c",
+			nil,
 		},
 		{ // 35
 			"'\n'",
@@ -302,8 +302,8 @@ func TestUnquoteTemplate(t *testing.T) {
 		},
 		{ // 15
 			"`\\c`",
-			"",
-			ErrInvalidQuoted,
+			"c",
+			nil,
 		},
 		{ // 16
 			"`\\0`",
