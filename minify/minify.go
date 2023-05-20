@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, templates, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
+	literals, numbers, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
 }
 
 type Minifier minifier
@@ -73,7 +73,6 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
 		w.minifyConditionExpressionParens(t)
-		w.minifyTemplates(t)
 	}
 
 	return nil
@@ -97,6 +96,18 @@ func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 			}
 		} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == "undefined" {
 			pe.IdentifierReference.Data = "void 0"
+		} else if pe.TemplateLiteral != nil && pe.TemplateLiteral.NoSubstitutionTemplate != nil {
+			str, err := javascript.UnquoteTemplate(pe.TemplateLiteral.NoSubstitutionTemplate.Data)
+			if err != nil {
+				return
+			}
+			asStrLit := strconv.Quote(str)
+			if len(asStrLit) < len(pe.TemplateLiteral.NoSubstitutionTemplate.Data) {
+				tk := pe.TemplateLiteral.NoSubstitutionTemplate
+				tk.Type = javascript.TokenStringLiteral
+				pe.TemplateLiteral = nil
+				pe.Literal = tk
+			}
 		}
 	}
 }
@@ -862,15 +873,5 @@ func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
 				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
 			},
 		})
-	}
-}
-
-func (m *Minifier) minifyTemplates(ce *javascript.ConditionalExpression) {
-	if m.templates {
-		switch t := javascript.UnwrapConditional(ce).(type) {
-		case *javascript.TemplateLiteral:
-			if t.NoSubstitutionTemplate != nil {
-			}
-		}
 	}
 }
