@@ -224,3 +224,108 @@ func TestUnquote(t *testing.T) {
 		}
 	}
 }
+
+func TestUnquoteTemplate(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+		Err           error
+	}{
+		{
+			"``",
+			"",
+			nil,
+		},
+		{
+			"}`",
+			"",
+			nil,
+		},
+		{
+			"`${",
+			"",
+			nil,
+		},
+		{
+			"}${",
+			"",
+			nil,
+		},
+		{
+			"`",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"}",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"${",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"`a`",
+			"a",
+			nil,
+		},
+		{
+			"`\\'\\\"\\\\\\b\\f\\n\\r\\t\\v`",
+			"'\"\\\b\f\n\r\t\v",
+			nil,
+		},
+		{
+			"`\x41`",
+			"A",
+			nil,
+		},
+		{
+			"`\n`",
+			"\n",
+			nil,
+		},
+		{
+			"`\\x4G`",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"`\\u0041`",
+			"A",
+			nil,
+		},
+		{
+			"`\\u00G1`",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"`\\c`",
+			"",
+			ErrInvalidQuoted,
+		},
+		{
+			"`\\0`",
+			"\000",
+			nil,
+		},
+		{
+			"`\\u{41}`",
+			"A",
+			nil,
+		},
+		{
+			"`\\u{}`",
+			"",
+			ErrInvalidQuoted,
+		},
+	} {
+		o, err := UnquoteTemplate(test.Input)
+		if !errors.Is(err, test.Err) {
+			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
+		} else if o != test.Output {
+			t.Errorf("test %d: from %s, expecting output %q, got %q", n+1, test.Input, test.Output, o)
+		}
+	}
+}
