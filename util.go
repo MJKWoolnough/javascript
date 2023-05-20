@@ -66,7 +66,9 @@ func unquoteEscape(ret string, s *parser.Tokeniser) (string, bool) {
 			ret += "\v"
 		}
 	} else {
-		return "", false
+		s.Get()
+		s.Except("")
+		return ret + s.Get(), true
 	}
 	return ret, true
 }
