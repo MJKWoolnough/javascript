@@ -320,6 +320,11 @@ func TestUnquoteTemplate(t *testing.T) {
 			"",
 			ErrInvalidQuoted,
 		},
+		{ // 19
+			"`\\${`",
+			"${",
+			nil,
+		},
 	} {
 		o, err := UnquoteTemplate(test.Input)
 		if !errors.Is(err, test.Err) {
