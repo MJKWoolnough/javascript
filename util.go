@@ -145,6 +145,7 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
+// QuoteTemplate creates a minimally quoted template string.
 func QuoteTemplate(t string) string {
 	l := len(t) + 2
 	for n, r := range t {
