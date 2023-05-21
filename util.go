@@ -145,9 +145,30 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
+type TemplateType byte
+
+const (
+	TemplateNoSubstitution TemplateType = iota
+	TemplateHead
+	TemplateMiddle
+	TemplateTail
+)
+
 // QuoteTemplate creates a minimally quoted template string.
-func QuoteTemplate(t string) string {
+//
+// templateType determines the prefix and suffix.
+//
+// |  Template Type         |  Prefix  |  Suffix  |
+// |------------------------|----------|----------|
+// | TemplateNoSubstitution | "`"      | "`"      |
+// | TemplateHead           | "`"      | "${"     |
+// | TemplateMiddle         | "}"      | "}"      |
+// | TemplateTail           | "}"      | "`"      |
+func QuoteTemplate(t string, templateType TemplateType) string {
 	l := len(t) + 2
+	if templateType == TemplateHead || templateType == TemplateMiddle {
+		l++
+	}
 	for n, r := range t {
 		switch r {
 		case '$':
@@ -161,7 +182,11 @@ func QuoteTemplate(t string) string {
 	}
 	var ret strings.Builder
 	ret.Grow(l)
-	ret.WriteByte('`')
+	if templateType == TemplateNoSubstitution || templateType == TemplateHead {
+		ret.WriteByte('`')
+	} else {
+		ret.WriteByte('}')
+	}
 	for n, r := range t {
 		switch r {
 		case '$':
@@ -174,7 +199,11 @@ func QuoteTemplate(t string) string {
 		}
 		ret.WriteRune(r)
 	}
-	ret.WriteByte('`')
+	if templateType == TemplateNoSubstitution || templateType == TemplateTail {
+		ret.WriteByte('`')
+	} else {
+		ret.WriteString("${")
+	}
 	return ret.String()
 }
 
