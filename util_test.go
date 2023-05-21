@@ -334,3 +334,46 @@ func TestUnquoteTemplate(t *testing.T) {
 		}
 	}
 }
+
+func TestQuoteTemplate(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{ // 1
+			"",
+			"``",
+		},
+		{ // 2
+			"a",
+			"`a`",
+		},
+		{ // 3
+			"abc",
+			"`abc`",
+		},
+		{ // 4
+			"a\nb	c",
+			"`a\nb	c`",
+		},
+		{ // 5
+			"\\n",
+			"`\\\\n`",
+		},
+		{ // 6
+			"a$b",
+			"`a$b`",
+		},
+		{ // 7
+			"a${b",
+			"`a\\${b`",
+		},
+		{ // 8
+			"`",
+			"`\\``",
+		},
+	} {
+		if out := QuoteTemplate(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, out)
+		}
+	}
+}
