@@ -7,70 +7,71 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-func unquoteEscape(ret string, s *parser.Tokeniser) (string, bool) {
-	ret += s.Get()
+func unquoteEscape(ret *strings.Builder, s *parser.Tokeniser) bool {
+	ret.WriteString(s.Get())
 	s.Accept("\\")
 	s.Get()
 	if s.Accept("x") {
 		s.Get()
 		if !s.Accept(hexDigit) || !s.Accept(hexDigit) {
-			return "", false
+			return false
 		}
 		c, _ := strconv.ParseUint(s.Get(), 16, 8)
-		ret += string(rune(c))
+		ret.WriteString(string(rune(c)))
 	} else if s.Accept("u") {
 		s.Get()
 		if s.Accept("{") {
 			s.Get()
 			if !s.Accept(hexDigit) {
-				return "", false
+				return false
 			}
 			s.AcceptRun(hexDigit)
 			c, _ := strconv.ParseUint(s.Get(), 16, 8)
-			ret += string(rune(c))
+			ret.WriteString(string(rune(c)))
 			if !s.Accept("}") {
-				return "", false
+				return false
 			}
 			s.Get()
 		} else if !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) {
-			return "", false
+			return false
 		} else {
 			c, _ := strconv.ParseUint(s.Get(), 16, 8)
-			ret += string(rune(c))
+			ret.WriteString(string(rune(c)))
 		}
 	} else if s.Accept("0") {
 		if s.Accept(decimalDigit) {
-			return "", false
+			return false
 		}
 		s.Get()
-		ret += "\000"
+		ret.WriteString("\000")
 	} else if s.Accept(singleEscapeChar) {
 		switch s.Get() {
 		case "'":
-			ret += singleEscapeChar[0:1]
+			ret.WriteString(singleEscapeChar[0:1])
 		case "\"":
-			ret += singleEscapeChar[1:2]
+			ret.WriteString(singleEscapeChar[1:2])
 		case "\\":
-			ret += singleEscapeChar[2:3]
+			ret.WriteString(singleEscapeChar[2:3])
 		case "b":
-			ret += "\b"
+			ret.WriteString("\b")
 		case "f":
-			ret += "\f"
+			ret.WriteString("\f")
 		case "n":
-			ret += "\n"
+			ret.WriteString("\n")
 		case "r":
-			ret += "\r"
+			ret.WriteString("\r")
 		case "t":
-			ret += "\t"
+			ret.WriteString("\t")
 		case "v":
-			ret += "\v"
+			ret.WriteString("\v")
 		}
 	} else {
 		s.Get()
 		s.Except("")
-		return ret + s.Get(), true
+		ret.WriteString(s.Get())
+		return true
 	}
-	return ret, true
+	return true
 }
 
 // Unquote parses a javascript quoted string and produces the unquoted version
@@ -85,17 +86,16 @@ func Unquote(str string) (string, error) {
 		return "", ErrInvalidQuoted
 	}
 	s.Get()
-	var ret string
+	var ret strings.Builder
+	ret.Grow(len(str))
 Loop:
 	for {
 		switch s.ExceptRun(chars) {
 		case '"', '\'':
-			ret += s.Get()
-			return ret, nil
+			ret.WriteString(s.Get())
+			return ret.String(), nil
 		case '\\':
-			var ok bool
-			ret, ok = unquoteEscape(ret, &s)
-			if !ok {
+			if !unquoteEscape(&ret, &s) {
 				break Loop
 			}
 		default:
@@ -121,7 +121,8 @@ func UnquoteTemplate(t string) (string, error) {
 		return "", ErrInvalidQuoted
 	}
 	s := parser.NewStringTokeniser(t)
-	var ret string
+	var ret strings.Builder
+	ret.Grow(len(t))
 Loop:
 	for {
 		switch s.ExceptRun("$`\\") {
@@ -131,15 +132,14 @@ Loop:
 				break Loop
 			}
 		case '\\':
-			var ok bool
-			ret, ok = unquoteEscape(ret, &s)
-			if !ok {
+			if !unquoteEscape(&ret, &s) {
 				break Loop
 			}
 		case '`':
 			break Loop
 		default:
-			return ret + s.Get(), nil
+			ret.WriteString(s.Get())
+			return ret.String(), nil
 		}
 	}
 	return "", ErrInvalidQuoted
