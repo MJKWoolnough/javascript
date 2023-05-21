@@ -104,6 +104,13 @@ var (
 ```
 Errors
 
+#### func  QuoteTemplate
+
+```go
+func QuoteTemplate(t string) string
+```
+QuoteTemplate creates a minimally quoted template string.
+
 #### func  SetTokeniser
 
 ```go
@@ -117,6 +124,14 @@ SetTokeniser provides javascript parsing functions to a Tokeniser
 func Unquote(str string) (string, error)
 ```
 Unquote parses a javascript quoted string and produces the unquoted version
+
+#### func  UnquoteTemplate
+
+```go
+func UnquoteTemplate(t string) (string, error)
+```
+UnquoteTemplate parses a javascript template (either NoSubstitution Template, or
+any template part), and produces the unquoted version.
 
 #### type AdditiveExpression
 
