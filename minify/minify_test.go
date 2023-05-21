@@ -4769,6 +4769,17 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 138
+			[]Option{Literals},
+			&javascript.PrimaryExpression{
+				TemplateLiteral: &javascript.TemplateLiteral{
+					NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`\\${`"),
+				},
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"${\""),
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
