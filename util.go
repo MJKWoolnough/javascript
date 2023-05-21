@@ -145,6 +145,38 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
+func QuoteTemplate(t string) string {
+	l := len(t) + 2
+	for n, r := range t {
+		switch r {
+		case '$':
+			if len(t) > n && t[n+1] != '{' {
+				break
+			}
+			fallthrough
+		case '`', '\\':
+			l++
+		}
+	}
+	var ret strings.Builder
+	ret.Grow(l)
+	ret.WriteByte('`')
+	for n, r := range t {
+		switch r {
+		case '$':
+			if len(t) > n && t[n+1] != '{' {
+				break
+			}
+			fallthrough
+		case '`', '\\':
+			ret.WriteByte('\\')
+		}
+		ret.WriteRune(r)
+	}
+	ret.WriteByte('`')
+	return ret.String()
+}
+
 // WrapConditional takes one of many types and wraps it in a
 // *ConditionalExpression.
 //
