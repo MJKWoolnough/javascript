@@ -338,41 +338,50 @@ func TestUnquoteTemplate(t *testing.T) {
 func TestQuoteTemplate(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
+		templateType  TemplateType
 	}{
 		{ // 1
 			"",
 			"``",
+			TemplateNoSubstitution,
 		},
 		{ // 2
 			"a",
 			"`a`",
+			TemplateNoSubstitution,
 		},
 		{ // 3
 			"abc",
 			"`abc`",
+			TemplateNoSubstitution,
 		},
 		{ // 4
 			"a\nb	c",
 			"`a\nb	c`",
+			TemplateNoSubstitution,
 		},
 		{ // 5
 			"\\n",
 			"`\\\\n`",
+			TemplateNoSubstitution,
 		},
 		{ // 6
 			"a$b",
 			"`a$b`",
+			TemplateNoSubstitution,
 		},
 		{ // 7
 			"a${b",
 			"`a\\${b`",
+			TemplateNoSubstitution,
 		},
 		{ // 8
 			"`",
 			"`\\``",
+			TemplateNoSubstitution,
 		},
 	} {
-		if out := QuoteTemplate(test.Input); out != test.Output {
+		if out := QuoteTemplate(test.Input, test.templateType); out != test.Output {
 			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, out)
 		}
 	}
