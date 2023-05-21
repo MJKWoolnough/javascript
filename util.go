@@ -105,6 +105,8 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
+// UnquoteTemplate parses a javascript template (either NoSubstitution Template, or any template part),
+// and produces the unquoted version.
 func UnquoteTemplate(t string) (string, error) {
 	if strings.HasPrefix(t, "`") || strings.HasPrefix(t, "}") {
 		t = t[1:]
