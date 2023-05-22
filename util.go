@@ -196,10 +196,10 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 	}
 	var ret strings.Builder
 	ret.Grow(l)
-	if templateType == TemplateNoSubstitution || templateType == TemplateHead {
-		ret.WriteByte('`')
-	} else {
+	if templateType == TemplateMiddle || templateType == TemplateTail {
 		ret.WriteByte('}')
+	} else {
+		ret.WriteByte('`')
 	}
 	for n, r := range t {
 		switch r {
@@ -213,10 +213,10 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 		}
 		ret.WriteRune(r)
 	}
-	if templateType == TemplateNoSubstitution || templateType == TemplateTail {
-		ret.WriteByte('`')
-	} else {
+	if templateType == TemplateHead || templateType == TemplateMiddle {
 		ret.WriteString("${")
+	} else {
+		ret.WriteByte('`')
 	}
 	return ret.String()
 }
