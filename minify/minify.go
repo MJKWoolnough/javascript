@@ -114,11 +114,29 @@ func (m *Minifier) minifyTemplates(t *javascript.TemplateLiteral) {
 func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 	if m.literals {
 		if pe.Literal != nil {
-			switch pe.Literal.Data {
-			case "true":
-				pe.Literal.Data = "!0"
-			case "false":
-				pe.Literal.Data = "!1"
+			switch pe.Literal.Type {
+			case javascript.TokenBooleanLiteral:
+				switch pe.Literal.Data {
+				case "true":
+					pe.Literal.Data = "!0"
+				case "false":
+					pe.Literal.Data = "!1"
+				}
+			case javascript.TokenStringLiteral:
+				str, err := javascript.Unquote(pe.Literal.Data)
+				if err != nil {
+					return
+				}
+				tmpl := javascript.QuoteTemplate(str, javascript.TemplateNoSubstitution)
+				if len(tmpl) < len(pe.Literal.Data) {
+					pe.TemplateLiteral = &javascript.TemplateLiteral{
+						NoSubstitutionTemplate: pe.Literal,
+						Tokens:                 pe.Tokens,
+					}
+					pe.Literal = nil
+					pe.TemplateLiteral.NoSubstitutionTemplate.Type = javascript.TokenNoSubstitutionTemplate
+					pe.TemplateLiteral.NoSubstitutionTemplate.Data = tmpl
+				}
 			}
 		} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == "undefined" {
 			pe.IdentifierReference.Data = "void 0"
