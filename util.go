@@ -154,6 +154,20 @@ const (
 	TemplateTail
 )
 
+func TokenTypeToTemplateType(tokenType parser.TokenType) TemplateType {
+	switch tokenType {
+	case TokenNoSubstitutionTemplate:
+		return TemplateNoSubstitution
+	case TokenTemplateHead:
+		return TemplateHead
+	case TokenTemplateMiddle:
+		return TemplateMiddle
+	case TokenTemplateTail:
+		return TemplateTail
+	}
+	return 255
+}
+
 // QuoteTemplate creates a minimally quoted template string.
 //
 // templateType determines the prefix and suffix.
