@@ -25,19 +25,19 @@ func TestTransforms(t *testing.T) {
 		{ // 1
 			[]Option{Literals},
 			&javascript.PrimaryExpression{
-				Literal: makeToken(javascript.TokenIdentifier, "false"),
+				Literal: makeToken(javascript.TokenBooleanLiteral, "false"),
 			},
 			&javascript.PrimaryExpression{
-				Literal: makeToken(javascript.TokenIdentifier, "!1"),
+				Literal: makeToken(javascript.TokenBooleanLiteral, "!1"),
 			},
 		},
 		{ // 2
 			[]Option{Literals},
 			&javascript.PrimaryExpression{
-				Literal: makeToken(javascript.TokenIdentifier, "true"),
+				Literal: makeToken(javascript.TokenBooleanLiteral, "true"),
 			},
 			&javascript.PrimaryExpression{
-				Literal: makeToken(javascript.TokenIdentifier, "!0"),
+				Literal: makeToken(javascript.TokenBooleanLiteral, "!0"),
 			},
 		},
 		{ // 3
