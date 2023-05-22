@@ -4831,6 +4831,35 @@ func TestTransforms(t *testing.T) {
 				TemplateTail: makeToken(javascript.TokenTemplateTail, "}\n`"),
 			},
 		},
+		{ // 144
+			[]Option{Literals},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"\""),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"\""),
+			},
+		},
+		{ // 145
+			[]Option{Literals},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"abc\""),
+			},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"abc\""),
+			},
+		},
+		{ // 146
+			[]Option{Literals},
+			&javascript.PrimaryExpression{
+				Literal: makeToken(javascript.TokenStringLiteral, "\"\\n\""),
+			},
+			&javascript.PrimaryExpression{
+				TemplateLiteral: &javascript.TemplateLiteral{
+					NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`\n`"),
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
