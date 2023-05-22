@@ -4780,6 +4780,57 @@ func TestTransforms(t *testing.T) {
 				Literal: makeToken(javascript.TokenStringLiteral, "\"${\""),
 			},
 		},
+		{ // 139
+			[]Option{Literals},
+			&javascript.TemplateLiteral{},
+			&javascript.TemplateLiteral{},
+		},
+		{ // 140
+			[]Option{Literals},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "``"),
+			},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "``"),
+			},
+		},
+		{ // 141
+			[]Option{Literals},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`abc`"),
+			},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`abc`"),
+			},
+		},
+		{ // 142
+			[]Option{Literals},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`\\n`"),
+			},
+			&javascript.TemplateLiteral{
+				NoSubstitutionTemplate: makeToken(javascript.TokenNoSubstitutionTemplate, "`\n`"),
+			},
+		},
+		{ // 143
+			[]Option{Literals},
+			&javascript.TemplateLiteral{
+				TemplateHead: makeToken(javascript.TokenTemplateHead, "`\\n${"),
+				TemplateMiddleList: []*javascript.Token{
+					makeToken(javascript.TokenTemplateMiddle, "}\\n${"),
+					makeToken(javascript.TokenTemplateMiddle, "}\\n${"),
+				},
+				TemplateTail: makeToken(javascript.TokenTemplateTail, "}\\n`"),
+			},
+			&javascript.TemplateLiteral{
+				TemplateHead: makeToken(javascript.TokenTemplateHead, "`\n${"),
+				TemplateMiddleList: []*javascript.Token{
+					makeToken(javascript.TokenTemplateMiddle, "}\n${"),
+					makeToken(javascript.TokenTemplateMiddle, "}\n${"),
+				},
+				TemplateTail: makeToken(javascript.TokenTemplateTail, "}\n`"),
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
