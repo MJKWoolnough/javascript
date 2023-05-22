@@ -107,9 +107,16 @@ Errors
 #### func  QuoteTemplate
 
 ```go
-func QuoteTemplate(t string) string
+func QuoteTemplate(t string, templateType TemplateType) string
 ```
 QuoteTemplate creates a minimally quoted template string.
+
+templateType determines the prefix and suffix.
+
+| Template Type | Prefix | Suffix |
+|------------------------|----------|----------| | TemplateNoSubstitution | "`"
+| "`" | | TemplateHead | "`" | "${" | | TemplateMiddle | "}" | "}" | |
+TemplateTail | "}" | "`" |
 
 #### func  SetTokeniser
 
@@ -2307,6 +2314,33 @@ than the length of Expressions.
 func (f TemplateLiteral) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### type TemplateType
+
+```go
+type TemplateType byte
+```
+
+TemplateType determines the type of Template used in QuoteTemplate.
+
+```go
+const (
+	TemplateNoSubstitution TemplateType = iota
+	TemplateHead
+	TemplateMiddle
+	TemplateTail
+)
+```
+
+#### func  TokenTypeToTemplateType
+
+```go
+func TokenTypeToTemplateType(tokenType parser.TokenType) TemplateType
+```
+TokenTypeToTemplateType converts from a parser.TokenType to the appropriate
+TemplateType.
+
+Invalid TokenTypes return 255.
 
 #### type Token
 
