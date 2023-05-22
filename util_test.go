@@ -380,6 +380,126 @@ func TestQuoteTemplate(t *testing.T) {
 			"`\\``",
 			TemplateNoSubstitution,
 		},
+		{ // 9
+			"",
+			"`${",
+			TemplateHead,
+		},
+		{ // 10
+			"a",
+			"`a${",
+			TemplateHead,
+		},
+		{ // 11
+			"abc",
+			"`abc${",
+			TemplateHead,
+		},
+		{ // 12
+			"a\nb	c",
+			"`a\nb	c${",
+			TemplateHead,
+		},
+		{ // 13
+			"\\n",
+			"`\\\\n${",
+			TemplateHead,
+		},
+		{ // 14
+			"a$b",
+			"`a$b${",
+			TemplateHead,
+		},
+		{ // 15
+			"a${b",
+			"`a\\${b${",
+			TemplateHead,
+		},
+		{ // 16
+			"`",
+			"`\\`${",
+			TemplateHead,
+		},
+		{ // 17
+			"",
+			"}${",
+			TemplateMiddle,
+		},
+		{ // 18
+			"a",
+			"}a${",
+			TemplateMiddle,
+		},
+		{ // 19
+			"abc",
+			"}abc${",
+			TemplateMiddle,
+		},
+		{ // 20
+			"a\nb	c",
+			"}a\nb	c${",
+			TemplateMiddle,
+		},
+		{ // 21
+			"\\n",
+			"}\\\\n${",
+			TemplateMiddle,
+		},
+		{ // 22
+			"a$b",
+			"}a$b${",
+			TemplateMiddle,
+		},
+		{ // 23
+			"a${b",
+			"}a\\${b${",
+			TemplateMiddle,
+		},
+		{ // 24
+			"`",
+			"}\\`${",
+			TemplateMiddle,
+		},
+		{ // 25
+			"",
+			"}`",
+			TemplateTail,
+		},
+		{ // 26
+			"a",
+			"}a`",
+			TemplateTail,
+		},
+		{ // 27
+			"abc",
+			"}abc`",
+			TemplateTail,
+		},
+		{ // 28
+			"a\nb	c",
+			"}a\nb	c`",
+			TemplateTail,
+		},
+		{ // 29
+			"\\n",
+			"}\\\\n`",
+			TemplateTail,
+		},
+		{ // 30
+			"a$b",
+			"}a$b`",
+			TemplateTail,
+		},
+		{ // 31
+			"a${b",
+			"}a\\${b`",
+			TemplateTail,
+		},
+		{ // 32
+			"`",
+			"}\\``",
+			TemplateTail,
+		},
 	} {
 		if out := QuoteTemplate(test.Input, test.templateType); out != test.Output {
 			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, out)
