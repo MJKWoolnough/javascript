@@ -32,6 +32,8 @@ func (w *walker) Handle(t javascript.Type) error {
 		return err
 	}
 	switch t := t.(type) {
+	case *javascript.TemplateLiteral:
+		w.minifyTemplates(t)
 	case *javascript.PrimaryExpression:
 		w.minifyLiterals(t)
 		w.minifyNumbers(t)
@@ -82,6 +84,30 @@ func (m *Minifier) Process(jm *javascript.Module) {
 	walk.Walk(jm, &walker{Minifier: m})
 	if m.rename {
 		renameIdentifiers(jm)
+	}
+}
+
+func minifyTemplate(t *javascript.Token) {
+	if t != nil {
+		str, err := javascript.UnquoteTemplate(t.Data)
+		if err != nil {
+			return
+		}
+		res := javascript.QuoteTemplate(str, javascript.TokenTypeToTemplateType(t.Type))
+		if len(res) < len(t.Data) {
+			t.Data = res
+		}
+	}
+}
+
+func (m *Minifier) minifyTemplates(t *javascript.TemplateLiteral) {
+	if m.literals {
+		minifyTemplate(t.NoSubstitutionTemplate)
+		minifyTemplate(t.TemplateHead)
+		for _, m := range t.TemplateMiddleList {
+			minifyTemplate(m)
+		}
+		minifyTemplate(t.TemplateTail)
 	}
 }
 
