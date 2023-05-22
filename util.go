@@ -145,6 +145,7 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
+// TemplateType determines the type of Template used in QuoteTemplate.
 type TemplateType byte
 
 const (
@@ -154,6 +155,10 @@ const (
 	TemplateTail
 )
 
+// TokenTypeToTemplateType converts from a parser.TokenType to the appropriate
+// TemplateType.
+//
+// Invalid TokenTypes return 255.
 func TokenTypeToTemplateType(tokenType parser.TokenType) TemplateType {
 	switch tokenType {
 	case TokenNoSubstitutionTemplate:
