@@ -81,7 +81,7 @@ func (w *walker) Handle(t javascript.Type) error {
 
 func (m *Minifier) Process(jm *javascript.Module) {
 	walk.Walk(jm, &walker{Minifier: m})
-	if m.rename {
+	if m.Has(RenameIdentifiers) {
 		renameIdentifiers(jm)
 	}
 }
@@ -100,7 +100,7 @@ func minifyTemplate(t *javascript.Token) {
 }
 
 func (m *Minifier) minifyTemplates(t *javascript.TemplateLiteral) {
-	if m.literals {
+	if m.Has(Literals) {
 		minifyTemplate(t.NoSubstitutionTemplate)
 		minifyTemplate(t.TemplateHead)
 		for _, m := range t.TemplateMiddleList {
@@ -111,7 +111,7 @@ func (m *Minifier) minifyTemplates(t *javascript.TemplateLiteral) {
 }
 
 func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
-	if m.literals {
+	if m.Has(Literals) {
 		if pe.Literal != nil {
 			switch pe.Literal.Type {
 			case javascript.TokenBooleanLiteral:
@@ -221,7 +221,7 @@ func minifyNumbers(nt *javascript.Token) {
 }
 
 func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
-	if m.arrowFn {
+	if m.Has(ArrowFn) {
 		if af.FormalParameters != nil && len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil && af.FormalParameters.BindingIdentifier == nil {
 			if fp := af.FormalParameters.FormalParameterList[0]; fp.Initializer == nil && fp.SingleNameBinding != nil && fp.ArrayBindingPattern == nil && fp.ObjectBindingPattern == nil {
 				af.BindingIdentifier = fp.SingleNameBinding
@@ -256,7 +256,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 }
 
 func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
-	if s.IfStatement != nil && s.IfStatement.ElseStatement != nil {
+	if m.Has(IfToConditional) && s.IfStatement != nil && s.IfStatement.ElseStatement != nil {
 		last := s.IfStatement.Expression.Expressions[len(s.IfStatement.Expression.Expressions)-1]
 		if last.AssignmentOperator != javascript.AssignmentNone || last.ConditionalExpression == nil || last.ArrowFunction != nil || last.AssignmentExpression != nil || last.AssignmentPattern != nil || last.Delegate || last.LeftHandSideExpression != nil || last.Yield {
 			return
@@ -370,13 +370,13 @@ func isHoistable(s *javascript.StatementListItem) bool {
 }
 
 func (m *Minifier) removeDebugger(s *javascript.Statement) {
-	if m.rmDebugger && s.Type == javascript.StatementDebugger {
+	if m.Has(RemoveDebugger) && s.Type == javascript.StatementDebugger {
 		s.Type = javascript.StatementNormal
 	}
 }
 
 func (m *Minifier) minifyBlockToStatement(s *javascript.Statement) {
-	if m.blocks && s.BlockStatement != nil {
+	if m.Has(BlocksToStatement) && s.BlockStatement != nil {
 		if l := len(s.BlockStatement.StatementList); l == 1 {
 			if s.BlockStatement.StatementList[0].Statement != nil {
 				*s = *s.BlockStatement.StatementList[0].Statement
@@ -396,7 +396,7 @@ func (m *Minifier) minifyBlockToStatement(s *javascript.Statement) {
 }
 
 func (m *Minifier) minifyObjectKeys(p *javascript.PropertyName) {
-	if m.keys {
+	if m.Has(Keys) {
 		if ae := p.ComputedPropertyName; ae != nil && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil && !ae.Yield {
 			pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.PrimaryExpression)
 			if ok && pe.Literal != nil && pe.Literal.Type != javascript.TokenRegularExpressionLiteral {
@@ -420,7 +420,7 @@ func (m *Minifier) minifyObjectKeys(p *javascript.PropertyName) {
 }
 
 func (m *Minifier) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
-	if m.nonHoistableNames {
+	if m.Has(RemoveExpressionNames) {
 		if pe.FunctionExpression != nil {
 			pe.FunctionExpression.BindingIdentifier = nil
 		} else if pe.ClassExpression != nil {
@@ -430,7 +430,7 @@ func (m *Minifier) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
 }
 
 func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.AssignmentExpression) {
-	if m.replaceFEWithAF && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil {
+	if m.Has(FunctionExpressionToArrowFunc) && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil {
 		if fe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.FunctionDeclaration); ok && (fe.Type == javascript.FunctionAsync || fe.Type == javascript.FunctionNormal) {
 			s, err := scope.ScriptScope(&javascript.Script{
 				StatementList: fe.FunctionBody.StatementList,
@@ -456,13 +456,13 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 }
 
 func (m *Minifier) minifyExpressionParens(e *javascript.Expression) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		e.Expressions = m.minifyParens(e.Expressions)
 	}
 }
 
 func (m *Minifier) minifyParenthsizedExpressionParens(pe *javascript.ParenthesizedExpression) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		pe.Expressions = m.minifyParens(pe.Expressions)
 	}
 }
@@ -493,7 +493,7 @@ func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascrip
 }
 
 func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		if pe, ok := aeAsParen(&a.AssignmentExpression); ok && len(pe.Expressions) == 1 {
 			a.AssignmentExpression = pe.Expressions[0]
 		}
@@ -501,7 +501,7 @@ func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
 }
 
 func (m *Minifier) minifyAEParens(ae *javascript.AssignmentExpression) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		if pe, ok := aeAsParen(ae.AssignmentExpression); ok && len(pe.Expressions) == 1 {
 			ae.AssignmentExpression = &pe.Expressions[0]
 		}
@@ -513,7 +513,7 @@ func meIsSinglePe(me *javascript.MemberExpression) bool {
 }
 
 func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression) {
-	if m.unwrapParens && meIsSinglePe(me) {
+	if m.Has(UnwrapParens) && meIsSinglePe(me) {
 		switch e := javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(type) {
 		case *javascript.PrimaryExpression:
 			me.PrimaryExpression = e
@@ -549,7 +549,7 @@ func (m *Minifier) minifyMemberExpressionParens(me *javascript.MemberExpression)
 }
 
 func (m *Minifier) minifyCallExpressionParens(ce *javascript.CallExpression) {
-	if m.unwrapParens && meIsSinglePe(ce.MemberExpression) {
+	if m.Has(UnwrapParens) && meIsSinglePe(ce.MemberExpression) {
 		switch e := javascript.UnwrapConditional(ce.MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(type) {
 		case *javascript.CallExpression:
 			ce.CallExpression = e
@@ -579,7 +579,7 @@ func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
 }
 
 func (m *Minifier) minifyConditionExpressionParens(ce *javascript.ConditionalExpression) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		w := javascript.UnwrapConditional(ce)
 		switch w := w.(type) {
 		case *javascript.LogicalORExpression:
@@ -681,7 +681,7 @@ func isConditionalWrappingAConditional(w javascript.ConditionalWrappable, below 
 }
 
 func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpression) {
-	if m.unwrapParens && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
+	if m.Has(UnwrapParens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
 		ce := meAsCE(&lhs.NewExpression.MemberExpression)
 		if ce != nil {
 			lhs.CallExpression = ce
@@ -718,19 +718,19 @@ func removeLastReturnStatement(b *javascript.Block) {
 }
 
 func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) {
-	if m.removeLastReturn {
+	if m.Has(RemoveLastEmptyReturn) {
 		removeLastReturnStatement(&f.FunctionBody)
 	}
 }
 
 func (m *Minifier) minifyLastReturnStatementInArrowFn(af *javascript.ArrowFunction) {
-	if m.removeLastReturn && af.FunctionBody != nil {
+	if m.Has(RemoveLastEmptyReturn) && af.FunctionBody != nil {
 		removeLastReturnStatement(af.FunctionBody)
 	}
 }
 
 func (m *Minifier) minifyExpressionRunInBlock(b *javascript.Block) {
-	if m.combineExpressions && len(b.StatementList) > 1 {
+	if m.Has(CombineExpressionRuns) && len(b.StatementList) > 1 {
 		lastWasExpression := isStatementExpression(b.StatementList[0].Statement)
 		for i := 1; i < len(b.StatementList); i++ {
 			isExpression := isStatementExpression(b.StatementList[i].Statement)
@@ -751,7 +751,7 @@ func isStatementListItemExpression(s *javascript.StatementListItem) bool {
 }
 
 func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
-	if m.combineExpressions && len(jm.ModuleListItems) > 1 {
+	if m.Has(CombineExpressionRuns) && len(jm.ModuleListItems) > 1 {
 		lastWasExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
 		for i := 1; i < len(jm.ModuleListItems); i++ {
 			isExpression := isStatementListItemExpression(jm.ModuleListItems[i].StatementListItem)
@@ -891,7 +891,7 @@ func fixWrapping(s *javascript.Statement) {
 }
 
 func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		for n := range b.StatementList {
 			if isStatementListItemExpression(&b.StatementList[n]) {
 				fixWrapping(b.StatementList[n].Statement)
@@ -901,7 +901,7 @@ func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
 }
 
 func (m *Minifier) fixFirstExpressionInModule(jm *javascript.Module) {
-	if m.unwrapParens {
+	if m.Has(UnwrapParens) {
 		for n := range jm.ModuleListItems {
 			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
 				fixWrapping(jm.ModuleListItems[n].StatementListItem.Statement)
@@ -911,7 +911,7 @@ func (m *Minifier) fixFirstExpressionInModule(jm *javascript.Module) {
 }
 
 func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
-	if m.unwrapParens && af.AssignmentExpression != nil {
+	if m.Has(UnwrapParens) && af.AssignmentExpression != nil {
 		fixWrapping(&javascript.Statement{
 			ExpressionStatement: &javascript.Expression{
 				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
