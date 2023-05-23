@@ -6,10 +6,6 @@ func Literals(m *minifier) {
 	m.literals = true
 }
 
-func Numbers(m *minifier) {
-	m.numbers = true
-}
-
 func ArrowFn(m *minifier) {
 	m.arrowFn = true
 }
