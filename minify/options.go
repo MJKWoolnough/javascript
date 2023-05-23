@@ -16,3 +16,7 @@ const (
 	RemoveLastEmptyReturn
 	CombineExpressionRuns
 )
+
+func (o Option) Has(opt Option) bool {
+	return o&opt != 0
+}
