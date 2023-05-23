@@ -10,7 +10,7 @@ import (
 )
 
 type minifier struct {
-	literals, arrowFn, ifToConditional, rmDebugger, rename, blocks, keys, nonHoistableNames, replaceFEWithAF, unwrapParens, removeLastReturn, combineExpressions bool
+	Option
 }
 
 type Minifier minifier
@@ -18,7 +18,7 @@ type Minifier minifier
 func New(opts ...Option) *Minifier {
 	m := new(minifier)
 	for _, opt := range opts {
-		opt(m)
+		m.Option |= opt
 	}
 	return (*Minifier)(m)
 }
