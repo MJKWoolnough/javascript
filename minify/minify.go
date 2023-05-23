@@ -15,6 +15,9 @@ type Minifier struct {
 
 func New(opts ...Option) *Minifier {
 	m := new(Minifier)
+	if len(opts) == 0 {
+		m.Option = Safe
+	}
 	for _, opt := range opts {
 		m.Option |= opt
 	}
