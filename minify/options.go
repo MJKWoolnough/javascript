@@ -15,6 +15,8 @@ const (
 	UnwrapParens
 	RemoveLastEmptyReturn
 	CombineExpressionRuns
+
+	Safe = Literals | ArrowFn | IfToConditional | RemoveDebugger | RenameIdentifiers | BlocksToStatement | Keys | RemoveExpressionNames | FunctionExpressionToArrowFunc | UnwrapParens | RemoveLastEmptyReturn | CombineExpressionRuns
 )
 
 func (o Option) Has(opt Option) bool {
