@@ -9,18 +9,16 @@ import (
 	"vimagination.zapto.org/javascript/walk"
 )
 
-type minifier struct {
+type Minifier struct {
 	Option
 }
 
-type Minifier minifier
-
 func New(opts ...Option) *Minifier {
-	m := new(minifier)
+	m := new(Minifier)
 	for _, opt := range opts {
 		m.Option |= opt
 	}
-	return (*Minifier)(m)
+	return m
 }
 
 type walker struct {
