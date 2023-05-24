@@ -60,6 +60,22 @@ func deadWalker(t javascript.Type) error {
 				}
 				t.ModuleListItems = append(t.ModuleListItems[:i], append(ls, t.ModuleListItems[i+1:]...)...)
 				i += len(bl)
+			case clvVar:
+				dl := t.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
+				ls := make([]javascript.ModuleItem, len(dl), len(t.ModuleListItems)-i)
+				for n := range ls {
+					ls[n] = javascript.ModuleItem{
+						StatementListItem: &javascript.StatementListItem{
+							Statement: &javascript.Statement{
+								VariableStatement: &javascript.VariableStatement{
+									VariableDeclarationList: dl[n : n+1],
+								},
+							},
+						},
+					}
+				}
+				t.ModuleListItems = append(t.ModuleListItems[:i], append(ls, t.ModuleListItems[i+1:]...)...)
+				i += len(dl)
 			}
 		}
 	}
