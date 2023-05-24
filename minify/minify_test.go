@@ -2618,7 +2618,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 94
-			[]Option{},
+			[]Option{0},
 			&javascript.Block{
 				StatementList: []javascript.StatementListItem{
 					{
@@ -2631,7 +2631,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 95
-			[]Option{},
+			[]Option{0},
 			&javascript.Block{
 				StatementList: []javascript.StatementListItem{
 					{
@@ -2647,7 +2647,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 96
-			[]Option{},
+			[]Option{0},
 			&javascript.Block{
 				StatementList: []javascript.StatementListItem{
 					{
@@ -2745,7 +2745,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 97
-			[]Option{},
+			[]Option{0},
 			&javascript.Module{
 				ModuleListItems: []javascript.ModuleItem{
 					{
@@ -2760,7 +2760,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 98
-			[]Option{},
+			[]Option{0},
 			&javascript.Module{
 				ModuleListItems: []javascript.ModuleItem{
 					{
@@ -2780,7 +2780,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 		{ // 99
-			[]Option{},
+			[]Option{0},
 			&javascript.Module{
 				ModuleListItems: []javascript.ModuleItem{
 					{
