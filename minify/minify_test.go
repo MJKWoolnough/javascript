@@ -4860,6 +4860,177 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 147
+			[]Option{RemoveDeadCode},
+			&javascript.Block{},
+			&javascript.Block{},
+		},
+		{ // 148
+			[]Option{RemoveDeadCode},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+		},
+		{ // 149
+			[]Option{RemoveDeadCode},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+		},
+		{ // 150
+			[]Option{RemoveDeadCode},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+		},
+		{ // 151
+			[]Option{RemoveDeadCode},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.VariableDeclaration{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+										Initializer: &javascript.AssignmentExpression{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementDebugger,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.VariableDeclaration{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+										Initializer: &javascript.AssignmentExpression{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
