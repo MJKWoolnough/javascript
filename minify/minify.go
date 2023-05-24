@@ -368,7 +368,7 @@ func isEmptyStatement(s *javascript.Statement) bool {
 }
 
 func isHoistable(s *javascript.StatementListItem) bool {
-	return (s.Statement != nil && (s.Statement.VariableStatement.VariableDeclarationList != nil || s.Statement.LabelledItemFunction != nil)) || (s.Declaration != nil && (s.Declaration.FunctionDeclaration != nil || s.Declaration.ClassDeclaration != nil))
+	return (s.Statement != nil && (s.Statement.VariableStatement != nil || s.Statement.LabelledItemFunction != nil)) || (s.Declaration != nil && (s.Declaration.FunctionDeclaration != nil || s.Declaration.ClassDeclaration != nil))
 }
 
 func (m *Minifier) removeDebugger(s *javascript.Statement) {
