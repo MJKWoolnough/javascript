@@ -78,6 +78,12 @@ func deadWalker(t javascript.Type) error {
 				i += len(dl)
 			}
 		}
+		for i := 0; i < len(t.ModuleListItems); i++ {
+			if removeDeadSLI(t.ModuleListItems[i].StatementListItem) {
+				t.ModuleListItems = append(t.ModuleListItems[:i], t.ModuleListItems[i+1:]...)
+				i--
+			}
+		}
 	}
 	return nil
 }
@@ -100,4 +106,12 @@ func sliCLV(sli *javascript.StatementListItem) clv {
 		}
 	}
 	return clvNone
+}
+
+func removeDeadSLI(sli *javascript.StatementListItem) bool {
+	if sli == nil {
+		return false
+	}
+
+	return false
 }
