@@ -64,6 +64,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	case *javascript.LeftHandSideExpression:
 		w.minifyLHSExpressionParens(t)
 	case *javascript.Block:
+		w.minifyRemoveDeadCode(t)
 		w.minifyEmptyStatementInBlock(t)
 		w.minifyExpressionRunInBlock(t)
 		w.fixFirstExpressionInBlock(t)
@@ -918,5 +919,25 @@ func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
 				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
 			},
 		})
+	}
+}
+
+func (m *Minifier) minifyRemoveDeadCode(b *javascript.Block) {
+	if m.Has(RemoveDeadCode) {
+		retPos := -1
+		for n := range b.StatementList {
+			if isReturnStatement(b.StatementList[n].Statement) {
+				retPos = n
+				break
+			}
+		}
+		if retPos >= 0 {
+			for i := retPos + 1; i < len(b.StatementList); i++ {
+				if !isHoistable(&b.StatementList[i]) {
+					b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
+					i--
+				}
+			}
+		}
 	}
 }
