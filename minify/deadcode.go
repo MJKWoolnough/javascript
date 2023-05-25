@@ -101,6 +101,63 @@ func deadWalker(t javascript.Type) error {
 			}
 			last = next
 		}
+	case *javascript.Block:
+		for i := 0; i < len(t.StatementList); i++ {
+			switch sliCLV(&t.StatementList[i]) {
+			case clvConst, clvLet:
+				bl := t.StatementList[i].Declaration.LexicalDeclaration.BindingList
+				ls := make([]javascript.StatementListItem, len(bl), len(t.StatementList)-i)
+				for n := range ls {
+					ls[n] = javascript.StatementListItem{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst:  t.StatementList[i].Declaration.LexicalDeclaration.LetOrConst,
+								BindingList: bl[n : n+1],
+							},
+						},
+					}
+				}
+				t.StatementList = append(t.StatementList[:i], append(ls, t.StatementList[i+1:]...)...)
+				i += len(bl)
+			case clvVar:
+				dl := t.StatementList[i].Statement.VariableStatement.VariableDeclarationList
+				ls := make([]javascript.StatementListItem, len(dl), len(t.StatementList)-i)
+				for n := range ls {
+					ls[n] = javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: dl[n : n+1],
+							},
+						},
+					}
+				}
+				t.StatementList = append(t.StatementList[:i], append(ls, t.StatementList[i+1:]...)...)
+				i += len(dl)
+			}
+		}
+		for i := 0; i < len(t.StatementList); i++ {
+			if removeDeadSLI(&t.StatementList[i]) {
+				t.StatementList = append(t.StatementList[:i], t.StatementList[i+1:]...)
+				i--
+			}
+		}
+		last := clvNone
+		for i := 0; i < len(t.StatementList); i++ {
+			next := sliCLV(&t.StatementList[i])
+			if last == next {
+				switch next {
+				case clvConst, clvLet:
+					ld := t.StatementList[i-1].Declaration.LexicalDeclaration
+					ld.BindingList = append(ld.BindingList, t.StatementList[i].Declaration.LexicalDeclaration.BindingList[0])
+				case clvVar:
+					vd := t.StatementList[i-1].Statement.VariableStatement
+					vd.VariableDeclarationList = append(vd.VariableDeclarationList, t.StatementList[i].Statement.VariableStatement.VariableDeclarationList[0])
+				}
+				t.StatementList = append(t.StatementList[:i], t.StatementList[i+1:]...)
+				i--
+			}
+			last = next
+		}
 	}
 	return nil
 }
