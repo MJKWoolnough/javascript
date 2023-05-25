@@ -84,6 +84,23 @@ func deadWalker(t javascript.Type) error {
 				i--
 			}
 		}
+		last := clvNone
+		for i := 0; i < len(t.ModuleListItems); i++ {
+			next := sliCLV(t.ModuleListItems[i].StatementListItem)
+			if last == next {
+				switch next {
+				case clvConst, clvLet:
+					ld := t.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
+					ld.BindingList = append(ld.BindingList, t.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList[0])
+				case clvVar:
+					vd := t.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
+					vd.VariableDeclarationList = append(vd.VariableDeclarationList, t.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0])
+				}
+				t.ModuleListItems = append(t.ModuleListItems[:i], t.ModuleListItems[i+1:]...)
+				i--
+			}
+			last = next
+		}
 	}
 	return nil
 }
