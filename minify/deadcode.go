@@ -129,6 +129,7 @@ const (
 	bindableVar
 	bindableClass
 	bindableFunction
+	bindableBare
 )
 
 func sliBindable(sli *javascript.StatementListItem) bindable {
@@ -147,6 +148,11 @@ func sliBindable(sli *javascript.StatementListItem) bindable {
 		}
 		if sli.Statement != nil && sli.Statement.VariableStatement != nil {
 			return bindableVar
+		}
+		if isStatementExpression(sli.Statement) {
+			if sli.Statement.ExpressionStatement.Expressions[0].AssignmentOperator == javascript.AssignmentAssign {
+				return bindableBare
+			}
 		}
 	}
 	return bindableNone
