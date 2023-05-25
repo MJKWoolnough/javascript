@@ -59,8 +59,8 @@ func deadWalker(t javascript.Type) error {
 
 func removeDeadCodeFromModule(m *javascript.Module) {
 	for i := 0; i < len(m.ModuleListItems); i++ {
-		switch sliCLV(m.ModuleListItems[i].StatementListItem) {
-		case clvConst, clvLet:
+		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
+		case bindableConst, bindableLet:
 			bl := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
 			ls := make([]javascript.ModuleItem, len(bl), len(m.ModuleListItems)-i)
 			for n := range ls {
@@ -77,7 +77,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 			}
 			m.ModuleListItems = append(m.ModuleListItems[:i], append(ls, m.ModuleListItems[i+1:]...)...)
 			i += len(bl)
-		case clvVar:
+		case bindableVar:
 			dl := m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
 			ls := make([]javascript.ModuleItem, len(dl), len(m.ModuleListItems)-i)
 			for n := range ls {
@@ -101,15 +101,15 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 			i--
 		}
 	}
-	last := clvNone
+	last := bindableNone
 	for i := 0; i < len(m.ModuleListItems); i++ {
-		next := sliCLV(m.ModuleListItems[i].StatementListItem)
+		next := sliBindable(m.ModuleListItems[i].StatementListItem)
 		if last == next {
 			switch next {
-			case clvConst, clvLet:
+			case bindableConst, bindableLet:
 				ld := m.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
 				ld.BindingList = append(ld.BindingList, m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList[0])
-			case clvVar:
+			case bindableVar:
 				vd := m.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
 				vd.VariableDeclarationList = append(vd.VariableDeclarationList, m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0])
 			}
@@ -120,46 +120,46 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 	}
 }
 
-type clv byte
+type bindable byte
 
 const (
-	clvNone clv = iota
-	clvConst
-	clvLet
-	clvVar
-	clvClass
-	clvFunction
+	bindableNone bindable = iota
+	bindableConst
+	bindableLet
+	bindableVar
+	bindableClass
+	bindableFunction
 )
 
-func sliCLV(sli *javascript.StatementListItem) clv {
+func sliBindable(sli *javascript.StatementListItem) bindable {
 	if sli != nil {
 		if sli.Declaration != nil {
 			if sli.Declaration.LexicalDeclaration != nil {
 				if sli.Declaration.LexicalDeclaration.LetOrConst == javascript.Const {
-					return clvConst
+					return bindableConst
 				}
-				return clvLet
+				return bindableLet
 			} else if sli.Declaration.ClassDeclaration != nil {
-				return clvClass
+				return bindableClass
 			} else if sli.Declaration.FunctionDeclaration != nil {
-				return clvFunction
+				return bindableFunction
 			}
 		}
 		if sli.Statement != nil && sli.Statement.VariableStatement != nil {
-			return clvVar
+			return bindableVar
 		}
 	}
-	return clvNone
+	return bindableNone
 }
 
 func removeDeadSLI(sli *javascript.StatementListItem) bool {
-	switch sliCLV(sli) {
-	case clvConst, clvLet:
+	switch sliBindable(sli) {
+	case bindableConst, bindableLet:
 		lb := sli.Declaration.LexicalDeclaration.BindingList[0]
 		if lb.BindingIdentifier != nil {
 			return lb.BindingIdentifier.Data == ""
 		}
-	case clvVar:
+	case bindableVar:
 		vd := sli.Statement.VariableStatement.VariableDeclarationList[0]
 		if vd.BindingIdentifier != nil {
 			return vd.BindingIdentifier.Data == ""
