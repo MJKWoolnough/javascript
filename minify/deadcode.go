@@ -41,127 +41,83 @@ func clearSinglesFromScope(s *scope.Scope) bool {
 func deadWalker(t javascript.Type) error {
 	switch t := t.(type) {
 	case *javascript.Module:
-		for i := 0; i < len(t.ModuleListItems); i++ {
-			switch sliCLV(t.ModuleListItems[i].StatementListItem) {
-			case clvConst, clvLet:
-				bl := t.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
-				ls := make([]javascript.ModuleItem, len(bl), len(t.ModuleListItems)-i)
-				for n := range ls {
-					ls[n] = javascript.ModuleItem{
-						StatementListItem: &javascript.StatementListItem{
-							Declaration: &javascript.Declaration{
-								LexicalDeclaration: &javascript.LexicalDeclaration{
-									LetOrConst:  t.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.LetOrConst,
-									BindingList: bl[n : n+1],
-								},
-							},
-						},
-					}
-				}
-				t.ModuleListItems = append(t.ModuleListItems[:i], append(ls, t.ModuleListItems[i+1:]...)...)
-				i += len(bl)
-			case clvVar:
-				dl := t.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
-				ls := make([]javascript.ModuleItem, len(dl), len(t.ModuleListItems)-i)
-				for n := range ls {
-					ls[n] = javascript.ModuleItem{
-						StatementListItem: &javascript.StatementListItem{
-							Statement: &javascript.Statement{
-								VariableStatement: &javascript.VariableStatement{
-									VariableDeclarationList: dl[n : n+1],
-								},
-							},
-						},
-					}
-				}
-				t.ModuleListItems = append(t.ModuleListItems[:i], append(ls, t.ModuleListItems[i+1:]...)...)
-				i += len(dl)
-			}
-		}
-		for i := 0; i < len(t.ModuleListItems); i++ {
-			if removeDeadSLI(t.ModuleListItems[i].StatementListItem) {
-				t.ModuleListItems = append(t.ModuleListItems[:i], t.ModuleListItems[i+1:]...)
-				i--
-			}
-		}
-		last := clvNone
-		for i := 0; i < len(t.ModuleListItems); i++ {
-			next := sliCLV(t.ModuleListItems[i].StatementListItem)
-			if last == next {
-				switch next {
-				case clvConst, clvLet:
-					ld := t.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
-					ld.BindingList = append(ld.BindingList, t.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList[0])
-				case clvVar:
-					vd := t.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
-					vd.VariableDeclarationList = append(vd.VariableDeclarationList, t.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0])
-				}
-				t.ModuleListItems = append(t.ModuleListItems[:i], t.ModuleListItems[i+1:]...)
-				i--
-			}
-			last = next
-		}
+		removeDeadCodeFromModule(t)
 	case *javascript.Block:
-		for i := 0; i < len(t.StatementList); i++ {
-			switch sliCLV(&t.StatementList[i]) {
-			case clvConst, clvLet:
-				bl := t.StatementList[i].Declaration.LexicalDeclaration.BindingList
-				ls := make([]javascript.StatementListItem, len(bl), len(t.StatementList)-i)
-				for n := range ls {
-					ls[n] = javascript.StatementListItem{
-						Declaration: &javascript.Declaration{
-							LexicalDeclaration: &javascript.LexicalDeclaration{
-								LetOrConst:  t.StatementList[i].Declaration.LexicalDeclaration.LetOrConst,
-								BindingList: bl[n : n+1],
-							},
-						},
-					}
-				}
-				t.StatementList = append(t.StatementList[:i], append(ls, t.StatementList[i+1:]...)...)
-				i += len(bl)
-			case clvVar:
-				dl := t.StatementList[i].Statement.VariableStatement.VariableDeclarationList
-				ls := make([]javascript.StatementListItem, len(dl), len(t.StatementList)-i)
-				for n := range ls {
-					ls[n] = javascript.StatementListItem{
-						Statement: &javascript.Statement{
-							VariableStatement: &javascript.VariableStatement{
-								VariableDeclarationList: dl[n : n+1],
-							},
-						},
-					}
-				}
-				t.StatementList = append(t.StatementList[:i], append(ls, t.StatementList[i+1:]...)...)
-				i += len(dl)
-			}
-		}
-		for i := 0; i < len(t.StatementList); i++ {
-			if removeDeadSLI(&t.StatementList[i]) {
-				t.StatementList = append(t.StatementList[:i], t.StatementList[i+1:]...)
-				i--
-			}
-		}
-		last := clvNone
-		for i := 0; i < len(t.StatementList); i++ {
-			next := sliCLV(&t.StatementList[i])
-			if last == next {
-				switch next {
-				case clvConst, clvLet:
-					ld := t.StatementList[i-1].Declaration.LexicalDeclaration
-					ld.BindingList = append(ld.BindingList, t.StatementList[i].Declaration.LexicalDeclaration.BindingList[0])
-				case clvVar:
-					vd := t.StatementList[i-1].Statement.VariableStatement
-					vd.VariableDeclarationList = append(vd.VariableDeclarationList, t.StatementList[i].Statement.VariableStatement.VariableDeclarationList[0])
-				}
-				t.StatementList = append(t.StatementList[:i], t.StatementList[i+1:]...)
-				i--
-			}
-			last = next
+		m := javascript.ScriptToModule(&javascript.Script{
+			StatementList: t.StatementList,
+		})
+		removeDeadCodeFromModule(m)
+		t.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
+		for n, sli := range m.ModuleListItems {
+			t.StatementList[n] = *sli.StatementListItem
 		}
 	default:
 		deadWalker(t)
 	}
 	return nil
+}
+
+func removeDeadCodeFromModule(m *javascript.Module) {
+	for i := 0; i < len(m.ModuleListItems); i++ {
+		switch sliCLV(m.ModuleListItems[i].StatementListItem) {
+		case clvConst, clvLet:
+			bl := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
+			ls := make([]javascript.ModuleItem, len(bl), len(m.ModuleListItems)-i)
+			for n := range ls {
+				ls[n] = javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst:  m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.LetOrConst,
+								BindingList: bl[n : n+1],
+							},
+						},
+					},
+				}
+			}
+			m.ModuleListItems = append(m.ModuleListItems[:i], append(ls, m.ModuleListItems[i+1:]...)...)
+			i += len(bl)
+		case clvVar:
+			dl := m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
+			ls := make([]javascript.ModuleItem, len(dl), len(m.ModuleListItems)-i)
+			for n := range ls {
+				ls[n] = javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: dl[n : n+1],
+							},
+						},
+					},
+				}
+			}
+			m.ModuleListItems = append(m.ModuleListItems[:i], append(ls, m.ModuleListItems[i+1:]...)...)
+			i += len(dl)
+		}
+	}
+	for i := 0; i < len(m.ModuleListItems); i++ {
+		if removeDeadSLI(m.ModuleListItems[i].StatementListItem) {
+			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
+			i--
+		}
+	}
+	last := clvNone
+	for i := 0; i < len(m.ModuleListItems); i++ {
+		next := sliCLV(m.ModuleListItems[i].StatementListItem)
+		if last == next {
+			switch next {
+			case clvConst, clvLet:
+				ld := m.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
+				ld.BindingList = append(ld.BindingList, m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList[0])
+			case clvVar:
+				vd := m.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
+				vd.VariableDeclarationList = append(vd.VariableDeclarationList, m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0])
+			}
+			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
+			i--
+		}
+		last = next
+	}
 }
 
 type clv byte
