@@ -127,15 +127,23 @@ const (
 	clvConst
 	clvLet
 	clvVar
+	clvClass
+	clvFunction
 )
 
 func sliCLV(sli *javascript.StatementListItem) clv {
 	if sli != nil {
-		if sli.Declaration != nil && sli.Declaration.LexicalDeclaration != nil {
-			if sli.Declaration.LexicalDeclaration.LetOrConst == javascript.Const {
-				return clvConst
+		if sli.Declaration != nil {
+			if sli.Declaration.LexicalDeclaration != nil {
+				if sli.Declaration.LexicalDeclaration.LetOrConst == javascript.Const {
+					return clvConst
+				}
+				return clvLet
+			} else if sli.Declaration.ClassDeclaration != nil {
+				return clvClass
+			} else if sli.Declaration.FunctionDeclaration != nil {
+				return clvFunction
 			}
-			return clvLet
 		}
 		if sli.Statement != nil && sli.Statement.VariableStatement != nil {
 			return clvVar
