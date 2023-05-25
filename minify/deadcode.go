@@ -158,6 +158,8 @@ func deadWalker(t javascript.Type) error {
 			}
 			last = next
 		}
+	default:
+		deadWalker(t)
 	}
 	return nil
 }
