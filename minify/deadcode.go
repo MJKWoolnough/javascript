@@ -145,8 +145,17 @@ func sliCLV(sli *javascript.StatementListItem) clv {
 }
 
 func removeDeadSLI(sli *javascript.StatementListItem) bool {
-	if sli == nil {
-		return false
+	switch sliCLV(sli) {
+	case clvConst, clvLet:
+		lb := sli.Declaration.LexicalDeclaration.BindingList[0]
+		if lb.BindingIdentifier != nil {
+			return lb.BindingIdentifier.Data == ""
+		}
+	case clvVar:
+		vd := sli.Statement.VariableStatement.VariableDeclarationList[0]
+		if vd.BindingIdentifier != nil {
+			return vd.BindingIdentifier.Data == ""
+		}
 	}
 
 	return false
