@@ -43,7 +43,7 @@ func deadWalker(t javascript.Type) error {
 	case *javascript.Module:
 		for i := 0; i < len(t.ModuleListItems); i++ {
 			switch sliCLV(t.ModuleListItems[i].StatementListItem) {
-			case clvLexical:
+			case clvConst, clvLet:
 				bl := t.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
 				ls := make([]javascript.ModuleItem, len(bl), len(t.ModuleListItems)-i)
 				for n := range ls {
@@ -92,14 +92,18 @@ type clv byte
 
 const (
 	clvNone clv = iota
-	clvLexical
+	clvConst
+	clvLet
 	clvVar
 )
 
 func sliCLV(sli *javascript.StatementListItem) clv {
 	if sli != nil {
 		if sli.Declaration != nil && sli.Declaration.LexicalDeclaration != nil {
-			return clvLexical
+			if sli.Declaration.LexicalDeclaration.LetOrConst == javascript.Const {
+				return clvConst
+			}
+			return clvLet
 		}
 		if sli.Statement != nil && sli.Statement.VariableStatement != nil {
 			return clvVar
