@@ -164,6 +164,10 @@ func removeDeadSLI(sli *javascript.StatementListItem) bool {
 		if vd.BindingIdentifier != nil {
 			return vd.BindingIdentifier.Data == ""
 		}
+	case bindableClass:
+		return sli.Declaration.ClassDeclaration.BindingIdentifier == nil || sli.Declaration.ClassDeclaration.BindingIdentifier.Data == ""
+	case bindableFunction:
+		return sli.Declaration.FunctionDeclaration.BindingIdentifier == nil || sli.Declaration.FunctionDeclaration.BindingIdentifier.Data == ""
 	}
 
 	return false
