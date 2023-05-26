@@ -92,6 +92,20 @@ func (m *Minifier) Process(jm *javascript.Module) {
 	}
 }
 
+func blockAsModule(b *javascript.Block, fn func(*javascript.Module)) {
+	if len(b.StatementList) == 0 {
+		return
+	}
+	m := javascript.ScriptToModule(&javascript.Script{
+		StatementList: b.StatementList,
+	})
+	fn(m)
+	b.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
+	for n, mi := range m.ModuleListItems {
+		b.StatementList[n] = *mi.StatementListItem
+	}
+}
+
 func minifyTemplate(t *javascript.Token) {
 	if t != nil {
 		str, err := javascript.UnquoteTemplate(t.Data)
