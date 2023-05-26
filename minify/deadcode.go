@@ -43,14 +43,7 @@ func deadWalker(t javascript.Type) error {
 	case *javascript.Module:
 		removeDeadCodeFromModule(t)
 	case *javascript.Block:
-		m := javascript.ScriptToModule(&javascript.Script{
-			StatementList: t.StatementList,
-		})
-		removeDeadCodeFromModule(m)
-		t.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
-		for n, sli := range m.ModuleListItems {
-			t.StatementList[n] = *sli.StatementListItem
-		}
+		blockAsModule(t, removeDeadCodeFromModule)
 	default:
 		deadWalker(t)
 	}
