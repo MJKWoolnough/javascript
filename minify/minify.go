@@ -710,15 +710,6 @@ func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpress
 	}
 }
 
-func (m *Minifier) minifyEmptyStatementInBlock(b *javascript.Block) {
-	for i := 0; i < len(b.StatementList); i++ {
-		if isEmptyStatement(b.StatementList[i].Statement) {
-			b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
-			i--
-		}
-	}
-}
-
 func (m *Minifier) minifyEmptyStatementInModule(jm *javascript.Module) {
 	for i := 0; i < len(jm.ModuleListItems); i++ {
 		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
@@ -746,23 +737,6 @@ func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) 
 func (m *Minifier) minifyLastReturnStatementInArrowFn(af *javascript.ArrowFunction) {
 	if m.Has(RemoveLastEmptyReturn) && af.FunctionBody != nil {
 		removeLastReturnStatement(af.FunctionBody)
-	}
-}
-
-func (m *Minifier) minifyExpressionRunInBlock(b *javascript.Block) {
-	if m.Has(CombineExpressionRuns) && len(b.StatementList) > 1 {
-		lastWasExpression := isStatementExpression(b.StatementList[0].Statement)
-		for i := 1; i < len(b.StatementList); i++ {
-			isExpression := isStatementExpression(b.StatementList[i].Statement)
-			if isExpression && lastWasExpression {
-				e := b.StatementList[i-1].Statement.ExpressionStatement
-				e.Expressions = append(e.Expressions, b.StatementList[i].Statement.ExpressionStatement.Expressions...)
-				b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
-				i--
-			} else {
-				lastWasExpression = isExpression
-			}
-		}
 	}
 }
 
@@ -906,16 +880,6 @@ func fixWrapping(s *javascript.Statement) {
 				Expressions: []javascript.AssignmentExpression{*ae},
 				Tokens:      ae.Tokens,
 			})
-		}
-	}
-}
-
-func (m *Minifier) fixFirstExpressionInBlock(b *javascript.Block) {
-	if m.Has(UnwrapParens) {
-		for n := range b.StatementList {
-			if isStatementListItemExpression(&b.StatementList[n]) {
-				fixWrapping(b.StatementList[n].Statement)
-			}
 		}
 	}
 }
