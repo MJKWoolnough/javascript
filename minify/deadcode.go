@@ -44,6 +44,8 @@ func deadWalker(t javascript.Type) error {
 		removeDeadCodeFromModule(t)
 	case *javascript.Block:
 		blockAsModule(t, removeDeadCodeFromModule)
+	case *javascript.Expression:
+		expressionsAsModule(t, removeDeadCodeFromModule)
 	default:
 		deadWalker(t)
 	}
