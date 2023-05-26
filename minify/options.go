@@ -16,8 +16,9 @@ const (
 	RemoveLastEmptyReturn
 	CombineExpressionRuns
 	RemoveDeadCode
+	MergeLexical
 
-	Safe = Literals | ArrowFn | IfToConditional | RemoveDebugger | RenameIdentifiers | BlocksToStatement | Keys | RemoveExpressionNames | FunctionExpressionToArrowFunc | UnwrapParens | RemoveLastEmptyReturn | CombineExpressionRuns | RemoveDeadCode
+	Safe = Literals | ArrowFn | IfToConditional | RemoveDebugger | RenameIdentifiers | BlocksToStatement | Keys | RemoveExpressionNames | FunctionExpressionToArrowFunc | UnwrapParens | RemoveLastEmptyReturn | CombineExpressionRuns | RemoveDeadCode | MergeLexical
 )
 
 func (o Option) Has(opt Option) bool {
