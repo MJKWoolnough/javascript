@@ -65,13 +65,13 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLHSExpressionParens(t)
 	case *javascript.Block:
 		w.minifyRemoveDeadCode(t)
-		blockAsModule(t, w.minifyEmptyStatementInModule)
-		blockAsModule(t, w.minifyExpressionRunInModule)
-		blockAsModule(t, w.fixFirstExpressionInModule)
+		blockAsModule(t, w.minifyEmptyStatement)
+		blockAsModule(t, w.minifyExpressionRun)
+		blockAsModule(t, w.ixFirstExpression)
 	case *javascript.Module:
-		w.minifyEmptyStatementInModule(t)
-		w.minifyExpressionRunInModule(t)
-		w.fixFirstExpressionInModule(t)
+		w.minifyEmptyStatement(t)
+		w.minifyExpressionRun(t)
+		w.ixFirstExpression(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
@@ -710,7 +710,7 @@ func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpress
 	}
 }
 
-func (m *Minifier) minifyEmptyStatementInModule(jm *javascript.Module) {
+func (m *Minifier) minifyEmptyStatement(jm *javascript.Module) {
 	for i := 0; i < len(jm.ModuleListItems); i++ {
 		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
 			jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
@@ -744,7 +744,7 @@ func isStatementListItemExpression(s *javascript.StatementListItem) bool {
 	return s != nil && isStatementExpression(s.Statement)
 }
 
-func (m *Minifier) minifyExpressionRunInModule(jm *javascript.Module) {
+func (m *Minifier) minifyExpressionRun(jm *javascript.Module) {
 	if m.Has(CombineExpressionRuns) && len(jm.ModuleListItems) > 1 {
 		lastWasExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
 		for i := 1; i < len(jm.ModuleListItems); i++ {
@@ -884,7 +884,7 @@ func fixWrapping(s *javascript.Statement) {
 	}
 }
 
-func (m *Minifier) fixFirstExpressionInModule(jm *javascript.Module) {
+func (m *Minifier) ixFirstExpression(jm *javascript.Module) {
 	if m.Has(UnwrapParens) {
 		for n := range jm.ModuleListItems {
 			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
