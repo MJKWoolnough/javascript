@@ -67,11 +67,11 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyRemoveDeadCode(t)
 		blockAsModule(t, w.minifyEmptyStatement)
 		blockAsModule(t, w.minifyExpressionRun)
-		blockAsModule(t, w.ixFirstExpression)
+		blockAsModule(t, w.fixFirstExpression)
 	case *javascript.Module:
 		w.minifyEmptyStatement(t)
 		w.minifyExpressionRun(t)
-		w.ixFirstExpression(t)
+		w.fixFirstExpression(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
@@ -884,7 +884,7 @@ func fixWrapping(s *javascript.Statement) {
 	}
 }
 
-func (m *Minifier) ixFirstExpression(jm *javascript.Module) {
+func (m *Minifier) fixFirstExpression(jm *javascript.Module) {
 	if m.Has(UnwrapParens) {
 		for n := range jm.ModuleListItems {
 			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
