@@ -72,6 +72,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyEmptyStatement(t)
 		w.minifyExpressionRun(t)
 		w.fixFirstExpression(t)
+		w.minifyLexical(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
@@ -920,6 +921,30 @@ func (m *Minifier) minifyRemoveDeadCode(b *javascript.Block) {
 					i--
 				}
 			}
+		}
+	}
+}
+
+func (m *Minifier) minifyLexical(jm *javascript.Module) {
+	if m.Has(MergeLexical) {
+		last := bindableNone
+		for i := 0; i < len(jm.ModuleListItems); i++ {
+			next := sliBindable(jm.ModuleListItems[i].StatementListItem)
+			if last == next {
+				switch next {
+				case bindableConst, bindableLet:
+					ld := jm.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
+					ld.BindingList = append(ld.BindingList, jm.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList...)
+					jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
+					i--
+				case bindableVar:
+					vs := jm.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
+					vs.VariableDeclarationList = append(vs.VariableDeclarationList, jm.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList...)
+					jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
+					i--
+				}
+			}
+			last = next
 		}
 	}
 }
