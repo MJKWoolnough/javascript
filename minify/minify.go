@@ -65,9 +65,9 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyLHSExpressionParens(t)
 	case *javascript.Block:
 		w.minifyRemoveDeadCode(t)
-		w.minifyEmptyStatementInBlock(t)
-		w.minifyExpressionRunInBlock(t)
-		w.fixFirstExpressionInBlock(t)
+		blockAsModule(t, w.minifyEmptyStatementInModule)
+		blockAsModule(t, w.minifyExpressionRunInModule)
+		blockAsModule(t, w.fixFirstExpressionInModule)
 	case *javascript.Module:
 		w.minifyEmptyStatementInModule(t)
 		w.minifyExpressionRunInModule(t)
