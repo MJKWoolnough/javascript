@@ -52,31 +52,6 @@ func deadWalker(t javascript.Type) error {
 	return nil
 }
 
-func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module)) {
-	if len(e.Expressions) == 0 {
-		return
-	}
-	m := &javascript.Module{
-		ModuleListItems: make([]javascript.ModuleItem, len(e.Expressions)),
-	}
-	for n := range e.Expressions {
-		m.ModuleListItems[n] = javascript.ModuleItem{
-			StatementListItem: &javascript.StatementListItem{
-				Statement: &javascript.Statement{
-					ExpressionStatement: &javascript.Expression{
-						Expressions: e.Expressions[n : n+1],
-					},
-				},
-			},
-		}
-	}
-	fn(m)
-	e.Expressions = make([]javascript.AssignmentExpression, len(m.ModuleListItems))
-	for n := range m.ModuleListItems {
-		e.Expressions[n] = m.ModuleListItems[n].StatementListItem.Statement.ExpressionStatement.Expressions[0]
-	}
-}
-
 func removeDeadCodeFromModule(m *javascript.Module) {
 	for i := 0; i < len(m.ModuleListItems); i++ {
 		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
