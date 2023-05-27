@@ -78,7 +78,7 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 }
 
 func isSLIExpression(s *javascript.StatementListItem) bool {
-	return s.Declaration == nil && isStatementExpression(s.Statement)
+	return s != nil && s.Declaration == nil && isStatementExpression(s.Statement)
 }
 
 func isStatementExpression(s *javascript.Statement) bool {
