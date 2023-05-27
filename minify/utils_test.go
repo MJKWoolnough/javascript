@@ -192,3 +192,44 @@ func TestIsReturnStatement(t *testing.T) {
 		}
 	}
 }
+
+func TestIsNonEmptyReturnStatement(t *testing.T) {
+	for n, test := range [...]struct {
+		Input    *javascript.Statement
+		IsReturn bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.Statement{},
+			false,
+		},
+		{ // 3
+			&javascript.Statement{
+				Type: javascript.StatementReturn,
+			},
+			false,
+		},
+		{ // 4
+			&javascript.Statement{
+				Type: javascript.StatementReturn,
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							}),
+						},
+					},
+				},
+			},
+			true,
+		},
+	} {
+		if isNonEmptyReturnStatement(test.Input) != test.IsReturn {
+			t.Errorf("test %d: expecting return %v, got %v", n+1, test.IsReturn, !test.IsReturn)
+		}
+	}
+}
