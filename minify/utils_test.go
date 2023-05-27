@@ -373,3 +373,35 @@ func TestIsSLIExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestIsEmptyStatement(t *testing.T) {
+	for n, test := range [...]struct {
+		Input            *javascript.Statement
+		IsEmptyStatement bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.Statement{},
+			true,
+		},
+		{ // 3
+			&javascript.Statement{
+				Type: javascript.StatementContinue,
+			},
+			false,
+		},
+		{ // 4
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{},
+			},
+			false,
+		},
+	} {
+		if isEmptyStatement(test.Input) != test.IsEmptyStatement {
+			t.Errorf("test %d: expecting return %v, got %v", n+1, test.IsEmptyStatement, !test.IsEmptyStatement)
+		}
+	}
+}
