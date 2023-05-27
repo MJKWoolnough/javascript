@@ -74,3 +74,80 @@ func TestBlockAsModule(t *testing.T) {
 		}
 	}
 }
+
+func TestExpressionsAsModule(t *testing.T) {
+	for n, test := range [...]struct {
+		Input    *javascript.Expression
+		Callback func(*javascript.Module)
+		Output   *javascript.Expression
+	}{
+		{ // 1
+			&javascript.Expression{},
+			func(m *javascript.Module) {
+			},
+			&javascript.Expression{},
+		},
+		{ // 2
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "d"),
+						}),
+					},
+				},
+			},
+			func(m *javascript.Module) {
+				for i := 0; i < len(m.ModuleListItems); i++ {
+					if javascript.UnwrapConditional(m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference.Data == "b" {
+						m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
+					}
+				}
+			},
+			&javascript.Expression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "c"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "d"),
+						}),
+					},
+				},
+			},
+		},
+	} {
+		expressionsAsModule(test.Input, test.Callback)
+		if !reflect.DeepEqual(test.Input, test.Output) {
+			t.Errorf("test %d: expecting output %v, got %v", n+1, test.Output, test.Input)
+		}
+	}
+}
