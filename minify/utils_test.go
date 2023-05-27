@@ -294,3 +294,82 @@ func TestIsStatementExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestIsSLIExpression(t *testing.T) {
+	for n, test := range [...]struct {
+		Input           *javascript.StatementListItem
+		IsSLIExpression bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.StatementListItem{},
+			false,
+		},
+		{ // 3
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 3
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 4
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementReturn,
+					ExpressionStatement: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{ // 5
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					ExpressionStatement: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			true,
+		},
+		{ // 5
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{
+					FunctionDeclaration: &javascript.FunctionDeclaration{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					},
+				},
+			},
+			false,
+		},
+	} {
+		if isSLIExpression(test.Input) != test.IsSLIExpression {
+			t.Errorf("test %d: expecting return %v, got %v", n+1, test.IsSLIExpression, !test.IsSLIExpression)
+		}
+	}
+}
