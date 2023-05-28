@@ -1003,3 +1003,87 @@ func TestAEAsParen(t *testing.T) {
 		}
 	}
 }
+
+func TestMEIsSinglePE(t *testing.T) {
+	for n, test := range [...]struct {
+		MemberExpression *javascript.MemberExpression
+		IsSinglePE       bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.MemberExpression{},
+			false,
+		},
+		{ // 3
+			&javascript.MemberExpression{
+				PrimaryExpression: &javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+				},
+			},
+			false,
+		},
+		{ // 4
+			&javascript.MemberExpression{
+				PrimaryExpression: &javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			true,
+		},
+		{ // 5
+			&javascript.MemberExpression{
+				PrimaryExpression: &javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{ // 6
+			&javascript.MemberExpression{
+				MemberExpression: &javascript.MemberExpression{
+					PrimaryExpression: &javascript.PrimaryExpression{
+						ParenthesizedExpression: &javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+									}),
+								},
+							},
+						},
+					},
+				},
+				IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
+			},
+			false,
+		},
+	} {
+		if isPE := meIsSinglePe(test.MemberExpression); isPE != test.IsSinglePE {
+			t.Errorf("test %d: expecting meIsSinglePe to return %v, got %v", n+1, test.IsSinglePE, !test.IsSinglePE)
+		}
+	}
+}
