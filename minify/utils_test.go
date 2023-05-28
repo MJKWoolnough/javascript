@@ -1193,3 +1193,78 @@ func TestMEAsCE(t *testing.T) {
 		}
 	}
 }
+
+func TestIsStatementListItemExpression(t *testing.T) {
+	for n, test := range [...]struct {
+		StatementListItem             *javascript.StatementListItem
+		IsStatementListItemExpression bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.StatementListItem{},
+			false,
+		},
+		{ // 2
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{},
+			},
+			false,
+		},
+		{ // 3
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 3
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 4
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementReturn,
+					ExpressionStatement: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{ // 5
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					ExpressionStatement: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				},
+			},
+			true,
+		},
+	} {
+		if isStatementListItemExpression(test.StatementListItem) != test.IsStatementListItemExpression {
+			t.Errorf("test %d: expecting return %v, got %v", n+1, test.IsStatementListItemExpression, !test.IsStatementListItemExpression)
+		}
+	}
+}
