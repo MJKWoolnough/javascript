@@ -97,12 +97,14 @@ func aeIsCE(ae *javascript.AssignmentExpression) bool {
 	return ae != nil && ae.ConditionalExpression != nil && ae.AssignmentOperator == javascript.AssignmentNone && !ae.Yield
 }
 
-func aeAsParen(ae *javascript.AssignmentExpression) (*javascript.ParenthesizedExpression, bool) {
+func aeAsParen(ae *javascript.AssignmentExpression) *javascript.ParenthesizedExpression {
 	if aeIsCE(ae) {
 		pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression)
-		return pe, ok
+		if ok {
+			return pe
+		}
 	}
-	return nil, false
+	return nil
 }
 
 func meIsSinglePe(me *javascript.MemberExpression) bool {
