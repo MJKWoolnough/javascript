@@ -115,7 +115,7 @@ func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
 	var ce *javascript.CallExpression
 	if meIsSinglePe(me) {
 		ce, _ = javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(*javascript.CallExpression)
-	} else if me.MemberExpression != nil && me.Arguments == nil {
+	} else if me != nil && me.MemberExpression != nil && me.Arguments == nil {
 		ce = meAsCE(me.MemberExpression)
 		if ce != nil {
 			ce = &javascript.CallExpression{
