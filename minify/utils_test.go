@@ -1087,3 +1087,109 @@ func TestMEIsSinglePE(t *testing.T) {
 		}
 	}
 }
+
+func TestMEAsCE(t *testing.T) {
+	for n, test := range [...]struct {
+		MemberExpression *javascript.MemberExpression
+		CallExpression   *javascript.CallExpression
+	}{
+		{ // 1
+			nil,
+			nil,
+		},
+		{ // 2
+			&javascript.MemberExpression{},
+			nil,
+		},
+		{ // 3
+			&javascript.MemberExpression{
+				PrimaryExpression: &javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+									MemberExpression: &javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+										},
+									},
+									Arguments: &javascript.Arguments{},
+								}),
+							},
+						},
+					},
+				},
+			},
+			&javascript.CallExpression{
+				MemberExpression: &javascript.MemberExpression{
+					PrimaryExpression: &javascript.PrimaryExpression{
+						IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+					},
+				},
+				Arguments: &javascript.Arguments{},
+			},
+		},
+		{ // 4
+			&javascript.MemberExpression{
+				MemberExpression: &javascript.MemberExpression{
+					PrimaryExpression: &javascript.PrimaryExpression{
+						ParenthesizedExpression: &javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+										MemberExpression: &javascript.MemberExpression{
+											PrimaryExpression: &javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											},
+										},
+										Arguments: &javascript.Arguments{},
+									}),
+								},
+							},
+						},
+					},
+				},
+				Arguments: &javascript.Arguments{},
+			},
+			nil,
+		},
+		{ // 5
+			&javascript.MemberExpression{
+				MemberExpression: &javascript.MemberExpression{
+					PrimaryExpression: &javascript.PrimaryExpression{
+						ParenthesizedExpression: &javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+										MemberExpression: &javascript.MemberExpression{
+											PrimaryExpression: &javascript.PrimaryExpression{
+												IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+											},
+										},
+										Arguments: &javascript.Arguments{},
+									}),
+								},
+							},
+						},
+					},
+				},
+				IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
+			},
+			&javascript.CallExpression{
+				CallExpression: &javascript.CallExpression{
+					MemberExpression: &javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						},
+					},
+					Arguments: &javascript.Arguments{},
+				},
+				IdentifierName: makeToken(javascript.TokenIdentifier, "b"),
+			},
+		},
+	} {
+		if ce := meAsCE(test.MemberExpression); !reflect.DeepEqual(ce, test.CallExpression) {
+			t.Errorf("test %d: expecting %v, got %v", n+1, test.MemberExpression, ce)
+		}
+	}
+}
