@@ -887,3 +887,119 @@ func TestAEIsCE(t *testing.T) {
 		}
 	}
 }
+
+func TestAEAsParen(t *testing.T) {
+	for n, test := range [...]struct {
+		AssignmentExpression    *javascript.AssignmentExpression
+		ParenthesizedExpression *javascript.ParenthesizedExpression
+	}{
+		{ // 1
+			nil,
+			nil,
+		},
+		{ // 2
+			&javascript.AssignmentExpression{},
+			nil,
+		},
+		{ // 3
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+				}),
+			},
+			nil,
+		},
+		{ // 4
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+						},
+					},
+				}),
+			},
+			&javascript.ParenthesizedExpression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						}),
+					},
+				},
+			},
+		},
+		{ // 5
+			&javascript.AssignmentExpression{
+				AssignmentOperator: javascript.AssignmentAdd,
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						ParenthesizedExpression: &javascript.ParenthesizedExpression{
+							Expressions: []javascript.AssignmentExpression{
+								{
+									ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+										IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+									}),
+								},
+							},
+						},
+					}),
+				},
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}),
+							},
+						},
+					},
+				}),
+			},
+			nil,
+		},
+		{ // 6
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					ParenthesizedExpression: &javascript.ParenthesizedExpression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+								}),
+							},
+							{
+								ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+									IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+								}),
+							},
+						},
+					},
+				}),
+			},
+			&javascript.ParenthesizedExpression{
+				Expressions: []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						}),
+					},
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+						}),
+					},
+				},
+			},
+		},
+	} {
+		if pe := aeAsParen(test.AssignmentExpression); !reflect.DeepEqual(pe, test.ParenthesizedExpression) {
+			t.Errorf("test %d: expecting %v, got %v", n+1, test.ParenthesizedExpression, pe)
+		}
+	}
+}
