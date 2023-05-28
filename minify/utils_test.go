@@ -845,3 +845,45 @@ func TestStatementsListItemsAsExpressionsAndReturn(t *testing.T) {
 		}
 	}
 }
+
+func TestAEIsCE(t *testing.T) {
+	for n, test := range [...]struct {
+		AssignmentExpression    *javascript.AssignmentExpression
+		IsConditionalExpression bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.AssignmentExpression{},
+			false,
+		},
+		{ // 3
+			&javascript.AssignmentExpression{
+				AssignmentOperator: javascript.AssignmentAdd,
+				AssignmentExpression: &javascript.AssignmentExpression{
+					ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+						IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+					}),
+				},
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+				}),
+			},
+			false,
+		},
+		{ // 4
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+				}),
+			},
+			true,
+		},
+	} {
+		if aeIsCE(test.AssignmentExpression) != test.IsConditionalExpression {
+			t.Errorf("test %d: expecting aeIsCE toreturn %v, got %v", n+1, test.IsConditionalExpression, !test.IsConditionalExpression)
+		}
+	}
+}
