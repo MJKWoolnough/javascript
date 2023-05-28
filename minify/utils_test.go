@@ -405,3 +405,82 @@ func TestIsEmptyStatement(t *testing.T) {
 		}
 	}
 }
+
+func TestIsHoistable(t *testing.T) {
+	for n, test := range [...]struct {
+		Input       *javascript.StatementListItem
+		IsHoistable bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.StatementListItem{},
+			false,
+		},
+		{ // 3
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{},
+			},
+			false,
+		},
+		{ // 4
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					VariableStatement: &javascript.VariableStatement{},
+				},
+			},
+			true,
+		},
+		{ // 5
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					LabelIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					LabelledItemFunction: &javascript.FunctionDeclaration{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+					},
+				},
+			},
+			true,
+		},
+		{ // 6
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{},
+			},
+			false,
+		},
+		{ // 7
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{
+					LexicalDeclaration: &javascript.LexicalDeclaration{},
+				},
+			},
+			false,
+		},
+		{ // 8
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{
+					FunctionDeclaration: &javascript.FunctionDeclaration{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					},
+				},
+			},
+			true,
+		},
+		{ // 9
+			&javascript.StatementListItem{
+				Declaration: &javascript.Declaration{
+					ClassDeclaration: &javascript.ClassDeclaration{
+						BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+					},
+				},
+			},
+			true,
+		},
+	} {
+		if isHoistable(test.Input) != test.IsHoistable {
+			t.Errorf("test %d: expecting return %v, got %v", n+1, test.IsHoistable, !test.IsHoistable)
+		}
+	}
+}
