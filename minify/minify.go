@@ -426,7 +426,7 @@ func (m *Minifier) minifyParenthsizedExpressionParens(pe *javascript.Parenthesiz
 
 func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascript.AssignmentExpression {
 	for i := 0; i < len(e); i++ {
-		if pe, ok := aeAsParen(&e[i]); ok {
+		if pe := aeAsParen(&e[i]); pe != nil {
 			add := make([]javascript.AssignmentExpression, 0, len(pe.Expressions)+len(e)-i-1)
 			add = append(add, pe.Expressions...)
 			add = append(add, e[i+1:]...)
@@ -439,7 +439,7 @@ func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascrip
 
 func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
 	if m.Has(UnwrapParens) {
-		if pe, ok := aeAsParen(&a.AssignmentExpression); ok && len(pe.Expressions) == 1 {
+		if pe := aeAsParen(&a.AssignmentExpression); pe != nil && len(pe.Expressions) == 1 {
 			a.AssignmentExpression = pe.Expressions[0]
 		}
 	}
@@ -447,7 +447,7 @@ func (m *Minifier) minifyArgumentParens(a *javascript.Argument) {
 
 func (m *Minifier) minifyAEParens(ae *javascript.AssignmentExpression) {
 	if m.Has(UnwrapParens) {
-		if pe, ok := aeAsParen(ae.AssignmentExpression); ok && len(pe.Expressions) == 1 {
+		if pe := aeAsParen(ae.AssignmentExpression); pe != nil && len(pe.Expressions) == 1 {
 			ae.AssignmentExpression = &pe.Expressions[0]
 		}
 	}
