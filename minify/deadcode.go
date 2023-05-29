@@ -56,62 +56,17 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 	for i := 0; i < len(m.ModuleListItems); i++ {
 		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
 		case bindableConst, bindableLet:
-			bl := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
-			ls := make([]javascript.ModuleItem, len(bl), len(m.ModuleListItems)-i)
-			for n := range ls {
-				ls[n] = javascript.ModuleItem{
-					StatementListItem: &javascript.StatementListItem{
-						Declaration: &javascript.Declaration{
-							LexicalDeclaration: &javascript.LexicalDeclaration{
-								LetOrConst:  m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.LetOrConst,
-								BindingList: bl[n : n+1],
-							},
-						},
-					},
-				}
-			}
-			m.ModuleListItems = append(m.ModuleListItems[:i], append(ls, m.ModuleListItems[i+1:]...)...)
-			i += len(bl)
 		case bindableVar:
-			dl := m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
-			ls := make([]javascript.ModuleItem, len(dl), len(m.ModuleListItems)-i)
-			for n := range ls {
-				ls[n] = javascript.ModuleItem{
-					StatementListItem: &javascript.StatementListItem{
-						Statement: &javascript.Statement{
-							VariableStatement: &javascript.VariableStatement{
-								VariableDeclarationList: dl[n : n+1],
-							},
-						},
-					},
-				}
+		case bindableBare:
+			expr := m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement
+			if pe, ok := javascript.UnwrapConditional(expr.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil && pe.IdentifierReference.Data == "" {
+				expr.Expressions[0] = *expr.Expressions[0].AssignmentExpression
 			}
-			m.ModuleListItems = append(m.ModuleListItems[:i], append(ls, m.ModuleListItems[i+1:]...)...)
-			i += len(dl)
-		}
-	}
-	for i := 0; i < len(m.ModuleListItems); i++ {
-		if removeDeadSLI(m.ModuleListItems[i].StatementListItem) {
+		case bindableFunction:
 			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
 			i--
+		case bindableClass:
 		}
-	}
-	last := bindableNone
-	for i := 0; i < len(m.ModuleListItems); i++ {
-		next := sliBindable(m.ModuleListItems[i].StatementListItem)
-		if last == next {
-			switch next {
-			case bindableConst, bindableLet:
-				ld := m.ModuleListItems[i-1].StatementListItem.Declaration.LexicalDeclaration
-				ld.BindingList = append(ld.BindingList, m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList[0])
-			case bindableVar:
-				vd := m.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
-				vd.VariableDeclarationList = append(vd.VariableDeclarationList, m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0])
-			}
-			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
-			i--
-		}
-		last = next
 	}
 }
 
