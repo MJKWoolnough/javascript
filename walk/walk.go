@@ -215,10 +215,6 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkBindingProperty(&t, fn)
 	case *javascript.BindingProperty:
 		return walkBindingProperty(t, fn)
-	case javascript.VariableDeclaration:
-		return walkVariableDeclaration(&t, fn)
-	case *javascript.VariableDeclaration:
-		return walkVariableDeclaration(t, fn)
 	case javascript.ArrayElement:
 		return walkArrayElement(&t, fn)
 	case *javascript.ArrayElement:
@@ -997,10 +993,6 @@ func walkBindingProperty(t *javascript.BindingProperty, fn Handler) error {
 		return err
 	}
 	return fn.Handle(&t.BindingElement)
-}
-
-func walkVariableDeclaration(t *javascript.VariableDeclaration, fn Handler) error {
-	return walkLexicalBinding((*javascript.LexicalBinding)(t), fn)
 }
 
 func walkArrayElement(t *javascript.ArrayElement, fn Handler) error {
