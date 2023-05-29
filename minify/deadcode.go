@@ -103,7 +103,47 @@ func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.Mo
 			},
 		})
 	}
-
+	for _, ce := range cd.ClassBody {
+		if ce.FieldDefinition != nil {
+			fd := ce.FieldDefinition
+			if fd.ClassElementName.PropertyName != nil && fd.ClassElementName.PropertyName.ComputedPropertyName != nil {
+				mis = append(mis, javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{*fd.ClassElementName.PropertyName.ComputedPropertyName},
+							},
+						},
+					},
+				})
+			}
+			if fd.Initializer != nil {
+				mis = append(mis, javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{*fd.Initializer},
+							},
+						},
+					},
+				})
+			}
+		} else if ce.MethodDefinition != nil {
+			md := ce.MethodDefinition
+			if md.ClassElementName.PropertyName != nil && md.ClassElementName.PropertyName.ComputedPropertyName != nil {
+				mis = append(mis, javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{*md.ClassElementName.PropertyName.ComputedPropertyName},
+							},
+						},
+					},
+				})
+			}
+		} else if ce.ClassStaticBlock != nil {
+		}
+	}
 	return nil
 }
 
