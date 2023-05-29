@@ -68,6 +68,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 			expr := m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement
 			if pe, ok := javascript.UnwrapConditional(expr.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil && pe.IdentifierReference.Data == "" {
 				expr.Expressions[0] = *expr.Expressions[0].AssignmentExpression
+				i--
 			}
 		case bindableFunction:
 			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
