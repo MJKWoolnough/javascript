@@ -2659,7 +2659,7 @@ func TestStatement(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err:     ErrNoIdentifier,
-						Parsing: "VariableDeclaration",
+						Parsing: "LexicalBinding",
 						Token:   tk[1],
 					},
 					Parsing: "VariableStatement",
@@ -3985,7 +3985,7 @@ func TestIterationStatementFor(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
-					Parsing: "VariableDeclaration",
+					Parsing: "LexicalBinding",
 					Token:   tk[5],
 				},
 				Parsing: "IterationStatementFor",
@@ -6622,7 +6622,7 @@ func TestVariableStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
-					Parsing: "VariableDeclaration",
+					Parsing: "LexicalBinding",
 					Token:   tk[1],
 				},
 				Parsing: "VariableStatement",
@@ -6644,7 +6644,7 @@ func TestVariableStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
-					Parsing: "VariableDeclaration",
+					Parsing: "LexicalBinding",
 					Token:   tk[5],
 				},
 				Parsing: "VariableStatement",

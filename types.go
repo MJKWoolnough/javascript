@@ -110,8 +110,6 @@ func (ObjectBindingPattern) javascriptType() {}
 
 func (BindingProperty) javascriptType() {}
 
-func (VariableDeclaration) javascriptType() {}
-
 func (ArrayElement) javascriptType() {}
 
 func (ArrayLiteral) javascriptType() {}

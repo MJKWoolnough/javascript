@@ -500,16 +500,7 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 
 // VariableDeclaration as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-VariableDeclaration
-type VariableDeclaration LexicalBinding
-
-func (v *VariableDeclaration) parse(j *jsParser, in, yield, await bool) error {
-	if err := ((*LexicalBinding)(v)).parse(j, in, yield, await); err != nil {
-		errr := err.(Error)
-		errr.Parsing = "VariableDeclaration"
-		return errr
-	}
-	return nil
-}
+type VariableDeclaration = LexicalBinding
 
 // ArrayElement is an element of ElementList in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ElementList

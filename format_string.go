@@ -2652,45 +2652,6 @@ func (f *UpdateExpression) printType(w io.Writer, v bool) {
 	w.Write(objectClose)
 }
 
-func (f *VariableDeclaration) printType(w io.Writer, v bool) {
-	w.Write(nameVariableDeclaration[1:20])
-	w.Write(objectOpen)
-	pp := indentPrinter{w}
-	if f.BindingIdentifier != nil {
-		pp.Write(nameBindingIdentifier)
-		f.BindingIdentifier.printType(&pp, v)
-	} else if v {
-		pp.Write(nameBindingIdentifier)
-		pp.Write(nilStr)
-	}
-	if f.ArrayBindingPattern != nil {
-		pp.Write(nameArrayBindingPattern)
-		f.ArrayBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameArrayBindingPattern)
-		pp.Write(nilStr)
-	}
-	if f.ObjectBindingPattern != nil {
-		pp.Write(nameObjectBindingPattern)
-		f.ObjectBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Write(nameObjectBindingPattern)
-		pp.Write(nilStr)
-	}
-	if f.Initializer != nil {
-		pp.Write(nameInitializer)
-		f.Initializer.printType(&pp, v)
-	} else if v {
-		pp.Write(nameInitializer)
-		pp.Write(nilStr)
-	}
-	if v {
-		pp.Write(tokensTo)
-		f.Tokens.printType(&pp, v)
-	}
-	w.Write(objectClose)
-}
-
 func (f *VariableStatement) printType(w io.Writer, v bool) {
 	w.Write(nameVariableStatement[1:18])
 	w.Write(objectOpen)

@@ -983,17 +983,6 @@ func (f UpdateExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
-func (f VariableDeclaration) Format(s fmt.State, v rune) {
-	if v == 'v' && s.Flag('#') {
-		type X = VariableDeclaration
-		type VariableDeclaration X
-		fmt.Fprintf(s, "%#v", VariableDeclaration(f))
-	} else {
-		format(&f, s, v)
-	}
-}
-
-// Format implements the fmt.Formatter interface
 func (f VariableStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = VariableStatement

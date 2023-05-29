@@ -1644,10 +1644,6 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 	io.WriteString(w, i.ImportedBinding.Data)
 }
 
-func (vd VariableDeclaration) printSource(w io.Writer, v bool) {
-	LexicalBinding(vd).printSource(w, v)
-}
-
 func (oe OptionalExpression) printSource(w io.Writer, v bool) {
 	if oe.MemberExpression != nil {
 		oe.MemberExpression.printSource(w, v)
