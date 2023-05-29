@@ -57,9 +57,13 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
 		case bindableConst, bindableLet:
 			ld := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration
-			removeDeadLexicalBindings(&m.ModuleListItems, i, &ld.BindingList, lexicalMaker(ld.LetOrConst))
+			if removeDeadLexicalBindings(&m.ModuleListItems, i, &ld.BindingList, lexicalMaker(ld.LetOrConst)) {
+				i--
+			}
 		case bindableVar:
-			removeDeadLexicalBindings(&m.ModuleListItems, i, &m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList, variableMaker)
+			if removeDeadLexicalBindings(&m.ModuleListItems, i, &m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList, variableMaker) {
+				i--
+			}
 		case bindableBare:
 			expr := m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement
 			if pe, ok := javascript.UnwrapConditional(expr.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil && pe.IdentifierReference.Data == "" {
@@ -73,9 +77,9 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 	}
 }
 
-func lexicalMaker(LetOrConst javascript.LetOrConst) func([]javascript.LexicalBinding) *javascript.ModuleItem {
-	return func(lbs []javascript.LexicalBinding) *javascript.ModuleItem {
-		return &javascript.ModuleItem{
+func lexicalMaker(LetOrConst javascript.LetOrConst) func([]javascript.LexicalBinding) javascript.ModuleItem {
+	return func(lbs []javascript.LexicalBinding) javascript.ModuleItem {
+		return javascript.ModuleItem{
 			StatementListItem: &javascript.StatementListItem{
 				Declaration: &javascript.Declaration{
 					LexicalDeclaration: &javascript.LexicalDeclaration{
@@ -88,8 +92,8 @@ func lexicalMaker(LetOrConst javascript.LetOrConst) func([]javascript.LexicalBin
 	}
 }
 
-func variableMaker(vds []javascript.VariableDeclaration) *javascript.ModuleItem {
-	return &javascript.ModuleItem{
+func variableMaker(vds []javascript.VariableDeclaration) javascript.ModuleItem {
+	return javascript.ModuleItem{
 		StatementListItem: &javascript.StatementListItem{
 			Statement: &javascript.Statement{
 				VariableStatement: &javascript.VariableStatement{
@@ -100,7 +104,34 @@ func variableMaker(vds []javascript.VariableDeclaration) *javascript.ModuleItem 
 	}
 }
 
-func removeDeadLexicalBindings(mlis *[]javascript.ModuleItem, pos int, lds *[]javascript.LexicalBinding, sm func([]javascript.LexicalBinding) *javascript.ModuleItem) {
+func removeDeadLexicalBindings(mlis *[]javascript.ModuleItem, pos int, lds *[]javascript.LexicalBinding, sm func([]javascript.LexicalBinding) javascript.ModuleItem) bool {
+	for n, ld := range *lds {
+		if ld.BindingIdentifier != nil && ld.BindingIdentifier.Data == "" {
+			toAdd := make([]javascript.ModuleItem, 0, 3+len(*mlis)-pos)
+			rest := (*lds)[n+1:]
+			if n > 0 {
+				toAdd = append(toAdd, (*mlis)[pos])
+				*lds = (*lds)[:n]
+			}
+			if ld.Initializer != nil {
+				toAdd = append(toAdd, javascript.ModuleItem{
+					StatementListItem: &javascript.StatementListItem{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{*ld.Initializer},
+							},
+						},
+					},
+				})
+			}
+			if len(rest) > 0 {
+				toAdd = append(toAdd, sm(rest))
+			}
+			*mlis = append((*mlis)[:pos], append(toAdd, (*mlis)[pos+1:]...)...)
+			return true
+		}
+	}
+	return false
 }
 
 type bindable byte
