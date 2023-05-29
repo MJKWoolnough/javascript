@@ -71,8 +71,10 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 				i--
 			}
 		case bindableFunction:
-			m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
-			i--
+			if m.ModuleListItems[i].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier.Data == "" {
+				m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
+				i--
+			}
 		case bindableClass:
 		}
 	}
