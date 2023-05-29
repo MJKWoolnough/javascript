@@ -76,8 +76,18 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 				i--
 			}
 		case bindableClass:
+			cd := m.ModuleListItems[i].StatementListItem.Declaration.ClassDeclaration
+			if cd.BindingIdentifier.Data == "" {
+				mis := extractStatementsFromClass(cd)
+				m.ModuleListItems = append(m.ModuleListItems[:i], append(mis, m.ModuleListItems[i+1:]...)...)
+				i--
+			}
 		}
 	}
+}
+
+func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.ModuleItem {
+	return nil
 }
 
 func lexicalMaker(LetOrConst javascript.LetOrConst) func([]javascript.LexicalBinding) javascript.ModuleItem {
