@@ -87,6 +87,23 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 }
 
 func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.ModuleItem {
+	var mis []javascript.ModuleItem
+	if cd.ClassHeritage != nil {
+		mis = append(mis, javascript.ModuleItem{
+			StatementListItem: &javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					ExpressionStatement: &javascript.Expression{
+						Expressions: []javascript.AssignmentExpression{
+							{
+								ConditionalExpression: javascript.WrapConditional(cd.ClassHeritage),
+							},
+						},
+					},
+				},
+			},
+		})
+	}
+
 	return nil
 }
 
