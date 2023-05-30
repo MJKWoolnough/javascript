@@ -1499,3 +1499,31 @@ func TestFixWrapping(t *testing.T) {
 		}
 	}
 }
+
+func TestScoreCE(t *testing.T) {
+	for n, test := range [...]struct {
+		Input  javascript.ConditionalWrappable
+		Output int
+	}{
+		{ // 1
+			nil,
+			-1,
+		},
+		{ // 2
+			&javascript.LogicalORExpression{},
+			1,
+		},
+		{ // 3
+			&javascript.EqualityExpression{},
+			6,
+		},
+		{ // 4
+			&javascript.UpdateExpression{},
+			13,
+		},
+	} {
+		if out := scoreCE(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting %d, got %d", n+1, test.Output, out)
+		}
+	}
+}
