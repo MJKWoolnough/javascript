@@ -228,6 +228,9 @@ func leftMostLHS(c javascript.ConditionalWrappable) *javascript.LeftHandSideExpr
 }
 
 func fixWrapping(s *javascript.Statement) {
+	if s == nil || s.ExpressionStatement == nil || len(s.ExpressionStatement.Expressions) == 0 {
+		return
+	}
 	ae := &s.ExpressionStatement.Expressions[0]
 	if aeIsCE(ae) {
 		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
