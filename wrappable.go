@@ -38,6 +38,8 @@ func (UpdateExpression) conditionalWrapabble() {}
 
 func (LeftHandSideExpression) conditionalWrapabble() {}
 
+func (OptionalExpression) conditionalWrapabble() {}
+
 func (CallExpression) conditionalWrapabble() {}
 
 func (NewExpression) conditionalWrapabble() {}
