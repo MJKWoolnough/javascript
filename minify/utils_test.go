@@ -1527,3 +1527,157 @@ func TestScoreCE(t *testing.T) {
 		}
 	}
 }
+
+func TestIsConditionalWrappingAConditional(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Below javascript.ConditionalWrappable
+		Output       *javascript.ConditionalExpression
+	}{
+		{ // 1
+			nil,
+			nil,
+			nil,
+		},
+		{ // 2
+			&javascript.PrimaryExpression{
+				IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+			},
+			nil,
+			nil,
+		},
+		{ // 3
+			&javascript.PrimaryExpression{
+				ParenthesizedExpression: &javascript.ParenthesizedExpression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							}),
+						},
+					},
+				},
+			},
+			nil,
+			javascript.WrapConditional(&javascript.PrimaryExpression{
+				IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+			}),
+		},
+		{ // 4
+			&javascript.PrimaryExpression{
+				ParenthesizedExpression: &javascript.ParenthesizedExpression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							}),
+						},
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "b"),
+							}),
+						},
+					},
+				},
+			},
+			nil,
+			nil,
+		},
+		{ // 5
+			&javascript.MultiplicativeExpression{
+				ExponentiationExpression: javascript.ExponentiationExpression{
+					UnaryExpression: javascript.UnaryExpression{
+						UpdateExpression: javascript.UpdateExpression{
+							LeftHandSideExpression: &javascript.LeftHandSideExpression{
+								NewExpression: &javascript.NewExpression{
+									MemberExpression: javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											ParenthesizedExpression: &javascript.ParenthesizedExpression{
+												Expressions: []javascript.AssignmentExpression{
+													{
+														ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+															IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+														}),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			nil,
+			javascript.WrapConditional(&javascript.PrimaryExpression{
+				IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+			}),
+		},
+		{ // 6
+			&javascript.MultiplicativeExpression{
+				ExponentiationExpression: javascript.ExponentiationExpression{
+					UnaryExpression: javascript.UnaryExpression{
+						UpdateExpression: javascript.UpdateExpression{
+							LeftHandSideExpression: &javascript.LeftHandSideExpression{
+								NewExpression: &javascript.NewExpression{
+									MemberExpression: javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											ParenthesizedExpression: &javascript.ParenthesizedExpression{
+												Expressions: []javascript.AssignmentExpression{
+													{
+														ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+															IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+														}),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.AdditiveExpression{},
+			javascript.WrapConditional(&javascript.PrimaryExpression{
+				IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+			}),
+		},
+		{ // 7
+			&javascript.MultiplicativeExpression{
+				ExponentiationExpression: javascript.ExponentiationExpression{
+					UnaryExpression: javascript.UnaryExpression{
+						UpdateExpression: javascript.UpdateExpression{
+							LeftHandSideExpression: &javascript.LeftHandSideExpression{
+								NewExpression: &javascript.NewExpression{
+									MemberExpression: javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											ParenthesizedExpression: &javascript.ParenthesizedExpression{
+												Expressions: []javascript.AssignmentExpression{
+													{
+														ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+															IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+														}),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.ExponentiationExpression{},
+			javascript.WrapConditional(&javascript.PrimaryExpression{
+				IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+			}),
+		},
+	} {
+		if out := isConditionalWrappingAConditional(test.Input, test.Below); !reflect.DeepEqual(out, test.Output) {
+			t.Errorf("test %d: expecting %v, got %v", n+1, test.Output, out)
+		}
+	}
+}
