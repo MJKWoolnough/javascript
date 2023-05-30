@@ -221,6 +221,8 @@ func leftMostLHS(c javascript.ConditionalWrappable) *javascript.LeftHandSideExpr
 				return t.LeftHandSideExpression
 			}
 			c = &t.UnaryExpression.UpdateExpression
+		default:
+			return nil
 		}
 	}
 }
