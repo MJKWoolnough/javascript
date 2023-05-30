@@ -291,6 +291,8 @@ func scoreCE(ce javascript.ConditionalWrappable) int {
 		return 12
 	case *javascript.UpdateExpression:
 		return 13
+	case *javascript.NewExpression, *javascript.MemberExpression, *javascript.PrimaryExpression, *javascript.CallExpression, *javascript.OptionalExpression:
+		return 14
 	}
 	return -1
 }
