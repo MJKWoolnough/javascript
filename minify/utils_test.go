@@ -1365,3 +1365,137 @@ func TestleftMostLHS(t *testing.T) {
 		}
 	}
 }
+
+func TestFixWrapping(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output *javascript.Statement
+	}{
+		{ // 1
+			nil,
+			nil,
+		},
+		{ // 2
+			&javascript.Statement{},
+			&javascript.Statement{},
+		},
+		{ // 3
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{},
+			},
+			&javascript.Statement{
+				BlockStatement: &javascript.Block{},
+			},
+		},
+		{ // 4
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{},
+			},
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{},
+			},
+		},
+		{ // 5
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							}),
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+							}),
+						},
+					},
+				},
+			},
+		},
+		{ // 6
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								ObjectLiteral: &javascript.ObjectLiteral{},
+							}),
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												ObjectLiteral: &javascript.ObjectLiteral{},
+											}),
+										},
+									},
+								},
+							}),
+						},
+					},
+				},
+			},
+		},
+		{ // 6
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								FunctionExpression: &javascript.FunctionDeclaration{},
+							}),
+						},
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								ObjectLiteral: &javascript.ObjectLiteral{},
+							}),
+						},
+					},
+				},
+			},
+			&javascript.Statement{
+				ExpressionStatement: &javascript.Expression{
+					Expressions: []javascript.AssignmentExpression{
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								ParenthesizedExpression: &javascript.ParenthesizedExpression{
+									Expressions: []javascript.AssignmentExpression{
+										{
+											ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+												FunctionExpression: &javascript.FunctionDeclaration{},
+											}),
+										},
+									},
+								},
+							}),
+						},
+						{
+							ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+								ObjectLiteral: &javascript.ObjectLiteral{},
+							}),
+						},
+					},
+				},
+			},
+		},
+	} {
+		fixWrapping(test.Input)
+		if !reflect.DeepEqual(test.Input, test.Output) {
+			t.Errorf("test %d: expecting %v, got %v", n+1, test.Output, test.Input)
+		}
+	}
+}
