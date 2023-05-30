@@ -807,6 +807,7 @@ The accepted types/pointers are as follows:
     UpdateExpression
     LeftHandSideExpression
     CallExpression
+    OptionalExpression
     NewExpression
     MemberExpression
     PrimaryExpression
@@ -862,6 +863,7 @@ Possible returns types are as follows:
     *UnaryExpression
     *UpdateExpression
     *CallExpression
+    *OptionalExpression
     *NewExpression
     *MemberExpression
     *PrimaryExpression
@@ -2547,18 +2549,11 @@ String implements the fmt.Stringer interface
 #### type VariableDeclaration
 
 ```go
-type VariableDeclaration LexicalBinding
+type VariableDeclaration = LexicalBinding
 ```
 
 VariableDeclaration as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-VariableDeclaration
-
-#### func (VariableDeclaration) Format
-
-```go
-func (f VariableDeclaration) Format(s fmt.State, v rune)
-```
-Format implements the fmt.Formatter interface
 
 #### type VariableStatement
 
