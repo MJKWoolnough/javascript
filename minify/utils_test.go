@@ -1268,3 +1268,100 @@ func TestIsStatementListItemExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestleftMostLHS(t *testing.T) {
+	for n, test := range [...]struct {
+		Input  javascript.ConditionalWrappable
+		Output *javascript.LeftHandSideExpression
+	}{
+		{ // 1
+			nil,
+			nil,
+		},
+		{ // 2
+			javascript.WrapConditional(&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{},
+			}),
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{},
+			},
+		},
+		{ // 3
+			javascript.WrapConditional(&javascript.AdditiveExpression{
+				MultiplicativeExpression: javascript.MultiplicativeExpression{
+					ExponentiationExpression: javascript.ExponentiationExpression{
+						UnaryExpression: javascript.UnaryExpression{
+							UpdateExpression: javascript.UpdateExpression{
+								LeftHandSideExpression: &javascript.LeftHandSideExpression{
+									CallExpression: &javascript.CallExpression{},
+								},
+							},
+						},
+					},
+				},
+			}),
+			&javascript.LeftHandSideExpression{
+				CallExpression: &javascript.CallExpression{},
+			},
+		},
+		{ // 4
+			javascript.WrapConditional(&javascript.ExponentiationExpression{
+				ExponentiationExpression: &javascript.ExponentiationExpression{
+					UnaryExpression: javascript.UnaryExpression{
+						UpdateExpression: javascript.UpdateExpression{
+							LeftHandSideExpression: &javascript.LeftHandSideExpression{
+								NewExpression: &javascript.NewExpression{},
+							},
+						},
+					},
+				},
+				UnaryExpression: javascript.UnaryExpression{
+					UpdateExpression: javascript.UpdateExpression{
+						LeftHandSideExpression: &javascript.LeftHandSideExpression{
+							CallExpression: &javascript.CallExpression{},
+						},
+					},
+				},
+			}),
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{},
+			},
+		},
+		{ // 5
+			javascript.WrapConditional(&javascript.ExponentiationExpression{
+				ExponentiationExpression: &javascript.ExponentiationExpression{
+					ExponentiationExpression: &javascript.ExponentiationExpression{
+						UnaryExpression: javascript.UnaryExpression{
+							UpdateExpression: javascript.UpdateExpression{
+								LeftHandSideExpression: &javascript.LeftHandSideExpression{
+									OptionalExpression: &javascript.OptionalExpression{},
+								},
+							},
+						},
+					},
+					UnaryExpression: javascript.UnaryExpression{
+						UpdateExpression: javascript.UpdateExpression{
+							LeftHandSideExpression: &javascript.LeftHandSideExpression{
+								NewExpression: &javascript.NewExpression{},
+							},
+						},
+					},
+				},
+				UnaryExpression: javascript.UnaryExpression{
+					UpdateExpression: javascript.UpdateExpression{
+						LeftHandSideExpression: &javascript.LeftHandSideExpression{
+							CallExpression: &javascript.CallExpression{},
+						},
+					},
+				},
+			}),
+			&javascript.LeftHandSideExpression{
+				NewExpression: &javascript.NewExpression{},
+			},
+		},
+	} {
+		if out := leftMostLHS(test.Input); !reflect.DeepEqual(out, test.Output) {
+			t.Errorf("test %d: expecting %v, got %v", n+1, test.Output, out)
+		}
+	}
+}
