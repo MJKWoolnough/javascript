@@ -246,6 +246,7 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 //    UpdateExpression
 //    LeftHandSideExpression
 //    CallExpression
+//    OptionalExpression
 //    NewExpression
 //    MemberExpression
 //    PrimaryExpression
@@ -357,6 +358,16 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
 			CallExpression: &p,
 			Tokens:         p.Tokens,
+		}
+	case *OptionalExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			OptionalExpression: p,
+			Tokens:             p.Tokens,
+		}
+	case OptionalExpression:
+		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
+			OptionalExpression: &p,
+			Tokens:             p.Tokens,
 		}
 	case *NewExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
@@ -506,6 +517,7 @@ logicalORExpression:
 //    *UnaryExpression
 //    *UpdateExpression
 //    *CallExpression
+//    *OptionalExpression
 //    *NewExpression
 //    *MemberExpression
 //    *PrimaryExpression
@@ -549,6 +561,8 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		return &c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression
 	} else if lhs := c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs.CallExpression != nil {
 		return lhs.CallExpression
+	} else if lhs.OptionalExpression != nil {
+		return lhs.OptionalExpression
 	} else if lhs.NewExpression.News > 0 {
 		return lhs.NewExpression
 	} else if lhs.NewExpression.MemberExpression.PrimaryExpression == nil {
