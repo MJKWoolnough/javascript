@@ -317,3 +317,12 @@ func removeLastReturnStatement(b *javascript.Block) {
 		}
 	}
 }
+
+func isSimpleAE(ae *javascript.AssignmentExpression) bool {
+	if aeIsCE(ae) {
+		if pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.PrimaryExpression); ok {
+			return pe.Literal != nil || pe.IdentifierReference != nil
+		}
+	}
+	return false
+}
