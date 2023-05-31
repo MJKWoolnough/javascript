@@ -5415,6 +5415,352 @@ func TestTransforms(t *testing.T) {
 				},
 			},
 		},
+		{ // 158
+			[]Option{MergeLexical},
+			&javascript.Block{},
+			&javascript.Block{},
+		},
+		{ // 159
+			[]Option{MergeLexical},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 160
+			[]Option{MergeLexical},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Let,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Let,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Let,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 161
+			[]Option{MergeLexical},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							FunctionDeclaration: &javascript.FunctionDeclaration{
+								BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "e"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							FunctionDeclaration: &javascript.FunctionDeclaration{
+								BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+							},
+						},
+					},
+					{
+						Declaration: &javascript.Declaration{
+							LexicalDeclaration: &javascript.LexicalDeclaration{
+								LetOrConst: javascript.Const,
+								BindingList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "e"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 162
+			[]Option{MergeLexical},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 163
+			[]Option{MergeLexical},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+								},
+							},
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "e"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							VariableStatement: &javascript.VariableStatement{
+								VariableDeclarationList: []javascript.LexicalBinding{
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "a"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "b"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "c"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "d"),
+									},
+									{
+										BindingIdentifier: makeToken(javascript.TokenIdentifier, "e"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		w := walker{New(test.Options...)}
 		w.Handle(test.Input)
