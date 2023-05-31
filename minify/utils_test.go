@@ -1792,3 +1792,52 @@ func TestRemoveLastReturnStatement(t *testing.T) {
 		}
 	}
 }
+
+func TestIsSimpleAE(t *testing.T) {
+	for n, test := range [...]struct {
+		Input  *javascript.AssignmentExpression
+		Output bool
+	}{
+		{ // 1
+			nil,
+			false,
+		},
+		{ // 2
+			&javascript.AssignmentExpression{},
+			false,
+		},
+		{ // 3
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+				}),
+			},
+			true,
+		},
+		{ // 4
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+					Literal: makeToken(javascript.TokenNumericLiteral, "1"),
+				}),
+			},
+			true,
+		},
+		{ // 5
+			&javascript.AssignmentExpression{
+				ConditionalExpression: javascript.WrapConditional(&javascript.CallExpression{
+					MemberExpression: &javascript.MemberExpression{
+						PrimaryExpression: &javascript.PrimaryExpression{
+							IdentifierReference: makeToken(javascript.TokenIdentifier, "a"),
+						},
+					},
+					Arguments: &javascript.Arguments{},
+				}),
+			},
+			false,
+		},
+	} {
+		if out := isSimpleAE(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting output %v, got %v", n+1, test.Output, out)
+		}
+	}
+}
