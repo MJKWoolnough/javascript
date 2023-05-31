@@ -1681,3 +1681,114 @@ func TestIsConditionalWrappingAConditional(t *testing.T) {
 		}
 	}
 }
+
+func TestRemoveLastReturnStatement(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output *javascript.Block
+	}{
+		{ // 1
+			nil,
+			nil,
+		},
+		{ // 2
+			&javascript.Block{},
+			&javascript.Block{},
+		},
+		{ // 3
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+											IdentifierReference: makeToken(javascript.TokenLineTerminator, "a"),
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+											IdentifierReference: makeToken(javascript.TokenLineTerminator, "a"),
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{ // 4
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{},
+			},
+		},
+		{ // 5
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+											IdentifierReference: makeToken(javascript.TokenLineTerminator, "a"),
+										}),
+									},
+								},
+							},
+						},
+					},
+					{
+						Statement: &javascript.Statement{
+							Type: javascript.StatementReturn,
+						},
+					},
+				},
+			},
+			&javascript.Block{
+				StatementList: []javascript.StatementListItem{
+					{
+						Statement: &javascript.Statement{
+							ExpressionStatement: &javascript.Expression{
+								Expressions: []javascript.AssignmentExpression{
+									{
+										ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+											IdentifierReference: makeToken(javascript.TokenLineTerminator, "a"),
+										}),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	} {
+		removeLastReturnStatement(test.Input)
+		if !reflect.DeepEqual(test.Input, test.Output) {
+			t.Errorf("test %d: expecting %b, got %v", n+1, test.Output, test.Input)
+		}
+	}
+}
