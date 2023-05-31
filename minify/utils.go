@@ -310,7 +310,7 @@ func isConditionalWrappingAConditional(w javascript.ConditionalWrappable, below 
 }
 
 func removeLastReturnStatement(b *javascript.Block) {
-	if len(b.StatementList) > 0 {
+	if b != nil && len(b.StatementList) > 0 {
 		s := b.StatementList[len(b.StatementList)-1].Statement
 		if isReturnStatement(s) && s.ExpressionStatement == nil {
 			b.StatementList = b.StatementList[:len(b.StatementList)-1]
