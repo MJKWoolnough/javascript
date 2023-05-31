@@ -683,11 +683,11 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 					flbs = jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList
 					lbs = jm.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
 				}
-				back := 1
+				back := 0
 				for n := range lbs {
 					if pe := aeAsParen(lbs[n].Initializer); pe != nil {
 						pe.Expressions = append(jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement.Expressions, pe.Expressions...)
-						back = 2
+						back = 1
 						break
 					} else if !isSimpleAE(lbs[n].Initializer) {
 						lbs[n].Initializer = &javascript.AssignmentExpression{
@@ -695,17 +695,17 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 								Expressions: append(jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement.Expressions, *lbs[n].Initializer),
 							}),
 						}
-						back = 2
+						back = 1
 						break
 					}
 				}
-				jm.ModuleListItems = append(jm.ModuleListItems[:i-back], jm.ModuleListItems[i+1:]...)
 				flbs = append(flbs, lbs...)
 				if last == bindableVar {
 					jm.ModuleListItems[i-2].StatementListItem.Statement.VariableStatement.VariableDeclarationList = flbs
 				} else {
 					jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList = flbs
 				}
+				jm.ModuleListItems = append(jm.ModuleListItems[:i-back], jm.ModuleListItems[i+1:]...)
 				i--
 			}
 		}
