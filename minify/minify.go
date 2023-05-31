@@ -74,6 +74,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		w.minifyExpressionRun(t)
 		w.fixFirstExpression(t)
 		w.minifyLexical(t)
+		w.minifyExpressionsBetweenLexicals(t)
 	case *javascript.FunctionDeclaration:
 		w.minifyLastReturnStatement(t)
 	case *javascript.ConditionalExpression:
@@ -666,6 +667,47 @@ func (m *Minifier) minifyLexical(jm *javascript.Module) {
 				}
 			}
 			last = next
+		}
+	}
+}
+
+func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
+	if m.Has(MergeLexical) && m.Has(CombineExpressionRuns) {
+		for i := 2; i < len(jm.ModuleListItems); i++ {
+			if last := sliBindable(jm.ModuleListItems[i-2].StatementListItem); (last == bindableLet || last == bindableConst || last == bindableVar) && isStatementListItemExpression(jm.ModuleListItems[i-1].StatementListItem) && sliBindable(jm.ModuleListItems[i].StatementListItem) == last {
+				var flbs, lbs []javascript.LexicalBinding
+				if last == bindableVar {
+					flbs = jm.ModuleListItems[i-2].StatementListItem.Statement.VariableStatement.VariableDeclarationList
+					lbs = jm.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
+				} else {
+					flbs = jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList
+					lbs = jm.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
+				}
+				back := 1
+				for n := range lbs {
+					if pe := aeAsParen(lbs[n].Initializer); pe != nil {
+						pe.Expressions = append(jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement.Expressions, pe.Expressions...)
+						back = 2
+						break
+					} else if !isSimpleAE(lbs[n].Initializer) {
+						lbs[n].Initializer = &javascript.AssignmentExpression{
+							ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
+								Expressions: append(jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement.Expressions, *lbs[n].Initializer),
+							}),
+						}
+						back = 2
+						break
+					}
+				}
+				jm.ModuleListItems = append(jm.ModuleListItems[:i-back], jm.ModuleListItems[i+1:]...)
+				flbs = append(flbs, lbs...)
+				if last == bindableVar {
+					jm.ModuleListItems[i-2].StatementListItem.Statement.VariableStatement.VariableDeclarationList = flbs
+				} else {
+					jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList = flbs
+				}
+				i--
+			}
 		}
 	}
 }
