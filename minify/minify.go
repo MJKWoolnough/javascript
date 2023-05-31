@@ -68,6 +68,7 @@ func (w *walker) Handle(t javascript.Type) error {
 		blockAsModule(t, w.minifyEmptyStatement)
 		blockAsModule(t, w.minifyExpressionRun)
 		blockAsModule(t, w.fixFirstExpression)
+		blockAsModule(t, w.minifyLexical)
 	case *javascript.Module:
 		w.minifyEmptyStatement(t)
 		w.minifyExpressionRun(t)
