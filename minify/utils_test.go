@@ -1450,7 +1450,7 @@ func TestFixWrapping(t *testing.T) {
 				},
 			},
 		},
-		{ // 6
+		{ // 7
 			&javascript.Statement{
 				ExpressionStatement: &javascript.Expression{
 					Expressions: []javascript.AssignmentExpression{
