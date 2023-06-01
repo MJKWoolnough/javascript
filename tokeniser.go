@@ -5,8 +5,8 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	"unicode"
 
+	"vimagination.zapto.org/javascript/internal"
 	"vimagination.zapto.org/parser"
 )
 
@@ -19,9 +19,6 @@ const (
 	octalDigit       = "01234567"
 	decimalDigit     = "0123456789"
 	hexDigit         = "0123456789abcdefABCDEF"
-
-	zwnj rune = 8204
-	zwj  rune = 8205
 )
 
 var keywords = [...]string{"await", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield"}
@@ -49,38 +46,6 @@ const (
 	TokenNullLiteral
 	TokenFutureReservedWord
 )
-
-var (
-	idContinue = []*unicode.RangeTable{
-		unicode.L,
-		unicode.Nl,
-		unicode.Other_ID_Start,
-		unicode.Mn,
-		unicode.Mc,
-		unicode.Nd,
-		unicode.Pc,
-		unicode.Other_ID_Continue,
-	}
-	idStart = idContinue[:3]
-	notID   = []*unicode.RangeTable{
-		unicode.Pattern_Syntax,
-		unicode.Pattern_White_Space,
-	}
-)
-
-func isIDStart(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' {
-		return true
-	}
-	return unicode.In(c, idStart...) && !unicode.In(c, notID...)
-}
-
-func isIDContinue(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' || c == zwnj || c == zwj {
-		return true
-	}
-	return unicode.In(c, idContinue...) && !unicode.In(c, notID...)
-}
 
 type jsTokeniser struct {
 	tokenDepth      []byte
@@ -177,7 +142,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		return j.template(t)
 	case '#':
 		t.Except("")
-		if !isIDStart(t.Peek()) {
+		if !internal.IsIDStart(t.Peek()) {
 			t.Except("")
 			t.Err = fmt.Errorf("%w: %s", ErrInvalidSequence, t.Get())
 			return t.Error()
@@ -193,7 +158,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			j.divisionAllowed = true
 			return j.number(t)
 		}
-		if isIDStart(c) {
+		if internal.IsIDStart(c) {
 			tk, tf := j.identifier(t)
 			if tk.Type == TokenIdentifier {
 				if tk.Data == "true" || tk.Data == "false" {
@@ -230,7 +195,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 								code = tk.Data[2:6]
 							}
 							r, err := strconv.ParseInt(code, 16, 64)
-							if err != nil || r == 92 || !isIDStart(rune(r)) {
+							if err != nil || r == 92 || !internal.IsIDStart(rune(r)) {
 								t.Err = fmt.Errorf("%w: %s", ErrInvalidUnicode, tk.Data)
 								return t.Error()
 							}
@@ -400,7 +365,7 @@ Loop:
 		}
 	}
 	for {
-		if c := t.Peek(); !isIDContinue(c) || c == '\\' {
+		if c := t.Peek(); !internal.IsIDContinue(c) || c == '\\' {
 			break
 		}
 		t.Except("")
@@ -510,7 +475,7 @@ func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 	}
 	for {
 		c = t.Peek()
-		if isIDContinue(c) {
+		if internal.IsIDContinue(c) {
 			t.Except("")
 			continue
 		}
