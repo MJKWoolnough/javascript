@@ -316,7 +316,7 @@ func TestIsSLIExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 3
+		{ // 4
 			&javascript.StatementListItem{
 				Statement: &javascript.Statement{
 					Type: javascript.StatementDebugger,
@@ -324,7 +324,7 @@ func TestIsSLIExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 4
+		{ // 5
 			&javascript.StatementListItem{
 				Statement: &javascript.Statement{
 					Type: javascript.StatementReturn,
@@ -341,7 +341,7 @@ func TestIsSLIExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 5
+		{ // 6
 			&javascript.StatementListItem{
 				Statement: &javascript.Statement{
 					ExpressionStatement: &javascript.Expression{
@@ -357,7 +357,7 @@ func TestIsSLIExpression(t *testing.T) {
 			},
 			true,
 		},
-		{ // 5
+		{ // 7
 			&javascript.StatementListItem{
 				Declaration: &javascript.Declaration{
 					FunctionDeclaration: &javascript.FunctionDeclaration{
