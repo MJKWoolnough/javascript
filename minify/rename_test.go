@@ -15,31 +15,31 @@ func TestOrderedScope(t *testing.T) {
 		Input    string
 		Bindings []string
 	}{
-		{
+		{ // 1
 			"",
 			[]string{},
 		},
-		{
+		{ // 2
 			"let a = 1",
 			[]string{
 				"a",
 			},
 		},
-		{
+		{ // 3
 			"let a = 1, b = 2;a",
 			[]string{
 				"a",
 				"b",
 			},
 		},
-		{
+		{ // 4
 			"let a = 1, b = 2;b",
 			[]string{
 				"b",
 				"a",
 			},
 		},
-		{
+		{ // 5
 			"function b() { a()} function c() {b()} function a(){} b()",
 			[]string{
 				"b",
@@ -47,11 +47,11 @@ func TestOrderedScope(t *testing.T) {
 				"c",
 			},
 		},
-		{
+		{ // 6
 			"window",
 			[]string{},
 		},
-		{
+		{ // 7
 			"console.log(1);function a() {console.log(2)}",
 			[]string{"a"},
 		},
