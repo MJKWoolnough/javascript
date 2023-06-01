@@ -1207,29 +1207,29 @@ func TestIsStatementListItemExpression(t *testing.T) {
 			&javascript.StatementListItem{},
 			false,
 		},
-		{ // 2
+		{ // 3
 			&javascript.StatementListItem{
 				Declaration: &javascript.Declaration{},
 			},
 			false,
 		},
-		{ // 3
-			&javascript.StatementListItem{
-				Statement: &javascript.Statement{
-					Type: javascript.StatementDebugger,
-				},
-			},
-			false,
-		},
-		{ // 3
-			&javascript.StatementListItem{
-				Statement: &javascript.Statement{
-					Type: javascript.StatementDebugger,
-				},
-			},
-			false,
-		},
 		{ // 4
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 5
+			&javascript.StatementListItem{
+				Statement: &javascript.Statement{
+					Type: javascript.StatementDebugger,
+				},
+			},
+			false,
+		},
+		{ // 6
 			&javascript.StatementListItem{
 				Statement: &javascript.Statement{
 					Type: javascript.StatementReturn,
@@ -1246,7 +1246,7 @@ func TestIsStatementListItemExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 5
+		{ // 7
 			&javascript.StatementListItem{
 				Statement: &javascript.Statement{
 					ExpressionStatement: &javascript.Expression{
