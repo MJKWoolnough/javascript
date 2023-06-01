@@ -1,48 +1,12 @@
 package minify
 
-import "unicode"
+import "vimagination.zapto.org/javascript/internal"
 
-var (
-	idContinue = []*unicode.RangeTable{
-		unicode.L,
-		unicode.Nl,
-		unicode.Other_ID_Start,
-		unicode.Mn,
-		unicode.Mc,
-		unicode.Nd,
-		unicode.Pc,
-		unicode.Other_ID_Continue,
-	}
-	idStart = idContinue[:3]
-	notID   = []*unicode.RangeTable{
-		unicode.Pattern_Syntax,
-		unicode.Pattern_White_Space,
-	}
-	maxSafeInt = "9007199254740991"
-)
-
-const (
-	zwnj rune = 8204
-	zwj  rune = 8205
-)
-
-func isIDStart(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' {
-		return true
-	}
-	return unicode.In(c, idStart...) && !unicode.In(c, notID...)
-}
-
-func isIDContinue(c rune) bool {
-	if c == '$' || c == '_' || c == '\\' || c == zwnj || c == zwj {
-		return true
-	}
-	return unicode.In(c, idContinue...) && !unicode.In(c, notID...)
-}
+const maxSafeInt = "9007199254740991"
 
 func isIdentifier(str string) bool {
 	for n, r := range str {
-		if (n == 0 && !isIDStart(r)) || (n > 0 && !isIDContinue(r)) {
+		if (n == 0 && !internal.IsIDStart(r)) || (n > 0 && !internal.IsIDContinue(r)) {
 			return false
 		}
 	}

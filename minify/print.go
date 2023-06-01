@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"vimagination.zapto.org/javascript"
+	"vimagination.zapto.org/javascript/internal"
 )
 
 type writer struct {
@@ -18,9 +19,9 @@ type writer struct {
 func (w *writer) WriteString(str string) {
 	if w.err == nil {
 		var n int
-		if isIDContinue(w.lastChar) {
+		if internal.IsIDContinue(w.lastChar) {
 			r, _ := utf8.DecodeRuneInString(str)
-			if isIDContinue(r) {
+			if internal.IsIDContinue(r) {
 				n, w.err = io.WriteString(w.Writer, " ")
 				w.count += int64(n)
 			}
