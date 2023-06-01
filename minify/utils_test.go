@@ -253,13 +253,13 @@ func TestIsStatementExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 3
+		{ // 4
 			&javascript.Statement{
 				Type: javascript.StatementDebugger,
 			},
 			false,
 		},
-		{ // 4
+		{ // 5
 			&javascript.Statement{
 				Type: javascript.StatementReturn,
 				ExpressionStatement: &javascript.Expression{
@@ -274,7 +274,7 @@ func TestIsStatementExpression(t *testing.T) {
 			},
 			false,
 		},
-		{ // 5
+		{ // 6
 			&javascript.Statement{
 				ExpressionStatement: &javascript.Expression{
 					Expressions: []javascript.AssignmentExpression{
