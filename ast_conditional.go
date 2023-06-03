@@ -520,7 +520,7 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
-// MultiplicativeOperator determines the multication type for MultiplicativeExpression
+// MultiplicativeOperator determines the multiplication type for MultiplicativeExpression
 type MultiplicativeOperator int
 
 // Valid MultiplicativeOperator's
