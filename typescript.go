@@ -1242,6 +1242,33 @@ func (j *jsParser) ReadFunctionDeclaration() bool {
 	return true
 }
 
+func (j *jsParser) SkipFunctionOverload(bi *Token, yield, await bool) bool {
+	g := j.NewGoal()
+	if g.IsTypescript() {
+		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
+			g.AcceptRunWhitespace()
+		}
+		if g.ReadCallSignature() {
+			g.AcceptRunWhitespace()
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				g.AcceptRunWhitespace()
+			}
+			if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
+				g.AcceptRunWhitespaceNoNewLine()
+			}
+			if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
+				g.AcceptRunWhitespace()
+				if g.AcceptToken(bi.Token) {
+					j.Score(g)
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func (j *jsParser) ReadClassDeclaration() bool {
 	g := j.NewGoal()
 	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"}) {
