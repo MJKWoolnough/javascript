@@ -3779,6 +3779,35 @@ case "b":
 				Tokens: tk[:43],
 			}
 		}},
+		{`function a(): b;
+function a(): c;
+function a() {}`, func(t *test, tk Tokens) { // 103
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										Tokens: tk[23:25],
+									},
+									FunctionBody: Block{
+										Tokens: tk[26:28],
+									},
+									Tokens: tk[:28],
+								},
+								Tokens: tk[:28],
+							},
+							Tokens: tk[:28],
+						},
+						Tokens: tk[:28],
+					},
+				},
+				Tokens: tk[:28],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
