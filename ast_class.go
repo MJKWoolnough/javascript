@@ -147,6 +147,14 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			ce.MethodDefinition = &MethodDefinition{
 				ClassElementName: cen,
 			}
+			for {
+				h := g.NewGoal()
+				if h.SkipMethodOverload(cen, yield, await) {
+					g.Score(h)
+				} else {
+					break
+				}
+			}
 			if err := ce.MethodDefinition.parse(&g, yield, await); err != nil {
 				return j.Error("ClassElement", err)
 			}
