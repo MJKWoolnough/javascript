@@ -53,6 +53,14 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		}
 	} else {
 		fd.BindingIdentifier = bi
+		for {
+			g := j.NewGoal()
+			if g.SkipFunctionOverload(bi, yield, await) {
+				j.Score(g)
+			} else {
+				break
+			}
+		}
 		j.AcceptRunWhitespace()
 	}
 	if j.SkipGeneric() {
