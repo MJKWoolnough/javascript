@@ -3716,6 +3716,69 @@ case "b":
 				Tokens: tk[:23],
 			}
 		}},
+		{`type A = B & {}`, func(t *test, tk Tokens) { // 101
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`class A {
+	b(c: string): this;
+	b(d: number): this
+	b(): this {}
+}`, func(t *test, tk Tokens) { // 102
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											MethodDefinition: &MethodDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[7],
+														Tokens:              tk[7:8],
+													},
+													Tokens: tk[7:8],
+												},
+												Params: FormalParameters{
+													Tokens: tk[33:35],
+												},
+												FunctionBody: Block{
+													Tokens: tk[39:41],
+												},
+												Tokens: tk[7:41],
+											},
+											Tokens: tk[7:41],
+										},
+									},
+									Tokens: tk[:43],
+								},
+								Tokens: tk[:43],
+							},
+							Tokens: tk[:43],
+						},
+						Tokens: tk[:43],
+					},
+				},
+				Tokens: tk[:43],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
