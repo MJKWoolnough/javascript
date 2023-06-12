@@ -1,6 +1,10 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"strings"
+
+	"vimagination.zapto.org/parser"
+)
 
 const marker = "TS"
 
@@ -1163,6 +1167,33 @@ func (j *jsParser) SkipDeclare() bool {
 
 func (j *jsParser) SkipForce() bool {
 	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"})
+}
+
+func (j *jsParser) SkipMethodOverload(cen ClassElementName, yield, await bool) bool {
+	g := j.NewGoal()
+	if g.IsTypescript() {
+		if g.ReadCallSignature() {
+			var den ClassElementName
+			g.AcceptRunWhitespace()
+			g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"})
+			g.AcceptRunWhitespace()
+			if err := den.parse(&g, yield, await); err != nil {
+				return false
+			}
+
+			var csb, dsb strings.Builder
+			cen.printSource(&csb, false)
+			den.printSource(&dsb, false)
+
+			if csb.String() != dsb.String() {
+				return false
+			}
+
+			j.Score(g)
+			return true
+		}
+	}
+	return false
 }
 
 func (j *jsParser) SkipAbstract() bool {
