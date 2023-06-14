@@ -3808,6 +3808,53 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:28],
 			}
 		}},
+		{`class A {
+	static b(c: string): this
+	static b(d: number): this;
+	static b(): this {}
+}`, func(t *test, tk Tokens) { // 105
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											Static: true,
+											MethodDefinition: &MethodDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														LiteralPropertyName: &tk[9],
+														Tokens:              tk[9:10],
+													},
+													Tokens: tk[9:10],
+												},
+												Params: FormalParameters{
+													Tokens: tk[39:41],
+												},
+												FunctionBody: Block{
+													Tokens: tk[45:47],
+												},
+												Tokens: tk[9:47],
+											},
+											Tokens: tk[7:47],
+										},
+									},
+									Tokens: tk[:49],
+								},
+								Tokens: tk[:49],
+							},
+							Tokens: tk[:49],
+						},
+						Tokens: tk[:49],
+					},
+				},
+				Tokens: tk[:49],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
