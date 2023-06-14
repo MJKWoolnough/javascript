@@ -1169,14 +1169,20 @@ func (j *jsParser) SkipForce() bool {
 	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"})
 }
 
-func (j *jsParser) SkipMethodOverload(cen ClassElementName, yield, await bool) bool {
+func (j *jsParser) SkipMethodOverload(static bool, cen ClassElementName, yield, await bool) bool {
 	g := j.NewGoal()
 	if g.IsTypescript() {
 		if g.ReadCallSignature() {
-			var den ClassElementName
 			g.AcceptRunWhitespace()
 			g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"})
 			g.AcceptRunWhitespace()
+			if static {
+				if !g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"}) {
+					return false
+				}
+				g.AcceptRunWhitespace()
+			}
+			var den ClassElementName
 			if err := den.parse(&g, yield, await); err != nil {
 				return false
 			}
