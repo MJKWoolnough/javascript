@@ -149,7 +149,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			}
 			for {
 				h := g.NewGoal()
-				if h.SkipMethodOverload(cen, yield, await) {
+				if h.SkipMethodOverload(ce.Static, cen, yield, await) {
 					g.Score(h)
 				} else {
 					break
