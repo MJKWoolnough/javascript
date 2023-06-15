@@ -65,6 +65,10 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 			j.Score(g)
 			continue
 		}
+		if g.SkipIndexSignature() {
+			j.Score(g)
+			continue
+		}
 		md := len(cd.ClassBody)
 		cd.ClassBody = append(cd.ClassBody, ClassElement{})
 		if err := cd.ClassBody[md].parse(&g, yield, await); err != nil {
