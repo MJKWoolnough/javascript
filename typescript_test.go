@@ -3855,6 +3855,78 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:49],
 			}
 		}},
+		{`class A {
+	[b: number]: string;
+	[c] = d;
+	[e]!
+}`, func(t *test, tk Tokens) { // 1065
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								ClassDeclaration: &ClassDeclaration{
+									BindingIdentifier: &tk[2],
+									ClassBody: []ClassElement{
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														ComputedPropertyName: &AssignmentExpression{
+															ConditionalExpression: WrapConditional(&PrimaryExpression{
+																IdentifierReference: &tk[20],
+																Tokens:              tk[20:21],
+															}),
+															Tokens: tk[20:21],
+														},
+														Tokens: tk[19:22],
+													},
+													Tokens: tk[19:22],
+												},
+												Initializer: &AssignmentExpression{
+													ConditionalExpression: WrapConditional(&PrimaryExpression{
+														IdentifierReference: &tk[25],
+														Tokens:              tk[25:26],
+													}),
+													Tokens: tk[25:26],
+												},
+												Tokens: tk[19:26],
+											},
+											Tokens: tk[19:27],
+										},
+										{
+											FieldDefinition: &FieldDefinition{
+												ClassElementName: ClassElementName{
+													PropertyName: &PropertyName{
+														ComputedPropertyName: &AssignmentExpression{
+															ConditionalExpression: WrapConditional(&PrimaryExpression{
+																IdentifierReference: &tk[30],
+																Tokens:              tk[30:31],
+															}),
+															Tokens: tk[30:31],
+														},
+														Tokens: tk[29:32],
+													},
+													Tokens: tk[29:32],
+												},
+												Tokens: tk[29:33],
+											},
+											Tokens: tk[29:33],
+										},
+									},
+									Tokens: tk[:35],
+								},
+								Tokens: tk[:35],
+							},
+							Tokens: tk[:35],
+						},
+						Tokens: tk[:35],
+					},
+				},
+				Tokens: tk[:35],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
