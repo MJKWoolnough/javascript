@@ -1220,6 +1220,51 @@ func (j *jsParser) SkipAbstractField() bool {
 	return false
 }
 
+func (j *jsParser) SkipIndexSignature() bool {
+	if j.IsTypescript() {
+		g := j.NewGoal()
+		g.ReadModifiers()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if g.parseIdentifier(false, false) == nil {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if !g.ReadTypeAnnotation() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+			return false
+		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespace()
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"}) {
+			return false
+		}
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+			g.Score(h)
+			h = g.NewGoal()
+			h.AcceptRunWhitespace()
+		}
+		if h.ReadTypeAnnotation() {
+			g.Score(h)
+			h = g.NewGoal()
+		}
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+			return false
+		}
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			g.Score(h)
+		}
+		j.Score(g)
+		return true
+	}
+	return false
+}
+
 func (j *jsParser) ReadFunctionDeclaration() bool {
 	g := j.NewGoal()
 	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
