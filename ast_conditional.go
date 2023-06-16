@@ -26,9 +26,14 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	g = j.NewGoal()
 	g.AcceptRunWhitespaceNoNewLine()
 	if g.SkipAsType() {
-		j.Score(g)
-		g = j.NewGoal()
-		g.AcceptRunWhitespace()
+		for {
+			j.Score(g)
+			g = j.NewGoal()
+			g.AcceptRunWhitespace()
+			if !g.SkipAsType() {
+				break
+			}
+		}
 	} else {
 		g.AcceptRunWhitespace()
 		if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??"}) {
