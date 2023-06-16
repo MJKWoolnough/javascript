@@ -3812,7 +3812,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 	static b(c: string): this
 	static b(d: number): this;
 	static b(): this {}
-}`, func(t *test, tk Tokens) { // 105
+}`, func(t *test, tk Tokens) { // 104
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3859,7 +3859,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 	[b: number]: string;
 	[c] = d;
 	[e]!
-}`, func(t *test, tk Tokens) { // 1065
+}`, func(t *test, tk Tokens) { // 105
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3925,6 +3925,39 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 					},
 				},
 				Tokens: tk[:35],
+			}
+		}},
+		{`a as any as b as c`, func(t *test, tk Tokens) { // 106
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: &ConditionalExpression{
+												LogicalORExpression: WrapConditional(&PrimaryExpression{
+													IdentifierReference: &tk[0],
+													Tokens:              tk[0:1],
+												}).LogicalORExpression,
+
+												Tokens: tk[0:13],
+											},
+											Tokens: tk[0:13],
+										},
+									},
+									Tokens: tk[0:13],
+								},
+								Tokens: tk[0:13],
+							},
+							Tokens: tk[0:13],
+						},
+						Tokens: tk[0:13],
+					},
+				},
+				Tokens: tk[0:13],
 			}
 		}},
 	}, func(t *test) (Type, error) {
