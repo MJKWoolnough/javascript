@@ -3960,6 +3960,51 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[0:13],
 			}
 		}},
+		{`const a = (b :c) => {}`, func(t *test, tk Tokens) { // 107
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ArrowFunction: &ArrowFunction{
+													FormalParameters: &FormalParameters{
+														FormalParameterList: []BindingElement{
+															{
+																SingleNameBinding: &tk[7],
+																Tokens:            tk[7:8],
+															},
+														},
+														Tokens: tk[6:12],
+													},
+													FunctionBody: &Block{
+														Tokens: tk[15:17],
+													},
+													Tokens: tk[6:17],
+												},
+												Tokens: tk[6:17],
+											},
+											Tokens: tk[2:17],
+										},
+									},
+									Tokens: tk[:17],
+								},
+								Tokens: tk[:17],
+							},
+							Tokens: tk[:17],
+						},
+						Tokens: tk[:17],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
