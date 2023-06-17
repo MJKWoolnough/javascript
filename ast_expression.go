@@ -1059,6 +1059,7 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 			if err := cp.Expressions[e].parse(&g, true, yield, await); err != nil {
 				return j.Error("ParenthesizedExpression", err)
 			}
+			g.AcceptRunWhitespace()
 			if ae := &cp.Expressions[e]; ae.AssignmentOperator == AssignmentNone && g.SkipOptionalColonType() {
 				g.AcceptRunWhitespace()
 				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
