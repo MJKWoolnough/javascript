@@ -604,6 +604,11 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 	} else {
 		return j.Error("OptionalChain", ErrInvalidOptionalChain)
 	}
+	g := j.NewGoal()
+	g.AcceptRunWhitespaceNoNewLine()
+	if g.SkipForce() {
+		j.Score(g)
+	}
 	for {
 		oc.Tokens = j.ToTokens()
 		g := j.NewGoal()
@@ -653,6 +658,11 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			g.Score(h)
 		} else {
 			break
+		}
+		h := g.NewGoal()
+		h.AcceptRunWhitespaceNoNewLine()
+		if h.SkipForce() {
+			g.Score(h)
 		}
 		noc := new(OptionalChain)
 		*noc = *oc
