@@ -4005,6 +4005,56 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:17],
 			}
 		}},
+		{`const a = b?.c()!;`, func(t *test, tk Tokens) { // 108
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&OptionalExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[6],
+															Tokens:              tk[6:7],
+														},
+														Tokens: tk[6:7],
+													},
+													OptionalChain: OptionalChain{
+														OptionalChain: &OptionalChain{
+															IdentifierName: &tk[8],
+															Tokens:         tk[7:9],
+														},
+														Arguments: &Arguments{
+															Tokens: tk[9:11],
+														},
+														Tokens: tk[7:12],
+													},
+													Tokens: tk[6:12],
+												}),
+												Tokens: tk[6:12],
+											},
+											Tokens: tk[2:12],
+										},
+									},
+									Tokens: tk[:13],
+								},
+								Tokens: tk[:13],
+							},
+							Tokens: tk[:13],
+						},
+						Tokens: tk[:13],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
