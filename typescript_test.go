@@ -4055,6 +4055,23 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:13],
 			}
 		}},
+		{`type A = {[B in C]: D;}`, func(t *test, tk Tokens) { // 109
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								Tokens: tk[:19],
+							},
+							Tokens: tk[:19],
+						},
+						Tokens: tk[:19],
+					},
+				},
+				Tokens: tk[:19],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
