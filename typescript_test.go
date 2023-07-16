@@ -4072,6 +4072,39 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:19],
 			}
 		}},
+		{`function a<const B extends C[]>(d: B) {}`, func(t *test, tk Tokens) { // 110
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[2],
+									FormalParameters: FormalParameters{
+										FormalParameterList: []BindingElement{
+											{
+												SingleNameBinding: &tk[15],
+												Tokens:            tk[15:19],
+											},
+										},
+										Tokens: tk[14:20],
+									},
+									FunctionBody: Block{
+										Tokens: tk[21:23],
+									},
+									Tokens: tk[:23],
+								},
+								Tokens: tk[:23],
+							},
+							Tokens: tk[:23],
+						},
+						Tokens: tk[:23],
+					},
+				},
+				Tokens: tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
