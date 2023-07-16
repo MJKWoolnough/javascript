@@ -43,6 +43,9 @@ func (j *jsParser) ReadTypeParameters() bool {
 	}
 	for {
 		g.AcceptRunWhitespace()
+		if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "const"}) {
+			g.AcceptRunWhitespace()
+		}
 		if !g.ReadTypeParameter() {
 			return false
 		}
