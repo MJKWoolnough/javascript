@@ -496,7 +496,7 @@ func (j *jsParser) ReadPropertyName() bool {
 func (j *jsParser) ReadPropertySignature() bool {
 	g := j.NewGoal()
 	g.ReadModifiers()
-	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+	if !g.Accept(TokenIdentifier, TokenKeyword, TokenStringLiteral, TokenNumericLiteral) {
 		return false
 	}
 	g.AcceptRunWhitespace()
@@ -690,7 +690,7 @@ func (j *jsParser) ReadParameter() bool {
 func (j *jsParser) ReadMethodSignature() bool {
 	g := j.NewGoal()
 	g.ReadModifiers()
-	if !g.Accept(TokenIdentifier, TokenStringLiteral, TokenNumericLiteral) {
+	if !g.Accept(TokenIdentifier, TokenKeyword, TokenStringLiteral, TokenNumericLiteral) {
 		return false
 	}
 	g.AcceptRunWhitespace()
