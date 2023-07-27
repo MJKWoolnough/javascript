@@ -4122,6 +4122,52 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:28],
 			}
 		}},
+		{`((): this is b => true)`, func(t *test, tk Tokens) { // 112
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&ParenthesizedExpression{
+												Expressions: []AssignmentExpression{
+													{
+														ArrowFunction: &ArrowFunction{
+															FormalParameters: &FormalParameters{
+																Tokens: tk[1:3],
+															},
+															AssignmentExpression: &AssignmentExpression{
+																ConditionalExpression: WrapConditional(&PrimaryExpression{
+																	Literal: &tk[13],
+																	Tokens:  tk[13:14],
+																}),
+																Tokens: tk[13:14],
+															},
+															Tokens: tk[1:14],
+														},
+														Tokens: tk[1:14],
+													},
+												},
+												Tokens: tk[:15],
+											}),
+											Tokens: tk[:15],
+										},
+									},
+									Tokens: tk[:15],
+								},
+								Tokens: tk[:15],
+							},
+							Tokens: tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
