@@ -40,7 +40,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		}
 		j.Score(g)
 		j.AcceptRunWhitespace()
-		if j.SkipGeneric() {
+		if j.SkipTypeArguments() {
 			j.AcceptRunWhitespace()
 		}
 	}
