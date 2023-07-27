@@ -367,7 +367,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	}
 	j.AcceptRunWhitespace()
-	if j.SkipColonType() {
+	if j.SkipReturnType() {
 		j.AcceptRunWhitespace()
 	}
 	g := j.NewGoal()
