@@ -537,7 +537,7 @@ func (j *jsParser) ReadColonReturnType() bool {
 func (j *jsParser) ReadReturnType() bool {
 	g := j.NewGoal()
 	h := g.NewGoal()
-	if h.parseIdentifier(false, false) != nil {
+	if h.parseIdentifier(false, false) != nil || h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
 		h.AcceptRunWhitespaceNoNewLine()
 		if h.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "is"}) {
 			h.AcceptRunWhitespace()
