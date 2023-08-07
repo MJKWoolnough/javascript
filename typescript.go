@@ -217,6 +217,7 @@ func (j *jsParser) ReadPrimaryType() bool {
 		(*jsParser).ReadObjectOrMappedType,
 		(*jsParser).ReadTupleType,
 		(*jsParser).ReadThisType,
+		(*jsParser).ReadImportType,
 		(*jsParser).ReadTypeQuery,
 		(*jsParser).ReadTypeReference,
 	} {
@@ -751,6 +752,35 @@ func (j *jsParser) ReadTupleType() bool {
 
 func (j *jsParser) ReadThisType() bool {
 	return j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"})
+}
+
+func (j *jsParser) ReadImportType() bool {
+	g := j.NewGoal()
+	if !g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.ReadType() {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		return false
+	}
+	g.AcceptRunWhitespace()
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+		if !g.ReadTypeReference() {
+			return false
+		}
+		g.AcceptRunWhitespace()
+	}
+	g.ReadTypeArguments()
+	j.Score(g)
+	return true
 }
 
 func (j *jsParser) ReadTypeQuery() bool {
