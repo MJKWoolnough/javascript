@@ -4261,6 +4261,40 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:16],
 			}
 		}},
+		{`const a: import("mod").A = 1`, func(t *test, tk Tokens) { // 116
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: WrapConditional(&PrimaryExpression{
+													Literal: &tk[14],
+													Tokens:  tk[14:15],
+												}),
+												Tokens: tk[14:15],
+											},
+											Tokens: tk[2:15],
+										},
+									},
+									Tokens: tk[:15],
+								},
+								Tokens: tk[:15],
+							},
+							Tokens: tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
