@@ -711,6 +711,7 @@ func (j *jsParser) ReadTupleType() bool {
 		return false
 	}
 	g.AcceptRunWhitespace()
+
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		for {
 			h := g.NewGoal()
@@ -737,6 +738,11 @@ func (j *jsParser) ReadTupleType() bool {
 			}
 
 			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
+				g.AcceptRunWhitespace()
+			}
+
 			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				break
 			}
