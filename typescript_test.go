@@ -4312,6 +4312,58 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:11],
 			}
 		}},
+		{`a.method().method2<string>()`, func(t *test, tk Tokens) { // 118 {
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&CallExpression{
+												CallExpression: &CallExpression{
+													CallExpression: &CallExpression{
+														MemberExpression: &MemberExpression{
+															MemberExpression: &MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	IdentifierReference: &tk[0],
+																	Tokens:              tk[:1],
+																},
+																Tokens: tk[:1],
+															},
+															IdentifierName: &tk[2],
+															Tokens:         tk[:3],
+														},
+														Arguments: &Arguments{
+															Tokens: tk[3:5],
+														},
+														Tokens: tk[:5],
+													},
+													IdentifierName: &tk[6],
+													Tokens:         tk[:7],
+												},
+												Arguments: &Arguments{
+													Tokens: tk[7:12],
+												},
+												Tokens: tk[:12],
+											}),
+											Tokens: tk[:12],
+										},
+									},
+									Tokens: tk[:12],
+								},
+								Tokens: tk[:12],
+							},
+							Tokens: tk[:12],
+						},
+						Tokens: tk[:12],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
