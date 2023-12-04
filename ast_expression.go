@@ -573,12 +573,20 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		return j.Error("OptionalChain", ErrMissingOptional)
 	}
 	j.AcceptRunWhitespace()
-	if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
-		g := j.NewGoal()
+
+	g := j.NewGoal()
+
+	if g.SkipTypeArguments() {
+		g.AcceptRunWhitespace()
+	}
+
+	if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
+		h := g.NewGoal()
 		oc.Arguments = new(Arguments)
-		if err := oc.Arguments.parse(&g, yield, await); err != nil {
+		if err := oc.Arguments.parse(&h, yield, await); err != nil {
 			return j.Error("OptionalChain", err)
 		}
+		g.Score(h)
 		j.Score(g)
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 		j.AcceptRunWhitespace()
@@ -606,7 +614,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 	} else {
 		return j.Error("OptionalChain", ErrInvalidOptionalChain)
 	}
-	g := j.NewGoal()
+	g = j.NewGoal()
 	g.AcceptRunWhitespaceNoNewLine()
 	if g.SkipForce() {
 		j.Score(g)
