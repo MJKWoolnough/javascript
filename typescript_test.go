@@ -4405,6 +4405,51 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:7],
 			}
 		}},
+		{`a?.method<string>()`, func(t *test, tk Tokens) { // 120 {
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&OptionalExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[0],
+														Tokens:              tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												OptionalChain: OptionalChain{
+													OptionalChain: &OptionalChain{
+														IdentifierName: &tk[2],
+														Tokens:         tk[1:3],
+													},
+													Arguments: &Arguments{
+														Tokens: tk[6:8],
+													},
+													Tokens: tk[1:8],
+												},
+												Tokens: tk[:8],
+											}),
+											Tokens: tk[:8],
+										},
+									},
+									Tokens: tk[:8],
+								},
+								Tokens: tk[:8],
+							},
+							Tokens: tk[:8],
+						},
+						Tokens: tk[:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
