@@ -1,6 +1,8 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"vimagination.zapto.org/parser"
+)
 
 // AssignmentOperator specifies the type of assignment in AssignmentExpression
 type AssignmentOperator uint8
@@ -1219,19 +1221,21 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 	}
 	if !skip {
 		j.AcceptRunWhitespace()
-		if j.SkipTypeArguments() {
-			j.AcceptRunWhitespace()
-		}
 		g := j.NewGoal()
-		ce.Arguments = new(Arguments)
-		if err := ce.Arguments.parse(&g, yield, await); err != nil {
-			return j.Error("CallExpression", err)
+		if g.SkipTypeArguments() {
+			g.AcceptRunWhitespace()
 		}
 		h := g.NewGoal()
-		h.AcceptRunWhitespaceNoNewLine()
-		if h.SkipForce() {
-			g.Score(h)
+		ce.Arguments = new(Arguments)
+		if err := ce.Arguments.parse(&h, yield, await); err != nil {
+			return j.Error("CallExpression", err)
 		}
+		i := h.NewGoal()
+		i.AcceptRunWhitespaceNoNewLine()
+		if i.SkipForce() {
+			h.Score(i)
+		}
+		g.Score(h)
 		j.Score(g)
 	}
 	for {
@@ -1253,6 +1257,19 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			}
 		case TokenPunctuator:
 			switch tk.Data {
+			case "<":
+				i := h.NewGoal()
+				if i.SkipTypeArguments() {
+					i.AcceptRunWhitespace()
+				}
+
+				if i.Peek() != (parser.Token{Type: TokenPunctuator, Data: "("}) {
+					return nil
+				}
+
+				h.Score(i)
+
+				fallthrough
 			case "(":
 				a = new(Arguments)
 				if err := a.parse(&h, yield, await); err != nil {
