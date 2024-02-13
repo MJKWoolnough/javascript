@@ -1041,8 +1041,6 @@ i <J> () {}
 		}},
 		{`1 as number`, func(t *test, tk Tokens) { // 25
 			t.Typescript = true
-			one := makeConditionLiteral(tk, 0)
-			one.Tokens = tk[:5]
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
 					{
@@ -1051,8 +1049,20 @@ i <J> () {}
 								ExpressionStatement: &Expression{
 									Expressions: []AssignmentExpression{
 										{
-											ConditionalExpression: &one,
-											Tokens:                tk[:5],
+											ConditionalExpression: WrapConditional(&LeftHandSideExpression{
+												NewExpression: &NewExpression{
+													MemberExpression: MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															Literal: &tk[0],
+															Tokens:  tk[0:1],
+														},
+														Tokens: tk[0:1],
+													},
+													Tokens: tk[0:1],
+												},
+												Tokens: tk[0:5],
+											}),
+											Tokens: tk[:5],
 										},
 									},
 									Tokens: tk[:5],
@@ -1560,16 +1570,6 @@ i <J> () {}
 		}},
 		{"let a: B = c as D, [e] = f as const", func(t *test, tk Tokens) { // 41
 			t.Typescript = true
-			c := WrapConditional(&PrimaryExpression{
-				IdentifierReference: &tk[9],
-				Tokens:              tk[9:10],
-			})
-			c.Tokens = tk[9:14]
-			f := WrapConditional(&PrimaryExpression{
-				IdentifierReference: &tk[22],
-				Tokens:              tk[22:23],
-			})
-			f.Tokens = tk[22:27]
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
 					{
@@ -1580,8 +1580,20 @@ i <J> () {}
 										{
 											BindingIdentifier: &tk[2],
 											Initializer: &AssignmentExpression{
-												ConditionalExpression: c,
-												Tokens:                tk[9:14],
+												ConditionalExpression: WrapConditional(&LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[9],
+																Tokens:              tk[9:10],
+															},
+															Tokens: tk[9:10],
+														},
+														Tokens: tk[9:10],
+													},
+													Tokens: tk[9:14],
+												}),
+												Tokens: tk[9:14],
 											},
 											Tokens: tk[2:14],
 										},
@@ -1596,8 +1608,20 @@ i <J> () {}
 												Tokens: tk[16:19],
 											},
 											Initializer: &AssignmentExpression{
-												ConditionalExpression: f,
-												Tokens:                tk[22:27],
+												ConditionalExpression: WrapConditional(&LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[22],
+																Tokens:              tk[22:23],
+															},
+															Tokens: tk[22:23],
+														},
+														Tokens: tk[22:23],
+													},
+													Tokens: tk[22:27],
+												}),
+												Tokens: tk[22:27],
 											},
 											Tokens: tk[16:27],
 										},
@@ -3938,9 +3962,18 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 									Expressions: []AssignmentExpression{
 										{
 											ConditionalExpression: &ConditionalExpression{
-												LogicalORExpression: WrapConditional(&PrimaryExpression{
-													IdentifierReference: &tk[0],
-													Tokens:              tk[0:1],
+												LogicalORExpression: WrapConditional(&LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: &tk[0],
+																Tokens:              tk[0:1],
+															},
+															Tokens: tk[0:1],
+														},
+														Tokens: tk[0:1],
+													},
+													Tokens: tk[0:13],
 												}).LogicalORExpression,
 
 												Tokens: tk[0:13],
