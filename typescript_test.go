@@ -4483,6 +4483,62 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:8],
 			}
 		}},
+		{`const a = b as c ?? d`, func(t *test, tk Tokens) { // 121
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Declaration: &Declaration{
+								LexicalDeclaration: &LexicalDeclaration{
+									LetOrConst: Const,
+									BindingList: []LexicalBinding{
+										{
+											BindingIdentifier: &tk[2],
+											Initializer: &AssignmentExpression{
+												ConditionalExpression: &ConditionalExpression{
+													CoalesceExpression: &CoalesceExpression{
+														CoalesceExpressionHead: &CoalesceExpression{
+															BitwiseORExpression: WrapConditional(&LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			IdentifierReference: &tk[6],
+																			Tokens:              tk[6:7],
+																		},
+																		Tokens: tk[6:7],
+																	},
+																	Tokens: tk[6:7],
+																},
+																Tokens: tk[6:11],
+															}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+															Tokens: tk[6:11],
+														},
+														BitwiseORExpression: WrapConditional(&PrimaryExpression{
+															IdentifierReference: &tk[14],
+															Tokens:              tk[14:15],
+														}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression,
+														Tokens: tk[6:15],
+													},
+													Tokens: tk[6:15],
+												},
+												Tokens: tk[6:15],
+											},
+											Tokens: tk[2:15],
+										},
+									},
+									Tokens: tk[:15],
+								},
+								Tokens: tk[:15],
+							},
+							Tokens: tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
