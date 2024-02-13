@@ -283,6 +283,17 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 			lhs.NewExpression = nil
 		}
 	}
+	for {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+		if g.SkipAsType() {
+			j.Score(g)
+		} else {
+			break
+		}
+	}
+
 	lhs.Tokens = j.ToTokens()
 	return nil
 }
