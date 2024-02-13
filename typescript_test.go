@@ -4345,7 +4345,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:11],
 			}
 		}},
-		{`a.method().method2<string>()`, func(t *test, tk Tokens) { // 118 {
+		{`a.method().method2<string>()`, func(t *test, tk Tokens) { // 118
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4397,7 +4397,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:12],
 			}
 		}},
-		{`a?.<string>()`, func(t *test, tk Tokens) { // 119 {
+		{`a?.<string>()`, func(t *test, tk Tokens) { // 119
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4438,7 +4438,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:7],
 			}
 		}},
-		{`a?.method<string>()`, func(t *test, tk Tokens) { // 120 {
+		{`a?.method<string>()`, func(t *test, tk Tokens) { // 120
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
