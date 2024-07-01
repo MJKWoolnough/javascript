@@ -1134,6 +1134,12 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenNumericLiteral, Data: ".123_456"},
 			},
 		},
+		{ // 136
+			"`a\\`b`",
+			[]parser.Token{
+				{Type: TokenNoSubstitutionTemplate, Data: "`a\\`b`"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 		SetTokeniser(&p)

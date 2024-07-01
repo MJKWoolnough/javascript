@@ -520,7 +520,7 @@ func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
 	} else if t.Accept("0") {
 		return !t.Accept(decimalDigit)
 	}
-	t.Accept(singleEscapeChar)
+	t.Except(lineTerminators)
 	return true
 }
 
