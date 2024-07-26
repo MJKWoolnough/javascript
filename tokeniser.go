@@ -61,17 +61,11 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
 func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(whitespace) {
 		t.AcceptRun(whitespace)
-		return parser.Token{
-			Type: TokenWhitespace,
-			Data: t.Get(),
-		}, j.inputElement
+		return t.Return(TokenWhitespace, j.inputElement)
 	}
 	if t.Accept(lineTerminators) {
 		t.AcceptRun(lineTerminators)
-		return parser.Token{
-			Type: TokenLineTerminator,
-			Data: t.Get(),
-		}, j.inputElement
+		return t.Return(TokenLineTerminator, j.inputElement)
 	}
 	allowDivision := j.divisionAllowed
 	j.divisionAllowed = false
@@ -87,10 +81,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		t.Except("")
 		if t.Accept("/") {
 			t.ExceptRun(lineTerminators)
-			return parser.Token{
-				Type: TokenSingleLineComment,
-				Data: t.Get(),
-			}, j.inputElement
+			return t.Return(TokenSingleLineComment, j.inputElement)
 		}
 		if t.Accept("*") {
 			for {
@@ -98,10 +89,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 				t.Accept("*")
 				if t.Accept("/") {
 					j.divisionAllowed = allowDivision
-					return parser.Token{
-						Type: TokenMultiLineComment,
-						Data: t.Get(),
-					}, j.inputElement
+					return t.Return(TokenMultiLineComment, j.inputElement)
 				}
 				if t.Peek() == -1 {
 					t.Err = io.ErrUnexpectedEOF
@@ -112,10 +100,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		}
 		if allowDivision {
 			t.Accept("=")
-			return parser.Token{
-				Type: TokenDivPunctuator,
-				Data: t.Get(),
-			}, j.inputElement
+			return t.Return(TokenDivPunctuator, j.inputElement)
 		}
 		j.divisionAllowed = true
 		return j.regexp(t)
@@ -124,10 +109,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		switch j.lastDepth() {
 		case '{':
 			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
-			return parser.Token{
-				Type: TokenRightBracePunctuator,
-				Data: t.Get(),
-			}, j.inputElement
+			return t.Return(TokenRightBracePunctuator, j.inputElement)
 		case '$':
 			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
 			return j.template(t)
@@ -242,10 +224,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					numberRun(t, decimalDigit)
 				}
 				j.divisionAllowed = true
-				return parser.Token{
-					Type: TokenNumericLiteral,
-					Data: t.Get(),
-				}, j.inputElement
+				return t.Return(TokenNumericLiteral, j.inputElement)
 			}
 		case '<', '*':
 			if !t.Accept("=") { // <=, *=
@@ -279,10 +258,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
 			return t.Error()
 		}
-		return parser.Token{
-			Type: TokenPunctuator,
-			Data: t.Get(),
-		}, j.inputElement
+		return t.Return(TokenPunctuator, j.inputElement)
 	}
 }
 
@@ -370,10 +346,7 @@ Loop:
 		}
 		t.Except("")
 	}
-	return parser.Token{
-		Type: TokenRegularExpressionLiteral,
-		Data: t.Get(),
-	}, j.inputElement
+	return t.Return(TokenRegularExpressionLiteral, j.inputElement)
 }
 
 func numberRun(t *parser.Tokeniser, digits string) bool {
@@ -453,10 +426,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			}
 		}
 	}
-	return parser.Token{
-		Type: TokenNumericLiteral,
-		Data: t.Get(),
-	}, j.inputElement
+	return t.Return(TokenNumericLiteral, j.inputElement)
 }
 
 func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -481,10 +451,7 @@ func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 		}
 		break
 	}
-	return parser.Token{
-		Type: TokenIdentifier,
-		Data: t.Get(),
-	}, j.inputElement
+	return t.Return(TokenIdentifier, j.inputElement)
 }
 
 func (j *jsTokeniser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
@@ -560,10 +527,7 @@ Loop:
 		}
 		return t.Error()
 	}
-	return parser.Token{
-		Type: TokenStringLiteral,
-		Data: t.Get(),
-	}, j.inputElement
+	return t.Return(TokenStringLiteral, j.inputElement)
 }
 
 func (j *jsTokeniser) template(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
