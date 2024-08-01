@@ -39,6 +39,7 @@ func newJSParser(t Tokeniser) (jsParser, error) {
 			Line:    line,
 			LinePos: linePos,
 		})
+
 		switch tk.Type {
 		case parser.TokenDone:
 			return tokens[0:0:len(tokens)], nil
@@ -52,32 +53,40 @@ func newJSParser(t Tokeniser) (jsParser, error) {
 			switch tk.Type {
 			case TokenLineTerminator:
 				var lastChar rune
+
 				for _, c := range tk.Data {
 					if lastChar != '\r' || c != '\n' {
 						line++
 					}
+
 					lastChar = c
 				}
+
 				linePos = 0
 			case TokenNoSubstitutionTemplate, TokenTemplateHead, TokenTemplateMiddle, TokenTemplateTail, TokenMultiLineComment:
 				var (
 					lastLT   int
 					lastChar rune
 				)
+
 				for n, c := range tk.Data {
 					if strings.ContainsRune(lineTerminators, c) {
 						lastLT = n + 1
 						linePos = 0
+
 						if lastChar != '\r' || c != '\n' {
 							line++
 						}
 					}
+
 					lastChar = c
 				}
+
 				linePos += uint64(len(tk.Data) - lastLT)
 			default:
 				linePos += uint64(len(tk.Data))
 			}
+
 			pos += uint64(len(tk.Data))
 		}
 	}
@@ -96,8 +105,10 @@ func (j *jsParser) next() Token {
 	if l == cap(*j) {
 		return (*j)[l-1]
 	}
+
 	*j = (*j)[:l+1]
 	tk := (*j)[l]
+
 	return tk
 }
 
@@ -107,18 +118,23 @@ func (j *jsParser) backup() {
 
 func (j *jsParser) Peek() parser.Token {
 	tk := j.next().Token
+
 	j.backup()
+
 	return tk
 }
 
 func (j *jsParser) Accept(ts ...parser.TokenType) bool {
 	tt := j.next().Type
+
 	for _, pt := range ts {
 		if pt == tt {
 			return true
 		}
 	}
+
 	j.backup()
+
 	return false
 }
 
@@ -126,12 +142,15 @@ func (j *jsParser) AcceptRun(ts ...parser.TokenType) parser.TokenType {
 Loop:
 	for {
 		tt := j.next().Type
+
 		for _, pt := range ts {
 			if pt == tt {
 				continue Loop
 			}
 		}
+
 		j.backup()
+
 		return tt
 	}
 }
@@ -143,9 +162,11 @@ func (j *jsParser) Skip() {
 func (j *jsParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
 	for {
 		tt := j.next().Type
+
 		for _, pt := range ts {
 			if pt == tt || tt < 0 {
 				j.backup()
+
 				return tt
 			}
 		}
@@ -156,7 +177,9 @@ func (j *jsParser) AcceptToken(tk parser.Token) bool {
 	if j.next().Token == tk {
 		return true
 	}
+
 	j.backup()
+
 	return false
 }
 
@@ -170,14 +193,16 @@ func (j *jsParser) AcceptRunWhitespace() parser.TokenType {
 
 func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 	var tt parser.TokenType
+
 	for {
-		tt = j.AcceptRun(TokenWhitespace)
-		if tt != TokenMultiLineComment {
+		if tt = j.AcceptRun(TokenWhitespace); tt != TokenMultiLineComment {
 			return tt
 		}
+
 		if strings.ContainsAny(j.Peek().Data, lineTerminators) {
 			return tt
 		}
+
 		j.Skip()
 	}
 }
@@ -205,7 +230,9 @@ func (e Error) Unwrap() error {
 
 func (j *jsParser) Error(parsingFunc string, err error) error {
 	tk := j.next()
+
 	j.backup()
+
 	return Error{
 		Err:     err,
 		Parsing: parsingFunc,
