@@ -176,7 +176,9 @@ var (
 func (f *AdditiveExpression) printType(w io.Writer, v bool) {
 	w.Write(nameAdditiveExpression[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.AdditiveExpression != nil {
 		pp.Write(nameAdditiveExpression)
 		f.AdditiveExpression.printType(&pp, v)
@@ -184,75 +186,95 @@ func (f *AdditiveExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameAdditiveExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameAdditiveOperator)
 	io.WriteString(&pp, f.AdditiveOperator.String())
 	pp.Write(nameMultiplicativeExpression)
 	f.MultiplicativeExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Argument) printType(w io.Writer, v bool) {
 	w.Write(nameArgument[1:9])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Spread || v {
 		pp.Printf("\nSpread: %v", f.Spread)
 	}
+
 	pp.Write(nameAssignmentExpression)
 	f.AssignmentExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Arguments) printType(w io.Writer, v bool) {
 	w.Write(nameArguments[1:10])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ArgumentList == nil {
 		pp.Write(nameArgumentList)
 		pp.Write(nilStr)
 	} else if len(f.ArgumentList) > 0 {
 		pp.Write(nameArgumentList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ArgumentList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameArgumentList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ArrayAssignmentPattern) printType(w io.Writer, v bool) {
 	w.Write(nameArrayAssignmentPattern[1:23])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.AssignmentElements == nil {
 		pp.Write(nameAssignmentElements)
 		pp.Write(nilStr)
 	} else if len(f.AssignmentElements) > 0 {
 		pp.Write(nameAssignmentElements)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.AssignmentElements {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameAssignmentElements)
@@ -265,33 +287,41 @@ func (f *ArrayAssignmentPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentRestElement)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ArrayBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(nameArrayBindingPattern[1:20])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BindingElementList == nil {
 		pp.Write(nameBindingElementList)
 		pp.Write(nilStr)
 	} else if len(f.BindingElementList) > 0 {
 		pp.Write(nameBindingElementList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.BindingElementList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameBindingElementList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.BindingRestElement != nil {
 		pp.Write(nameBindingRestElement)
 		f.BindingRestElement.printType(&pp, v)
@@ -299,63 +329,80 @@ func (f *ArrayBindingPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingRestElement)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ArrayElement) printType(w io.Writer, v bool) {
 	w.Write(nameArrayElement[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Spread || v {
 		pp.Printf("\nSpread: %v", f.Spread)
 	}
+
 	pp.Write(nameAssignmentExpression)
 	f.AssignmentExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ArrayLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameArrayLiteral[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ElementList == nil {
 		pp.Write(nameElementList)
 		pp.Write(nilStr)
 	} else if len(f.ElementList) > 0 {
 		pp.Write(nameElementList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ElementList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameElementList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ArrowFunction) printType(w io.Writer, v bool) {
 	w.Write(nameArrowFunction[1:14])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Async || v {
 		pp.Printf("\nAsync: %v", f.Async)
 	}
+
 	if f.BindingIdentifier != nil {
 		pp.Write(nameBindingIdentifier)
 		f.BindingIdentifier.printType(&pp, v)
@@ -363,6 +410,7 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.FormalParameters != nil {
 		pp.Write(nameFormalParameters)
 		f.FormalParameters.printType(&pp, v)
@@ -370,6 +418,7 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 		pp.Write(nameFormalParameters)
 		pp.Write(nilStr)
 	}
+
 	if f.AssignmentExpression != nil {
 		pp.Write(nameAssignmentExpression)
 		f.AssignmentExpression.printType(&pp, v)
@@ -377,6 +426,7 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.FunctionBody != nil {
 		pp.Write(nameFunctionBody)
 		f.FunctionBody.printType(&pp, v)
@@ -384,19 +434,24 @@ func (f *ArrowFunction) printType(w io.Writer, v bool) {
 		pp.Write(nameFunctionBody)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *AssignmentElement) printType(w io.Writer, v bool) {
 	w.Write(nameAssignmentElement[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameDestructuringAssignmentTarget)
 	f.DestructuringAssignmentTarget.printType(&pp, v)
+
 	if f.Initializer != nil {
 		pp.Write(nameInitializer)
 		f.Initializer.printType(&pp, v)
@@ -404,17 +459,21 @@ func (f *AssignmentElement) printType(w io.Writer, v bool) {
 		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 	w.Write(nameAssignmentExpression[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ConditionalExpression != nil {
 		pp.Write(nameConditionalExpression)
 		f.ConditionalExpression.printType(&pp, v)
@@ -422,6 +481,7 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameConditionalExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrowFunction != nil {
 		pp.Write(nameArrowFunction)
 		f.ArrowFunction.printType(&pp, v)
@@ -429,6 +489,7 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameArrowFunction)
 		pp.Write(nilStr)
 	}
+
 	if f.LeftHandSideExpression != nil {
 		pp.Write(nameLeftHandSideExpression)
 		f.LeftHandSideExpression.printType(&pp, v)
@@ -436,6 +497,7 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLeftHandSideExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.AssignmentPattern != nil {
 		pp.Write(nameAssignmentPattern)
 		f.AssignmentPattern.printType(&pp, v)
@@ -443,14 +505,18 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.Yield || v {
 		pp.Printf("\nYield: %v", f.Yield)
 	}
+
 	if f.Delegate || v {
 		pp.Printf("\nDelegate: %v", f.Delegate)
 	}
+
 	pp.Write(nameAssignmentOperator)
 	io.WriteString(&pp, f.AssignmentOperator.String())
+
 	if f.AssignmentExpression != nil {
 		pp.Write(nameAssignmentExpression)
 		f.AssignmentExpression.printType(&pp, v)
@@ -458,17 +524,21 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentExpression)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *AssignmentPattern) printType(w io.Writer, v bool) {
 	w.Write(nameAssignmentPattern[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ObjectAssignmentPattern != nil {
 		pp.Write(nameObjectAssignmentPattern)
 		f.ObjectAssignmentPattern.printType(&pp, v)
@@ -476,6 +546,7 @@ func (f *AssignmentPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameObjectAssignmentPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrayAssignmentPattern != nil {
 		pp.Write(nameArrayAssignmentPattern)
 		f.ArrayAssignmentPattern.printType(&pp, v)
@@ -483,19 +554,24 @@ func (f *AssignmentPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameArrayAssignmentPattern)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *AssignmentProperty) printType(w io.Writer, v bool) {
 	w.Write(nameAssignmentProperty[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(namePropertyName)
 	f.PropertyName.printType(&pp, v)
+
 	if f.DestructuringAssignmentTarget != nil {
 		pp.Write(nameDestructuringAssignmentTarget)
 		f.DestructuringAssignmentTarget.printType(&pp, v)
@@ -503,6 +579,7 @@ func (f *AssignmentProperty) printType(w io.Writer, v bool) {
 		pp.Write(nameDestructuringAssignmentTarget)
 		pp.Write(nilStr)
 	}
+
 	if f.Initializer != nil {
 		pp.Write(nameInitializer)
 		f.Initializer.printType(&pp, v)
@@ -510,17 +587,21 @@ func (f *AssignmentProperty) printType(w io.Writer, v bool) {
 		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *BindingElement) printType(w io.Writer, v bool) {
 	w.Write(nameBindingElement[1:15])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.SingleNameBinding != nil {
 		pp.Write(nameSingleNameBinding)
 		f.SingleNameBinding.printType(&pp, v)
@@ -528,6 +609,7 @@ func (f *BindingElement) printType(w io.Writer, v bool) {
 		pp.Write(nameSingleNameBinding)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrayBindingPattern != nil {
 		pp.Write(nameArrayBindingPattern)
 		f.ArrayBindingPattern.printType(&pp, v)
@@ -535,6 +617,7 @@ func (f *BindingElement) printType(w io.Writer, v bool) {
 		pp.Write(nameArrayBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.ObjectBindingPattern != nil {
 		pp.Write(nameObjectBindingPattern)
 		f.ObjectBindingPattern.printType(&pp, v)
@@ -542,6 +625,7 @@ func (f *BindingElement) printType(w io.Writer, v bool) {
 		pp.Write(nameObjectBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.Initializer != nil {
 		pp.Write(nameInitializer)
 		f.Initializer.printType(&pp, v)
@@ -549,32 +633,40 @@ func (f *BindingElement) printType(w io.Writer, v bool) {
 		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *BindingProperty) printType(w io.Writer, v bool) {
 	w.Write(nameBindingProperty[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(namePropertyName)
 	f.PropertyName.printType(&pp, v)
 	pp.Write(nameBindingElement)
 	f.BindingElement.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *BitwiseANDExpression) printType(w io.Writer, v bool) {
 	w.Write(nameBitwiseANDExpression[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BitwiseANDExpression != nil {
 		pp.Write(nameBitwiseANDExpression)
 		f.BitwiseANDExpression.printType(&pp, v)
@@ -582,19 +674,24 @@ func (f *BitwiseANDExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameBitwiseANDExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameEqualityExpression)
 	f.EqualityExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *BitwiseORExpression) printType(w io.Writer, v bool) {
 	w.Write(nameBitwiseORExpression[1:20])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BitwiseORExpression != nil {
 		pp.Write(nameBitwiseORExpression)
 		f.BitwiseORExpression.printType(&pp, v)
@@ -602,19 +699,24 @@ func (f *BitwiseORExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameBitwiseORExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameBitwiseXORExpression)
 	f.BitwiseXORExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *BitwiseXORExpression) printType(w io.Writer, v bool) {
 	w.Write(nameBitwiseXORExpression[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BitwiseXORExpression != nil {
 		pp.Write(nameBitwiseXORExpression)
 		f.BitwiseXORExpression.printType(&pp, v)
@@ -622,46 +724,58 @@ func (f *BitwiseXORExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameBitwiseXORExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameBitwiseANDExpression)
 	f.BitwiseANDExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Block) printType(w io.Writer, v bool) {
 	w.Write(nameBlock[1:6])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.StatementList == nil {
 		pp.Write(nameStatementList)
 		pp.Write(nilStr)
 	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *CallExpression) printType(w io.Writer, v bool) {
 	w.Write(nameCallExpression[1:15])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.MemberExpression != nil {
 		pp.Write(nameMemberExpression)
 		f.MemberExpression.printType(&pp, v)
@@ -669,9 +783,11 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameMemberExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.SuperCall || v {
 		pp.Printf("\nSuperCall: %v", f.SuperCall)
 	}
+
 	if f.ImportCall != nil {
 		pp.Write(nameImportCall)
 		f.ImportCall.printType(&pp, v)
@@ -679,6 +795,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameImportCall)
 		pp.Write(nilStr)
 	}
+
 	if f.CallExpression != nil {
 		pp.Write(nameCallExpression)
 		f.CallExpression.printType(&pp, v)
@@ -686,6 +803,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCallExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.Arguments != nil {
 		pp.Write(nameArguments)
 		f.Arguments.printType(&pp, v)
@@ -693,6 +811,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameArguments)
 		pp.Write(nilStr)
 	}
+
 	if f.Expression != nil {
 		pp.Write(nameExpression)
 		f.Expression.printType(&pp, v)
@@ -700,6 +819,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.IdentifierName != nil {
 		pp.Write(nameIdentifierName)
 		f.IdentifierName.printType(&pp, v)
@@ -707,6 +827,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if f.TemplateLiteral != nil {
 		pp.Write(nameTemplateLiteral)
 		f.TemplateLiteral.printType(&pp, v)
@@ -714,6 +835,7 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.PrivateIdentifier != nil {
 		pp.Write(namePrivateIdentifier)
 		f.PrivateIdentifier.printType(&pp, v)
@@ -721,46 +843,58 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *CaseClause) printType(w io.Writer, v bool) {
 	w.Write(nameCaseClause[1:11])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
+
 	if f.StatementList == nil {
 		pp.Write(nameStatementList)
 		pp.Write(nilStr)
 	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 	w.Write(nameClassDeclaration[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BindingIdentifier != nil {
 		pp.Write(nameBindingIdentifier)
 		f.BindingIdentifier.printType(&pp, v)
@@ -768,6 +902,7 @@ func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.ClassHeritage != nil {
 		pp.Write(nameClassHeritage)
 		f.ClassHeritage.printType(&pp, v)
@@ -775,36 +910,45 @@ func (f *ClassDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameClassHeritage)
 		pp.Write(nilStr)
 	}
+
 	if f.ClassBody == nil {
 		pp.Write(nameClassBody)
 		pp.Write(nilStr)
 	} else if len(f.ClassBody) > 0 {
 		pp.Write(nameClassBody)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ClassBody {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameClassBody)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ClassElement) printType(w io.Writer, v bool) {
 	w.Write(nameClassElement[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Static || v {
 		pp.Printf("\nStatic: %v", f.Static)
 	}
+
 	if f.MethodDefinition != nil {
 		pp.Write(nameMethodDefinition)
 		f.MethodDefinition.printType(&pp, v)
@@ -812,6 +956,7 @@ func (f *ClassElement) printType(w io.Writer, v bool) {
 		pp.Write(nameMethodDefinition)
 		pp.Write(nilStr)
 	}
+
 	if f.FieldDefinition != nil {
 		pp.Write(nameFieldDefinition)
 		f.FieldDefinition.printType(&pp, v)
@@ -819,6 +964,7 @@ func (f *ClassElement) printType(w io.Writer, v bool) {
 		pp.Write(nameFieldDefinition)
 		pp.Write(nilStr)
 	}
+
 	if f.ClassStaticBlock != nil {
 		pp.Write(nameClassStaticBlock)
 		f.ClassStaticBlock.printType(&pp, v)
@@ -826,17 +972,21 @@ func (f *ClassElement) printType(w io.Writer, v bool) {
 		pp.Write(nameClassStaticBlock)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ClassElementName) printType(w io.Writer, v bool) {
 	w.Write(nameClassElementName[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.PropertyName != nil {
 		pp.Write(namePropertyName)
 		f.PropertyName.printType(&pp, v)
@@ -844,6 +994,7 @@ func (f *ClassElementName) printType(w io.Writer, v bool) {
 		pp.Write(namePropertyName)
 		pp.Write(nilStr)
 	}
+
 	if f.PrivateIdentifier != nil {
 		pp.Write(namePrivateIdentifier)
 		f.PrivateIdentifier.printType(&pp, v)
@@ -851,17 +1002,21 @@ func (f *ClassElementName) printType(w io.Writer, v bool) {
 		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *CoalesceExpression) printType(w io.Writer, v bool) {
 	w.Write(nameCoalesceExpression[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.CoalesceExpressionHead != nil {
 		pp.Write(nameCoalesceExpressionHead)
 		f.CoalesceExpressionHead.printType(&pp, v)
@@ -869,19 +1024,24 @@ func (f *CoalesceExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCoalesceExpressionHead)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameBitwiseORExpression)
 	f.BitwiseORExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 	w.Write(nameConditionalExpression[1:22])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LogicalORExpression != nil {
 		pp.Write(nameLogicalORExpression)
 		f.LogicalORExpression.printType(&pp, v)
@@ -889,6 +1049,7 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLogicalORExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.CoalesceExpression != nil {
 		pp.Write(nameCoalesceExpression)
 		f.CoalesceExpression.printType(&pp, v)
@@ -896,6 +1057,7 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCoalesceExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.True != nil {
 		pp.Write(nameTrue)
 		f.True.printType(&pp, v)
@@ -903,6 +1065,7 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameTrue)
 		pp.Write(nilStr)
 	}
+
 	if f.False != nil {
 		pp.Write(nameFalse)
 		f.False.printType(&pp, v)
@@ -910,33 +1073,41 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameFalse)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 	w.Write(nameParenthesizedExpression[1:24])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Expressions == nil {
 		pp.Write(nameExpressions)
 		pp.Write(nilStr)
 	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.bindingIdentifier != nil {
 		pp.Write(namebindingIdentifier)
 		f.bindingIdentifier.printType(&pp, v)
@@ -944,6 +1115,7 @@ func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 		pp.Write(namebindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.arrayBindingPattern != nil {
 		pp.Write(namearrayBindingPattern)
 		f.arrayBindingPattern.printType(&pp, v)
@@ -951,6 +1123,7 @@ func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 		pp.Write(namearrayBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.objectBindingPattern != nil {
 		pp.Write(nameobjectBindingPattern)
 		f.objectBindingPattern.printType(&pp, v)
@@ -958,17 +1131,21 @@ func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameobjectBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Declaration) printType(w io.Writer, v bool) {
 	w.Write(nameDeclaration[1:12])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ClassDeclaration != nil {
 		pp.Write(nameClassDeclaration)
 		f.ClassDeclaration.printType(&pp, v)
@@ -976,6 +1153,7 @@ func (f *Declaration) printType(w io.Writer, v bool) {
 		pp.Write(nameClassDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if f.FunctionDeclaration != nil {
 		pp.Write(nameFunctionDeclaration)
 		f.FunctionDeclaration.printType(&pp, v)
@@ -983,6 +1161,7 @@ func (f *Declaration) printType(w io.Writer, v bool) {
 		pp.Write(nameFunctionDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if f.LexicalDeclaration != nil {
 		pp.Write(nameLexicalDeclaration)
 		f.LexicalDeclaration.printType(&pp, v)
@@ -990,17 +1169,21 @@ func (f *Declaration) printType(w io.Writer, v bool) {
 		pp.Write(nameLexicalDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *DestructuringAssignmentTarget) printType(w io.Writer, v bool) {
 	w.Write(nameDestructuringAssignmentTarget[1:30])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LeftHandSideExpression != nil {
 		pp.Write(nameLeftHandSideExpression)
 		f.LeftHandSideExpression.printType(&pp, v)
@@ -1008,6 +1191,7 @@ func (f *DestructuringAssignmentTarget) printType(w io.Writer, v bool) {
 		pp.Write(nameLeftHandSideExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.AssignmentPattern != nil {
 		pp.Write(nameAssignmentPattern)
 		f.AssignmentPattern.printType(&pp, v)
@@ -1015,17 +1199,21 @@ func (f *DestructuringAssignmentTarget) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentPattern)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *EqualityExpression) printType(w io.Writer, v bool) {
 	w.Write(nameEqualityExpression[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.EqualityExpression != nil {
 		pp.Write(nameEqualityExpression)
 		f.EqualityExpression.printType(&pp, v)
@@ -1033,21 +1221,26 @@ func (f *EqualityExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameEqualityExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameEqualityOperator)
 	io.WriteString(&pp, f.EqualityOperator.String())
 	pp.Write(nameRelationalExpression)
 	f.RelationalExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ExponentiationExpression) printType(w io.Writer, v bool) {
 	w.Write(nameExponentiationExpression[1:25])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ExponentiationExpression != nil {
 		pp.Write(nameExponentiationExpression)
 		f.ExponentiationExpression.printType(&pp, v)
@@ -1055,8 +1248,10 @@ func (f *ExponentiationExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameExponentiationExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameUnaryExpression)
 	f.UnaryExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
@@ -1067,34 +1262,43 @@ func (f *ExponentiationExpression) printType(w io.Writer, v bool) {
 func (f *ExportClause) printType(w io.Writer, v bool) {
 	w.Write(nameExportClause[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ExportList == nil {
 		pp.Write(nameExportList)
 		pp.Write(nilStr)
 	} else if len(f.ExportList) > 0 {
 		pp.Write(nameExportList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ExportList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameExportList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 	w.Write(nameExportDeclaration[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ExportClause != nil {
 		pp.Write(nameExportClause)
 		f.ExportClause.printType(&pp, v)
@@ -1102,6 +1306,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameExportClause)
 		pp.Write(nilStr)
 	}
+
 	if f.ExportFromClause != nil {
 		pp.Write(nameExportFromClause)
 		f.ExportFromClause.printType(&pp, v)
@@ -1109,6 +1314,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameExportFromClause)
 		pp.Write(nilStr)
 	}
+
 	if f.FromClause != nil {
 		pp.Write(nameFromClause)
 		f.FromClause.printType(&pp, v)
@@ -1116,6 +1322,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameFromClause)
 		pp.Write(nilStr)
 	}
+
 	if f.VariableStatement != nil {
 		pp.Write(nameVariableStatement)
 		f.VariableStatement.printType(&pp, v)
@@ -1123,6 +1330,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameVariableStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.Declaration != nil {
 		pp.Write(nameDeclaration)
 		f.Declaration.printType(&pp, v)
@@ -1130,6 +1338,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if f.DefaultFunction != nil {
 		pp.Write(nameDefaultFunction)
 		f.DefaultFunction.printType(&pp, v)
@@ -1137,6 +1346,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameDefaultFunction)
 		pp.Write(nilStr)
 	}
+
 	if f.DefaultClass != nil {
 		pp.Write(nameDefaultClass)
 		f.DefaultClass.printType(&pp, v)
@@ -1144,6 +1354,7 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameDefaultClass)
 		pp.Write(nilStr)
 	}
+
 	if f.DefaultAssignmentExpression != nil {
 		pp.Write(nameDefaultAssignmentExpression)
 		f.DefaultAssignmentExpression.printType(&pp, v)
@@ -1151,17 +1362,21 @@ func (f *ExportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameDefaultAssignmentExpression)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ExportSpecifier) printType(w io.Writer, v bool) {
 	w.Write(nameExportSpecifier[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.IdentifierName != nil {
 		pp.Write(nameIdentifierName)
 		f.IdentifierName.printType(&pp, v)
@@ -1169,6 +1384,7 @@ func (f *ExportSpecifier) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if f.EIdentifierName != nil {
 		pp.Write(nameEIdentifierName)
 		f.EIdentifierName.printType(&pp, v)
@@ -1176,46 +1392,58 @@ func (f *ExportSpecifier) printType(w io.Writer, v bool) {
 		pp.Write(nameEIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Expression) printType(w io.Writer, v bool) {
 	w.Write(nameExpression[1:11])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Expressions == nil {
 		pp.Write(nameExpressions)
 		pp.Write(nilStr)
 	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *FieldDefinition) printType(w io.Writer, v bool) {
 	w.Write(nameFieldDefinition[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameClassElementName)
 	f.ClassElementName.printType(&pp, v)
+
 	if f.Initializer != nil {
 		pp.Write(nameInitializer)
 		f.Initializer.printType(&pp, v)
@@ -1223,33 +1451,41 @@ func (f *FieldDefinition) printType(w io.Writer, v bool) {
 		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *FormalParameters) printType(w io.Writer, v bool) {
 	w.Write(nameFormalParameters[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.FormalParameterList == nil {
 		pp.Write(nameFormalParameterList)
 		pp.Write(nilStr)
 	} else if len(f.FormalParameterList) > 0 {
 		pp.Write(nameFormalParameterList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.FormalParameterList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameFormalParameterList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.BindingIdentifier != nil {
 		pp.Write(nameBindingIdentifier)
 		f.BindingIdentifier.printType(&pp, v)
@@ -1257,6 +1493,7 @@ func (f *FormalParameters) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrayBindingPattern != nil {
 		pp.Write(nameArrayBindingPattern)
 		f.ArrayBindingPattern.printType(&pp, v)
@@ -1264,6 +1501,7 @@ func (f *FormalParameters) printType(w io.Writer, v bool) {
 		pp.Write(nameArrayBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.ObjectBindingPattern != nil {
 		pp.Write(nameObjectBindingPattern)
 		f.ObjectBindingPattern.printType(&pp, v)
@@ -1271,17 +1509,21 @@ func (f *FormalParameters) printType(w io.Writer, v bool) {
 		pp.Write(nameObjectBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *FromClause) printType(w io.Writer, v bool) {
 	w.Write(nameFromClause[1:11])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ModuleSpecifier != nil {
 		pp.Write(nameModuleSpecifier)
 		f.ModuleSpecifier.printType(&pp, v)
@@ -1289,19 +1531,24 @@ func (f *FromClause) printType(w io.Writer, v bool) {
 		pp.Write(nameModuleSpecifier)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *FunctionDeclaration) printType(w io.Writer, v bool) {
 	w.Write(nameFunctionDeclaration[1:20])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameType)
 	io.WriteString(&pp, f.Type.String())
+
 	if f.BindingIdentifier != nil {
 		pp.Write(nameBindingIdentifier)
 		f.BindingIdentifier.printType(&pp, v)
@@ -1309,25 +1556,31 @@ func (f *FunctionDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameFormalParameters)
 	f.FormalParameters.printType(&pp, v)
 	pp.Write(nameFunctionBody)
 	f.FunctionBody.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *IfStatement) printType(w io.Writer, v bool) {
 	w.Write(nameIfStatement[1:12])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
 	pp.Write(nameStatement)
 	f.Statement.printType(&pp, v)
+
 	if f.ElseStatement != nil {
 		pp.Write(nameElseStatement)
 		f.ElseStatement.printType(&pp, v)
@@ -1335,17 +1588,21 @@ func (f *IfStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameElseStatement)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ImportClause) printType(w io.Writer, v bool) {
 	w.Write(nameImportClause[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ImportedDefaultBinding != nil {
 		pp.Write(nameImportedDefaultBinding)
 		f.ImportedDefaultBinding.printType(&pp, v)
@@ -1353,6 +1610,7 @@ func (f *ImportClause) printType(w io.Writer, v bool) {
 		pp.Write(nameImportedDefaultBinding)
 		pp.Write(nilStr)
 	}
+
 	if f.NameSpaceImport != nil {
 		pp.Write(nameNameSpaceImport)
 		f.NameSpaceImport.printType(&pp, v)
@@ -1360,6 +1618,7 @@ func (f *ImportClause) printType(w io.Writer, v bool) {
 		pp.Write(nameNameSpaceImport)
 		pp.Write(nilStr)
 	}
+
 	if f.NamedImports != nil {
 		pp.Write(nameNamedImports)
 		f.NamedImports.printType(&pp, v)
@@ -1367,17 +1626,21 @@ func (f *ImportClause) printType(w io.Writer, v bool) {
 		pp.Write(nameNamedImports)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ImportDeclaration) printType(w io.Writer, v bool) {
 	w.Write(nameImportDeclaration[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ImportClause != nil {
 		pp.Write(nameImportClause)
 		f.ImportClause.printType(&pp, v)
@@ -1385,19 +1648,24 @@ func (f *ImportDeclaration) printType(w io.Writer, v bool) {
 		pp.Write(nameImportClause)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameFromClause)
 	f.FromClause.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ImportSpecifier) printType(w io.Writer, v bool) {
 	w.Write(nameImportSpecifier[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.IdentifierName != nil {
 		pp.Write(nameIdentifierName)
 		f.IdentifierName.printType(&pp, v)
@@ -1405,6 +1673,7 @@ func (f *ImportSpecifier) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if f.ImportedBinding != nil {
 		pp.Write(nameImportedBinding)
 		f.ImportedBinding.printType(&pp, v)
@@ -1412,34 +1681,43 @@ func (f *ImportSpecifier) printType(w io.Writer, v bool) {
 		pp.Write(nameImportedBinding)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *IterationStatementDo) printType(w io.Writer, v bool) {
 	w.Write(nameIterationStatementDo[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameStatement)
 	f.Statement.printType(&pp, v)
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 	w.Write(nameIterationStatementFor[1:22])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameType)
 	io.WriteString(&pp, f.Type.String())
+
 	if f.InitExpression != nil {
 		pp.Write(nameInitExpression)
 		f.InitExpression.printType(&pp, v)
@@ -1447,22 +1725,27 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameInitExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.InitVar == nil {
 		pp.Write(nameInitVar)
 		pp.Write(nilStr)
 	} else if len(f.InitVar) > 0 {
 		pp.Write(nameInitVar)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.InitVar {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameInitVar)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.InitLexical != nil {
 		pp.Write(nameInitLexical)
 		f.InitLexical.printType(&pp, v)
@@ -1470,6 +1753,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameInitLexical)
 		pp.Write(nilStr)
 	}
+
 	if f.Conditional != nil {
 		pp.Write(nameConditional)
 		f.Conditional.printType(&pp, v)
@@ -1477,6 +1761,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameConditional)
 		pp.Write(nilStr)
 	}
+
 	if f.Afterthought != nil {
 		pp.Write(nameAfterthought)
 		f.Afterthought.printType(&pp, v)
@@ -1484,6 +1769,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameAfterthought)
 		pp.Write(nilStr)
 	}
+
 	if f.LeftHandSideExpression != nil {
 		pp.Write(nameLeftHandSideExpression)
 		f.LeftHandSideExpression.printType(&pp, v)
@@ -1491,6 +1777,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameLeftHandSideExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.ForBindingIdentifier != nil {
 		pp.Write(nameForBindingIdentifier)
 		f.ForBindingIdentifier.printType(&pp, v)
@@ -1498,6 +1785,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameForBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.ForBindingPatternObject != nil {
 		pp.Write(nameForBindingPatternObject)
 		f.ForBindingPatternObject.printType(&pp, v)
@@ -1505,6 +1793,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameForBindingPatternObject)
 		pp.Write(nilStr)
 	}
+
 	if f.ForBindingPatternArray != nil {
 		pp.Write(nameForBindingPatternArray)
 		f.ForBindingPatternArray.printType(&pp, v)
@@ -1512,6 +1801,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameForBindingPatternArray)
 		pp.Write(nilStr)
 	}
+
 	if f.In != nil {
 		pp.Write(nameIn)
 		f.In.printType(&pp, v)
@@ -1519,6 +1809,7 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameIn)
 		pp.Write(nilStr)
 	}
+
 	if f.Of != nil {
 		pp.Write(nameOf)
 		f.Of.printType(&pp, v)
@@ -1526,34 +1817,43 @@ func (f *IterationStatementFor) printType(w io.Writer, v bool) {
 		pp.Write(nameOf)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameStatement)
 	f.Statement.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *IterationStatementWhile) printType(w io.Writer, v bool) {
 	w.Write(nameIterationStatementWhile[1:24])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
 	pp.Write(nameStatement)
 	f.Statement.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
 	w.Write(nameLeftHandSideExpression[1:23])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.NewExpression != nil {
 		pp.Write(nameNewExpression)
 		f.NewExpression.printType(&pp, v)
@@ -1561,6 +1861,7 @@ func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameNewExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.CallExpression != nil {
 		pp.Write(nameCallExpression)
 		f.CallExpression.printType(&pp, v)
@@ -1568,6 +1869,7 @@ func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCallExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.OptionalExpression != nil {
 		pp.Write(nameOptionalExpression)
 		f.OptionalExpression.printType(&pp, v)
@@ -1575,17 +1877,21 @@ func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameOptionalExpression)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *LexicalBinding) printType(w io.Writer, v bool) {
 	w.Write(nameLexicalBinding[1:15])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BindingIdentifier != nil {
 		pp.Write(nameBindingIdentifier)
 		f.BindingIdentifier.printType(&pp, v)
@@ -1593,6 +1899,7 @@ func (f *LexicalBinding) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrayBindingPattern != nil {
 		pp.Write(nameArrayBindingPattern)
 		f.ArrayBindingPattern.printType(&pp, v)
@@ -1600,6 +1907,7 @@ func (f *LexicalBinding) printType(w io.Writer, v bool) {
 		pp.Write(nameArrayBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.ObjectBindingPattern != nil {
 		pp.Write(nameObjectBindingPattern)
 		f.ObjectBindingPattern.printType(&pp, v)
@@ -1607,6 +1915,7 @@ func (f *LexicalBinding) printType(w io.Writer, v bool) {
 		pp.Write(nameObjectBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.Initializer != nil {
 		pp.Write(nameInitializer)
 		f.Initializer.printType(&pp, v)
@@ -1614,46 +1923,58 @@ func (f *LexicalBinding) printType(w io.Writer, v bool) {
 		pp.Write(nameInitializer)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *LexicalDeclaration) printType(w io.Writer, v bool) {
 	w.Write(nameLexicalDeclaration[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameLetOrConst)
 	io.WriteString(&pp, f.LetOrConst.String())
+
 	if f.BindingList == nil {
 		pp.Write(nameBindingList)
 		pp.Write(nilStr)
 	} else if len(f.BindingList) > 0 {
 		pp.Write(nameBindingList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.BindingList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameBindingList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *LogicalANDExpression) printType(w io.Writer, v bool) {
 	w.Write(nameLogicalANDExpression[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LogicalANDExpression != nil {
 		pp.Write(nameLogicalANDExpression)
 		f.LogicalANDExpression.printType(&pp, v)
@@ -1661,19 +1982,24 @@ func (f *LogicalANDExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLogicalANDExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameBitwiseORExpression)
 	f.BitwiseORExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *LogicalORExpression) printType(w io.Writer, v bool) {
 	w.Write(nameLogicalORExpression[1:20])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LogicalORExpression != nil {
 		pp.Write(nameLogicalORExpression)
 		f.LogicalORExpression.printType(&pp, v)
@@ -1681,19 +2007,24 @@ func (f *LogicalORExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLogicalORExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameLogicalANDExpression)
 	f.LogicalANDExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *MemberExpression) printType(w io.Writer, v bool) {
 	w.Write(nameMemberExpression[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.MemberExpression != nil {
 		pp.Write(nameMemberExpression)
 		f.MemberExpression.printType(&pp, v)
@@ -1701,6 +2032,7 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameMemberExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.PrimaryExpression != nil {
 		pp.Write(namePrimaryExpression)
 		f.PrimaryExpression.printType(&pp, v)
@@ -1708,6 +2040,7 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(namePrimaryExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.Expression != nil {
 		pp.Write(nameExpression)
 		f.Expression.printType(&pp, v)
@@ -1715,6 +2048,7 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.IdentifierName != nil {
 		pp.Write(nameIdentifierName)
 		f.IdentifierName.printType(&pp, v)
@@ -1722,6 +2056,7 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if f.TemplateLiteral != nil {
 		pp.Write(nameTemplateLiteral)
 		f.TemplateLiteral.printType(&pp, v)
@@ -1729,15 +2064,19 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.SuperProperty || v {
 		pp.Printf("\nSuperProperty: %v", f.SuperProperty)
 	}
+
 	if f.NewTarget || v {
 		pp.Printf("\nNewTarget: %v", f.NewTarget)
 	}
+
 	if f.ImportMeta || v {
 		pp.Printf("\nImportMeta: %v", f.ImportMeta)
 	}
+
 	if f.Arguments != nil {
 		pp.Write(nameArguments)
 		f.Arguments.printType(&pp, v)
@@ -1745,6 +2084,7 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameArguments)
 		pp.Write(nilStr)
 	}
+
 	if f.PrivateIdentifier != nil {
 		pp.Write(namePrivateIdentifier)
 		f.PrivateIdentifier.printType(&pp, v)
@@ -1752,17 +2092,21 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *MethodDefinition) printType(w io.Writer, v bool) {
 	w.Write(nameMethodDefinition[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameType)
 	io.WriteString(&pp, f.Type.String())
 	pp.Write(nameClassElementName)
@@ -1771,44 +2115,55 @@ func (f *MethodDefinition) printType(w io.Writer, v bool) {
 	f.Params.printType(&pp, v)
 	pp.Write(nameFunctionBody)
 	f.FunctionBody.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Module) printType(w io.Writer, v bool) {
 	w.Write(nameModule[1:7])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ModuleListItems == nil {
 		pp.Write(nameModuleListItems)
 		pp.Write(nilStr)
 	} else if len(f.ModuleListItems) > 0 {
 		pp.Write(nameModuleListItems)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ModuleListItems {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameModuleListItems)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ModuleItem) printType(w io.Writer, v bool) {
 	w.Write(nameModuleItem[1:11])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ImportDeclaration != nil {
 		pp.Write(nameImportDeclaration)
 		f.ImportDeclaration.printType(&pp, v)
@@ -1816,6 +2171,7 @@ func (f *ModuleItem) printType(w io.Writer, v bool) {
 		pp.Write(nameImportDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if f.StatementListItem != nil {
 		pp.Write(nameStatementListItem)
 		f.StatementListItem.printType(&pp, v)
@@ -1823,6 +2179,7 @@ func (f *ModuleItem) printType(w io.Writer, v bool) {
 		pp.Write(nameStatementListItem)
 		pp.Write(nilStr)
 	}
+
 	if f.ExportDeclaration != nil {
 		pp.Write(nameExportDeclaration)
 		f.ExportDeclaration.printType(&pp, v)
@@ -1830,17 +2187,21 @@ func (f *ModuleItem) printType(w io.Writer, v bool) {
 		pp.Write(nameExportDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *MultiplicativeExpression) printType(w io.Writer, v bool) {
 	w.Write(nameMultiplicativeExpression[1:25])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.MultiplicativeExpression != nil {
 		pp.Write(nameMultiplicativeExpression)
 		f.MultiplicativeExpression.printType(&pp, v)
@@ -1848,78 +2209,98 @@ func (f *MultiplicativeExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameMultiplicativeExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameMultiplicativeOperator)
 	io.WriteString(&pp, f.MultiplicativeOperator.String())
 	pp.Write(nameExponentiationExpression)
 	f.ExponentiationExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *NamedImports) printType(w io.Writer, v bool) {
 	w.Write(nameNamedImports[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ImportList == nil {
 		pp.Write(nameImportList)
 		pp.Write(nilStr)
 	} else if len(f.ImportList) > 0 {
 		pp.Write(nameImportList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.ImportList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameImportList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *NewExpression) printType(w io.Writer, v bool) {
 	w.Write(nameNewExpression[1:14])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Printf("\nNews: %d", f.News)
 	pp.Write(nameMemberExpression)
 	f.MemberExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ObjectAssignmentPattern) printType(w io.Writer, v bool) {
 	w.Write(nameObjectAssignmentPattern[1:24])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.AssignmentPropertyList == nil {
 		pp.Write(nameAssignmentPropertyList)
 		pp.Write(nilStr)
 	} else if len(f.AssignmentPropertyList) > 0 {
 		pp.Write(nameAssignmentPropertyList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.AssignmentPropertyList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameAssignmentPropertyList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.AssignmentRestElement != nil {
 		pp.Write(nameAssignmentRestElement)
 		f.AssignmentRestElement.printType(&pp, v)
@@ -1927,33 +2308,41 @@ func (f *ObjectAssignmentPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentRestElement)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ObjectBindingPattern) printType(w io.Writer, v bool) {
 	w.Write(nameObjectBindingPattern[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.BindingPropertyList == nil {
 		pp.Write(nameBindingPropertyList)
 		pp.Write(nilStr)
 	} else if len(f.BindingPropertyList) > 0 {
 		pp.Write(nameBindingPropertyList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.BindingPropertyList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameBindingPropertyList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.BindingRestProperty != nil {
 		pp.Write(nameBindingRestProperty)
 		f.BindingRestProperty.printType(&pp, v)
@@ -1961,44 +2350,55 @@ func (f *ObjectBindingPattern) printType(w io.Writer, v bool) {
 		pp.Write(nameBindingRestProperty)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ObjectLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameObjectLiteral[1:14])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.PropertyDefinitionList == nil {
 		pp.Write(namePropertyDefinitionList)
 		pp.Write(nilStr)
 	} else if len(f.PropertyDefinitionList) > 0 {
 		pp.Write(namePropertyDefinitionList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.PropertyDefinitionList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(namePropertyDefinitionList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *OptionalChain) printType(w io.Writer, v bool) {
 	w.Write(nameOptionalChain[1:14])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.OptionalChain != nil {
 		pp.Write(nameOptionalChain)
 		f.OptionalChain.printType(&pp, v)
@@ -2006,6 +2406,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(nameOptionalChain)
 		pp.Write(nilStr)
 	}
+
 	if f.Arguments != nil {
 		pp.Write(nameArguments)
 		f.Arguments.printType(&pp, v)
@@ -2013,6 +2414,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(nameArguments)
 		pp.Write(nilStr)
 	}
+
 	if f.Expression != nil {
 		pp.Write(nameExpression)
 		f.Expression.printType(&pp, v)
@@ -2020,6 +2422,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(nameExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.IdentifierName != nil {
 		pp.Write(nameIdentifierName)
 		f.IdentifierName.printType(&pp, v)
@@ -2027,6 +2430,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierName)
 		pp.Write(nilStr)
 	}
+
 	if f.TemplateLiteral != nil {
 		pp.Write(nameTemplateLiteral)
 		f.TemplateLiteral.printType(&pp, v)
@@ -2034,6 +2438,7 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.PrivateIdentifier != nil {
 		pp.Write(namePrivateIdentifier)
 		f.PrivateIdentifier.printType(&pp, v)
@@ -2041,17 +2446,21 @@ func (f *OptionalChain) printType(w io.Writer, v bool) {
 		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *OptionalExpression) printType(w io.Writer, v bool) {
 	w.Write(nameOptionalExpression[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.MemberExpression != nil {
 		pp.Write(nameMemberExpression)
 		f.MemberExpression.printType(&pp, v)
@@ -2059,6 +2468,7 @@ func (f *OptionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameMemberExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.CallExpression != nil {
 		pp.Write(nameCallExpression)
 		f.CallExpression.printType(&pp, v)
@@ -2066,6 +2476,7 @@ func (f *OptionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameCallExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.OptionalExpression != nil {
 		pp.Write(nameOptionalExpression)
 		f.OptionalExpression.printType(&pp, v)
@@ -2073,19 +2484,24 @@ func (f *OptionalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameOptionalExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameOptionalChain)
 	f.OptionalChain.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 	w.Write(namePrimaryExpression[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.This != nil {
 		pp.Write(nameThis)
 		f.This.printType(&pp, v)
@@ -2093,6 +2509,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameThis)
 		pp.Write(nilStr)
 	}
+
 	if f.IdentifierReference != nil {
 		pp.Write(nameIdentifierReference)
 		f.IdentifierReference.printType(&pp, v)
@@ -2100,6 +2517,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameIdentifierReference)
 		pp.Write(nilStr)
 	}
+
 	if f.Literal != nil {
 		pp.Write(nameLiteral)
 		f.Literal.printType(&pp, v)
@@ -2107,6 +2525,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.ArrayLiteral != nil {
 		pp.Write(nameArrayLiteral)
 		f.ArrayLiteral.printType(&pp, v)
@@ -2114,6 +2533,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameArrayLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.ObjectLiteral != nil {
 		pp.Write(nameObjectLiteral)
 		f.ObjectLiteral.printType(&pp, v)
@@ -2121,6 +2541,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameObjectLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.FunctionExpression != nil {
 		pp.Write(nameFunctionExpression)
 		f.FunctionExpression.printType(&pp, v)
@@ -2128,6 +2549,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameFunctionExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.ClassExpression != nil {
 		pp.Write(nameClassExpression)
 		f.ClassExpression.printType(&pp, v)
@@ -2135,6 +2557,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameClassExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.TemplateLiteral != nil {
 		pp.Write(nameTemplateLiteral)
 		f.TemplateLiteral.printType(&pp, v)
@@ -2142,6 +2565,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateLiteral)
 		pp.Write(nilStr)
 	}
+
 	if f.ParenthesizedExpression != nil {
 		pp.Write(nameParenthesizedExpression)
 		f.ParenthesizedExpression.printType(&pp, v)
@@ -2149,20 +2573,25 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameParenthesizedExpression)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *PropertyDefinition) printType(w io.Writer, v bool) {
 	w.Write(namePropertyDefinition[1:19])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.IsCoverInitializedName || v {
 		pp.Printf("\nIsCoverInitializedName: %v", f.IsCoverInitializedName)
 	}
+
 	if f.PropertyName != nil {
 		pp.Write(namePropertyName)
 		f.PropertyName.printType(&pp, v)
@@ -2170,6 +2599,7 @@ func (f *PropertyDefinition) printType(w io.Writer, v bool) {
 		pp.Write(namePropertyName)
 		pp.Write(nilStr)
 	}
+
 	if f.AssignmentExpression != nil {
 		pp.Write(nameAssignmentExpression)
 		f.AssignmentExpression.printType(&pp, v)
@@ -2177,6 +2607,7 @@ func (f *PropertyDefinition) printType(w io.Writer, v bool) {
 		pp.Write(nameAssignmentExpression)
 		pp.Write(nilStr)
 	}
+
 	if f.MethodDefinition != nil {
 		pp.Write(nameMethodDefinition)
 		f.MethodDefinition.printType(&pp, v)
@@ -2184,17 +2615,21 @@ func (f *PropertyDefinition) printType(w io.Writer, v bool) {
 		pp.Write(nameMethodDefinition)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *PropertyName) printType(w io.Writer, v bool) {
 	w.Write(namePropertyName[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LiteralPropertyName != nil {
 		pp.Write(nameLiteralPropertyName)
 		f.LiteralPropertyName.printType(&pp, v)
@@ -2202,6 +2637,7 @@ func (f *PropertyName) printType(w io.Writer, v bool) {
 		pp.Write(nameLiteralPropertyName)
 		pp.Write(nilStr)
 	}
+
 	if f.ComputedPropertyName != nil {
 		pp.Write(nameComputedPropertyName)
 		f.ComputedPropertyName.printType(&pp, v)
@@ -2209,17 +2645,21 @@ func (f *PropertyName) printType(w io.Writer, v bool) {
 		pp.Write(nameComputedPropertyName)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *RelationalExpression) printType(w io.Writer, v bool) {
 	w.Write(nameRelationalExpression[1:21])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.PrivateIdentifier != nil {
 		pp.Write(namePrivateIdentifier)
 		f.PrivateIdentifier.printType(&pp, v)
@@ -2227,6 +2667,7 @@ func (f *RelationalExpression) printType(w io.Writer, v bool) {
 		pp.Write(namePrivateIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.RelationalExpression != nil {
 		pp.Write(nameRelationalExpression)
 		f.RelationalExpression.printType(&pp, v)
@@ -2234,48 +2675,60 @@ func (f *RelationalExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameRelationalExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameRelationshipOperator)
 	io.WriteString(&pp, f.RelationshipOperator.String())
 	pp.Write(nameShiftExpression)
 	f.ShiftExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Script) printType(w io.Writer, v bool) {
 	w.Write(nameScript[1:7])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.StatementList == nil {
 		pp.Write(nameStatementList)
 		pp.Write(nilStr)
 	} else if len(f.StatementList) > 0 {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameStatementList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *ShiftExpression) printType(w io.Writer, v bool) {
 	w.Write(nameShiftExpression[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.ShiftExpression != nil {
 		pp.Write(nameShiftExpression)
 		f.ShiftExpression.printType(&pp, v)
@@ -2283,23 +2736,29 @@ func (f *ShiftExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameShiftExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameShiftOperator)
 	io.WriteString(&pp, f.ShiftOperator.String())
 	pp.Write(nameAdditiveExpression)
 	f.AdditiveExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *Statement) printType(w io.Writer, v bool) {
 	w.Write(nameStatement[1:10])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameType)
 	io.WriteString(&pp, f.Type.String())
+
 	if f.BlockStatement != nil {
 		pp.Write(nameBlockStatement)
 		f.BlockStatement.printType(&pp, v)
@@ -2307,6 +2766,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameBlockStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.VariableStatement != nil {
 		pp.Write(nameVariableStatement)
 		f.VariableStatement.printType(&pp, v)
@@ -2314,6 +2774,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameVariableStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.ExpressionStatement != nil {
 		pp.Write(nameExpressionStatement)
 		f.ExpressionStatement.printType(&pp, v)
@@ -2321,6 +2782,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameExpressionStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.IfStatement != nil {
 		pp.Write(nameIfStatement)
 		f.IfStatement.printType(&pp, v)
@@ -2328,6 +2790,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameIfStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.IterationStatementDo != nil {
 		pp.Write(nameIterationStatementDo)
 		f.IterationStatementDo.printType(&pp, v)
@@ -2335,6 +2798,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameIterationStatementDo)
 		pp.Write(nilStr)
 	}
+
 	if f.IterationStatementWhile != nil {
 		pp.Write(nameIterationStatementWhile)
 		f.IterationStatementWhile.printType(&pp, v)
@@ -2342,6 +2806,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameIterationStatementWhile)
 		pp.Write(nilStr)
 	}
+
 	if f.IterationStatementFor != nil {
 		pp.Write(nameIterationStatementFor)
 		f.IterationStatementFor.printType(&pp, v)
@@ -2349,6 +2814,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameIterationStatementFor)
 		pp.Write(nilStr)
 	}
+
 	if f.SwitchStatement != nil {
 		pp.Write(nameSwitchStatement)
 		f.SwitchStatement.printType(&pp, v)
@@ -2356,6 +2822,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameSwitchStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.WithStatement != nil {
 		pp.Write(nameWithStatement)
 		f.WithStatement.printType(&pp, v)
@@ -2363,6 +2830,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameWithStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.LabelIdentifier != nil {
 		pp.Write(nameLabelIdentifier)
 		f.LabelIdentifier.printType(&pp, v)
@@ -2370,6 +2838,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameLabelIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.LabelledItemFunction != nil {
 		pp.Write(nameLabelledItemFunction)
 		f.LabelledItemFunction.printType(&pp, v)
@@ -2377,6 +2846,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameLabelledItemFunction)
 		pp.Write(nilStr)
 	}
+
 	if f.LabelledItemStatement != nil {
 		pp.Write(nameLabelledItemStatement)
 		f.LabelledItemStatement.printType(&pp, v)
@@ -2384,6 +2854,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameLabelledItemStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.TryStatement != nil {
 		pp.Write(nameTryStatement)
 		f.TryStatement.printType(&pp, v)
@@ -2391,17 +2862,21 @@ func (f *Statement) printType(w io.Writer, v bool) {
 		pp.Write(nameTryStatement)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *StatementListItem) printType(w io.Writer, v bool) {
 	w.Write(nameStatementListItem[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.Statement != nil {
 		pp.Write(nameStatement)
 		f.Statement.printType(&pp, v)
@@ -2409,6 +2884,7 @@ func (f *StatementListItem) printType(w io.Writer, v bool) {
 		pp.Write(nameStatement)
 		pp.Write(nilStr)
 	}
+
 	if f.Declaration != nil {
 		pp.Write(nameDeclaration)
 		f.Declaration.printType(&pp, v)
@@ -2416,78 +2892,98 @@ func (f *StatementListItem) printType(w io.Writer, v bool) {
 		pp.Write(nameDeclaration)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *SwitchStatement) printType(w io.Writer, v bool) {
 	w.Write(nameSwitchStatement[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
+
 	if f.CaseClauses == nil {
 		pp.Write(nameCaseClauses)
 		pp.Write(nilStr)
 	} else if len(f.CaseClauses) > 0 {
 		pp.Write(nameCaseClauses)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.CaseClauses {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameCaseClauses)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.DefaultClause == nil {
 		pp.Write(nameDefaultClause)
 		pp.Write(nilStr)
 	} else if len(f.DefaultClause) > 0 {
 		pp.Write(nameDefaultClause)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.DefaultClause {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameDefaultClause)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.PostDefaultCaseClauses == nil {
 		pp.Write(namePostDefaultCaseClauses)
 		pp.Write(nilStr)
 	} else if len(f.PostDefaultCaseClauses) > 0 {
 		pp.Write(namePostDefaultCaseClauses)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.PostDefaultCaseClauses {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(namePostDefaultCaseClauses)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 	w.Write(nameTemplateLiteral[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.NoSubstitutionTemplate != nil {
 		pp.Write(nameNoSubstitutionTemplate)
 		f.NoSubstitutionTemplate.printType(&pp, v)
@@ -2495,6 +2991,7 @@ func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 		pp.Write(nameNoSubstitutionTemplate)
 		pp.Write(nilStr)
 	}
+
 	if f.TemplateHead != nil {
 		pp.Write(nameTemplateHead)
 		f.TemplateHead.printType(&pp, v)
@@ -2502,38 +2999,47 @@ func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateHead)
 		pp.Write(nilStr)
 	}
+
 	if f.Expressions == nil {
 		pp.Write(nameExpressions)
 		pp.Write(nilStr)
 	} else if len(f.Expressions) > 0 {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameExpressions)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.TemplateMiddleList == nil {
 		pp.Write(nameTemplateMiddleList)
 		pp.Write(nilStr)
 	} else if len(f.TemplateMiddleList) > 0 {
 		pp.Write(nameTemplateMiddleList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.TemplateMiddleList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameTemplateMiddleList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if f.TemplateTail != nil {
 		pp.Write(nameTemplateTail)
 		f.TemplateTail.printType(&pp, v)
@@ -2541,19 +3047,24 @@ func (f *TemplateLiteral) printType(w io.Writer, v bool) {
 		pp.Write(nameTemplateTail)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *TryStatement) printType(w io.Writer, v bool) {
 	w.Write(nameTryStatement[1:13])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameTryBlock)
 	f.TryBlock.printType(&pp, v)
+
 	if f.CatchParameterBindingIdentifier != nil {
 		pp.Write(nameCatchParameterBindingIdentifier)
 		f.CatchParameterBindingIdentifier.printType(&pp, v)
@@ -2561,6 +3072,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameCatchParameterBindingIdentifier)
 		pp.Write(nilStr)
 	}
+
 	if f.CatchParameterObjectBindingPattern != nil {
 		pp.Write(nameCatchParameterObjectBindingPattern)
 		f.CatchParameterObjectBindingPattern.printType(&pp, v)
@@ -2568,6 +3080,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameCatchParameterObjectBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.CatchParameterArrayBindingPattern != nil {
 		pp.Write(nameCatchParameterArrayBindingPattern)
 		f.CatchParameterArrayBindingPattern.printType(&pp, v)
@@ -2575,6 +3088,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameCatchParameterArrayBindingPattern)
 		pp.Write(nilStr)
 	}
+
 	if f.CatchBlock != nil {
 		pp.Write(nameCatchBlock)
 		f.CatchBlock.printType(&pp, v)
@@ -2582,6 +3096,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameCatchBlock)
 		pp.Write(nilStr)
 	}
+
 	if f.FinallyBlock != nil {
 		pp.Write(nameFinallyBlock)
 		f.FinallyBlock.printType(&pp, v)
@@ -2589,46 +3104,58 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 		pp.Write(nameFinallyBlock)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *UnaryExpression) printType(w io.Writer, v bool) {
 	w.Write(nameUnaryExpression[1:16])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.UnaryOperators == nil {
 		pp.Write(nameUnaryOperators)
 		pp.Write(nilStr)
 	} else if len(f.UnaryOperators) > 0 {
 		pp.Write(nameUnaryOperators)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.UnaryOperators {
 			ipp.Printf("\n%d:", n)
 			ipp.WriteString(e.String())
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameUnaryOperators)
 		pp.Write(arrayOpenClose)
 	}
+
 	pp.Write(nameUpdateExpression)
 	f.UpdateExpression.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *UpdateExpression) printType(w io.Writer, v bool) {
 	w.Write(nameUpdateExpression[1:17])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.LeftHandSideExpression != nil {
 		pp.Write(nameLeftHandSideExpression)
 		f.LeftHandSideExpression.printType(&pp, v)
@@ -2636,8 +3163,10 @@ func (f *UpdateExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameLeftHandSideExpression)
 		pp.Write(nilStr)
 	}
+
 	pp.Write(nameUpdateOperator)
 	io.WriteString(&pp, f.UpdateOperator.String())
+
 	if f.UnaryExpression != nil {
 		pp.Write(nameUnaryExpression)
 		f.UnaryExpression.printType(&pp, v)
@@ -2645,52 +3174,65 @@ func (f *UpdateExpression) printType(w io.Writer, v bool) {
 		pp.Write(nameUnaryExpression)
 		pp.Write(nilStr)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *VariableStatement) printType(w io.Writer, v bool) {
 	w.Write(nameVariableStatement[1:18])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	if f.VariableDeclarationList == nil {
 		pp.Write(nameVariableDeclarationList)
 		pp.Write(nilStr)
 	} else if len(f.VariableDeclarationList) > 0 {
 		pp.Write(nameVariableDeclarationList)
 		pp.Write(arrayOpen)
+
 		ipp := indentPrinter{&pp}
+
 		for n, e := range f.VariableDeclarationList {
 			ipp.Printf("\n%d:", n)
 			e.printType(&ipp, v)
 		}
+
 		pp.Write(arrayClose)
 	} else if v {
 		pp.Write(nameVariableDeclarationList)
 		pp.Write(arrayOpenClose)
 	}
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
 func (f *WithStatement) printType(w io.Writer, v bool) {
 	w.Write(nameWithStatement[1:14])
 	w.Write(objectOpen)
+
 	pp := indentPrinter{w}
+
 	pp.Write(nameExpression)
 	f.Expression.printType(&pp, v)
 	pp.Write(nameStatement)
 	f.Statement.printType(&pp, v)
+
 	if v {
 		pp.Write(tokensTo)
 		f.Tokens.printType(&pp, v)
 	}
+
 	w.Write(objectClose)
 }
 
@@ -2923,6 +3465,7 @@ func (l LetOrConst) String() string {
 	if l {
 		return "Const"
 	}
+
 	return "Let"
 }
 
