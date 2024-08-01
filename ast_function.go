@@ -33,54 +33,72 @@ type FunctionDeclaration struct {
 func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		fd.Type = FunctionAsync
+
 		j.AcceptRunWhitespaceNoNewLine()
 	}
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
 		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
+
 	j.AcceptRunWhitespace()
+
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 		if fd.Type == FunctionAsync {
 			fd.Type = FunctionAsyncGenerator
 		} else {
 			fd.Type = FunctionGenerator
 		}
+
 		j.AcceptRunWhitespace()
 	}
+
 	if bi := j.parseIdentifier(yield, await); bi == nil {
 		if !def {
 			return j.Error("FunctionDeclaration", ErrNoIdentifier)
 		}
 	} else {
 		fd.BindingIdentifier = bi
+
 		for {
 			g := j.NewGoal()
+
 			if g.SkipFunctionOverload(bi, yield, await) {
 				j.Score(g)
 			} else {
 				break
 			}
 		}
+
 		j.AcceptRunWhitespace()
 	}
+
 	if j.SkipGeneric() {
 		j.AcceptRunWhitespace()
 	}
+
 	g := j.NewGoal()
+
 	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
 		return j.Error("FunctionDeclaration", err)
 	}
+
 	j.Score(g)
 	j.AcceptRunWhitespace()
+
 	if j.SkipReturnType() {
 		j.AcceptRunWhitespace()
 	}
+
 	g = j.NewGoal()
+
 	if err := fd.FunctionBody.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync, true); err != nil {
 		return j.Error("FunctionDeclaration", err)
 	}
+
 	j.Score(g)
+
 	fd.Tokens = j.ToTokens()
+
 	return nil
 }
 
@@ -101,19 +119,26 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
 	}
+
 	j.AcceptRunWhitespace()
+
 	if j.SkipThisParam() {
 		j.AcceptRunWhitespace()
+
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			j.AcceptRunWhitespace()
 		}
 	}
+
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
+
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
 				g.AcceptRunWhitespace()
+
 				h := g.NewGoal()
+
 				if t := h.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 					fp.ArrayBindingPattern = new(ArrayBindingPattern)
 					if err := fp.ArrayBindingPattern.parse(&h, yield, await); err != nil {
@@ -127,56 +152,74 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 				} else if fp.BindingIdentifier = h.parseIdentifier(yield, await); fp.BindingIdentifier == nil {
 					return g.Error("FormalParameters", ErrNoIdentifier)
 				}
+
 				g.Score(h)
 				j.Score(g)
 				j.AcceptRunWhitespace()
+
 				if j.SkipColonType() {
 					j.AcceptRunWhitespace()
 				}
+
 				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 					return j.Error("FormalParameters", ErrMissingClosingParenthesis)
 				}
+
 				break
 			}
+
 			h := g.NewGoal()
 			be := len(fp.FormalParameterList)
+
 			fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
 			if err := fp.FormalParameterList[be].parse(&h, nil, yield, await); err != nil {
 				return g.Error("FormalParameters", err)
 			}
+
 			g.Score(h)
 			j.Score(g)
 			j.AcceptRunWhitespace()
+
 			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
 			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				return j.Error("FormalParameters", ErrMissingComma)
 			}
+
 			j.AcceptRunWhitespace()
 		}
 	}
+
 	fp.Tokens = j.ToTokens()
+
 	return nil
 }
 
 func (fp *FormalParameters) from(ce *ParenthesizedExpression) error {
 	for n := range ce.Expressions {
 		ae := &ce.Expressions[n]
+
 		if ae.Yield || ae.ArrowFunction != nil {
 			z := jsParser(ce.Tokens[:0])
+
 			return z.Error("FormalParameters", ErrNoIdentifier)
 		}
+
 		var be BindingElement
+
 		if err := be.from(ae); err != nil {
 			z := jsParser(ce.Tokens[:0])
 			return z.Error("FormalParameters", err)
 		}
+
 		fp.FormalParameterList = append(fp.FormalParameterList, be)
 	}
+
 	fp.BindingIdentifier = ce.bindingIdentifier
 	fp.ArrayBindingPattern = ce.arrayBindingPattern
 	fp.ObjectBindingPattern = ce.objectBindingPattern
 	fp.Tokens = ce.Tokens
+
 	return nil
 }
 
@@ -197,40 +240,54 @@ type BindingElement struct {
 
 func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, await bool) error {
 	g := j.NewGoal()
+
 	if singleNameBinding != nil {
 		be.SingleNameBinding = singleNameBinding
 	} else if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
+
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
 	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
+
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
 	} else if be.SingleNameBinding = g.parseIdentifier(yield, await); be.SingleNameBinding == nil {
 		return j.Error("BindingElement", ErrNoIdentifier)
 	}
+
 	j.Score(g)
+
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
+
 	if g.SkipOptionalColonType() {
 		j.Score(g)
+
 		g = j.NewGoal()
+
 		g.AcceptRunWhitespace()
 	}
+
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		g.AcceptRunWhitespace()
 		j.Score(g)
+
 		g = j.NewGoal()
+
 		be.Initializer = new(AssignmentExpression)
 		if err := be.Initializer.parse(&g, true, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
+
 		j.Score(g)
 	}
+
 	be.Tokens = j.ToTokens()
+
 	return nil
 }
 
@@ -238,7 +295,9 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 	if len(ae.Tokens) == 0 {
 		return nil
 	}
+
 	var pe *PrimaryExpression
+
 	switch ae.AssignmentOperator {
 	case AssignmentNone:
 		if ae.ConditionalExpression != nil {
@@ -254,6 +313,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 					z := jsParser(ae.Tokens[:0])
 					return z.Error("BindingElement", err)
 				}
+
 				be.Initializer = ae.AssignmentExpression
 			} else {
 				be.ObjectBindingPattern = new(ObjectBindingPattern)
@@ -261,6 +321,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 					z := jsParser(ae.Tokens[:0])
 					return z.Error("BindingElement", err)
 				}
+
 				be.Initializer = ae.AssignmentExpression
 			}
 		} else if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
@@ -269,11 +330,14 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 		}
 	default:
 		z := jsParser(ae.Tokens[:0])
+
 		return z.Error("BindingElement", ErrInvalidAssignment)
 	}
+
 	if pe == nil {
 		if be.ArrayBindingPattern == nil && be.ObjectBindingPattern == nil {
 			z := jsParser(ae.Tokens[:0])
+
 			return z.Error("BindingElement", ErrNoIdentifier)
 		}
 	} else if pe.IdentifierReference != nil {
@@ -282,19 +346,24 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
 		if err := be.ArrayBindingPattern.from(pe.ArrayLiteral); err != nil {
 			z := jsParser(ae.Tokens[:0])
+
 			return z.Error("BindingElement", err)
 		}
 	} else if pe.ObjectLiteral != nil {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
 		if err := be.ObjectBindingPattern.from(pe.ObjectLiteral); err != nil {
 			z := jsParser(ae.Tokens[:0])
+
 			return z.Error("BindingElement", err)
 		}
 	} else {
 		z := jsParser(ae.Tokens[:0])
+
 		return z.Error("BindingElement", ErrNoIdentifier)
 	}
+
 	be.Tokens = ae.Tokens
+
 	return nil
 }
 
@@ -302,8 +371,10 @@ func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPatt
 	if lhs != nil {
 		if lhs.NewExpression == nil || lhs.NewExpression.News != 0 || lhs.NewExpression.MemberExpression.PrimaryExpression == nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
 			z := jsParser(lhs.Tokens[:0])
+
 			return z.Error("BindingElement", ErrNoIdentifier)
 		}
+
 		be.SingleNameBinding = lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
 		be.Tokens = lhs.Tokens
 	} else if ap != nil {
@@ -311,16 +382,20 @@ func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPatt
 			be.ArrayBindingPattern = new(ArrayBindingPattern)
 			if err := be.ArrayBindingPattern.fromAP(ap.ArrayAssignmentPattern); err != nil {
 				z := jsParser(ap.Tokens[:0])
+
 				return z.Error("BindingElement", err)
 			}
 		} else {
 			be.ObjectBindingPattern = new(ObjectBindingPattern)
 			if err := be.ObjectBindingPattern.fromAP(ap.ObjectAssignmentPattern); err != nil {
 				z := jsParser(ap.Tokens[:0])
+
 				return z.Error("BindingElement", err)
 			}
 		}
+
 		be.Tokens = ap.Tokens
 	}
+
 	return nil
 }
