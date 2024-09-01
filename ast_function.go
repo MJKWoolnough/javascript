@@ -36,6 +36,7 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 
 		j.AcceptRunWhitespaceNoNewLine()
 	}
+
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
 		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
