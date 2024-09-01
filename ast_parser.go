@@ -27,10 +27,12 @@ type Tokeniser interface {
 
 func newJSParser(t Tokeniser) (jsParser, error) {
 	t.TokeniserState(new(jsTokeniser).inputElement)
+
 	var (
 		tokens             jsParser
 		pos, line, linePos uint64
 	)
+
 	for {
 		tk, _ := t.GetToken()
 		tokens = append(tokens, Token{
