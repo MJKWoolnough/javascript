@@ -530,8 +530,7 @@ logicalORExpression:
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c == nil {
 		return nil
-	}
-	if c.True != nil || c.LogicalORExpression == nil {
+	} else if c.True != nil || c.LogicalORExpression == nil {
 		return c
 	} else if c.LogicalORExpression.LogicalORExpression != nil {
 		return c.LogicalORExpression
