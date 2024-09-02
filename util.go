@@ -11,37 +11,50 @@ func unquoteEscape(ret *strings.Builder, s *parser.Tokeniser) bool {
 	ret.WriteString(s.Get())
 	s.Accept("\\")
 	s.Get()
+
 	if s.Accept("x") {
 		s.Get()
+
 		if !s.Accept(hexDigit) || !s.Accept(hexDigit) {
 			return false
 		}
+
 		c, _ := strconv.ParseUint(s.Get(), 16, 8)
+
 		ret.WriteString(string(rune(c)))
 	} else if s.Accept("u") {
 		s.Get()
+
 		if s.Accept("{") {
 			s.Get()
+
 			if !s.Accept(hexDigit) {
 				return false
 			}
+
 			s.AcceptRun(hexDigit)
+
 			c, _ := strconv.ParseUint(s.Get(), 16, 8)
+
 			ret.WriteString(string(rune(c)))
+
 			if !s.Accept("}") {
 				return false
 			}
+
 			s.Get()
 		} else if !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) || !s.Accept(hexDigit) {
 			return false
 		} else {
 			c, _ := strconv.ParseUint(s.Get(), 16, 8)
+
 			ret.WriteString(string(rune(c)))
 		}
 	} else if s.Accept("0") {
 		if s.Accept(decimalDigit) {
 			return false
 		}
+
 		s.Get()
 		ret.WriteString("\000")
 	} else if s.Accept(singleEscapeChar) {
@@ -69,15 +82,19 @@ func unquoteEscape(ret *strings.Builder, s *parser.Tokeniser) bool {
 		s.Get()
 		s.Except("")
 		ret.WriteString(s.Get())
+
 		return true
 	}
+
 	return true
 }
 
 // Unquote parses a javascript quoted string and produces the unquoted version
 func Unquote(str string) (string, error) {
 	s := parser.NewStringTokeniser(str)
+
 	var chars string
+
 	if s.Accept("\"") {
 		chars = doubleStringChars
 	} else if s.Accept("'") {
@@ -85,14 +102,19 @@ func Unquote(str string) (string, error) {
 	} else {
 		return "", ErrInvalidQuoted
 	}
+
 	s.Get()
+
 	var ret strings.Builder
+
 	ret.Grow(len(str))
+
 Loop:
 	for {
 		switch s.ExceptRun(chars) {
 		case '"', '\'':
 			ret.WriteString(s.Get())
+
 			return ret.String(), nil
 		case '\\':
 			if !unquoteEscape(&ret, &s) {
@@ -102,6 +124,7 @@ Loop:
 			break Loop
 		}
 	}
+
 	return "", ErrInvalidQuoted
 }
 
@@ -113,6 +136,7 @@ func UnquoteTemplate(t string) (string, error) {
 	} else {
 		return "", ErrInvalidQuoted
 	}
+
 	if strings.HasSuffix(t, "`") {
 		t = t[:len(t)-1]
 	} else if strings.HasSuffix(t, "${") {
@@ -120,14 +144,19 @@ func UnquoteTemplate(t string) (string, error) {
 	} else {
 		return "", ErrInvalidQuoted
 	}
+
 	s := parser.NewStringTokeniser(t)
+
 	var ret strings.Builder
+
 	ret.Grow(len(t))
+
 Loop:
 	for {
 		switch s.ExceptRun("$`\\") {
 		case '$':
 			s.Except("")
+
 			if s.Accept("{") {
 				break Loop
 			}
@@ -139,9 +168,11 @@ Loop:
 			break Loop
 		default:
 			ret.WriteString(s.Get())
+
 			return ret.String(), nil
 		}
 	}
+
 	return "", ErrInvalidQuoted
 }
 
@@ -170,6 +201,7 @@ func TokenTypeToTemplateType(tokenType parser.TokenType) TemplateType {
 	case TokenTemplateTail:
 		return TemplateTail
 	}
+
 	return 255
 }
 
@@ -185,44 +217,55 @@ func TokenTypeToTemplateType(tokenType parser.TokenType) TemplateType {
 // | TemplateTail           | "}"      | "`"      |
 func QuoteTemplate(t string, templateType TemplateType) string {
 	l := len(t) + 2
+
 	if templateType == TemplateHead || templateType == TemplateMiddle {
 		l++
 	}
+
 	for n, r := range t {
 		switch r {
 		case '$':
 			if len(t) > n && t[n+1] != '{' {
 				break
 			}
+
 			fallthrough
 		case '`', '\\':
 			l++
 		}
 	}
+
 	var ret strings.Builder
+
 	ret.Grow(l)
+
 	if templateType == TemplateMiddle || templateType == TemplateTail {
 		ret.WriteByte('}')
 	} else {
 		ret.WriteByte('`')
 	}
+
 	for n, r := range t {
 		switch r {
 		case '$':
 			if len(t) > n && t[n+1] != '{' {
 				break
 			}
+
 			fallthrough
 		case '`', '\\':
 			ret.WriteByte('\\')
 		}
+
 		ret.WriteRune(r)
 	}
+
 	if templateType == TemplateHead || templateType == TemplateMiddle {
 		ret.WriteString("${")
 	} else {
 		ret.WriteByte('`')
 	}
+
 	return ret.String()
 }
 
@@ -259,94 +302,122 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
-	}
-	if c, ok := p.(ConditionalExpression); ok {
+	} else if c, ok := p.(ConditionalExpression); ok {
 		return &c
 	}
+
 	c := &ConditionalExpression{
 		LogicalORExpression: new(LogicalORExpression),
 	}
+
 	switch p := p.(type) {
 	case *LogicalORExpression:
 		c.LogicalORExpression = p
+
 		goto logicalORExpression
 	case LogicalORExpression:
 		c.LogicalORExpression = &p
+
 		goto logicalORExpression
 	case *LogicalANDExpression:
 		c.LogicalORExpression.LogicalANDExpression = *p
+
 		goto logicalANDExpression
 	case LogicalANDExpression:
 		c.LogicalORExpression.LogicalANDExpression = p
+
 		goto logicalANDExpression
 	case *BitwiseORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression = *p
+
 		goto bitwiseORExpression
 	case BitwiseORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression = p
+
 		goto bitwiseORExpression
 	case *BitwiseXORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression = *p
+
 		goto bitwiseXORExpression
 	case BitwiseXORExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression = p
+
 		goto bitwiseXORExpression
 	case *BitwiseANDExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression = *p
+
 		goto bitwiseANDExpression
 	case BitwiseANDExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression = p
+
 		goto bitwiseANDExpression
 	case *EqualityExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression = *p
+
 		goto equalityExpression
 	case EqualityExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression = p
+
 		goto equalityExpression
 	case *RelationalExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression = *p
+
 		goto relationalExpression
 	case RelationalExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression = p
+
 		goto relationalExpression
 	case *ShiftExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression = *p
+
 		goto shiftExpression
 	case ShiftExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression = p
+
 		goto shiftExpression
 	case *AdditiveExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression = *p
+
 		goto additiveExpression
 	case AdditiveExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression = p
+
 		goto additiveExpression
 	case *MultiplicativeExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression = *p
+
 		goto multiplicativeExpression
 	case MultiplicativeExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression = p
+
 		goto multiplicativeExpression
 	case *ExponentiationExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression = *p
+
 		goto exponentiationExpression
 	case ExponentiationExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression = p
+
 		goto exponentiationExpression
 	case *UnaryExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression = *p
+
 		goto unaryExpression
 	case UnaryExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression = p
+
 		goto unaryExpression
 	case *UpdateExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression = *p
+
 		goto updateExpression
 	case UpdateExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression = p
+
 		goto updateExpression
 	case *LeftHandSideExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = p
+
 	case LeftHandSideExpression:
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &p
 	case *CallExpression:
@@ -419,6 +490,7 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 		}
 	default:
 		pe := new(PrimaryExpression)
+
 		switch p := p.(type) {
 		case *ArrayLiteral:
 			pe.ArrayLiteral = p
@@ -457,6 +529,7 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 			pe.ParenthesizedExpression = &p
 			pe.Tokens = p.Tokens
 		}
+
 		c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression = &LeftHandSideExpression{
 			NewExpression: &NewExpression{
 				MemberExpression: MemberExpression{
@@ -468,6 +541,7 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 			Tokens: pe.Tokens,
 		}
 	}
+
 	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.Tokens
 updateExpression:
 	c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.Tokens
@@ -495,6 +569,7 @@ logicalANDExpression:
 	c.LogicalORExpression.Tokens = c.LogicalORExpression.LogicalANDExpression.Tokens
 logicalORExpression:
 	c.Tokens = c.LogicalORExpression.Tokens
+
 	return c
 }
 
@@ -568,6 +643,7 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		return &lhs.NewExpression.MemberExpression
 	} else {
 		pe := lhs.NewExpression.MemberExpression.PrimaryExpression
+
 		if pe.ArrayLiteral != nil {
 			return pe.ArrayLiteral
 		} else if pe.ObjectLiteral != nil {
@@ -581,6 +657,7 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		} else if pe.ParenthesizedExpression != nil {
 			return pe.ParenthesizedExpression
 		}
+
 		return pe
 	}
 }
