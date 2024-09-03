@@ -131,6 +131,7 @@ func (t Tokens) Format(s fmt.State, v rune) {
 func (t Tokens) printType(w io.Writer, v bool) {
 	if len(t) == 0 {
 		w.Write(arrayOpenClose)
+
 		return
 	}
 
@@ -140,7 +141,6 @@ func (t Tokens) printType(w io.Writer, v bool) {
 
 	for n, t := range t {
 		ipp.Printf("\n%d: ", n)
-
 		t.printType(w, v)
 	}
 
