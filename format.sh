@@ -100,3 +100,27 @@ HEREDOC
 		echo "}";
 	done < <(types);
 ) > "format_format.go";
+
+(
+	cat <<HEREDOC
+package javascript
+
+// File automatically generated with format.sh.
+
+import "fmt"
+
+// Type is an interface satisfied by all javascript structural types.
+type Type interface {
+	fmt.Formatter
+	javascriptType()
+}
+
+func (Tokens) javascriptType() {}
+
+func (Token) javascriptType() {}
+HEREDOC
+
+	while read type _; do
+		echo -e "\nfunc ($type) javascriptType() {}";
+	done < <(types);
+) > "types.go";
