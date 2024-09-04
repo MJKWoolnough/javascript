@@ -1,167 +1,169 @@
 package javascript
 
-import (
-	"fmt"
-)
+// File automatically generated with format.sh.
 
-// Type is an interface satisfied by all javascript structural types
+import "fmt"
+
+// Type is an interface satisfied by all javascript structural types.
 type Type interface {
 	fmt.Formatter
 	javascriptType()
 }
 
+func (Tokens) javascriptType() {}
+
 func (Token) javascriptType() {}
 
-func (ClassDeclaration) javascriptType() {}
-
-func (ClassElement) javascriptType() {}
-
-func (FieldDefinition) javascriptType() {}
-
-func (ClassElementName) javascriptType() {}
-
-func (MethodDefinition) javascriptType() {}
-
-func (PropertyName) javascriptType() {}
-
-func (ConditionalExpression) javascriptType() {}
-
-func (CoalesceExpression) javascriptType() {}
-
-func (LogicalORExpression) javascriptType() {}
-
-func (LogicalANDExpression) javascriptType() {}
-
-func (BitwiseORExpression) javascriptType() {}
-
-func (BitwiseXORExpression) javascriptType() {}
-
-func (BitwiseANDExpression) javascriptType() {}
-
-func (EqualityExpression) javascriptType() {}
-
-func (RelationalExpression) javascriptType() {}
-
-func (ShiftExpression) javascriptType() {}
-
 func (AdditiveExpression) javascriptType() {}
-
-func (MultiplicativeExpression) javascriptType() {}
-
-func (ExponentiationExpression) javascriptType() {}
-
-func (UnaryExpression) javascriptType() {}
-
-func (UpdateExpression) javascriptType() {}
-
-func (AssignmentExpression) javascriptType() {}
-
-func (LeftHandSideExpression) javascriptType() {}
-
-func (AssignmentPattern) javascriptType() {}
-
-func (ObjectAssignmentPattern) javascriptType() {}
-
-func (AssignmentProperty) javascriptType() {}
-
-func (DestructuringAssignmentTarget) javascriptType() {}
-
-func (AssignmentElement) javascriptType() {}
-
-func (ArrayAssignmentPattern) javascriptType() {}
-
-func (OptionalExpression) javascriptType() {}
-
-func (OptionalChain) javascriptType() {}
-
-func (Expression) javascriptType() {}
-
-func (NewExpression) javascriptType() {}
-
-func (MemberExpression) javascriptType() {}
-
-func (PrimaryExpression) javascriptType() {}
-
-func (ParenthesizedExpression) javascriptType() {}
 
 func (Argument) javascriptType() {}
 
 func (Arguments) javascriptType() {}
 
-func (CallExpression) javascriptType() {}
-
-func (FunctionDeclaration) javascriptType() {}
-
-func (FormalParameters) javascriptType() {}
-
-func (BindingElement) javascriptType() {}
-
-func (Script) javascriptType() {}
-
-func (Declaration) javascriptType() {}
-
-func (LexicalDeclaration) javascriptType() {}
-
-func (LexicalBinding) javascriptType() {}
+func (ArrayAssignmentPattern) javascriptType() {}
 
 func (ArrayBindingPattern) javascriptType() {}
-
-func (ObjectBindingPattern) javascriptType() {}
-
-func (BindingProperty) javascriptType() {}
 
 func (ArrayElement) javascriptType() {}
 
 func (ArrayLiteral) javascriptType() {}
 
-func (ObjectLiteral) javascriptType() {}
-
-func (PropertyDefinition) javascriptType() {}
-
-func (TemplateLiteral) javascriptType() {}
-
 func (ArrowFunction) javascriptType() {}
+
+func (AssignmentElement) javascriptType() {}
+
+func (AssignmentExpression) javascriptType() {}
+
+func (AssignmentPattern) javascriptType() {}
+
+func (AssignmentProperty) javascriptType() {}
+
+func (BindingElement) javascriptType() {}
+
+func (BindingProperty) javascriptType() {}
+
+func (BitwiseANDExpression) javascriptType() {}
+
+func (BitwiseORExpression) javascriptType() {}
+
+func (BitwiseXORExpression) javascriptType() {}
+
+func (Block) javascriptType() {}
+
+func (CallExpression) javascriptType() {}
+
+func (CaseClause) javascriptType() {}
+
+func (ClassDeclaration) javascriptType() {}
+
+func (ClassElement) javascriptType() {}
+
+func (ClassElementName) javascriptType() {}
+
+func (CoalesceExpression) javascriptType() {}
+
+func (ConditionalExpression) javascriptType() {}
+
+func (Declaration) javascriptType() {}
+
+func (DestructuringAssignmentTarget) javascriptType() {}
+
+func (EqualityExpression) javascriptType() {}
+
+func (ExponentiationExpression) javascriptType() {}
+
+func (ExportClause) javascriptType() {}
+
+func (ExportDeclaration) javascriptType() {}
+
+func (ExportSpecifier) javascriptType() {}
+
+func (Expression) javascriptType() {}
+
+func (FieldDefinition) javascriptType() {}
+
+func (FormalParameters) javascriptType() {}
+
+func (FromClause) javascriptType() {}
+
+func (FunctionDeclaration) javascriptType() {}
+
+func (IfStatement) javascriptType() {}
+
+func (ImportClause) javascriptType() {}
+
+func (ImportDeclaration) javascriptType() {}
+
+func (ImportSpecifier) javascriptType() {}
+
+func (IterationStatementDo) javascriptType() {}
+
+func (IterationStatementFor) javascriptType() {}
+
+func (IterationStatementWhile) javascriptType() {}
+
+func (LeftHandSideExpression) javascriptType() {}
+
+func (LexicalBinding) javascriptType() {}
+
+func (LexicalDeclaration) javascriptType() {}
+
+func (LogicalANDExpression) javascriptType() {}
+
+func (LogicalORExpression) javascriptType() {}
+
+func (MemberExpression) javascriptType() {}
+
+func (MethodDefinition) javascriptType() {}
 
 func (Module) javascriptType() {}
 
 func (ModuleItem) javascriptType() {}
 
-func (ImportDeclaration) javascriptType() {}
-
-func (ImportClause) javascriptType() {}
-
-func (FromClause) javascriptType() {}
+func (MultiplicativeExpression) javascriptType() {}
 
 func (NamedImports) javascriptType() {}
 
-func (ImportSpecifier) javascriptType() {}
+func (NewExpression) javascriptType() {}
 
-func (ExportDeclaration) javascriptType() {}
+func (ObjectAssignmentPattern) javascriptType() {}
 
-func (ExportClause) javascriptType() {}
+func (ObjectBindingPattern) javascriptType() {}
 
-func (ExportSpecifier) javascriptType() {}
+func (ObjectLiteral) javascriptType() {}
 
-func (Block) javascriptType() {}
+func (OptionalChain) javascriptType() {}
 
-func (StatementListItem) javascriptType() {}
+func (OptionalExpression) javascriptType() {}
+
+func (ParenthesizedExpression) javascriptType() {}
+
+func (PrimaryExpression) javascriptType() {}
+
+func (PropertyDefinition) javascriptType() {}
+
+func (PropertyName) javascriptType() {}
+
+func (RelationalExpression) javascriptType() {}
+
+func (Script) javascriptType() {}
+
+func (ShiftExpression) javascriptType() {}
 
 func (Statement) javascriptType() {}
 
-func (IfStatement) javascriptType() {}
-
-func (IterationStatementDo) javascriptType() {}
-
-func (IterationStatementWhile) javascriptType() {}
-
-func (IterationStatementFor) javascriptType() {}
+func (StatementListItem) javascriptType() {}
 
 func (SwitchStatement) javascriptType() {}
 
-func (CaseClause) javascriptType() {}
-
-func (WithStatement) javascriptType() {}
+func (TemplateLiteral) javascriptType() {}
 
 func (TryStatement) javascriptType() {}
 
+func (UnaryExpression) javascriptType() {}
+
+func (UpdateExpression) javascriptType() {}
+
 func (VariableStatement) javascriptType() {}
+
+func (WithStatement) javascriptType() {}
