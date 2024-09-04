@@ -642,9 +642,9 @@ type VariableDeclaration = LexicalBinding
 // ArrayElement is an element of ElementList in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ElementList
 type ArrayElement struct {
-	Spread bool
-	AssignmentExpression
-	Tokens Tokens
+	Spread               bool
+	AssignmentExpression AssignmentExpression
+	Tokens               Tokens
 }
 
 func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
