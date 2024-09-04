@@ -562,8 +562,9 @@ func (ec *ExportClause) parse(j *jsParser) error {
 //
 // IdentifierName must be non-nil, EIdentifierName should be non-nil.
 type ExportSpecifier struct {
-	IdentifierName, EIdentifierName *Token
-	Tokens                          Tokens
+	IdentifierName  *Token
+	EIdentifierName *Token
+	Tokens          Tokens
 }
 
 func (es *ExportSpecifier) parse(j *jsParser) error {
