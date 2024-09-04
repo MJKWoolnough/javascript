@@ -76,3 +76,27 @@ HEREDOC
 		echo "}";
 	done < <(types);
 ) > "format_types.go";
+
+(
+	cat <<HEREDOC
+package javascript
+
+// File automatically generated with format.sh.
+
+import "fmt"
+HEREDOC
+
+	while read type _; do
+		echo -e "\n// Format implements the fmt.Formatter interface";
+		echo "func (f $type) Format(s fmt.State, v rune) {";
+		echo "	if v == 'v' && s.Flag('#') {";
+		echo "		type X = $type";
+		echo "		type $type X";
+		echo;
+		echo "		fmt.Fprintf(s, \"%#v\", $t(f))";
+		echo "	} else {";
+		echo "		format(&f, s, v)";
+		echo "	}";
+		echo "}";
+	done < <(types);
+) > "format_format.go";
