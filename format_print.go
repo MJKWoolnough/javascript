@@ -126,6 +126,7 @@ var (
 	importCall                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '('}
 	optionalChain                = []byte{'?', '.'}
 	coalesceOperator             = []byte{' ', '?', '?', ' '}
+	space                        = []byte{' '}
 )
 
 func (s Script) printSource(w io.Writer, v bool) {
