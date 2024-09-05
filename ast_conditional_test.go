@@ -3,14 +3,14 @@ package javascript
 import "testing"
 
 func makeConditionLiteral(tk Tokens, pos int) ConditionalExpression {
-	p := PrimaryExpression{
-		Tokens: tk[pos : pos+1],
-	}
+	p := PrimaryExpression{Tokens: tk[pos : pos+1]}
+
 	if tk[pos].Type == TokenIdentifier || tk[pos].Type == TokenKeyword {
 		p.IdentifierReference = &tk[pos]
 	} else {
 		p.Literal = &tk[pos]
 	}
+
 	return *WrapConditional(&p)
 }
 
@@ -1463,7 +1463,9 @@ func TestConditional(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
+
 		err := ce.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return ce, err
 	})
 }
