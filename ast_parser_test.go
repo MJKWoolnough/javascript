@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -88,13 +89,16 @@ func TestNewJSParser(t *testing.T) {
 		},
 	} {
 		j, err := newJSParser(makeTokeniser(parser.NewStringTokeniser(test.Source)))
+
 		if !reflect.DeepEqual(err, test.Err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
 		}
+
 		for m, tk := range j[:cap(j)] {
 			tkp := j.Peek()
 			tkn := j.next()
 			tkl := j.GetLastToken()
+
 			if tkn != tk {
 				t.Errorf("test %d.%d.1: expecting %v, got %v", n+1, m+1, tk, tkn)
 			} else if tkp != tkn.Token {
@@ -103,12 +107,14 @@ func TestNewJSParser(t *testing.T) {
 				t.Errorf("test %d.%d.3: expectign to GetLast %v, got %v", n+1, m+1, tkn, *tkl)
 			}
 		}
+
 		if test.Err == nil {
 			if tk := j.next(); tk.Type != parser.TokenDone {
 				t.Errorf("test %d: expecting TokenDone, got %v", cap(j)+1, tk)
 			}
 		}
 	}
+
 	pErr := Error{
 		Err:     fmt.Errorf("%w: %s", ErrInvalidCharacter, "@"),
 		Parsing: "Tokens",
@@ -122,12 +128,15 @@ func TestNewJSParser(t *testing.T) {
 			LinePos: 0,
 		},
 	}
-	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("@"))); !reflect.DeepEqual(err, pErr) {
+
+	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("@"))); !errors.Is(err, pErr) {
 		t.Errorf("Script token error test: expecting %s, got %s", pErr, err)
 	}
-	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("@"))); !reflect.DeepEqual(err, pErr) {
+
+	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("@"))); !errors.Is(err, pErr) {
 		t.Errorf("Module token error test: expecting %s, got %s", pErr, err)
 	}
+
 	tk := Token{
 		Token: parser.Token{
 			Type: TokenPunctuator,
@@ -150,17 +159,21 @@ func TestNewJSParser(t *testing.T) {
 		Parsing: "StatementListItem",
 		Token:   tk,
 	}
-	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("?"))); !reflect.DeepEqual(err, sErr) {
+
+	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("?"))); !errors.Is(err, sErr) {
 		t.Errorf("Script error test: expecting %s, got %s", sErr, err)
 	}
+
 	mErr := Error{
 		Err:     sErr,
 		Parsing: "ModuleItem",
 		Token:   tk,
 	}
-	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("?"))); !reflect.DeepEqual(err, mErr) {
+
+	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("?"))); !errors.Is(err, mErr) {
 		t.Errorf("Module error test: expecting %s, got %s", mErr, err)
 	}
+
 	fErr := Error{
 		Err:     errorStr("TEST"),
 		Parsing: "FAUX",
@@ -170,7 +183,9 @@ func TestNewJSParser(t *testing.T) {
 			LinePos: 3,
 		},
 	}
+
 	const e = "FAUX: error at position 2 (3:4):\nTEST"
+
 	if str := fErr.Error(); str != e {
 		t.Errorf("error test: expecting %q, got %q", e, str)
 	}
