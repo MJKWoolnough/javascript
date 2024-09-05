@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -35,7 +36,7 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 		}
 		tt.Fn(&ts, Tokens(ts.Tokens[:cap(ts.Tokens)]))
 		output, err := fn(&ts)
-		if !reflect.DeepEqual(err, ts.Err) {
+		if !errors.Is(err, ts.Err) {
 			t.Errorf("test %d: expecting error: %v, got %v", n+1, ts.Err, err)
 		} else if ts.Output != nil && !reflect.DeepEqual(output, ts.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, ts.Output, output)
