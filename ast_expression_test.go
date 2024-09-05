@@ -435,7 +435,9 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var lhs LeftHandSideExpression
+
 		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
+
 		return lhs, err
 	})
 }
@@ -1027,7 +1029,9 @@ func TestAssignmentExpressionOld(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
+
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return ae, err
 	})
 }
@@ -2545,7 +2549,9 @@ func TestAssignmentExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
+
 		err := ae.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return ae, err
 	})
 }
@@ -2807,7 +2813,9 @@ func TestLeftHandSideExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var lhs LeftHandSideExpression
+
 		err := lhs.parse(&t.Tokens, t.Yield, t.Await)
+
 		return lhs, err
 	})
 }
@@ -2859,7 +2867,9 @@ func TestExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var e Expression
+
 		err := e.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return e, err
 	})
 }
@@ -2998,7 +3008,9 @@ func TestNewExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ne NewExpression
+
 		err := ne.parse(&t.Tokens, t.Yield, t.Await)
+
 		return ne, err
 	})
 }
@@ -3394,7 +3406,9 @@ func TestMemberExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var me MemberExpression
+
 		err := me.parse(&t.Tokens, t.Yield, t.Await)
+
 		return me, err
 	})
 }
@@ -3627,7 +3641,9 @@ func TestPrimaryExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
+
 		err := pe.parse(&t.Tokens, t.Yield, t.Await)
+
 		return pe, err
 	})
 }
@@ -3792,7 +3808,9 @@ func TestParenthesizedExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var c ParenthesizedExpression
+
 		err := c.parse(&t.Tokens, t.Yield, t.Await)
+
 		return c, err
 	})
 }
@@ -3953,7 +3971,9 @@ func TestArguments(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var a Arguments
+
 		err := a.parse(&t.Tokens, t.Yield, t.Await)
+
 		return a, err
 	})
 }
@@ -4176,7 +4196,9 @@ func TestCallExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ce CallExpression
+
 		err := ce.parse(&t.Tokens, nil, t.Yield, t.Await)
+
 		return ce, err
 	})
 }
@@ -4415,7 +4437,9 @@ func TestOptionalChain(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var oc OptionalChain
+
 		err := oc.parse(&t.Tokens, t.Yield, t.Await)
+
 		return oc, err
 	})
 }
@@ -4482,7 +4506,9 @@ func TestOptionalExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var oe OptionalExpression
+
 		err := oe.parse(&t.Tokens, t.Yield, t.Await, nil, nil)
+
 		return oe, err
 	})
 }
