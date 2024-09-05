@@ -15,7 +15,7 @@ type sourceFn struct {
 type test struct {
 	Tokens                                 jsParser
 	Yield, Await, In, Def, Ret, Typescript bool
-	Output                                 interface{}
+	Output                                 Type
 	Err                                    error
 }
 
