@@ -270,9 +270,9 @@ Format implements the fmt.Formatter interface
 
 ```go
 type ArrayElement struct {
-	Spread bool
-	AssignmentExpression
-	Tokens Tokens
+	Spread               bool
+	AssignmentExpression AssignmentExpression
+	Tokens               Tokens
 }
 ```
 
@@ -1071,8 +1071,9 @@ Format implements the fmt.Formatter interface
 
 ```go
 type ExportSpecifier struct {
-	IdentifierName, EIdentifierName *Token
-	Tokens                          Tokens
+	IdentifierName  *Token
+	EIdentifierName *Token
+	Tokens          Tokens
 }
 ```
 
@@ -2443,7 +2444,7 @@ type Type interface {
 }
 ```
 
-Type is an interface satisfied by all javascript structural types
+Type is an interface satisfied by all javascript structural types.
 
 #### type UnaryExpression
 
