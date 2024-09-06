@@ -12,12 +12,15 @@ type state struct {
 	Verbose bool
 }
 
-func (state) Width() (int, bool)     { return 0, false }
+func (state) Width() (int, bool) { return 0, false }
+
 func (state) Precision() (int, bool) { return 0, false }
-func (s *state) Flag(c int) bool     { return c == '+' == s.Verbose }
+
+func (s *state) Flag(c int) bool { return c == '+' == s.Verbose }
 
 func TestPrintingScript(t *testing.T) {
 	var st state
+
 	for n, test := range [...]struct {
 		Input, SimpleOutput, VerboseOutput string
 	}{
@@ -1608,15 +1611,21 @@ func TestPrintingScript(t *testing.T) {
 				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
 				continue
 			}
+
 			st.Verbose = false
+
 			st.Buffer.Reset()
 			s.Format(&st, 's')
+
 			if str := st.String(); str != test.SimpleOutput {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
+
 			st.Verbose = true
+
 			st.Buffer.Reset()
 			s.Format(&st, 's')
+
 			if str := st.Buffer.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
@@ -1626,6 +1635,7 @@ func TestPrintingScript(t *testing.T) {
 
 func TestPrintingModule(t *testing.T) {
 	var st state
+
 	for n, test := range [...]struct {
 		Input, SimpleOutput, VerboseOutput string
 	}{
@@ -1754,17 +1764,24 @@ func TestPrintingModule(t *testing.T) {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
 			if err != nil {
 				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
+
 				continue
 			}
+
 			st.Verbose = false
+
 			st.Buffer.Reset()
 			s.Format(&st, 's')
+
 			if str := st.Buffer.String(); str != test.SimpleOutput {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
+
 			st.Verbose = true
+
 			st.Buffer.Reset()
 			s.Format(&st, 's')
+
 			if str := st.Buffer.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
