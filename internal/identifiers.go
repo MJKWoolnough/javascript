@@ -29,6 +29,7 @@ func IsIDStart(c rune) bool {
 	if c == '$' || c == '_' || c == '\\' {
 		return true
 	}
+
 	return unicode.In(c, idStart...) && !unicode.In(c, notID...)
 }
 
@@ -36,5 +37,6 @@ func IsIDContinue(c rune) bool {
 	if c == '$' || c == '_' || c == '\\' || c == zwnj || c == zwj {
 		return true
 	}
+
 	return unicode.In(c, idContinue...) && !unicode.In(c, notID...)
 }
