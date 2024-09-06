@@ -22,27 +22,31 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 		total int
 		last  int
 	)
+
 	for n, c := range p {
 		if c == '\n' {
 			m, err := i.Writer.Write(p[last : n+1])
 			total += m
+
 			if err != nil {
 				return total, err
-			}
-			_, err = i.Writer.Write(indent)
-			if err != nil {
+			} else if _, err = i.Writer.Write(indent); err != nil {
 				return total, err
 			}
+
 			last = n + 1
 		}
 	}
+
 	if last != len(p) {
 		m, err := i.Writer.Write(p[last:])
 		total += m
+
 		if err != nil {
 			return total, err
 		}
 	}
+
 	return total, nil
 }
 
@@ -66,27 +70,35 @@ func (s *Scope) printScope(w *indentPrinter) {
 	} else {
 		w.WriteString("Scope {")
 	}
+
 	pp := &indentPrinter{w}
 	qq := &indentPrinter{pp}
 	rr := &indentPrinter{qq}
+
 	pp.WriteString("\nParent: ")
+
 	if s.Parent == nil {
 		pp.WriteString("nil")
 	} else {
 		pp.Printf("%p", s.Parent)
 	}
+
 	pp.WriteString("\nScopes: [")
+
 	for t, scope := range s.Scopes {
 		qq.WriteString("\n")
 		qq.Printf("%p", t)
 		qq.WriteString(": ")
 		scope.printScope(qq)
 	}
+
 	pp.WriteString("\n]\nBindings: [")
+
 	for ref, bindings := range s.Bindings {
 		qq.WriteString("\n")
 		qq.WriteString(ref)
 		qq.WriteString(": [")
+
 		for _, binding := range bindings {
 			rr.WriteString("\n[")
 			rr.WriteString("\n	BindingType: ")
@@ -97,8 +109,10 @@ func (s *Scope) printScope(w *indentPrinter) {
 			rr.Print(binding.Token)
 			rr.WriteString("\n]")
 		}
+
 		qq.WriteString("\n]")
 	}
+
 	pp.WriteString("\n]")
 	w.WriteString("\n}")
 }
@@ -124,7 +138,9 @@ func TestScriptScope(t *testing.T) {
 			`{}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
+
 				scope.newLexicalScope(s.StatementList[0].Statement.BlockStatement)
+
 				return scope, nil
 			},
 		},
@@ -132,7 +148,9 @@ func TestScriptScope(t *testing.T) {
 			`a`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
+
 				scope.addBinding(javascript.UnwrapConditional(s.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference, BindingRef)
+
 				return scope, nil
 			},
 		},
@@ -140,10 +158,13 @@ func TestScriptScope(t *testing.T) {
 			`function a(){}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
+
 				if err := scope.setBinding(s.StatementList[0].Declaration.FunctionDeclaration.BindingIdentifier, BindingHoistable); err != nil {
 					return nil, err
 				}
+
 				scope.newFunctionScope(s.StatementList[0].Declaration.FunctionDeclaration)
+
 				return scope, nil
 			},
 		},
@@ -151,10 +172,13 @@ func TestScriptScope(t *testing.T) {
 			`const a = () => true`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := NewScope()
+
 				if err := scope.setBinding(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier, BindingLexicalConst); err != nil {
 					return nil, err
 				}
+
 				scope.newArrowFunctionScope(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction)
+
 				return scope, nil
 			},
 		},
@@ -173,6 +197,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -190,6 +215,7 @@ func TestScriptScope(t *testing.T) {
 						Bindings:       make(map[string][]Binding),
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -217,6 +243,7 @@ func TestScriptScope(t *testing.T) {
 				scope.Scopes = map[javascript.Type]*Scope{
 					s.StatementList[0].Declaration.FunctionDeclaration: fScope,
 				}
+
 				return scope, nil
 			},
 		},
@@ -240,6 +267,7 @@ func TestScriptScope(t *testing.T) {
 						Bindings: make(map[string][]Binding),
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -272,6 +300,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -300,6 +329,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -331,6 +361,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -362,6 +393,7 @@ func TestScriptScope(t *testing.T) {
 				}
 				scope.Bindings = map[string][]Binding{"a": abind}
 				scope.Scopes = map[javascript.Type]*Scope{s.StatementList[0].Statement.BlockStatement: bscope}
+
 				return scope, nil
 			},
 		},
@@ -402,6 +434,7 @@ func TestScriptScope(t *testing.T) {
 					},
 				}
 				scope.Scopes = map[javascript.Type]*Scope{s.StatementList[1].Statement.BlockStatement: bscope}
+
 				return scope, nil
 			},
 		},
@@ -420,6 +453,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -443,6 +477,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -471,6 +506,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -507,6 +543,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -543,6 +580,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -575,6 +613,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -612,6 +651,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -657,6 +697,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -710,6 +751,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -763,6 +805,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -816,6 +859,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -853,6 +897,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -904,6 +949,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -955,6 +1001,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -979,7 +1026,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[0].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
@@ -1025,7 +1072,7 @@ func TestScriptScope(t *testing.T) {
 						{
 							BindingType: BindingRef,
 							Scope:       ascope,
-							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[1].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 						{
 							BindingType: BindingRef,
@@ -1044,6 +1091,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1075,6 +1123,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1106,6 +1155,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1143,6 +1193,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1175,6 +1226,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1210,6 +1262,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1237,6 +1290,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1255,6 +1309,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1309,6 +1364,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1365,6 +1421,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1419,6 +1476,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1471,6 +1529,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1523,6 +1582,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1569,6 +1629,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1614,6 +1675,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1659,6 +1721,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1718,6 +1781,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1791,6 +1855,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1859,6 +1924,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1910,6 +1976,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -1964,6 +2031,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2012,6 +2080,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2067,6 +2136,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2121,6 +2191,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2169,6 +2240,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2216,6 +2288,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2261,6 +2334,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2311,6 +2385,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2369,6 +2444,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2478,6 +2554,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2521,6 +2598,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2582,6 +2660,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2612,6 +2691,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2639,6 +2719,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2675,6 +2756,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2716,6 +2798,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2753,6 +2836,7 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2792,17 +2876,20 @@ func TestScriptScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
+
 		source, err := javascript.ParseScript(&tk)
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
 			tscope, terr := test.Output(source)
 			scope, err := ScriptScope(source, nil)
+
 			if terr != nil && err != nil {
 				if !errors.Is(terr, err) {
 					t.Errorf("test %d: expecting error: %v\ngot: %v", n+1, terr, err)
@@ -2845,6 +2932,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2863,6 +2951,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2886,6 +2975,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2913,6 +3003,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2945,6 +3036,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -2994,6 +3086,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -3019,6 +3112,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -3053,6 +3147,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -3101,6 +3196,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -3128,6 +3224,7 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
@@ -3146,17 +3243,20 @@ func TestModuleScope(t *testing.T) {
 						},
 					},
 				}
+
 				return scope, nil
 			},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
+
 		source, err := javascript.ParseModule(&tk)
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
 			tscope, terr := test.Output(source)
 			scope, err := ModuleScope(source, nil)
+
 			if terr != nil && err != nil {
 				if !errors.Is(terr, err) {
 					t.Errorf("test %d: expecting error: %v\ngot: %v", n+1, terr, err)
