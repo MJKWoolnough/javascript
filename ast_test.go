@@ -26,17 +26,21 @@ func makeTokeniser(tk parser.Tokeniser) *parser.Tokeniser {
 
 func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 	t.Helper()
+
 	var err error
+
 	for n, tt := range tests {
 		var ts test
-		ts.Tokens, err = newJSParser(makeTokeniser(parser.NewStringTokeniser(tt.Source)))
-		if err != nil {
+
+		if ts.Tokens, err = newJSParser(makeTokeniser(parser.NewStringTokeniser(tt.Source))); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
+
 			continue
 		}
+
 		tt.Fn(&ts, Tokens(ts.Tokens[:cap(ts.Tokens)]))
-		output, err := fn(&ts)
-		if !errors.Is(err, ts.Err) {
+
+		if output, err := fn(&ts); !errors.Is(err, ts.Err) {
 			t.Errorf("test %d: expecting error: %v, got %v", n+1, ts.Err, err)
 		} else if ts.Output != nil && !reflect.DeepEqual(output, ts.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, ts.Output, output)
@@ -925,7 +929,9 @@ for(
 		}},
 	}, func(t *test) (Type, error) {
 		var s Script
+
 		err := s.parse(&t.Tokens)
+
 		return s, err
 	})
 }
@@ -1057,7 +1063,9 @@ func TestDeclaration(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var d Declaration
+
 		err := d.parse(&t.Tokens, t.Yield, t.Await)
+
 		return d, err
 	})
 }
@@ -1262,7 +1270,9 @@ func TestLexicalDeclaration(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) { // 13
 		var ld LexicalDeclaration
+
 		err := ld.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return ld, err
 	})
 }
@@ -1383,7 +1393,9 @@ func TestLexicalBinding(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var lb LexicalBinding
+
 		err := lb.parse(&t.Tokens, t.In, t.Yield, t.Await)
+
 		return lb, err
 	})
 }
@@ -1554,7 +1566,9 @@ func TestArrayBindingPattern(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ab ArrayBindingPattern
+
 		err := ab.parse(&t.Tokens, t.Yield, t.Await)
+
 		return ab, err
 	})
 }
@@ -1690,7 +1704,9 @@ func TestObjectBindingPattern(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ob ObjectBindingPattern
+
 		err := ob.parse(&t.Tokens, t.Yield, t.Await)
+
 		return ob, err
 	})
 }
@@ -1805,7 +1821,9 @@ func TestBindingProperty(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var bp BindingProperty
+
 		err := bp.parse(&t.Tokens, t.Yield, t.Await)
+
 		return bp, err
 	})
 }
@@ -1998,7 +2016,9 @@ func TestArrayLiteral(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var al ArrayLiteral
+
 		err := al.parse(&t.Tokens, t.Yield, t.Await)
+
 		return al, err
 	})
 }
@@ -2098,7 +2118,9 @@ func TestObjectLiteral(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ol ObjectLiteral
+
 		err := ol.parse(&t.Tokens, t.Yield, t.Await)
+
 		return ol, err
 	})
 }
@@ -2417,7 +2439,9 @@ func TestPropertyDefinition(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var pd PropertyDefinition
+
 		err := pd.parse(&t.Tokens, t.Yield, t.Await)
+
 		return pd, err
 	})
 }
@@ -2551,7 +2575,9 @@ func TestTemplateLiteral(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var tl TemplateLiteral
+
 		err := tl.parse(&t.Tokens, t.Yield, t.Await)
+
 		return tl, err
 	})
 }
@@ -3949,13 +3975,17 @@ func TestArrowFunction(t *testing.T) {
 			af  ArrowFunction
 			err error
 		)
+
 		g := t.Tokens.NewGoal()
+
 		if err = pe.parse(&g, t.Yield, t.Await); err == nil {
 			t.Tokens.Score(g)
+
 			err = af.parse(&t.Tokens, &pe, t.In, t.Yield, t.Await)
 		} else {
 			err = af.parse(&t.Tokens, nil, t.In, t.Yield, t.Await)
 		}
+
 		return af, err
 	})
 }
