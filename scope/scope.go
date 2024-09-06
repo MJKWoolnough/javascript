@@ -1,11 +1,11 @@
-// Package scope parses out a scope tree for a javascript module or script
+// Package scope parses out a scope tree for a javascript module or script.
 package scope // import "vimagination.zapto.org/javascript/scope"
 
 import (
 	"vimagination.zapto.org/javascript"
 )
 
-// ErrDuplicateDeclaration is an error when a binding is declared more than once with a scope
+// ErrDuplicateDeclaration is an error when a binding is declared more than once with a scope.
 type ErrDuplicateDeclaration struct {
 	Declaration, Duplicate *javascript.Token
 }
@@ -14,10 +14,10 @@ func (ErrDuplicateDeclaration) Error() string {
 	return "duplicate declaration"
 }
 
-// BindingType indicates where the binding came from
+// BindingType indicates where the binding came from.
 type BindingType uint8
 
-// Binding Types
+// Binding Types.
 const (
 	BindingRef BindingType = iota
 	BindingBare
@@ -30,14 +30,14 @@ const (
 	BindingCatch
 )
 
-// Binding represents a single instance of a bound name
+// Binding represents a single instance of a bound name.
 type Binding struct {
 	BindingType
 	*Scope
 	*javascript.Token
 }
 
-// Scope represents a single level of variable scope
+// Scope represents a single level of variable scope.
 type Scope struct {
 	IsLexicalScope bool
 	Parent         *Scope
@@ -126,7 +126,7 @@ func (s *Scope) addBinding(t *javascript.Token, bindingType BindingType) {
 	}
 }
 
-// NewScope returns a init'd Scope type
+// NewScope returns a init'd Scope type.
 func NewScope() *Scope {
 	return &Scope{
 		Scopes:   make(map[javascript.Type]*Scope),

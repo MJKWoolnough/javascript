@@ -3,20 +3,20 @@ package walk
 
 import "vimagination.zapto.org/javascript"
 
-// Handler is used to process javascript types
+// Handler is used to process javascript types.
 type Handler interface {
 	Handle(javascript.Type) error
 }
 
-// HandlerFunc wraps a func to implement Handler interface
+// HandlerFunc wraps a func to implement Handler interface.
 type HandlerFunc func(javascript.Type) error
 
-// Handle implements the Handler interface
+// Handle implements the Handler interface.
 func (h HandlerFunc) Handle(t javascript.Type) error {
 	return h(t)
 }
 
-// Walk calls the Handle function on the given interface for each non-nil, non-Token field of the given javascript type
+// Walk calls the Handle function on the given interface for each non-nil, non-Token field of the given javascript type.
 func Walk(t javascript.Type, fn Handler) error {
 	switch t := t.(type) {
 	case javascript.ClassDeclaration:
@@ -328,6 +328,7 @@ func Walk(t javascript.Type, fn Handler) error {
 	case *javascript.VariableStatement:
 		return walkVariableStatement(t, fn)
 	}
+
 	return nil
 }
 
@@ -337,11 +338,13 @@ func walkClassDeclaration(t *javascript.ClassDeclaration, fn Handler) error {
 			return err
 		}
 	}
+
 	for n := range t.ClassBody {
 		if err := fn.Handle(&t.ClassBody[n]); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -359,18 +362,19 @@ func walkClassElement(t *javascript.ClassElement, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func walkFieldDefinition(t *javascript.FieldDefinition, fn Handler) error {
 	if err := fn.Handle(&t.ClassElementName); err != nil {
 		return err
-	}
-	if t.Initializer != nil {
+	} else if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -380,16 +384,17 @@ func walkClassElementName(t *javascript.ClassElementName, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func walkMethodDefinition(t *javascript.MethodDefinition, fn Handler) error {
 	if err := fn.Handle(&t.ClassElementName); err != nil {
 		return err
-	}
-	if err := fn.Handle(&t.Params); err != nil {
+	} else if err = fn.Handle(&t.Params); err != nil {
 		return err
 	}
+
 	return fn.Handle(t.FunctionBody)
 }
 
@@ -397,6 +402,7 @@ func walkPropertyName(t *javascript.PropertyName, fn Handler) error {
 	if t.ComputedPropertyName != nil {
 		return fn.Handle(t.ComputedPropertyName)
 	}
+
 	return nil
 }
 
@@ -406,21 +412,25 @@ func walkConditionalExpression(t *javascript.ConditionalExpression, fn Handler) 
 			return err
 		}
 	}
+
 	if t.CoalesceExpression != nil {
 		if err := fn.Handle(t.CoalesceExpression); err != nil {
 			return nil
 		}
 	}
+
 	if t.True != nil {
 		if err := fn.Handle(t.True); err != nil {
 			return err
 		}
 	}
+
 	if t.False != nil {
 		if err := fn.Handle(t.False); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -430,6 +440,7 @@ func walkCoalesceExpression(t *javascript.CoalesceExpression, fn Handler) error 
 			return err
 		}
 	}
+
 	return fn.Handle(&t.BitwiseORExpression)
 }
 
@@ -439,6 +450,7 @@ func walkLogicalORExpression(t *javascript.LogicalORExpression, fn Handler) erro
 			return err
 		}
 	}
+
 	return fn.Handle(&t.LogicalANDExpression)
 }
 
@@ -448,6 +460,7 @@ func walkLogicalANDExpression(t *javascript.LogicalANDExpression, fn Handler) er
 			return err
 		}
 	}
+
 	return fn.Handle(&t.BitwiseORExpression)
 }
 
@@ -457,6 +470,7 @@ func walkBitwiseORExpression(t *javascript.BitwiseORExpression, fn Handler) erro
 			return err
 		}
 	}
+
 	return fn.Handle(&t.BitwiseXORExpression)
 }
 
@@ -466,6 +480,7 @@ func walkBitwiseXORExpression(t *javascript.BitwiseXORExpression, fn Handler) er
 			return err
 		}
 	}
+
 	return fn.Handle(&t.BitwiseANDExpression)
 }
 
@@ -475,6 +490,7 @@ func walkBitwiseANDExpression(t *javascript.BitwiseANDExpression, fn Handler) er
 			return err
 		}
 	}
+
 	return fn.Handle(&t.EqualityExpression)
 }
 
@@ -484,6 +500,7 @@ func walkEqualityExpression(t *javascript.EqualityExpression, fn Handler) error 
 			return err
 		}
 	}
+
 	return fn.Handle(&t.RelationalExpression)
 }
 
@@ -493,6 +510,7 @@ func walkRelationalExpression(t *javascript.RelationalExpression, fn Handler) er
 			return err
 		}
 	}
+
 	return fn.Handle(&t.ShiftExpression)
 }
 
@@ -502,6 +520,7 @@ func walkShiftExpression(t *javascript.ShiftExpression, fn Handler) error {
 			return err
 		}
 	}
+
 	return fn.Handle(&t.AdditiveExpression)
 }
 
@@ -511,6 +530,7 @@ func walkAdditiveExpression(t *javascript.AdditiveExpression, fn Handler) error 
 			return err
 		}
 	}
+
 	return fn.Handle(&t.MultiplicativeExpression)
 }
 
@@ -520,6 +540,7 @@ func walkMultiplicativeExpression(t *javascript.MultiplicativeExpression, fn Han
 			return err
 		}
 	}
+
 	return fn.Handle(&t.ExponentiationExpression)
 }
 
@@ -529,6 +550,7 @@ func walkExponentiationExpression(t *javascript.ExponentiationExpression, fn Han
 			return err
 		}
 	}
+
 	return fn.Handle(&t.UnaryExpression)
 }
 
@@ -542,11 +564,13 @@ func walkUpdateExpression(t *javascript.UpdateExpression, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.UnaryExpression != nil {
 		if err := fn.Handle(t.UnaryExpression); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -556,26 +580,31 @@ func walkAssignmentExpression(t *javascript.AssignmentExpression, fn Handler) er
 			return err
 		}
 	}
+
 	if t.ArrowFunction != nil {
 		if err := fn.Handle(t.ArrowFunction); err != nil {
 			return err
 		}
 	}
+
 	if t.LeftHandSideExpression != nil {
 		if err := fn.Handle(t.LeftHandSideExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.AssignmentPattern != nil {
 		if err := fn.Handle(t.AssignmentPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -585,16 +614,19 @@ func walkLeftHandSideExpression(t *javascript.LeftHandSideExpression, fn Handler
 			return err
 		}
 	}
+
 	if t.CallExpression != nil {
 		if err := fn.Handle(t.CallExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.OptionalExpression != nil {
 		if err := fn.Handle(t.OptionalExpression); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -604,11 +636,13 @@ func walkAssignmentPattern(t *javascript.AssignmentPattern, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ObjectAssignmentPattern != nil {
 		if err := fn.Handle(t.ObjectAssignmentPattern); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -618,28 +652,31 @@ func walkObjectAssignmentPattern(t *javascript.ObjectAssignmentPattern, fn Handl
 			return err
 		}
 	}
+
 	if t.AssignmentRestElement != nil {
 		if err := fn.Handle(t.AssignmentRestElement); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func walkAssignmentProperty(t *javascript.AssignmentProperty, fn Handler) error {
 	if err := fn.Handle(&t.PropertyName); err != nil {
 		return err
-	}
-	if t.DestructuringAssignmentTarget != nil {
+	} else if t.DestructuringAssignmentTarget != nil {
 		if err := fn.Handle(t.DestructuringAssignmentTarget); err != nil {
 			return err
 		}
 	}
+
 	if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -649,23 +686,25 @@ func walkDestructuringAssignmentTarget(t *javascript.DestructuringAssignmentTarg
 			return err
 		}
 	}
+
 	if t.AssignmentPattern != nil {
 		if err := fn.Handle(t.AssignmentPattern); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func walkAssignmentElement(t *javascript.AssignmentElement, fn Handler) error {
 	if err := fn.Handle(&t.DestructuringAssignmentTarget); err != nil {
 		return err
-	}
-	if t.Initializer != nil {
+	} else if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -675,11 +714,13 @@ func walkArrayAssignmentPattern(t *javascript.ArrayAssignmentPattern, fn Handler
 			return err
 		}
 	}
+
 	if t.AssignmentRestElement != nil {
 		if err := fn.Handle(t.AssignmentRestElement); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -689,16 +730,19 @@ func walkOptionalExpression(t *javascript.OptionalExpression, fn Handler) error 
 			return err
 		}
 	}
+
 	if t.CallExpression != nil {
 		if err := fn.Handle(t.CallExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.OptionalExpression != nil {
 		if err := fn.Handle(t.OptionalExpression); err != nil {
 			return err
 		}
 	}
+
 	return fn.Handle(&t.OptionalChain)
 }
 
@@ -708,21 +752,25 @@ func walkOptionalChain(t *javascript.OptionalChain, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.Arguments != nil {
 		if err := fn.Handle(t.Arguments); err != nil {
 			return err
 		}
 	}
+
 	if t.Expression != nil {
 		if err := fn.Handle(t.Expression); err != nil {
 			return err
 		}
 	}
+
 	if t.TemplateLiteral != nil {
 		if err := fn.Handle(t.TemplateLiteral); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -732,6 +780,7 @@ func walkExpression(t *javascript.Expression, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -745,26 +794,31 @@ func walkMemberExpression(t *javascript.MemberExpression, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.PrimaryExpression != nil {
 		if err := fn.Handle(t.PrimaryExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.Expression != nil {
 		if err := fn.Handle(t.Expression); err != nil {
 			return err
 		}
 	}
+
 	if t.TemplateLiteral != nil {
 		if err := fn.Handle(t.TemplateLiteral); err != nil {
 			return err
 		}
 	}
+
 	if t.Arguments != nil {
 		if err := fn.Handle(t.Arguments); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -774,31 +828,37 @@ func walkPrimaryExpression(t *javascript.PrimaryExpression, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ObjectLiteral != nil {
 		if err := fn.Handle(t.ObjectLiteral); err != nil {
 			return err
 		}
 	}
+
 	if t.FunctionExpression != nil {
 		if err := fn.Handle(t.FunctionExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.ClassExpression != nil {
 		if err := fn.Handle(t.ClassExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.TemplateLiteral != nil {
 		if err := fn.Handle(t.TemplateLiteral); err != nil {
 			return err
 		}
 	}
+
 	if t.ParenthesizedExpression != nil {
 		if err := fn.Handle(t.ParenthesizedExpression); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -808,6 +868,7 @@ func walkParenthesizedExpression(t *javascript.ParenthesizedExpression, fn Handl
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -817,6 +878,7 @@ func walkArguments(t *javascript.Arguments, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -831,31 +893,37 @@ func walkCallExpression(t *javascript.CallExpression, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ImportCall != nil {
 		if err := fn.Handle(t.ImportCall); err != nil {
 			return err
 		}
 	}
+
 	if t.CallExpression != nil {
 		if err := fn.Handle(t.CallExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.Arguments != nil {
 		if err := fn.Handle(t.Arguments); err != nil {
 			return err
 		}
 	}
+
 	if t.Expression != nil {
 		if err := fn.Handle(t.Expression); err != nil {
 			return err
 		}
 	}
+
 	if t.TemplateLiteral != nil {
 		if err := fn.Handle(t.TemplateLiteral); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -863,6 +931,7 @@ func walkFunctionDeclaration(t *javascript.FunctionDeclaration, fn Handler) erro
 	if err := fn.Handle(&t.FormalParameters); err != nil {
 		return err
 	}
+
 	return fn.Handle(&t.FunctionBody)
 }
 
@@ -872,16 +941,19 @@ func walkFormalParameters(t *javascript.FormalParameters, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ArrayBindingPattern != nil {
 		if err := fn.Handle(t.ArrayBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.ObjectBindingPattern != nil {
 		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -891,16 +963,19 @@ func walkBindingElement(t *javascript.BindingElement, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ObjectBindingPattern != nil {
 		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -910,6 +985,7 @@ func walkScript(t *javascript.Script, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -919,16 +995,19 @@ func walkDeclaration(t *javascript.Declaration, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.FunctionDeclaration != nil {
 		if err := fn.Handle(t.FunctionDeclaration); err != nil {
 			return err
 		}
 	}
+
 	if t.LexicalDeclaration != nil {
 		if err := fn.Handle(t.LexicalDeclaration); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -938,6 +1017,7 @@ func walkLexicalDeclaration(t *javascript.LexicalDeclaration, fn Handler) error 
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -947,16 +1027,19 @@ func walkLexicalBinding(t *javascript.LexicalBinding, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.ObjectBindingPattern != nil {
 		if err := fn.Handle(t.ObjectBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.Initializer != nil {
 		if err := fn.Handle(t.Initializer); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -966,11 +1049,13 @@ func walkArrayBindingPattern(t *javascript.ArrayBindingPattern, fn Handler) erro
 			return err
 		}
 	}
+
 	if t.BindingRestElement != nil {
 		if err := fn.Handle(t.BindingRestElement); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -980,11 +1065,13 @@ func walkObjectBindingPattern(t *javascript.ObjectBindingPattern, fn Handler) er
 			return err
 		}
 	}
+
 	if t.BindingRestProperty != nil {
 		if err := fn.Handle(t.BindingRestProperty); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -992,6 +1079,7 @@ func walkBindingProperty(t *javascript.BindingProperty, fn Handler) error {
 	if err := fn.Handle(&t.PropertyName); err != nil {
 		return err
 	}
+
 	return fn.Handle(&t.BindingElement)
 }
 
@@ -1005,6 +1093,7 @@ func walkArrayLiteral(t *javascript.ArrayLiteral, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1014,6 +1103,7 @@ func walkObjectLiteral(t *javascript.ObjectLiteral, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1023,16 +1113,19 @@ func walkPropertyDefinition(t *javascript.PropertyDefinition, fn Handler) error 
 			return err
 		}
 	}
+
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.MethodDefinition != nil {
 		if err := fn.Handle(t.MethodDefinition); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1042,6 +1135,7 @@ func walkTemplateLiteral(t *javascript.TemplateLiteral, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1051,16 +1145,19 @@ func walkArrowFunction(t *javascript.ArrowFunction, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.AssignmentExpression != nil {
 		if err := fn.Handle(t.AssignmentExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.FunctionBody != nil {
 		if err := fn.Handle(t.FunctionBody); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1070,6 +1167,7 @@ func walkModule(t *javascript.Module, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1079,16 +1177,19 @@ func walkModuleItem(t *javascript.ModuleItem, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.StatementListItem != nil {
 		if err := fn.Handle(t.StatementListItem); err != nil {
 			return err
 		}
 	}
+
 	if t.ExportDeclaration != nil {
 		if err := fn.Handle(t.ExportDeclaration); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1098,6 +1199,7 @@ func walkImportDeclaration(t *javascript.ImportDeclaration, fn Handler) error {
 			return err
 		}
 	}
+
 	return fn.Handle(&t.FromClause)
 }
 
@@ -1107,10 +1209,11 @@ func walkImportClause(t *javascript.ImportClause, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
-func walkFromClause(t *javascript.FromClause, fn Handler) error {
+func walkFromClause(_ *javascript.FromClause, _ Handler) error {
 	return nil
 }
 
@@ -1120,10 +1223,11 @@ func walkNamedImports(t *javascript.NamedImports, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
-func walkImportSpecifier(t *javascript.ImportSpecifier, fn Handler) error {
+func walkImportSpecifier(_ *javascript.ImportSpecifier, _ Handler) error {
 	return nil
 }
 
@@ -1133,36 +1237,43 @@ func walkExportDeclaration(t *javascript.ExportDeclaration, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.FromClause != nil {
 		if err := fn.Handle(t.FromClause); err != nil {
 			return err
 		}
 	}
+
 	if t.VariableStatement != nil {
 		if err := fn.Handle(t.VariableStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.Declaration != nil {
 		if err := fn.Handle(t.Declaration); err != nil {
 			return err
 		}
 	}
+
 	if t.DefaultFunction != nil {
 		if err := fn.Handle(t.DefaultFunction); err != nil {
 			return err
 		}
 	}
+
 	if t.DefaultClass != nil {
 		if err := fn.Handle(t.DefaultClass); err != nil {
 			return err
 		}
 	}
+
 	if t.DefaultAssignmentExpression != nil {
 		if err := fn.Handle(t.DefaultAssignmentExpression); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1172,10 +1283,11 @@ func walkExportClause(t *javascript.ExportClause, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
-func walkExportSpecifier(t *javascript.ExportSpecifier, fn Handler) error {
+func walkExportSpecifier(_ *javascript.ExportSpecifier, _ Handler) error {
 	return nil
 }
 
@@ -1185,6 +1297,7 @@ func walkBlock(t *javascript.Block, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1194,11 +1307,13 @@ func walkStatementListItem(t *javascript.StatementListItem, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.Declaration != nil {
 		if err := fn.Handle(t.Declaration); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1208,61 +1323,73 @@ func walkStatement(t *javascript.Statement, fn Handler) error {
 			return err
 		}
 	}
+
 	if t.VariableStatement != nil {
 		if err := fn.Handle(t.VariableStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.ExpressionStatement != nil {
 		if err := fn.Handle(t.ExpressionStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.IfStatement != nil {
 		if err := fn.Handle(t.IfStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.IterationStatementDo != nil {
 		if err := fn.Handle(t.IterationStatementDo); err != nil {
 			return err
 		}
 	}
+
 	if t.IterationStatementWhile != nil {
 		if err := fn.Handle(t.IterationStatementWhile); err != nil {
 			return err
 		}
 	}
+
 	if t.IterationStatementFor != nil {
 		if err := fn.Handle(t.IterationStatementFor); err != nil {
 			return err
 		}
 	}
+
 	if t.SwitchStatement != nil {
 		if err := fn.Handle(t.SwitchStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.WithStatement != nil {
 		if err := fn.Handle(t.WithStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.LabelledItemFunction != nil {
 		if err := fn.Handle(t.LabelledItemFunction); err != nil {
 			return err
 		}
 	}
+
 	if t.LabelledItemStatement != nil {
 		if err := fn.Handle(t.LabelledItemStatement); err != nil {
 			return err
 		}
 	}
+
 	if t.TryStatement != nil {
 		if err := fn.Handle(t.TryStatement); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1270,14 +1397,17 @@ func walkIfStatement(t *javascript.IfStatement, fn Handler) error {
 	if err := fn.Handle(&t.Expression); err != nil {
 		return err
 	}
+
 	if err := fn.Handle(&t.Statement); err != nil {
 		return err
 	}
+
 	if t.ElseStatement != nil {
 		if err := fn.Handle(t.ElseStatement); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1285,6 +1415,7 @@ func walkIterationStatementDo(t *javascript.IterationStatementDo, fn Handler) er
 	if err := fn.Handle(&t.Statement); err != nil {
 		return err
 	}
+
 	return fn.Handle(&t.Expression)
 }
 
@@ -1292,6 +1423,7 @@ func walkIterationStatementWhile(t *javascript.IterationStatementWhile, fn Handl
 	if err := fn.Handle(&t.Expression); err != nil {
 		return err
 	}
+
 	return fn.Handle(&t.Statement)
 }
 
@@ -1301,51 +1433,61 @@ func walkIterationStatementFor(t *javascript.IterationStatementFor, fn Handler) 
 			return err
 		}
 	}
+
 	for n := range t.InitVar {
 		if err := fn.Handle(&t.InitVar[n]); err != nil {
 			return err
 		}
 	}
+
 	if t.InitLexical != nil {
 		if err := fn.Handle(t.InitLexical); err != nil {
 			return err
 		}
 	}
+
 	if t.Conditional != nil {
 		if err := fn.Handle(t.Conditional); err != nil {
 			return err
 		}
 	}
+
 	if t.Afterthought != nil {
 		if err := fn.Handle(t.Afterthought); err != nil {
 			return err
 		}
 	}
+
 	if t.LeftHandSideExpression != nil {
 		if err := fn.Handle(t.LeftHandSideExpression); err != nil {
 			return err
 		}
 	}
+
 	if t.ForBindingPatternObject != nil {
 		if err := fn.Handle(t.ForBindingPatternObject); err != nil {
 			return err
 		}
 	}
+
 	if t.ForBindingPatternArray != nil {
 		if err := fn.Handle(t.ForBindingPatternArray); err != nil {
 			return err
 		}
 	}
+
 	if t.In != nil {
 		if err := fn.Handle(t.In); err != nil {
 			return err
 		}
 	}
+
 	if t.Of != nil {
 		if err := fn.Handle(t.Of); err != nil {
 			return err
 		}
 	}
+
 	return fn.Handle(&t.Statement)
 }
 
@@ -1353,21 +1495,25 @@ func walkSwitchStatement(t *javascript.SwitchStatement, fn Handler) error {
 	if err := fn.Handle(&t.Expression); err != nil {
 		return err
 	}
+
 	for n := range t.CaseClauses {
 		if err := fn.Handle(&t.CaseClauses[n]); err != nil {
 			return err
 		}
 	}
+
 	for n := range t.DefaultClause {
 		if err := fn.Handle(&t.DefaultClause[n]); err != nil {
 			return err
 		}
 	}
+
 	for n := range t.PostDefaultCaseClauses {
 		if err := fn.Handle(&t.PostDefaultCaseClauses[n]); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1375,11 +1521,13 @@ func walkCaseClause(t *javascript.CaseClause, fn Handler) error {
 	if err := fn.Handle(&t.Expression); err != nil {
 		return err
 	}
+
 	for n := range t.StatementList {
 		if err := fn.Handle(&t.StatementList[n]); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1387,6 +1535,7 @@ func walkWithStatement(t *javascript.WithStatement, fn Handler) error {
 	if err := fn.Handle(&t.Expression); err != nil {
 		return err
 	}
+
 	return fn.Handle(&t.Statement)
 }
 
@@ -1394,26 +1543,31 @@ func walkTryStatement(t *javascript.TryStatement, fn Handler) error {
 	if err := fn.Handle(&t.TryBlock); err != nil {
 		return err
 	}
+
 	if t.CatchParameterObjectBindingPattern != nil {
 		if err := fn.Handle(t.CatchParameterObjectBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.CatchParameterArrayBindingPattern != nil {
 		if err := fn.Handle(t.CatchParameterArrayBindingPattern); err != nil {
 			return err
 		}
 	}
+
 	if t.CatchBlock != nil {
 		if err := fn.Handle(t.CatchBlock); err != nil {
 			return err
 		}
 	}
+
 	if t.FinallyBlock != nil {
 		if err := fn.Handle(t.FinallyBlock); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1423,5 +1577,6 @@ func walkVariableStatement(t *javascript.VariableStatement, fn Handler) error {
 			return err
 		}
 	}
+
 	return nil
 }
