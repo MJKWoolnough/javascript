@@ -48,17 +48,21 @@ type Scope struct {
 func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	name := t.Data
 	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
+
 	if b, ok := s.Bindings[name]; ok {
 		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch) {
 			s.Bindings[name] = append(b, binding)
+
 			if b[0].BindingType == BindingCatch && bindingType == BindingVar {
 				return nil
 			}
 		} else {
 			var bd *javascript.Token
+
 			if len(b) > 0 {
 				bd = b[0].Token
 			}
+
 			return ErrDuplicateDeclaration{
 				Declaration: bd,
 				Duplicate:   t,
@@ -67,10 +71,12 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	} else {
 		s.Bindings[name] = []Binding{binding}
 	}
+
 	if s.IsLexicalScope && (bindingType == BindingHoistable || bindingType == BindingVar) {
 	Loop:
 		for s.IsLexicalScope && s.Parent != nil {
 			s = s.Parent
+
 			if bindingType == BindingVar {
 				if b, ok := s.Bindings[name]; ok && len(b) > 0 {
 					switch b[0].BindingType {
@@ -86,29 +92,36 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 				}
 			}
 		}
+
 		if b, ok := s.Bindings[name]; !ok {
 			s.Bindings[name] = []Binding{binding}
 		} else if bindingType == BindingVar {
 			s.Bindings[name] = append(b, binding)
 		}
 	}
+
 	return nil
 }
 
 func (s *Scope) addBinding(t *javascript.Token, bindingType BindingType) {
 	name := t.Data
 	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
+
 	for {
 		if bs, ok := s.Bindings[name]; ok {
 			s.Bindings[name] = append(bs, binding)
+
 			if !s.IsLexicalScope || len(bs) == 0 || bs[0].BindingType != BindingVar {
 				return
 			}
 		}
+
 		if s.Parent == nil {
 			s.Bindings[name] = []Binding{binding}
+
 			return
 		}
+
 		s = s.Parent
 	}
 }
@@ -125,6 +138,7 @@ func (s *Scope) newFunctionScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
+
 	ns := &Scope{
 		Parent: s,
 		Scopes: make(map[javascript.Type]*Scope),
@@ -133,7 +147,9 @@ func (s *Scope) newFunctionScope(js javascript.Type) *Scope {
 			"arguments": {},
 		},
 	}
+
 	s.Scopes[js] = ns
+
 	return ns
 }
 
@@ -141,12 +157,15 @@ func (s *Scope) newArrowFunctionScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
+
 	ns := &Scope{
 		Parent:   s,
 		Scopes:   make(map[javascript.Type]*Scope),
 		Bindings: make(map[string][]Binding),
 	}
+
 	s.Scopes[js] = ns
+
 	return ns
 }
 
@@ -154,13 +173,16 @@ func (s *Scope) newLexicalScope(js javascript.Type) *Scope {
 	if ns, ok := s.Scopes[js]; ok {
 		return ns
 	}
+
 	ns := &Scope{
 		Parent:         s,
 		IsLexicalScope: true,
 		Scopes:         make(map[javascript.Type]*Scope),
 		Bindings:       make(map[string][]Binding),
 	}
+
 	s.Scopes[js] = ns
+
 	return ns
 }
 
@@ -169,10 +191,13 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
+
 	if err := processModule(m, global, true); err != nil {
 		return nil, err
 	}
+
 	_ = processModule(m, global, false)
+
 	return global, nil
 }
 
@@ -181,14 +206,17 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
+
 	for n := range s.StatementList {
 		if err := processStatementListItem(&s.StatementList[n], global, true); err != nil {
 			return nil, err
 		}
 	}
+
 	for n := range s.StatementList {
 		_ = processStatementListItem(&s.StatementList[n], global, false)
 	}
+
 	return global, nil
 }
 
@@ -201,11 +229,13 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 						return err
 					}
 				}
+
 				if i.ImportDeclaration.NameSpaceImport != nil {
 					if err := global.setBinding(i.ImportDeclaration.NameSpaceImport, BindingImport); err != nil {
 						return err
 					}
 				}
+
 				if i.ImportDeclaration.NamedImports != nil {
 					for _, is := range i.ImportDeclaration.NamedImports.ImportList {
 						if is.ImportedBinding != nil {
@@ -250,6 +280,7 @@ func processModule(m *javascript.Module, global *Scope, set bool) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -259,6 +290,7 @@ func processStatementListItem(s *javascript.StatementListItem, scope *Scope, set
 	} else if s.Declaration != nil {
 		return processDeclaration(s.Declaration, scope, set)
 	}
+
 	return nil
 }
 
@@ -290,6 +322,7 @@ func processStatement(s *javascript.Statement, scope *Scope, set bool) error {
 	} else if s.TryStatement != nil {
 		return processTryStatement(s.TryStatement, scope, set)
 	}
+
 	return nil
 }
 
@@ -307,6 +340,7 @@ func processDeclaration(d *javascript.Declaration, scope *Scope, set bool) error
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -316,6 +350,7 @@ func processBlockStatement(b *javascript.Block, scope *Scope, set bool) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -325,6 +360,7 @@ func processVariableStatement(v *javascript.VariableStatement, scope *Scope, set
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -334,46 +370,47 @@ func processExpression(e *javascript.Expression, scope *Scope, set bool) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processIfStatement(i *javascript.IfStatement, scope *Scope, set bool) error {
 	if err := processExpression(&i.Expression, scope, set); err != nil {
 		return err
-	}
-	if err := processStatement(&i.Statement, scope, set); err != nil {
+	} else if err = processStatement(&i.Statement, scope, set); err != nil {
 		return err
-	}
-	if i.ElseStatement != nil {
+	} else if i.ElseStatement != nil {
 		if err := processStatement(i.ElseStatement, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processIterationStatementDo(d *javascript.IterationStatementDo, scope *Scope, set bool) error {
 	if err := processStatement(&d.Statement, scope, set); err != nil {
 		return err
-	}
-	if err := processExpression(&d.Expression, scope, set); err != nil {
+	} else if err = processExpression(&d.Expression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func processIterationStatementWhile(w *javascript.IterationStatementWhile, scope *Scope, set bool) error {
 	if err := processExpression(&w.Expression, scope, set); err != nil {
 		return err
-	}
-	if err := processStatement(&w.Statement, scope, set); err != nil {
+	} else if err = processStatement(&w.Statement, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Scope, set bool) error {
 	scope = scope.newLexicalScope(f)
+
 	switch f.Type {
 	case javascript.ForNormal:
 	case javascript.ForNormalVar:
@@ -402,6 +439,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		}
 	default:
 		bindingType := BindingBare
+
 		switch f.Type {
 		case javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet:
 			bindingType = BindingLexicalLet
@@ -410,6 +448,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 		case javascript.ForInVar, javascript.ForOfVar, javascript.ForAwaitOfVar:
 			bindingType = BindingVar
 		}
+
 		if f.ForBindingPatternObject != nil {
 			if err := processObjectBindingPattern(f.ForBindingPatternObject, scope, set, bindingType); err != nil {
 				return err
@@ -428,6 +467,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			}
 		}
 	}
+
 	switch f.Type {
 	case javascript.ForNormal, javascript.ForNormalVar, javascript.ForNormalLexicalDeclaration, javascript.ForNormalExpression:
 		if f.Conditional != nil {
@@ -435,6 +475,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 				return err
 			}
 		}
+
 		if f.Afterthought != nil {
 			if err := processExpression(f.Afterthought, scope, set); err != nil {
 				return err
@@ -453,9 +494,11 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			}
 		}
 	}
+
 	if err := processStatement(&f.Statement, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -463,44 +506,53 @@ func processSwitchStatement(s *javascript.SwitchStatement, scope *Scope, set boo
 	if err := processExpression(&s.Expression, scope, set); err != nil {
 		return err
 	}
+
 	scope = scope.newLexicalScope(s)
+
 	for n := range s.CaseClauses {
 		c := &s.CaseClauses[n]
+
 		if err := processExpression(&c.Expression, scope, set); err != nil {
 			return err
 		}
+
 		for m := range c.StatementList {
 			if err := processStatementListItem(&c.StatementList[m], scope, set); err != nil {
 				return err
 			}
 		}
 	}
+
 	for n := range s.DefaultClause {
 		if err := processStatementListItem(&s.DefaultClause[n], scope, set); err != nil {
 			return err
 		}
 	}
+
 	for n := range s.PostDefaultCaseClauses {
 		c := &s.PostDefaultCaseClauses[n]
+
 		if err := processExpression(&c.Expression, scope, set); err != nil {
 			return err
 		}
+
 		for m := range c.StatementList {
 			if err := processStatementListItem(&c.StatementList[m], scope, set); err != nil {
 				return err
 			}
 		}
 	}
+
 	return nil
 }
 
 func processWithStatement(w *javascript.WithStatement, scope *Scope, set bool) error {
 	if err := processExpression(&w.Expression, scope, set); err != nil {
 		return err
-	}
-	if err := processStatement(&w.Statement, scope, set); err != nil {
+	} else if err = processStatement(&w.Statement, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -510,13 +562,15 @@ func processFunctionDeclaration(f *javascript.FunctionDeclaration, scope *Scope,
 			return err
 		}
 	}
+
 	scope = scope.newFunctionScope(f)
+
 	if err := processFormalParameters(&f.FormalParameters, scope, set); err != nil {
 		return err
-	}
-	if err := processBlockStatement(&f.FunctionBody, scope, set); err != nil {
+	} else if err = processBlockStatement(&f.FunctionBody, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -524,8 +578,10 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 	if err := processBlockStatement(&t.TryBlock, scope.newLexicalScope(&t.TryBlock), set); err != nil {
 		return err
 	}
+
 	if t.CatchBlock != nil {
 		scope = scope.newLexicalScope(t.CatchBlock)
+
 		if t.CatchParameterArrayBindingPattern != nil {
 			if err := processArrayBindingPattern(t.CatchParameterArrayBindingPattern, scope, set, BindingCatch); err != nil {
 				return err
@@ -539,15 +595,18 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 				return err
 			}
 		}
+
 		if err := processBlockStatement(t.CatchBlock, scope, set); err != nil {
 			return err
 		}
 	}
+
 	if t.FinallyBlock != nil {
 		if err := processBlockStatement(t.FinallyBlock, scope.newLexicalScope(t.FinallyBlock), set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -557,16 +616,19 @@ func processClassDeclaration(c *javascript.ClassDeclaration, scope *Scope, set, 
 			return err
 		}
 	}
+
 	if c.ClassHeritage != nil {
 		if err := processLeftHandSideExpression(c.ClassHeritage, scope, set); err != nil {
 			return err
 		}
 	}
+
 	for n := range c.ClassBody {
 		if err := processClassElement(&c.ClassBody[n], scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -585,18 +647,19 @@ func processClassElement(c *javascript.ClassElement, scope *Scope, set bool) err
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processFieldDefinition(f *javascript.FieldDefinition, scope *Scope, set bool) error {
 	if err := processClassElementName(&f.ClassElementName, scope, set); err != nil {
 		return err
-	}
-	if f.Initializer != nil {
+	} else if f.Initializer != nil {
 		if err := processAssignmentExpression(f.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -606,19 +669,23 @@ func processClassElementName(c *javascript.ClassElementName, scope *Scope, set b
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processLexicalDeclaration(l *javascript.LexicalDeclaration, scope *Scope, set bool) error {
 	typ := BindingLexicalLet
+
 	if l.LetOrConst == javascript.Const {
 		typ = BindingLexicalConst
 	}
+
 	for n := range l.BindingList {
 		if err := processLexicalBinding(&l.BindingList[n], scope, set, typ); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -636,11 +703,13 @@ func processVariableDeclaration(v *javascript.VariableDeclaration, scope *Scope,
 			return err
 		}
 	}
+
 	if v.Initializer != nil {
 		if err := processAssignmentExpression(v.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -666,11 +735,13 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 			return err
 		}
 	}
+
 	if a.AssignmentExpression != nil {
 		if err := processAssignmentExpression(a.AssignmentExpression, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -688,6 +759,7 @@ func processLeftHandSideExpression(l *javascript.LeftHandSideExpression, scope *
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -701,6 +773,7 @@ func processAssignmentPattern(a *javascript.AssignmentPattern, scope *Scope, set
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -710,28 +783,31 @@ func processObjectAssignmentPattern(o *javascript.ObjectAssignmentPattern, scope
 			return err
 		}
 	}
+
 	if o.AssignmentRestElement != nil {
 		if err := processLeftHandSideExpression(o.AssignmentRestElement, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processAssignmentProperty(a *javascript.AssignmentProperty, scope *Scope, set bool) error {
 	if err := processPropertyName(&a.PropertyName, scope, set); err != nil {
 		return err
-	}
-	if a.DestructuringAssignmentTarget != nil {
+	} else if a.DestructuringAssignmentTarget != nil {
 		if err := processDestructuringAssignmentTarget(a.DestructuringAssignmentTarget, scope, set); err != nil {
 			return err
 		}
 	}
+
 	if a.Initializer != nil {
 		if err := processAssignmentExpression(a.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -741,23 +817,25 @@ func processDestructuringAssignmentTarget(d *javascript.DestructuringAssignmentT
 			return err
 		}
 	}
+
 	if d.AssignmentPattern != nil {
 		if err := processAssignmentPattern(d.AssignmentPattern, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func processAssignmentElement(a *javascript.AssignmentElement, scope *Scope, set bool) error {
 	if err := processDestructuringAssignmentTarget(&a.DestructuringAssignmentTarget, scope, set); err != nil {
 		return err
-	}
-	if a.Initializer != nil {
+	} else if a.Initializer != nil {
 		if err := processAssignmentExpression(a.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -767,11 +845,13 @@ func processArrayAssignmentPattern(a *javascript.ArrayAssignmentPattern, scope *
 			return err
 		}
 	}
+
 	if a.AssignmentRestElement != nil {
 		if err := processLeftHandSideExpression(a.AssignmentRestElement, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -781,6 +861,7 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 			return err
 		}
 	}
+
 	if o.BindingRestProperty != nil {
 		if bindingType == BindingBare && !set {
 			scope.addBinding(o.BindingRestProperty, BindingBare)
@@ -790,6 +871,7 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -799,11 +881,13 @@ func processArrayBindingPattern(a *javascript.ArrayBindingPattern, scope *Scope,
 			return err
 		}
 	}
+
 	if a.BindingRestElement != nil {
 		if err := processBindingElement(a.BindingRestElement, scope, set, bindingType); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -813,6 +897,7 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 			return err
 		}
 	}
+
 	if f.ArrayBindingPattern != nil {
 		if err := processArrayBindingPattern(f.ArrayBindingPattern, scope, set, BindingFunctionParam); err != nil {
 			return err
@@ -826,6 +911,7 @@ func processFormalParameters(f *javascript.FormalParameters, scope *Scope, set b
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -833,13 +919,15 @@ func processMethodDefinition(m *javascript.MethodDefinition, scope *Scope, set b
 	if err := processClassElementName(&m.ClassElementName, scope, set); err != nil {
 		return err
 	}
+
 	scope = scope.newFunctionScope(m)
+
 	if err := processFormalParameters(&m.Params, scope, set); err != nil {
 		return err
-	}
-	if err := processBlockStatement(&m.FunctionBody, scope, set); err != nil {
+	} else if err = processBlockStatement(&m.FunctionBody, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -857,11 +945,13 @@ func processLexicalBinding(l *javascript.LexicalBinding, scope *Scope, set bool,
 			return err
 		}
 	}
+
 	if l.Initializer != nil {
 		if err := processAssignmentExpression(l.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -875,16 +965,19 @@ func processConditionalExpression(c *javascript.ConditionalExpression, scope *Sc
 			return err
 		}
 	}
+
 	if c.True != nil {
 		if err := processAssignmentExpression(c.True, scope, set); err != nil {
 			return err
 		}
 	}
+
 	if c.False != nil {
 		if err := processAssignmentExpression(c.False, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -899,6 +992,7 @@ func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) e
 			return err
 		}
 	}
+
 	if a.AssignmentExpression != nil {
 		if err := processAssignmentExpression(a.AssignmentExpression, scope, set); err != nil {
 			return err
@@ -908,6 +1002,7 @@ func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) e
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -915,6 +1010,7 @@ func processNewExpression(n *javascript.NewExpression, scope *Scope, set bool) e
 	if err := processMemberExpression(&n.MemberExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -932,6 +1028,7 @@ func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool)
 			return err
 		}
 	}
+
 	if c.Arguments != nil {
 		if err := processArguments(c.Arguments, scope, set); err != nil {
 			return err
@@ -945,6 +1042,7 @@ func processCallExpression(c *javascript.CallExpression, scope *Scope, set bool)
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -962,19 +1060,21 @@ func processOptionalExpression(o *javascript.OptionalExpression, scope *Scope, s
 			return err
 		}
 	}
+
 	if err := processOptionalChain(&o.OptionalChain, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set bool, bindingType BindingType) error {
 	if err := processPropertyName(&b.PropertyName, scope, set); err != nil {
 		return err
-	}
-	if err := processBindingElement(&b.BindingElement, scope, set, bindingType); err != nil {
+	} else if err = processBindingElement(&b.BindingElement, scope, set, bindingType); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -996,11 +1096,13 @@ func processBindingElement(b *javascript.BindingElement, scope *Scope, set bool,
 			return err
 		}
 	}
+
 	if b.Initializer != nil {
 		if err := processAssignmentExpression(b.Initializer, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1010,6 +1112,7 @@ func processPropertyName(p *javascript.PropertyName, scope *Scope, set bool) err
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1019,9 +1122,11 @@ func processLogicalORExpression(l *javascript.LogicalORExpression, scope *Scope,
 			return err
 		}
 	}
+
 	if err := processLogicalANDExpression(&l.LogicalANDExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1031,9 +1136,11 @@ func processCoalesceExpression(c *javascript.CoalesceExpression, scope *Scope, s
 			return err
 		}
 	}
+
 	if err := processBitwiseORExpression(&c.BitwiseORExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1043,6 +1150,7 @@ func processParenthesizedExpression(c *javascript.ParenthesizedExpression, scope
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1054,8 +1162,7 @@ func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set b
 	} else if m.MemberExpression != nil {
 		if err := processMemberExpression(m.MemberExpression, scope, set); err != nil {
 			return err
-		}
-		if m.Expression != nil {
+		} else if m.Expression != nil {
 			if err := processExpression(m.Expression, scope, set); err != nil {
 				return err
 			}
@@ -1069,6 +1176,7 @@ func processMemberExpression(m *javascript.MemberExpression, scope *Scope, set b
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -1078,6 +1186,7 @@ func processArguments(a *javascript.Arguments, scope *Scope, set bool) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1087,6 +1196,7 @@ func processTemplateLiteral(t *javascript.TemplateLiteral, scope *Scope, set boo
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1096,6 +1206,7 @@ func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) e
 			return err
 		}
 	}
+
 	if o.Arguments != nil {
 		if err := processArguments(o.Arguments, scope, set); err != nil {
 			return err
@@ -1109,6 +1220,7 @@ func processOptionalChain(o *javascript.OptionalChain, scope *Scope, set bool) e
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1118,9 +1230,11 @@ func processLogicalANDExpression(l *javascript.LogicalANDExpression, scope *Scop
 			return err
 		}
 	}
+
 	if err := processBitwiseORExpression(&l.BitwiseORExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1130,6 +1244,7 @@ func processBitwiseORExpression(b *javascript.BitwiseORExpression, scope *Scope,
 			return err
 		}
 	}
+
 	if err := processBitwiseXORExpression(&b.BitwiseXORExpression, scope, set); err != nil {
 		return err
 	}
@@ -1166,6 +1281,7 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 	} else if p.IdentifierReference != nil && !set {
 		scope.addBinding(p.IdentifierReference, BindingRef)
 	}
+
 	return nil
 }
 
@@ -1175,9 +1291,11 @@ func processBitwiseXORExpression(b *javascript.BitwiseXORExpression, scope *Scop
 			return err
 		}
 	}
+
 	if err := processBitwiseANDExpression(&b.BitwiseANDExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1191,6 +1309,7 @@ func processArrayLiteral(a *javascript.ArrayLiteral, scope *Scope, set bool) err
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1200,6 +1319,7 @@ func processObjectLiteral(o *javascript.ObjectLiteral, scope *Scope, set bool) e
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1209,9 +1329,11 @@ func processBitwiseANDExpression(b *javascript.BitwiseANDExpression, scope *Scop
 			return err
 		}
 	}
+
 	if err := processEqualityExpression(&b.EqualityExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1221,16 +1343,19 @@ func processPropertyDefinition(p *javascript.PropertyDefinition, scope *Scope, s
 			return err
 		}
 	}
+
 	if p.AssignmentExpression != nil {
 		if err := processAssignmentExpression(p.AssignmentExpression, scope, set); err != nil {
 			return err
 		}
 	}
+
 	if p.MethodDefinition != nil {
 		if err := processMethodDefinition(p.MethodDefinition, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -1240,9 +1365,11 @@ func processEqualityExpression(e *javascript.EqualityExpression, scope *Scope, s
 			return err
 		}
 	}
+
 	if err := processRelationalExpression(&e.RelationalExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1252,9 +1379,11 @@ func processRelationalExpression(r *javascript.RelationalExpression, scope *Scop
 			return err
 		}
 	}
+
 	if err := processShiftExpression(&r.ShiftExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1264,9 +1393,11 @@ func processShiftExpression(s *javascript.ShiftExpression, scope *Scope, set boo
 			return err
 		}
 	}
+
 	if err := processAdditiveExpression(&s.AdditiveExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1276,9 +1407,11 @@ func processAdditiveExpression(a *javascript.AdditiveExpression, scope *Scope, s
 			return err
 		}
 	}
+
 	if err := processMultiplicativeExpression(&a.MultiplicativeExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1288,9 +1421,11 @@ func processMultiplicativeExpression(m *javascript.MultiplicativeExpression, sco
 			return err
 		}
 	}
+
 	if err := processExponentiationExpression(&m.ExponentiationExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1300,9 +1435,11 @@ func processExponentiationExpression(e *javascript.ExponentiationExpression, sco
 			return err
 		}
 	}
+
 	if err := processUnaryExpression(&e.UnaryExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1310,6 +1447,7 @@ func processUnaryExpression(u *javascript.UnaryExpression, scope *Scope, set boo
 	if err := processUpdateExpression(&u.UpdateExpression, scope, set); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -1319,10 +1457,12 @@ func processUpdateExpression(u *javascript.UpdateExpression, scope *Scope, set b
 			return err
 		}
 	}
+
 	if u.UnaryExpression != nil {
 		if err := processUnaryExpression(u.UnaryExpression, scope, set); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
