@@ -216,8 +216,7 @@ func TestUnquote(t *testing.T) {
 			ErrInvalidQuoted,
 		},
 	} {
-		o, err := Unquote(test.Input)
-		if !errors.Is(err, test.Err) {
+		if o, err := Unquote(test.Input); !errors.Is(err, test.Err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
 		} else if o != test.Output {
 			t.Errorf("test %d: from %s, expecting output %q, got %q", n+1, test.Input, test.Output, o)
