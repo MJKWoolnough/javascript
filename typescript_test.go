@@ -4543,8 +4543,11 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
 		}
+
 		var m Module
+
 		err := m.parse(&t.Tokens)
+
 		return m, err
 	})
 }
@@ -5171,12 +5174,13 @@ func TestTypescriptTypes(t *testing.T) {
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
-		j, err := newJSParser(&tk)
-		if err != nil {
+
+		if j, err := newJSParser(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
 			j[:cap(j)][cap(j)-1].Data = marker
 			g := j
+
 			if !test.Fn(&j) {
 				t.Errorf("test %d: failed on specific type fn ", n+1)
 			} else if !g.ReadType() {
@@ -5202,8 +5206,8 @@ func TestAsTypescript(t *testing.T) {
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
-		m, err := ParseModule(AsTypescript(&tk))
-		if err != nil {
+
+		if m, err := ParseModule(AsTypescript(&tk)); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if str := fmt.Sprintf("%s", m); str != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, str)
