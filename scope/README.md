@@ -2,7 +2,7 @@
 --
     import "vimagination.zapto.org/javascript/scope"
 
-Package scope parses out a scope tree for a javascript module or script
+Package scope parses out a scope tree for a javascript module or script.
 
 ## Usage
 
@@ -16,7 +16,7 @@ type Binding struct {
 }
 ```
 
-Binding represents a single instance of a bound name
+Binding represents a single instance of a bound name.
 
 #### type BindingType
 
@@ -24,7 +24,7 @@ Binding represents a single instance of a bound name
 type BindingType uint8
 ```
 
-BindingType indicates where the binding came from
+BindingType indicates where the binding came from.
 
 ```go
 const (
@@ -39,7 +39,7 @@ const (
 	BindingCatch
 )
 ```
-Binding Types
+Binding Types.
 
 #### type ErrDuplicateDeclaration
 
@@ -50,7 +50,7 @@ type ErrDuplicateDeclaration struct {
 ```
 
 ErrDuplicateDeclaration is an error when a binding is declared more than once
-with a scope
+with a scope.
 
 #### func (ErrDuplicateDeclaration) Error
 
@@ -64,12 +64,12 @@ func (ErrDuplicateDeclaration) Error() string
 type Scope struct {
 	IsLexicalScope bool
 	Parent         *Scope
-	Scopes         map[fmt.Formatter]*Scope
+	Scopes         map[javascript.Type]*Scope
 	Bindings       map[string][]Binding
 }
 ```
 
-Scope represents a single level of variable scope
+Scope represents a single level of variable scope.
 
 #### func  ModuleScope
 
@@ -83,7 +83,7 @@ ModuleScope parses out the scope tree for a javascript Module
 ```go
 func NewScope() *Scope
 ```
-NewScope returns a init'd Scope type
+NewScope returns a init'd Scope type.
 
 #### func  ScriptScope
 
