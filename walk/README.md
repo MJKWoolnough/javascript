@@ -12,7 +12,7 @@ Package walk provides a javascript type walker
 func Walk(t javascript.Type, fn Handler) error
 ```
 Walk calls the Handle function on the given interface for each non-nil,
-non-Token field of the given javascript type
+non-Token field of the given javascript type.
 
 #### type Handler
 
@@ -22,7 +22,7 @@ type Handler interface {
 }
 ```
 
-Handler is used to process javascript types
+Handler is used to process javascript types.
 
 #### type HandlerFunc
 
@@ -30,11 +30,11 @@ Handler is used to process javascript types
 type HandlerFunc func(javascript.Type) error
 ```
 
-HandlerFunc wraps a func to implement Handler interface
+HandlerFunc wraps a func to implement Handler interface.
 
 #### func (HandlerFunc) Handle
 
 ```go
 func (h HandlerFunc) Handle(t javascript.Type) error
 ```
-Handle implements the Handler interface
+Handle implements the Handler interface.
