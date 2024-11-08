@@ -418,7 +418,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"a?.", func(t *test, tk Tokens) { // 22
+		{"a?.", func(t *test, tk Tokens) { // 23
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3211,7 +3211,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{"a", func(t *test, tk Tokens) { // 18
+		{"a", func(t *test, tk Tokens) { // 19
 			t.Output = MemberExpression{
 				PrimaryExpression: &PrimaryExpression{
 					IdentifierReference: &tk[0],
@@ -3220,7 +3220,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{"a\n`${\n1\n1\n}`", func(t *test, tk Tokens) { // 19
+		{"a\n`${\n1\n1\n}`", func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrInvalidTemplate,
@@ -3231,7 +3231,7 @@ func TestMemberExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"a\n``", func(t *test, tk Tokens) { // 20
+		{"a\n``", func(t *test, tk Tokens) { // 21
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -3247,14 +3247,14 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"a\n.\n", func(t *test, tk Tokens) { // 21
+		{"a\n.\n", func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err:     ErrNoIdentifier,
 				Parsing: "MemberExpression",
 				Token:   tk[2],
 			}
 		}},
-		{"a\n.\nb", func(t *test, tk Tokens) { // 22
+		{"a\n.\nb", func(t *test, tk Tokens) { // 23
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -3267,7 +3267,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens:         tk[:5],
 			}
 		}},
-		{"a\n[\n]", func(t *test, tk Tokens) { // 23
+		{"a\n[\n]", func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err: Error{
 					Err:     assignmentError(tk[4]),
@@ -3278,14 +3278,14 @@ func TestMemberExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"a\n[\n1\n2\n]", func(t *test, tk Tokens) { // 24
+		{"a\n[\n1\n2\n]", func(t *test, tk Tokens) { // 25
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "MemberExpression",
 				Token:   tk[2],
 			}
 		}},
-		{"a\n[\n1\n]", func(t *test, tk Tokens) { // 25
+		{"a\n[\n1\n]", func(t *test, tk Tokens) { // 26
 			lit1 := makeConditionLiteral(tk, 4)
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
@@ -3307,7 +3307,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"a\n.\nb\n[\nc\n]\n``", func(t *test, tk Tokens) { // 26
+		{"a\n.\nb\n[\nc\n]\n``", func(t *test, tk Tokens) { // 27
 			litC := makeConditionLiteral(tk, 8)
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
@@ -3340,13 +3340,13 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"import . meta", func(t *test, tk Tokens) { // 27
+		{"import . meta", func(t *test, tk Tokens) { // 28
 			t.Output = MemberExpression{
 				ImportMeta: true,
 				Tokens:     tk[:5],
 			}
 		}},
-		{"a.#b", func(t *test, tk Tokens) { // 28
+		{"a.#b", func(t *test, tk Tokens) { // 29
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -3359,7 +3359,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens:            tk[:3],
 			}
 		}},
-		{"a.#b.c", func(t *test, tk Tokens) { // 29
+		{"a.#b.c", func(t *test, tk Tokens) { // 30
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
 					MemberExpression: &MemberExpression{
@@ -3376,7 +3376,7 @@ func TestMemberExpression(t *testing.T) {
 				Tokens:         tk[:5],
 			}
 		}},
-		{"a.#b[\"c\"]", func(t *test, tk Tokens) { // 30
+		{"a.#b[\"c\"]", func(t *test, tk Tokens) { // 31
 			t.Output = MemberExpression{
 				MemberExpression: &MemberExpression{
 					MemberExpression: &MemberExpression{
