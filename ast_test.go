@@ -1008,7 +1008,7 @@ func TestDeclaration(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`let a = 1;`, func(t *test, tk Tokens) { // 4
+		{`let a = 1;`, func(t *test, tk Tokens) { // 6
 			lit1 := makeConditionLiteral(tk, 6)
 			t.Output = Declaration{
 				LexicalDeclaration: &LexicalDeclaration{
@@ -1028,7 +1028,7 @@ func TestDeclaration(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{`function`, func(t *test, tk Tokens) { // 7 {
+		{`function`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
@@ -1261,14 +1261,14 @@ func TestLexicalDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"let\na b;", func(t *test, tk Tokens) { // 12
+		{"let\na b;", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     ErrInvalidLexicalDeclaration,
 				Parsing: "LexicalDeclaration",
 				Token:   tk[3],
 			}
 		}},
-	}, func(t *test) (Type, error) { // 13
+	}, func(t *test) (Type, error) {
 		var ld LexicalDeclaration
 
 		err := ld.parse(&t.Tokens, t.In, t.Yield, t.Await)
