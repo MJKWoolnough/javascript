@@ -691,7 +691,7 @@ func TestModule(t *testing.T) {
 }
 
 func TestModuleItem(t *testing.T) {
-	doTests(t, []sourceFn{ // 1
+	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
 			t.Err = Error{
 				Err: Error{
@@ -1218,14 +1218,14 @@ func TestNamedImports(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"{\na as b\n,\nb\n}", func(t *test, tk Tokens) { // 9
+		{"{\na as b\n,\nb\n}", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrInvalidNamedImport,
 				Parsing: "NamedImports",
 				Token:   tk[10],
 			}
 		}},
-		{"{\na as c\n,\nb as c\n}", func(t *test, tk Tokens) { // 9
+		{"{\na as c\n,\nb as c\n}", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrInvalidNamedImport,
 				Parsing: "NamedImports",
