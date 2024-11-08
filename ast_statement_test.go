@@ -6015,7 +6015,7 @@ func TestSwitchStatement(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"switch\n(\na\n)\n{\ncase b:\ncase c:}", func(t *test, tk Tokens) { // 15
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:}", func(t *test, tk Tokens) { // 16
 			litA := makeConditionLiteral(tk, 4)
 			litB := makeConditionLiteral(tk, 12)
 			litC := makeConditionLiteral(tk, 17)
@@ -6058,7 +6058,7 @@ func TestSwitchStatement(t *testing.T) {
 				Tokens: tk[:20],
 			}
 		}},
-		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd\ne\ncase f:\ncase g:}", func(t *test, tk Tokens) { // 16
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd\ne\ncase f:\ncase g:}", func(t *test, tk Tokens) { // 17
 			litA := makeConditionLiteral(tk, 4)
 			litB := makeConditionLiteral(tk, 12)
 			litC := makeConditionLiteral(tk, 17)
@@ -6163,7 +6163,7 @@ func TestSwitchStatement(t *testing.T) {
 				Tokens: tk[:38],
 			}
 		}},
-		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd;\ne;\ncase f:\ncase g:default:}", func(t *test, tk Tokens) { // 17
+		{"switch\n(\na\n)\n{\ncase b:\ncase c:\ndefault\n:\nd;\ne;\ncase f:\ncase g:default:}", func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     ErrDuplicateDefaultClause,
 				Parsing: "SwitchStatement",
