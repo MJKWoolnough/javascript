@@ -1294,7 +1294,7 @@ i <J> () {}
 				Tokens: tk[:10],
 			}
 		}},
-		{`(): A => {}`, func(t *test, tk Tokens) { // 35
+		{`(): A => {}`, func(t *test, tk Tokens) { // 34
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4977,7 +4977,7 @@ func TestTypescriptTypes(t *testing.T) {
 			(*jsParser).ReadTypeReference,
 			"A.B",
 		},
-		{ // 116
+		{ // 106
 			(*jsParser).ReadTypeReference,
 			"A<B>",
 		},
