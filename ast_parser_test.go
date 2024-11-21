@@ -129,11 +129,11 @@ func TestNewJSParser(t *testing.T) {
 		},
 	}
 
-	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("@"))); !errors.Is(err, pErr) {
+	if _, err := ParseScript(makeTokeniser(parser.NewStringTokeniser("@"))); !reflect.DeepEqual(err, pErr) {
 		t.Errorf("Script token error test: expecting %s, got %s", pErr, err)
 	}
 
-	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("@"))); !errors.Is(err, pErr) {
+	if _, err := ParseModule(makeTokeniser(parser.NewStringTokeniser("@"))); !reflect.DeepEqual(err, pErr) {
 		t.Errorf("Module token error test: expecting %s, got %s", pErr, err)
 	}
 
