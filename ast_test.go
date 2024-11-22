@@ -3989,3 +3989,13 @@ func TestArrowFunction(t *testing.T) {
 		return af, err
 	})
 }
+
+func TestScriptToModule(t *testing.T) {
+	source := `const a = 1;alert(a)`
+	s, _ := ParseScript(makeTokeniser(parser.NewStringTokeniser(source)))
+	m, _ := ParseModule(makeTokeniser(parser.NewStringTokeniser(source)))
+
+	if sm := ScriptToModule(s); !reflect.DeepEqual(sm, m) {
+		t.Errorf("expecting module %v, got %v", m, sm)
+	}
+}
