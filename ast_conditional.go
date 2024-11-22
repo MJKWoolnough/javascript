@@ -5,7 +5,7 @@ import "vimagination.zapto.org/parser"
 // ConditionalExpression as defined in TC39
 // https://tc39.es/ecma262/#prod-ConditionalExpression
 //
-// One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil
+// # One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil
 //
 // If True is non-nil, False must be non-nil also.
 type ConditionalExpression struct {
@@ -28,34 +28,18 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 
 	g = j.NewGoal()
 
-	g.AcceptRunWhitespaceNoNewLine()
+	g.AcceptRunWhitespace()
 
-	if g.SkipAsType() {
-		for {
-			j.Score(g)
-
-			g = j.NewGoal()
-
-			g.AcceptRunWhitespace()
-
-			if !g.SkipAsType() {
-				break
-			}
+	if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??"}) {
+		ce.CoalesceExpression = new(CoalesceExpression)
+		if err := ce.CoalesceExpression.parse(j, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
+			return j.Error("ConditionalExpression", err)
 		}
-	} else {
+
+		ce.LogicalORExpression = nil
+		g = j.NewGoal()
+
 		g.AcceptRunWhitespace()
-
-		if ce.LogicalORExpression.LogicalORExpression == nil && ce.LogicalORExpression.LogicalANDExpression.LogicalANDExpression == nil && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "??"}) {
-			ce.CoalesceExpression = new(CoalesceExpression)
-			if err := ce.CoalesceExpression.parse(j, in, yield, await, ce.LogicalORExpression.LogicalANDExpression.BitwiseORExpression); err != nil {
-				return j.Error("ConditionalExpression", err)
-			}
-
-			ce.LogicalORExpression = nil
-			g = j.NewGoal()
-
-			g.AcceptRunWhitespace()
-		}
 	}
 
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
