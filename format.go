@@ -144,7 +144,7 @@ func (t Tokens) printType(w io.Writer, v bool) {
 		t.printType(w, v)
 	}
 
-	io.WriteString(w, "]")
+	io.WriteString(w, "\n]")
 }
 
 type formatter interface {
