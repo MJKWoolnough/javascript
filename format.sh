@@ -56,7 +56,7 @@ HEREDOC
 				echo "	} else if v {";
 				echo "		pp.Print(\"\\n$fieldName: []\")";
 				echo "	}";
-			elif [ "${fieldType:0:1}" = "*" -a "$fieldType" != "*Token" ]; then
+			elif [ "${fieldType:0:1}" = "*" ]; then
 				echo;
 				echo "	if f.$fieldName != nil {";
 				echo "		pp.Print(\"\\n$fieldName: \")";
@@ -72,7 +72,7 @@ HEREDOC
 		done < <(sed '/^type '$type' struct {$/,/^}$/!d;//d' "$file" | grep -v "^$");
 
 		echo;
-		echo "	io.WriteString(w, \"}\")";
+		echo "	io.WriteString(w, \"\\n}\")";
 		echo "}";
 	done < <(types);
 ) > "format_types.go";
