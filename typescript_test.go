@@ -4582,6 +4582,52 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 				Tokens: tk[:6],
 			}
 		}},
+		{`a()<b`, func(t *test, tk Tokens) { // 123
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&RelationalExpression{
+												RelationalExpression: &WrapConditional(&CallExpression{
+													MemberExpression: &MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: &tk[0],
+															Tokens:              tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Arguments: &Arguments{
+														Tokens: tk[1:3],
+													},
+													Tokens: tk[:3],
+												}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression,
+												RelationshipOperator: RelationshipLessThan,
+												ShiftExpression: WrapConditional(&PrimaryExpression{
+													IdentifierReference: &tk[4],
+													Tokens:              tk[4:5],
+												}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression,
+												Tokens: tk[:5],
+											}),
+											Tokens: tk[:5],
+										},
+									},
+									Tokens: tk[:5],
+								},
+								Tokens: tk[:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
