@@ -427,6 +427,7 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 		re.PrivateIdentifier = nil
 		g = j.NewGoal()
 	}
+
 	for {
 		if err := re.ShiftExpression.parse(&g, yield, await); err != nil {
 			return j.Error("RelationalExpression", err)
