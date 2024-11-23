@@ -3999,3 +3999,20 @@ func TestScriptToModule(t *testing.T) {
 		t.Errorf("expecting module %v, got %v", m, sm)
 	}
 }
+
+func TestErrUnwrap(t *testing.T) {
+	err := Error{
+		Err: Error{
+			Err: Error{
+				Err:     ErrBadRestElement,
+				Parsing: "NonLocalStatement",
+			},
+			Parsing: "Expression",
+		},
+		Parsing: "Module",
+	}
+
+	if !errors.Is(err, ErrBadRestElement) {
+		t.Errorf("error could not be correctly unwrapped")
+	}
+}
