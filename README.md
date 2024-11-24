@@ -777,7 +777,7 @@ type ConditionalExpression struct {
 ConditionalExpression as defined in TC39
 https://tc39.es/ecma262/#prod-ConditionalExpression
 
-One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil
+One, and only one, of LogicalORExpression or CoalesceExpression must be non-nil.
 
 If True is non-nil, False must be non-nil also.
 
