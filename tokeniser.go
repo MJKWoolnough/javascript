@@ -81,9 +81,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			return t.Done()
 		}
 
-		t.Err = io.ErrUnexpectedEOF
-
-		return t.Error()
+		return t.ReturnError(io.ErrUnexpectedEOF)
 	case '/':
 		t.Next()
 
@@ -104,13 +102,9 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 					return t.Return(TokenMultiLineComment, j.inputElement)
 				}
 				if t.Peek() == -1 {
-					t.Err = io.ErrUnexpectedEOF
-
-					break
+					return t.ReturnError(io.ErrUnexpectedEOF)
 				}
 			}
-
-			return t.Error()
 		}
 
 		if allowDivision {
@@ -136,9 +130,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			return j.template(t)
 		}
 
-		t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
-
-		return t.Error()
+		return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get()))
 	case '\'', '"':
 		j.divisionAllowed = true
 
@@ -153,9 +145,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		if !internal.IsIDStart(t.Peek()) {
 			t.Next()
 
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidSequence, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidSequence, t.Get()))
 		}
 
 		tk, tf := j.identifier(t)
@@ -219,9 +209,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 
 							r, err := strconv.ParseInt(code, 16, 64)
 							if err != nil || r == 92 || !internal.IsIDStart(rune(r)) {
-								t.Err = fmt.Errorf("%w: %s", ErrInvalidUnicode, tk.Data)
-
-								return t.Error()
+								return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidUnicode, tk.Data))
 							}
 						}
 
@@ -247,9 +235,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case ';', ',', ':', '~', '>':
 		case ')', ']':
 			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
-				t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
-
-				return t.Error()
+				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get()))
 			}
 
 			j.divisionAllowed = true
@@ -307,9 +293,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '%', '^':
 			t.Accept("=") // %=, ^=
 		default:
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get()))
 		}
 
 		return t.Return(TokenPunctuator, j.inputElement)
@@ -386,9 +370,7 @@ Loop:
 	for {
 		switch c := t.ExceptRun(lineTerminators + "\\[/"); c {
 		case -1:
-			t.Err = io.ErrUnexpectedEOF
-
-			return t.Error()
+			return t.ReturnError(io.ErrUnexpectedEOF)
 		case '\\':
 			if !j.regexpBackslashSequence(t) {
 				return t.Error()
@@ -405,9 +387,7 @@ Loop:
 			t.Get()
 			t.Next()
 
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidRegexpCharacter, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidRegexpCharacter, t.Get()))
 		}
 	}
 	for {
@@ -443,9 +423,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			if !numberRun(t, binaryDigit) {
 				t.Next()
 
-				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-				return t.Error()
+				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 			}
 
 			t.Accept("n")
@@ -453,9 +431,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			if !numberRun(t, octalDigit) {
 				t.Next()
 
-				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-				return t.Error()
+				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 			}
 
 			t.Accept("n")
@@ -463,9 +439,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			if !numberRun(t, hexDigit) {
 				t.Next()
 
-				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-				return t.Error()
+				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 			}
 
 			t.Accept("n")
@@ -473,9 +447,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			if !numberRun(t, decimalDigit) {
 				t.Next()
 
-				t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-				return t.Error()
+				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 			}
 
 			if t.Accept("eE") {
@@ -484,9 +456,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				if !numberRun(t, decimalDigit) {
 					t.Next()
 
-					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-					return t.Error()
+					return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 				}
 			}
 		} else {
@@ -496,9 +466,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 		if !numberRun(t, decimalDigit) {
 			t.Next()
 
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 		}
 
 		if !t.Accept("n") {
@@ -506,9 +474,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				if !numberRun(t, decimalDigit) {
 					t.Next()
 
-					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-					return t.Error()
+					return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 				}
 			}
 
@@ -518,9 +484,7 @@ func (j *jsTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				if !numberRun(t, decimalDigit) {
 					t.Next()
 
-					t.Err = fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get())
-
-					return t.Error()
+					return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidNumber, t.Get()))
 				}
 			}
 		}
@@ -536,14 +500,10 @@ func (j *jsTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 		if !t.Accept("u") {
 			t.Next()
 
-			t.Err = fmt.Errorf("%w: %s", ErrUnexpectedBackslash, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrUnexpectedBackslash, t.Get()))
 		}
 		if !j.unicodeEscapeSequence(t) {
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidUnicode, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidUnicode, t.Get()))
 		}
 	}
 
@@ -669,9 +629,7 @@ Loop:
 
 			t.Next()
 
-			t.Err = fmt.Errorf("%w: %s", ErrInvalidEscapeSequence, t.Get())
-
-			return t.Error()
+			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidEscapeSequence, t.Get()))
 		case '$':
 			t.Next()
 
@@ -693,9 +651,7 @@ Loop:
 				}, j.inputElement
 			}
 		default:
-			t.Err = io.ErrUnexpectedEOF
-
-			return t.Error()
+			return t.ReturnError(io.ErrUnexpectedEOF)
 		}
 	}
 
