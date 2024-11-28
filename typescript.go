@@ -12,14 +12,16 @@ type typescript struct {
 	Tokeniser
 }
 
-func (t *typescript) GetToken() (parser.Token, error) {
-	tk, err := t.Tokeniser.GetToken()
+func (t *typescript) Iter(fn func(parser.Token) bool) {
+	for tk := range t.Tokeniser.Iter {
+		if tk.Type == parser.TokenDone {
+			tk.Data = marker
+		}
 
-	if tk.Type == parser.TokenDone {
-		tk.Data = marker
+		if !fn(tk) {
+			break
+		}
 	}
-
-	return tk, err
 }
 
 // AsTypescript converts the tokeniser to one that reads Typescript.

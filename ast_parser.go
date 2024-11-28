@@ -20,9 +20,9 @@ type jsParser Tokens
 
 // Tokeniser is an interface representing a tokeniser
 type Tokeniser interface {
-	GetToken() (parser.Token, error)
-	GetError() error
 	TokeniserState(parser.TokenFunc)
+	Iter(func(parser.Token) bool)
+	GetError() error
 }
 
 func newJSParser(t Tokeniser) (jsParser, error) {
@@ -31,10 +31,10 @@ func newJSParser(t Tokeniser) (jsParser, error) {
 	var (
 		tokens             jsParser
 		pos, line, linePos uint64
+		err                error
 	)
 
-	for {
-		tk, _ := t.GetToken()
+	for tk := range t.Iter {
 		tokens = append(tokens, Token{
 			Token:   tk,
 			Pos:     pos,
@@ -43,55 +43,52 @@ func newJSParser(t Tokeniser) (jsParser, error) {
 		})
 
 		switch tk.Type {
-		case parser.TokenDone:
-			return tokens[0:0:len(tokens)], nil
 		case parser.TokenError:
-			return nil, Error{
+			err = Error{
 				Err:     t.GetError(),
 				Parsing: "Tokens",
 				Token:   tokens[len(tokens)-1],
 			}
-		default:
-			switch tk.Type {
-			case TokenLineTerminator:
-				var lastChar rune
+		case TokenLineTerminator:
+			var lastChar rune
 
-				for _, c := range tk.Data {
+			for _, c := range tk.Data {
+				if lastChar != '\r' || c != '\n' {
+					line++
+				}
+
+				lastChar = c
+			}
+
+			linePos = 0
+		case TokenNoSubstitutionTemplate, TokenTemplateHead, TokenTemplateMiddle, TokenTemplateTail, TokenMultiLineComment:
+			var (
+				lastLT   int
+				lastChar rune
+			)
+
+			for n, c := range tk.Data {
+				if strings.ContainsRune(lineTerminators, c) {
+					lastLT = n + 1
+					linePos = 0
+
 					if lastChar != '\r' || c != '\n' {
 						line++
 					}
-
-					lastChar = c
 				}
 
-				linePos = 0
-			case TokenNoSubstitutionTemplate, TokenTemplateHead, TokenTemplateMiddle, TokenTemplateTail, TokenMultiLineComment:
-				var (
-					lastLT   int
-					lastChar rune
-				)
-
-				for n, c := range tk.Data {
-					if strings.ContainsRune(lineTerminators, c) {
-						lastLT = n + 1
-						linePos = 0
-
-						if lastChar != '\r' || c != '\n' {
-							line++
-						}
-					}
-
-					lastChar = c
-				}
-
-				linePos += uint64(len(tk.Data) - lastLT)
-			default:
-				linePos += uint64(len(tk.Data))
+				lastChar = c
 			}
 
-			pos += uint64(len(tk.Data))
+			linePos += uint64(len(tk.Data) - lastLT)
+		default:
+			linePos += uint64(len(tk.Data))
 		}
+
+		pos += uint64(len(tk.Data))
 	}
+
+	return tokens[0:0:len(tokens)], err
 }
 
 func (j jsParser) NewGoal() jsParser {
