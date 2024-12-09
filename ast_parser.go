@@ -7,18 +7,18 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-// Token represents a single parsed token with source positioning
+// Token represents a single parsed token with source positioning.
 type Token struct {
 	parser.Token
 	Pos, Line, LinePos uint64
 }
 
-// Tokens is a collection of Token values
+// Tokens is a collection of Token values.
 type Tokens []Token
 
 type jsParser Tokens
 
-// Tokeniser is an interface representing a tokeniser
+// Tokeniser is an interface representing a tokeniser.
 type Tokeniser interface {
 	TokeniserState(parser.TokenFunc)
 	Iter(func(parser.Token) bool)
@@ -210,19 +210,19 @@ func (j *jsParser) GetLastToken() *Token {
 	return &(*j)[len(*j)-1]
 }
 
-// Error is a parsing error with trace details
+// Error is a parsing error with trace details.
 type Error struct {
 	Err     error
 	Parsing string
 	Token   Token
 }
 
-// Error returns the error string
+// Error returns the error string.
 func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
 }
 
-// Unwrap returns the wrapped error
+// Unwrap returns the wrapped error.
 func (e Error) Unwrap() error {
 	return e.Err
 }
