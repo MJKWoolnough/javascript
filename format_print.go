@@ -1366,18 +1366,29 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 }
 
 func (t TemplateLiteral) printSource(w io.Writer, v bool) {
+	x := w
+
+	for {
+		j, ok := x.(*indentPrinter)
+		if !ok {
+			break
+		}
+
+		x = j.Writer
+	}
+
 	if t.NoSubstitutionTemplate != nil {
-		io.WriteString(w, t.NoSubstitutionTemplate.Data)
+		io.WriteString(x, t.NoSubstitutionTemplate.Data)
 	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions) == len(t.TemplateMiddleList)+1 {
-		io.WriteString(w, t.TemplateHead.Data)
+		io.WriteString(x, t.TemplateHead.Data)
 		t.Expressions[0].printSource(w, v)
 
 		for n, e := range t.Expressions[1:] {
-			io.WriteString(w, t.TemplateMiddleList[n].Data)
+			io.WriteString(x, t.TemplateMiddleList[n].Data)
 			e.printSource(w, v)
 		}
 
-		io.WriteString(w, t.TemplateTail.Data)
+		io.WriteString(x, t.TemplateTail.Data)
 	}
 }
 
