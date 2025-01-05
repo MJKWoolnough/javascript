@@ -1649,3 +1649,258 @@ func TestWrapConditional(t *testing.T) {
 		}
 	}
 }
+
+func TestWrapConditionalExtra(t *testing.T) {
+	arrayTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "[",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "]",
+			},
+		},
+	}
+	arrayLiteral := &ArrayLiteral{
+		ElementList: []ArrayElement{
+			{
+				AssignmentExpression: AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &arrayTokens[1],
+						Tokens:              arrayTokens[1:2],
+					}),
+					Tokens: arrayTokens[1:2],
+				},
+				Tokens: arrayTokens[1:2],
+			},
+		},
+		Tokens: arrayTokens,
+	}
+	objectTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "{",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "...",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenRightBracePunctuator,
+				Data: "}",
+			},
+		},
+	}
+	objectLiteral := &ObjectLiteral{
+		PropertyDefinitionList: []PropertyDefinition{
+			{
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &arrayTokens[2],
+						Tokens:              arrayTokens[2:3],
+					}),
+					Tokens: arrayTokens[2:3],
+				},
+				Tokens: arrayTokens[2:3],
+			},
+		},
+		Tokens: objectTokens,
+	}
+	functionTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenKeyword,
+				Data: "function",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "(",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: ")",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "{",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenRightBracePunctuator,
+				Data: "}",
+			},
+		},
+	}
+	functionDeclaration := &FunctionDeclaration{
+		FormalParameters: FormalParameters{
+			Tokens: functionTokens[1:3],
+		},
+		FunctionBody: Block{
+			Tokens: functionTokens[3:5],
+		},
+		Tokens: functionTokens,
+	}
+	classTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenKeyword,
+				Data: "class",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "{",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenRightBracePunctuator,
+				Data: "}",
+			},
+		},
+	}
+	classDeclaration := &ClassDeclaration{
+		Tokens: classTokens,
+	}
+	parenthesizedTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "(",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: ")",
+			},
+		},
+	}
+	parenthesizedExpression := &ParenthesizedExpression{
+		Expressions: []AssignmentExpression{
+			{
+				ConditionalExpression: WrapConditional(&PrimaryExpression{
+					IdentifierReference: &arrayTokens[1],
+					Tokens:              parenthesizedTokens[1:2],
+				}),
+				Tokens: parenthesizedTokens[1:2],
+			},
+		},
+		Tokens: parenthesizedTokens,
+	}
+
+	for n, test := range [...]struct {
+		ConditionalWrappable ConditionalWrappable
+		PrimaryExpression    *PrimaryExpression
+	}{
+		{ // 1
+			arrayLiteral,
+			&PrimaryExpression{
+				ArrayLiteral: arrayLiteral,
+				Tokens:       arrayTokens,
+			},
+		},
+		{ // 2
+			*arrayLiteral,
+			&PrimaryExpression{
+				ArrayLiteral: arrayLiteral,
+				Tokens:       arrayTokens,
+			},
+		},
+		{ // 3
+			objectLiteral,
+			&PrimaryExpression{
+				ObjectLiteral: objectLiteral,
+				Tokens:        objectTokens,
+			},
+		},
+		{ // 4
+			*objectLiteral,
+			&PrimaryExpression{
+				ObjectLiteral: objectLiteral,
+				Tokens:        objectTokens,
+			},
+		},
+		{ // 5
+			functionDeclaration,
+			&PrimaryExpression{
+				FunctionExpression: functionDeclaration,
+				Tokens:             functionTokens,
+			},
+		},
+		{ // 6
+			*functionDeclaration,
+			&PrimaryExpression{
+				FunctionExpression: functionDeclaration,
+				Tokens:             functionTokens,
+			},
+		},
+		{ // 7
+			classDeclaration,
+			&PrimaryExpression{
+				ClassExpression: classDeclaration,
+				Tokens:          classTokens,
+			},
+		},
+		{ // 8
+			*classDeclaration,
+			&PrimaryExpression{
+				ClassExpression: classDeclaration,
+				Tokens:          classTokens,
+			},
+		},
+		{ // 9
+			parenthesizedExpression,
+			&PrimaryExpression{
+				ParenthesizedExpression: parenthesizedExpression,
+				Tokens:                  parenthesizedTokens,
+			},
+		},
+		{ // 10
+			*parenthesizedExpression,
+			&PrimaryExpression{
+				ParenthesizedExpression: parenthesizedExpression,
+				Tokens:                  parenthesizedTokens,
+			},
+		},
+	} {
+		if output, expectedOutput := WrapConditional(test.ConditionalWrappable), WrapConditional(test.PrimaryExpression); !reflect.DeepEqual(output, expectedOutput) {
+			t.Errorf("test %d: expecting\n%v\n...got...\n%v", n+1, expectedOutput, output)
+		}
+	}
+}
