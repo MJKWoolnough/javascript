@@ -3129,3 +3129,9 @@ func TestUnwrapConditional(t *testing.T) {
 		}
 	}
 }
+
+func TestUnwrapConditionalExtra(t *testing.T) {
+	if output := UnwrapConditional(nil); output != nil {
+		t.Errorf("expecting nil got: %v", output)
+	}
+}
