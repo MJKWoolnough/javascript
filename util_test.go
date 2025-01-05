@@ -1823,10 +1823,101 @@ func TestWrapConditionalExtra(t *testing.T) {
 		},
 		Tokens: parenthesizedTokens,
 	}
+	callTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "(",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "b",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: ")",
+			},
+		},
+	}
+	callExpression := &CallExpression{
+		CallExpression: &CallExpression{
+			MemberExpression: &MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: &callTokens[0],
+					Tokens:              callTokens[:1],
+				},
+				Tokens: callTokens[:1],
+			},
+			Tokens: callTokens[:1],
+		},
+		Arguments: &Arguments{
+			ArgumentList: []Argument{
+				{
+					AssignmentExpression: AssignmentExpression{
+						ConditionalExpression: WrapConditional(&PrimaryExpression{
+							IdentifierReference: &callTokens[2],
+							Tokens:              callTokens[2:3],
+						}),
+						Tokens: callTokens[2:3],
+					},
+					Tokens: callTokens[2:3],
+				},
+			},
+			Tokens: callTokens[1:4],
+		},
+		Tokens: callTokens[:4],
+	}
+	optionalTokens := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenPunctuator,
+				Data: "?.",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "b",
+			},
+		},
+	}
+	optionalExpression := &OptionalExpression{
+		OptionalExpression: &OptionalExpression{
+			MemberExpression: &MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: &optionalTokens[0],
+					Tokens:              optionalTokens[:1],
+				},
+				Tokens: optionalTokens[:1],
+			},
+			Tokens: optionalTokens[:1],
+		},
+		OptionalChain: OptionalChain{
+			IdentifierName: &optionalTokens[2],
+			Tokens:         optionalTokens[2:3],
+		},
+		Tokens: optionalTokens[:3],
+	}
 
 	for n, test := range [...]struct {
-		ConditionalWrappable ConditionalWrappable
-		PrimaryExpression    *PrimaryExpression
+		inner ConditionalWrappable
+		outer ConditionalWrappable
 	}{
 		{ // 1
 			arrayLiteral,
@@ -1898,8 +1989,36 @@ func TestWrapConditionalExtra(t *testing.T) {
 				Tokens:                  parenthesizedTokens,
 			},
 		},
+		{ // 11
+			callExpression,
+			&LeftHandSideExpression{
+				CallExpression: callExpression,
+				Tokens:         callTokens,
+			},
+		},
+		{ // 12
+			*callExpression,
+			&LeftHandSideExpression{
+				CallExpression: callExpression,
+				Tokens:         callTokens,
+			},
+		},
+		{ // 13
+			optionalExpression,
+			&LeftHandSideExpression{
+				OptionalExpression: optionalExpression,
+				Tokens:             optionalTokens,
+			},
+		},
+		{ // 14
+			*optionalExpression,
+			&LeftHandSideExpression{
+				OptionalExpression: optionalExpression,
+				Tokens:             optionalTokens,
+			},
+		},
 	} {
-		if output, expectedOutput := WrapConditional(test.ConditionalWrappable), WrapConditional(test.PrimaryExpression); !reflect.DeepEqual(output, expectedOutput) {
+		if output, expectedOutput := WrapConditional(test.inner), WrapConditional(test.outer); !reflect.DeepEqual(output, expectedOutput) {
 			t.Errorf("test %d: expecting\n%v\n...got...\n%v", n+1, expectedOutput, output)
 		}
 	}
