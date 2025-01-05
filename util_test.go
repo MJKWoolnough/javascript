@@ -1904,3 +1904,1109 @@ func TestWrapConditionalExtra(t *testing.T) {
 		}
 	}
 }
+
+func TestUnwrapConditional(t *testing.T) {
+	tks := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "a",
+			},
+		},
+		{
+			Token: parser.Token{
+				Type: TokenIdentifier,
+				Data: "b",
+			},
+		},
+	}
+	identA := &tks[0]
+	identB := &tks[1]
+
+	for n, test := range [...]ConditionalWrappable{
+		&ParenthesizedExpression{ // 1
+			Expressions: []AssignmentExpression{
+				{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: identA,
+						Tokens:              tks[:1],
+					}),
+					Tokens: tks[:1],
+				},
+			},
+			Tokens: tks[:1],
+		},
+		&TemplateLiteral{ // 2
+			NoSubstitutionTemplate: identA,
+			Tokens:                 tks[:1],
+		},
+		&ClassDeclaration{ // 3
+			BindingIdentifier: identA,
+			Tokens:            tks[:1],
+		},
+		&FunctionDeclaration{ // 4
+			BindingIdentifier: identA,
+			Tokens:            tks[:1],
+		},
+		&ObjectLiteral{ // 5
+			PropertyDefinitionList: []PropertyDefinition{
+				{
+					AssignmentExpression: &AssignmentExpression{
+						ConditionalExpression: WrapConditional(&PrimaryExpression{
+							IdentifierReference: identA,
+							Tokens:              tks[:1],
+						}),
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+			},
+			Tokens: tks[:1],
+		},
+		&ArrayLiteral{ // 6
+			ElementList: []ArrayElement{
+				{
+					AssignmentExpression: AssignmentExpression{
+						ConditionalExpression: WrapConditional(&PrimaryExpression{
+							IdentifierReference: identA,
+							Tokens:              tks[:1],
+						}),
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+			},
+			Tokens: tks[:1],
+		},
+		&PrimaryExpression{ // 7
+			IdentifierReference: identA,
+			Tokens:              tks[:1],
+		},
+		&MemberExpression{ // 8
+			MemberExpression: &MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: identA,
+					Tokens:              tks[:1],
+				},
+			},
+			IdentifierName: identB,
+			Tokens:         tks,
+		},
+		&NewExpression{ // 9
+			News: 1,
+			MemberExpression: MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: identA,
+					Tokens:              tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			Tokens: tks[:1],
+		},
+		&CallExpression{ // 10
+			CallExpression: &CallExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: identA,
+						Tokens:              tks[:1],
+					},
+				},
+				Tokens: tks[:1],
+			},
+			Arguments: &Arguments{
+				ArgumentList: []Argument{
+					{
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								IdentifierReference: identB,
+								Tokens:              tks[1:2],
+							}),
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&OptionalExpression{ // 11
+			OptionalExpression: &OptionalExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: identA,
+						Tokens:              tks[:1],
+					},
+				},
+				Tokens: tks[:1],
+			},
+			OptionalChain: OptionalChain{
+				IdentifierName: identB,
+				Tokens:         tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&UpdateExpression{ // 12
+			UpdateOperator: UpdatePostIncrement,
+			UnaryExpression: &UnaryExpression{
+				UpdateExpression: UpdateExpression{
+					LeftHandSideExpression: &LeftHandSideExpression{
+						NewExpression: &NewExpression{
+							MemberExpression: MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: identA,
+									Tokens:              tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			Tokens: tks[:1],
+		},
+		&UnaryExpression{ // 13
+			UnaryOperators: []UnaryOperator{UnaryVoid},
+			UpdateExpression: UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: identA,
+								Tokens:              tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			Tokens: tks[:1],
+		},
+		&ExponentiationExpression{ // 14
+			ExponentiationExpression: &ExponentiationExpression{
+				UnaryExpression: UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: identA,
+										Tokens:              tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			UnaryExpression: UnaryExpression{
+				UpdateExpression: UpdateExpression{
+					LeftHandSideExpression: &LeftHandSideExpression{
+						NewExpression: &NewExpression{
+							MemberExpression: MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: identB,
+									Tokens:              tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&MultiplicativeExpression{ // 15
+			MultiplicativeExpression: &MultiplicativeExpression{
+				ExponentiationExpression: ExponentiationExpression{
+					UnaryExpression: UnaryExpression{
+						UpdateExpression: UpdateExpression{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: identA,
+											Tokens:              tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			ExponentiationExpression: ExponentiationExpression{
+				UnaryExpression: UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: identB,
+										Tokens:              tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&AdditiveExpression{ // 16
+			AdditiveExpression: &AdditiveExpression{
+				MultiplicativeExpression: MultiplicativeExpression{
+					ExponentiationExpression: ExponentiationExpression{
+						UnaryExpression: UnaryExpression{
+							UpdateExpression: UpdateExpression{
+								LeftHandSideExpression: &LeftHandSideExpression{
+									NewExpression: &NewExpression{
+										MemberExpression: MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												IdentifierReference: identA,
+												Tokens:              tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			MultiplicativeExpression: MultiplicativeExpression{
+				ExponentiationExpression: ExponentiationExpression{
+					UnaryExpression: UnaryExpression{
+						UpdateExpression: UpdateExpression{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: identB,
+											Tokens:              tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&ShiftExpression{ // 17
+			ShiftExpression: &ShiftExpression{
+				AdditiveExpression: AdditiveExpression{
+					MultiplicativeExpression: MultiplicativeExpression{
+						ExponentiationExpression: ExponentiationExpression{
+							UnaryExpression: UnaryExpression{
+								UpdateExpression: UpdateExpression{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: identA,
+													Tokens:              tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			AdditiveExpression: AdditiveExpression{
+				MultiplicativeExpression: MultiplicativeExpression{
+					ExponentiationExpression: ExponentiationExpression{
+						UnaryExpression: UnaryExpression{
+							UpdateExpression: UpdateExpression{
+								LeftHandSideExpression: &LeftHandSideExpression{
+									NewExpression: &NewExpression{
+										MemberExpression: MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												IdentifierReference: identB,
+												Tokens:              tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&RelationalExpression{ // 18
+			RelationalExpression: &RelationalExpression{
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: identA,
+														Tokens:              tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			ShiftExpression: ShiftExpression{
+				AdditiveExpression: AdditiveExpression{
+					MultiplicativeExpression: MultiplicativeExpression{
+						ExponentiationExpression: ExponentiationExpression{
+							UnaryExpression: UnaryExpression{
+								UpdateExpression: UpdateExpression{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: identB,
+													Tokens:              tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&EqualityExpression{ // 19
+			EqualityExpression: &EqualityExpression{
+				RelationalExpression: RelationalExpression{
+					ShiftExpression: ShiftExpression{
+						AdditiveExpression: AdditiveExpression{
+							MultiplicativeExpression: MultiplicativeExpression{
+								ExponentiationExpression: ExponentiationExpression{
+									UnaryExpression: UnaryExpression{
+										UpdateExpression: UpdateExpression{
+											LeftHandSideExpression: &LeftHandSideExpression{
+												NewExpression: &NewExpression{
+													MemberExpression: MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: identA,
+															Tokens:              tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			RelationalExpression: RelationalExpression{
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: identB,
+														Tokens:              tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&BitwiseANDExpression{ // 20
+			BitwiseANDExpression: &BitwiseANDExpression{
+				EqualityExpression: EqualityExpression{
+					RelationalExpression: RelationalExpression{
+						ShiftExpression: ShiftExpression{
+							AdditiveExpression: AdditiveExpression{
+								MultiplicativeExpression: MultiplicativeExpression{
+									ExponentiationExpression: ExponentiationExpression{
+										UnaryExpression: UnaryExpression{
+											UpdateExpression: UpdateExpression{
+												LeftHandSideExpression: &LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: identA,
+																Tokens:              tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			EqualityExpression: EqualityExpression{
+				RelationalExpression: RelationalExpression{
+					ShiftExpression: ShiftExpression{
+						AdditiveExpression: AdditiveExpression{
+							MultiplicativeExpression: MultiplicativeExpression{
+								ExponentiationExpression: ExponentiationExpression{
+									UnaryExpression: UnaryExpression{
+										UpdateExpression: UpdateExpression{
+											LeftHandSideExpression: &LeftHandSideExpression{
+												NewExpression: &NewExpression{
+													MemberExpression: MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															IdentifierReference: identB,
+															Tokens:              tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&BitwiseXORExpression{ // 21
+			BitwiseXORExpression: &BitwiseXORExpression{
+				BitwiseANDExpression: BitwiseANDExpression{
+					EqualityExpression: EqualityExpression{
+						RelationalExpression: RelationalExpression{
+							ShiftExpression: ShiftExpression{
+								AdditiveExpression: AdditiveExpression{
+									MultiplicativeExpression: MultiplicativeExpression{
+										ExponentiationExpression: ExponentiationExpression{
+											UnaryExpression: UnaryExpression{
+												UpdateExpression: UpdateExpression{
+													LeftHandSideExpression: &LeftHandSideExpression{
+														NewExpression: &NewExpression{
+															MemberExpression: MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	IdentifierReference: identA,
+																	Tokens:              tks[:1],
+																},
+																Tokens: tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			BitwiseANDExpression: BitwiseANDExpression{
+				EqualityExpression: EqualityExpression{
+					RelationalExpression: RelationalExpression{
+						ShiftExpression: ShiftExpression{
+							AdditiveExpression: AdditiveExpression{
+								MultiplicativeExpression: MultiplicativeExpression{
+									ExponentiationExpression: ExponentiationExpression{
+										UnaryExpression: UnaryExpression{
+											UpdateExpression: UpdateExpression{
+												LeftHandSideExpression: &LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																IdentifierReference: identB,
+																Tokens:              tks[1:2],
+															},
+															Tokens: tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&BitwiseORExpression{ // 22
+			BitwiseORExpression: &BitwiseORExpression{
+				BitwiseXORExpression: BitwiseXORExpression{
+					BitwiseANDExpression: BitwiseANDExpression{
+						EqualityExpression: EqualityExpression{
+							RelationalExpression: RelationalExpression{
+								ShiftExpression: ShiftExpression{
+									AdditiveExpression: AdditiveExpression{
+										MultiplicativeExpression: MultiplicativeExpression{
+											ExponentiationExpression: ExponentiationExpression{
+												UnaryExpression: UnaryExpression{
+													UpdateExpression: UpdateExpression{
+														LeftHandSideExpression: &LeftHandSideExpression{
+															NewExpression: &NewExpression{
+																MemberExpression: MemberExpression{
+																	PrimaryExpression: &PrimaryExpression{
+																		IdentifierReference: identA,
+																		Tokens:              tks[:1],
+																	},
+																	Tokens: tks[:1],
+																},
+																Tokens: tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			BitwiseXORExpression: BitwiseXORExpression{
+				BitwiseANDExpression: BitwiseANDExpression{
+					EqualityExpression: EqualityExpression{
+						RelationalExpression: RelationalExpression{
+							ShiftExpression: ShiftExpression{
+								AdditiveExpression: AdditiveExpression{
+									MultiplicativeExpression: MultiplicativeExpression{
+										ExponentiationExpression: ExponentiationExpression{
+											UnaryExpression: UnaryExpression{
+												UpdateExpression: UpdateExpression{
+													LeftHandSideExpression: &LeftHandSideExpression{
+														NewExpression: &NewExpression{
+															MemberExpression: MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	IdentifierReference: identB,
+																	Tokens:              tks[1:2],
+																},
+																Tokens: tks[1:2],
+															},
+															Tokens: tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&LogicalANDExpression{ // 23
+			LogicalANDExpression: &LogicalANDExpression{
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			IdentifierReference: identA,
+																			Tokens:              tks[:1],
+																		},
+																		Tokens: tks[:1],
+																	},
+																	Tokens: tks[:1],
+																},
+																Tokens: tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			BitwiseORExpression: BitwiseORExpression{
+				BitwiseXORExpression: BitwiseXORExpression{
+					BitwiseANDExpression: BitwiseANDExpression{
+						EqualityExpression: EqualityExpression{
+							RelationalExpression: RelationalExpression{
+								ShiftExpression: ShiftExpression{
+									AdditiveExpression: AdditiveExpression{
+										MultiplicativeExpression: MultiplicativeExpression{
+											ExponentiationExpression: ExponentiationExpression{
+												UnaryExpression: UnaryExpression{
+													UpdateExpression: UpdateExpression{
+														LeftHandSideExpression: &LeftHandSideExpression{
+															NewExpression: &NewExpression{
+																MemberExpression: MemberExpression{
+																	PrimaryExpression: &PrimaryExpression{
+																		IdentifierReference: identB,
+																		Tokens:              tks[1:2],
+																	},
+																	Tokens: tks[1:2],
+																},
+																Tokens: tks[1:2],
+															},
+															Tokens: tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&LogicalORExpression{ // 24
+			LogicalORExpression: &LogicalORExpression{
+				LogicalANDExpression: LogicalANDExpression{
+					BitwiseORExpression: BitwiseORExpression{
+						BitwiseXORExpression: BitwiseXORExpression{
+							BitwiseANDExpression: BitwiseANDExpression{
+								EqualityExpression: EqualityExpression{
+									RelationalExpression: RelationalExpression{
+										ShiftExpression: ShiftExpression{
+											AdditiveExpression: AdditiveExpression{
+												MultiplicativeExpression: MultiplicativeExpression{
+													ExponentiationExpression: ExponentiationExpression{
+														UnaryExpression: UnaryExpression{
+															UpdateExpression: UpdateExpression{
+																LeftHandSideExpression: &LeftHandSideExpression{
+																	NewExpression: &NewExpression{
+																		MemberExpression: MemberExpression{
+																			PrimaryExpression: &PrimaryExpression{
+																				IdentifierReference: identA,
+																				Tokens:              tks[:1],
+																			},
+																			Tokens: tks[:1],
+																		},
+																		Tokens: tks[:1],
+																	},
+																	Tokens: tks[:1],
+																},
+																Tokens: tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				Tokens: tks[:1],
+			},
+			LogicalANDExpression: LogicalANDExpression{
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			IdentifierReference: identB,
+																			Tokens:              tks[1:2],
+																		},
+																		Tokens: tks[1:2],
+																	},
+																	Tokens: tks[1:2],
+																},
+																Tokens: tks[1:2],
+															},
+															Tokens: tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+		&ConditionalExpression{ // 25
+			CoalesceExpression: &CoalesceExpression{
+				CoalesceExpressionHead: &CoalesceExpression{
+					BitwiseORExpression: BitwiseORExpression{
+						BitwiseXORExpression: BitwiseXORExpression{
+							BitwiseANDExpression: BitwiseANDExpression{
+								EqualityExpression: EqualityExpression{
+									RelationalExpression: RelationalExpression{
+										ShiftExpression: ShiftExpression{
+											AdditiveExpression: AdditiveExpression{
+												MultiplicativeExpression: MultiplicativeExpression{
+													ExponentiationExpression: ExponentiationExpression{
+														UnaryExpression: UnaryExpression{
+															UpdateExpression: UpdateExpression{
+																LeftHandSideExpression: &LeftHandSideExpression{
+																	NewExpression: &NewExpression{
+																		MemberExpression: MemberExpression{
+																			PrimaryExpression: &PrimaryExpression{
+																				IdentifierReference: identA,
+																				Tokens:              tks[:1],
+																			},
+																			Tokens: tks[:1],
+																		},
+																		Tokens: tks[:1],
+																	},
+																	Tokens: tks[:1],
+																},
+																Tokens: tks[:1],
+															},
+															Tokens: tks[:1],
+														},
+														Tokens: tks[:1],
+													},
+													Tokens: tks[:1],
+												},
+												Tokens: tks[:1],
+											},
+											Tokens: tks[:1],
+										},
+										Tokens: tks[:1],
+									},
+									Tokens: tks[:1],
+								},
+								Tokens: tks[:1],
+							},
+							Tokens: tks[:1],
+						},
+						Tokens: tks[:1],
+					},
+					Tokens: tks[:1],
+				},
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			IdentifierReference: identB,
+																			Tokens:              tks[1:2],
+																		},
+																		Tokens: tks[1:2],
+																	},
+																	Tokens: tks[1:2],
+																},
+																Tokens: tks[1:2],
+															},
+															Tokens: tks[1:2],
+														},
+														Tokens: tks[1:2],
+													},
+													Tokens: tks[1:2],
+												},
+												Tokens: tks[1:2],
+											},
+											Tokens: tks[1:2],
+										},
+										Tokens: tks[1:2],
+									},
+									Tokens: tks[1:2],
+								},
+								Tokens: tks[1:2],
+							},
+							Tokens: tks[1:2],
+						},
+						Tokens: tks[1:2],
+					},
+					Tokens: tks[1:2],
+				},
+				Tokens: tks[1:2],
+			},
+			Tokens: tks[:2],
+		},
+	} {
+		if output := UnwrapConditional(WrapConditional(test)); !reflect.DeepEqual(output, test) {
+			t.Errorf("test %d: expecting\n%v\n...got...\n%v", n+1, test, output)
+		}
+	}
+}
