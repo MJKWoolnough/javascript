@@ -93,7 +93,7 @@ HEREDOC
 		echo "		type X = $type";
 		echo "		type $type X";
 		echo;
-		echo "		fmt.Fprintf(s, \"%#v\", $t(f))";
+		echo "		fmt.Fprintf(s, \"%#v\", $type(f))";
 		echo "	} else {";
 		echo "		format(&f, s, v)";
 		echo "	}";
