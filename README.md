@@ -980,21 +980,21 @@ type Error struct {
 }
 ```
 
-Error is a parsing error with trace details
+Error is a parsing error with trace details.
 
 #### func (Error) Error
 
 ```go
 func (e Error) Error() string
 ```
-Error returns the error string
+Error returns the error string.
 
 #### func (Error) Unwrap
 
 ```go
 func (e Error) Unwrap() error
 ```
-Unwrap returns the wrapped error
+Unwrap returns the wrapped error.
 
 #### type ExponentiationExpression
 
@@ -2354,7 +2354,7 @@ type Token struct {
 }
 ```
 
-Token represents a single parsed token with source positioning
+Token represents a single parsed token with source positioning.
 
 #### func (Token) Format
 
@@ -2367,13 +2367,13 @@ Format implements the fmt.Formatter interface
 
 ```go
 type Tokeniser interface {
-	GetToken() (parser.Token, error)
-	GetError() error
 	TokeniserState(parser.TokenFunc)
+	Iter(func(parser.Token) bool)
+	GetError() error
 }
 ```
 
-Tokeniser is an interface representing a tokeniser
+Tokeniser is an interface representing a tokeniser.
 
 #### func  AsTypescript
 
@@ -2395,7 +2395,7 @@ lookahead/lookback, such as the Typescript 'private' modifier, or the 'enum' and
 type Tokens []Token
 ```
 
-Tokens is a collection of Token values
+Tokens is a collection of Token values.
 
 #### func (Tokens) Format
 
