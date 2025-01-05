@@ -2,7 +2,10 @@ package javascript
 
 import (
 	"errors"
+	"reflect"
 	"testing"
+
+	"vimagination.zapto.org/parser"
 )
 
 func TestUnquote(t *testing.T) {
@@ -502,6 +505,1147 @@ func TestQuoteTemplate(t *testing.T) {
 	} {
 		if out := QuoteTemplate(test.Input, test.templateType); out != test.Output {
 			t.Errorf("test %d: expecting output %s, got %s", n+1, test.Output, out)
+		}
+	}
+}
+
+func TestWrapConditional(t *testing.T) {
+	tks := Tokens{
+		{
+			Token: parser.Token{
+				Type: TokenNoSubstitutionTemplate,
+				Data: "`abc`",
+			},
+		},
+	}
+	template := &TemplateLiteral{
+		NoSubstitutionTemplate: &tks[0],
+		Tokens:                 tks,
+	}
+	expectedOutput := ConditionalExpression{
+		LogicalORExpression: &LogicalORExpression{
+			LogicalANDExpression: LogicalANDExpression{
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			TemplateLiteral: template,
+																			Tokens:          tks,
+																		},
+																		Tokens: tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		Tokens: tks,
+	}
+
+	for n, test := range [...]ConditionalWrappable{
+		template,  // 1
+		*template, // 2
+		&PrimaryExpression{ // 3
+			TemplateLiteral: template,
+			Tokens:          tks,
+		},
+		PrimaryExpression{ // 4
+			TemplateLiteral: template,
+			Tokens:          tks,
+		},
+		&MemberExpression{ // 5
+			PrimaryExpression: &PrimaryExpression{
+				TemplateLiteral: template,
+				Tokens:          tks,
+			},
+			Tokens: tks,
+		},
+		MemberExpression{ // 6
+			PrimaryExpression: &PrimaryExpression{
+				TemplateLiteral: template,
+				Tokens:          tks,
+			},
+			Tokens: tks,
+		},
+		&NewExpression{ // 7
+			MemberExpression: MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					TemplateLiteral: template,
+					Tokens:          tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		NewExpression{ // 8
+			MemberExpression: MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					TemplateLiteral: template,
+					Tokens:          tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&LeftHandSideExpression{ // 9
+			NewExpression: &NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						TemplateLiteral: template,
+						Tokens:          tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		LeftHandSideExpression{ // 10
+			NewExpression: &NewExpression{
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						TemplateLiteral: template,
+						Tokens:          tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&UpdateExpression{ // 11
+			LeftHandSideExpression: &LeftHandSideExpression{
+				NewExpression: &NewExpression{
+					MemberExpression: MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							TemplateLiteral: template,
+							Tokens:          tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		UpdateExpression{ // 12
+			LeftHandSideExpression: &LeftHandSideExpression{
+				NewExpression: &NewExpression{
+					MemberExpression: MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							TemplateLiteral: template,
+							Tokens:          tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&UnaryExpression{ // 13
+			UpdateExpression: UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								TemplateLiteral: template,
+								Tokens:          tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		UnaryExpression{ // 14
+			UpdateExpression: UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								TemplateLiteral: template,
+								Tokens:          tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&ExponentiationExpression{ // 15
+			UnaryExpression: UnaryExpression{
+				UpdateExpression: UpdateExpression{
+					LeftHandSideExpression: &LeftHandSideExpression{
+						NewExpression: &NewExpression{
+							MemberExpression: MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									TemplateLiteral: template,
+									Tokens:          tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		ExponentiationExpression{ // 16
+			UnaryExpression: UnaryExpression{
+				UpdateExpression: UpdateExpression{
+					LeftHandSideExpression: &LeftHandSideExpression{
+						NewExpression: &NewExpression{
+							MemberExpression: MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									TemplateLiteral: template,
+									Tokens:          tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&MultiplicativeExpression{ // 17
+			ExponentiationExpression: ExponentiationExpression{
+				UnaryExpression: UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										TemplateLiteral: template,
+										Tokens:          tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		MultiplicativeExpression{ // 18
+			ExponentiationExpression: ExponentiationExpression{
+				UnaryExpression: UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										TemplateLiteral: template,
+										Tokens:          tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&AdditiveExpression{ // 19
+			MultiplicativeExpression: MultiplicativeExpression{
+				ExponentiationExpression: ExponentiationExpression{
+					UnaryExpression: UnaryExpression{
+						UpdateExpression: UpdateExpression{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											TemplateLiteral: template,
+											Tokens:          tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		AdditiveExpression{ // 20
+			MultiplicativeExpression: MultiplicativeExpression{
+				ExponentiationExpression: ExponentiationExpression{
+					UnaryExpression: UnaryExpression{
+						UpdateExpression: UpdateExpression{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											TemplateLiteral: template,
+											Tokens:          tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&ShiftExpression{ // 21
+			AdditiveExpression: AdditiveExpression{
+				MultiplicativeExpression: MultiplicativeExpression{
+					ExponentiationExpression: ExponentiationExpression{
+						UnaryExpression: UnaryExpression{
+							UpdateExpression: UpdateExpression{
+								LeftHandSideExpression: &LeftHandSideExpression{
+									NewExpression: &NewExpression{
+										MemberExpression: MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												TemplateLiteral: template,
+												Tokens:          tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&ShiftExpression{ // 22
+			AdditiveExpression: AdditiveExpression{
+				MultiplicativeExpression: MultiplicativeExpression{
+					ExponentiationExpression: ExponentiationExpression{
+						UnaryExpression: UnaryExpression{
+							UpdateExpression: UpdateExpression{
+								LeftHandSideExpression: &LeftHandSideExpression{
+									NewExpression: &NewExpression{
+										MemberExpression: MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												TemplateLiteral: template,
+												Tokens:          tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&RelationalExpression{ // 23
+			ShiftExpression: ShiftExpression{
+				AdditiveExpression: AdditiveExpression{
+					MultiplicativeExpression: MultiplicativeExpression{
+						ExponentiationExpression: ExponentiationExpression{
+							UnaryExpression: UnaryExpression{
+								UpdateExpression: UpdateExpression{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													TemplateLiteral: template,
+													Tokens:          tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		RelationalExpression{ // 24
+			ShiftExpression: ShiftExpression{
+				AdditiveExpression: AdditiveExpression{
+					MultiplicativeExpression: MultiplicativeExpression{
+						ExponentiationExpression: ExponentiationExpression{
+							UnaryExpression: UnaryExpression{
+								UpdateExpression: UpdateExpression{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													TemplateLiteral: template,
+													Tokens:          tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&EqualityExpression{ // 25
+			RelationalExpression: RelationalExpression{
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														TemplateLiteral: template,
+														Tokens:          tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		EqualityExpression{ // 26
+			RelationalExpression: RelationalExpression{
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														TemplateLiteral: template,
+														Tokens:          tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&BitwiseANDExpression{ // 27
+			EqualityExpression: EqualityExpression{
+				RelationalExpression: RelationalExpression{
+					ShiftExpression: ShiftExpression{
+						AdditiveExpression: AdditiveExpression{
+							MultiplicativeExpression: MultiplicativeExpression{
+								ExponentiationExpression: ExponentiationExpression{
+									UnaryExpression: UnaryExpression{
+										UpdateExpression: UpdateExpression{
+											LeftHandSideExpression: &LeftHandSideExpression{
+												NewExpression: &NewExpression{
+													MemberExpression: MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															TemplateLiteral: template,
+															Tokens:          tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		BitwiseANDExpression{ // 28
+			EqualityExpression: EqualityExpression{
+				RelationalExpression: RelationalExpression{
+					ShiftExpression: ShiftExpression{
+						AdditiveExpression: AdditiveExpression{
+							MultiplicativeExpression: MultiplicativeExpression{
+								ExponentiationExpression: ExponentiationExpression{
+									UnaryExpression: UnaryExpression{
+										UpdateExpression: UpdateExpression{
+											LeftHandSideExpression: &LeftHandSideExpression{
+												NewExpression: &NewExpression{
+													MemberExpression: MemberExpression{
+														PrimaryExpression: &PrimaryExpression{
+															TemplateLiteral: template,
+															Tokens:          tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&BitwiseXORExpression{ // 29
+			BitwiseANDExpression: BitwiseANDExpression{
+				EqualityExpression: EqualityExpression{
+					RelationalExpression: RelationalExpression{
+						ShiftExpression: ShiftExpression{
+							AdditiveExpression: AdditiveExpression{
+								MultiplicativeExpression: MultiplicativeExpression{
+									ExponentiationExpression: ExponentiationExpression{
+										UnaryExpression: UnaryExpression{
+											UpdateExpression: UpdateExpression{
+												LeftHandSideExpression: &LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																TemplateLiteral: template,
+																Tokens:          tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		BitwiseXORExpression{ // 30
+			BitwiseANDExpression: BitwiseANDExpression{
+				EqualityExpression: EqualityExpression{
+					RelationalExpression: RelationalExpression{
+						ShiftExpression: ShiftExpression{
+							AdditiveExpression: AdditiveExpression{
+								MultiplicativeExpression: MultiplicativeExpression{
+									ExponentiationExpression: ExponentiationExpression{
+										UnaryExpression: UnaryExpression{
+											UpdateExpression: UpdateExpression{
+												LeftHandSideExpression: &LeftHandSideExpression{
+													NewExpression: &NewExpression{
+														MemberExpression: MemberExpression{
+															PrimaryExpression: &PrimaryExpression{
+																TemplateLiteral: template,
+																Tokens:          tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&BitwiseORExpression{ // 31
+			BitwiseXORExpression: BitwiseXORExpression{
+				BitwiseANDExpression: BitwiseANDExpression{
+					EqualityExpression: EqualityExpression{
+						RelationalExpression: RelationalExpression{
+							ShiftExpression: ShiftExpression{
+								AdditiveExpression: AdditiveExpression{
+									MultiplicativeExpression: MultiplicativeExpression{
+										ExponentiationExpression: ExponentiationExpression{
+											UnaryExpression: UnaryExpression{
+												UpdateExpression: UpdateExpression{
+													LeftHandSideExpression: &LeftHandSideExpression{
+														NewExpression: &NewExpression{
+															MemberExpression: MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	TemplateLiteral: template,
+																	Tokens:          tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		BitwiseORExpression{ // 32
+			BitwiseXORExpression: BitwiseXORExpression{
+				BitwiseANDExpression: BitwiseANDExpression{
+					EqualityExpression: EqualityExpression{
+						RelationalExpression: RelationalExpression{
+							ShiftExpression: ShiftExpression{
+								AdditiveExpression: AdditiveExpression{
+									MultiplicativeExpression: MultiplicativeExpression{
+										ExponentiationExpression: ExponentiationExpression{
+											UnaryExpression: UnaryExpression{
+												UpdateExpression: UpdateExpression{
+													LeftHandSideExpression: &LeftHandSideExpression{
+														NewExpression: &NewExpression{
+															MemberExpression: MemberExpression{
+																PrimaryExpression: &PrimaryExpression{
+																	TemplateLiteral: template,
+																	Tokens:          tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&LogicalANDExpression{ // 33
+			BitwiseORExpression: BitwiseORExpression{
+				BitwiseXORExpression: BitwiseXORExpression{
+					BitwiseANDExpression: BitwiseANDExpression{
+						EqualityExpression: EqualityExpression{
+							RelationalExpression: RelationalExpression{
+								ShiftExpression: ShiftExpression{
+									AdditiveExpression: AdditiveExpression{
+										MultiplicativeExpression: MultiplicativeExpression{
+											ExponentiationExpression: ExponentiationExpression{
+												UnaryExpression: UnaryExpression{
+													UpdateExpression: UpdateExpression{
+														LeftHandSideExpression: &LeftHandSideExpression{
+															NewExpression: &NewExpression{
+																MemberExpression: MemberExpression{
+																	PrimaryExpression: &PrimaryExpression{
+																		TemplateLiteral: template,
+																		Tokens:          tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&LogicalANDExpression{ // 34
+			BitwiseORExpression: BitwiseORExpression{
+				BitwiseXORExpression: BitwiseXORExpression{
+					BitwiseANDExpression: BitwiseANDExpression{
+						EqualityExpression: EqualityExpression{
+							RelationalExpression: RelationalExpression{
+								ShiftExpression: ShiftExpression{
+									AdditiveExpression: AdditiveExpression{
+										MultiplicativeExpression: MultiplicativeExpression{
+											ExponentiationExpression: ExponentiationExpression{
+												UnaryExpression: UnaryExpression{
+													UpdateExpression: UpdateExpression{
+														LeftHandSideExpression: &LeftHandSideExpression{
+															NewExpression: &NewExpression{
+																MemberExpression: MemberExpression{
+																	PrimaryExpression: &PrimaryExpression{
+																		TemplateLiteral: template,
+																		Tokens:          tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&LogicalORExpression{ // 35
+			LogicalANDExpression: LogicalANDExpression{
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			TemplateLiteral: template,
+																			Tokens:          tks,
+																		},
+																		Tokens: tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		LogicalORExpression{ // 36
+			LogicalANDExpression: LogicalANDExpression{
+				BitwiseORExpression: BitwiseORExpression{
+					BitwiseXORExpression: BitwiseXORExpression{
+						BitwiseANDExpression: BitwiseANDExpression{
+							EqualityExpression: EqualityExpression{
+								RelationalExpression: RelationalExpression{
+									ShiftExpression: ShiftExpression{
+										AdditiveExpression: AdditiveExpression{
+											MultiplicativeExpression: MultiplicativeExpression{
+												ExponentiationExpression: ExponentiationExpression{
+													UnaryExpression: UnaryExpression{
+														UpdateExpression: UpdateExpression{
+															LeftHandSideExpression: &LeftHandSideExpression{
+																NewExpression: &NewExpression{
+																	MemberExpression: MemberExpression{
+																		PrimaryExpression: &PrimaryExpression{
+																			TemplateLiteral: template,
+																			Tokens:          tks,
+																		},
+																		Tokens: tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		&ConditionalExpression{ // 37
+			LogicalORExpression: &LogicalORExpression{
+				LogicalANDExpression: LogicalANDExpression{
+					BitwiseORExpression: BitwiseORExpression{
+						BitwiseXORExpression: BitwiseXORExpression{
+							BitwiseANDExpression: BitwiseANDExpression{
+								EqualityExpression: EqualityExpression{
+									RelationalExpression: RelationalExpression{
+										ShiftExpression: ShiftExpression{
+											AdditiveExpression: AdditiveExpression{
+												MultiplicativeExpression: MultiplicativeExpression{
+													ExponentiationExpression: ExponentiationExpression{
+														UnaryExpression: UnaryExpression{
+															UpdateExpression: UpdateExpression{
+																LeftHandSideExpression: &LeftHandSideExpression{
+																	NewExpression: &NewExpression{
+																		MemberExpression: MemberExpression{
+																			PrimaryExpression: &PrimaryExpression{
+																				TemplateLiteral: template,
+																				Tokens:          tks,
+																			},
+																			Tokens: tks,
+																		},
+																		Tokens: tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+		ConditionalExpression{ // 38
+			LogicalORExpression: &LogicalORExpression{
+				LogicalANDExpression: LogicalANDExpression{
+					BitwiseORExpression: BitwiseORExpression{
+						BitwiseXORExpression: BitwiseXORExpression{
+							BitwiseANDExpression: BitwiseANDExpression{
+								EqualityExpression: EqualityExpression{
+									RelationalExpression: RelationalExpression{
+										ShiftExpression: ShiftExpression{
+											AdditiveExpression: AdditiveExpression{
+												MultiplicativeExpression: MultiplicativeExpression{
+													ExponentiationExpression: ExponentiationExpression{
+														UnaryExpression: UnaryExpression{
+															UpdateExpression: UpdateExpression{
+																LeftHandSideExpression: &LeftHandSideExpression{
+																	NewExpression: &NewExpression{
+																		MemberExpression: MemberExpression{
+																			PrimaryExpression: &PrimaryExpression{
+																				TemplateLiteral: template,
+																				Tokens:          tks,
+																			},
+																			Tokens: tks,
+																		},
+																		Tokens: tks,
+																	},
+																	Tokens: tks,
+																},
+																Tokens: tks,
+															},
+															Tokens: tks,
+														},
+														Tokens: tks,
+													},
+													Tokens: tks,
+												},
+												Tokens: tks,
+											},
+											Tokens: tks,
+										},
+										Tokens: tks,
+									},
+									Tokens: tks,
+								},
+								Tokens: tks,
+							},
+							Tokens: tks,
+						},
+						Tokens: tks,
+					},
+					Tokens: tks,
+				},
+				Tokens: tks,
+			},
+			Tokens: tks,
+		},
+	} {
+		if output := WrapConditional(test); !reflect.DeepEqual(output, &expectedOutput) {
+			t.Errorf("test %d: expecting\n%v\n...got...\n%v", n+1, expectedOutput, output)
 		}
 	}
 }
