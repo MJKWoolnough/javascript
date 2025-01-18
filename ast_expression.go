@@ -1311,9 +1311,6 @@ func (pe *PrimaryExpression) IsSimple() bool {
 
 // ParenthesizedExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ParenthesizedExpression
-//
-// It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
-// ObjectBindingPattern to be non-nil
 type ParenthesizedExpression struct {
 	Expressions []AssignmentExpression
 	Tokens      Tokens
