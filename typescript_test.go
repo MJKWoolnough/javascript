@@ -1343,7 +1343,7 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[1],
-															Tokens:            tk[1:2],
+															Tokens:            tk[1:5],
 														},
 													},
 													Tokens: tk[0:6],
@@ -1383,11 +1383,11 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[4],
-															Tokens:            tk[4:5],
+															Tokens:            tk[4:8],
 														},
 														{
 															SingleNameBinding: &tk[10],
-															Tokens:            tk[10:11],
+															Tokens:            tk[10:14],
 														},
 													},
 													Tokens: tk[3:15],
@@ -1658,8 +1658,8 @@ i <J> () {}
 			}
 		}},
 		{`type A = {
-	data: any;
-	other: number;
+				data: any;
+				other: number;
 }`, func(t *test, tk Tokens) { // 43
 			t.Typescript = true
 			t.Output = Module{
@@ -2566,7 +2566,7 @@ public abstract d;
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
-																Tokens:            tk[7:8],
+																Tokens:            tk[7:9],
 															},
 														},
 														Tokens: tk[6:10],
@@ -2615,7 +2615,7 @@ public abstract d;
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
-																Tokens:            tk[7:8],
+																Tokens:            tk[7:11],
 															},
 														},
 														Tokens: tk[6:12],
@@ -2936,7 +2936,7 @@ case "b":
 											Token:   tk[4],
 										},
 										Parsing: "FormalParameters",
-										Token:   tk[3],
+										Token:   tk[4],
 									},
 									Parsing: "ArrowFunction",
 									Token:   tk[3],
@@ -3193,85 +3193,17 @@ case "b":
 									Err: Error{
 										Err: Error{
 											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err: Error{
-																						Err: Error{
-																							Err: Error{
-																								Err: Error{
-																									Err: Error{
-																										Err: Error{
-																											Err: Error{
-																												Err: Error{
-																													Err:     ErrBadRestElement,
-																													Parsing: "ArrayAssignmentPattern",
-																													Token:   tk[1],
-																												},
-																												Parsing: "AssignmentPattern",
-																												Token:   tk[1],
-																											},
-																											Parsing: "ParenthesizedExpression",
-																											Token:   tk[1],
-																										},
-																										Parsing: "PrimaryExpression",
-																										Token:   tk[0],
-																									},
-																									Parsing: "MemberExpression",
-																									Token:   tk[0],
-																								},
-																								Parsing: "NewExpression",
-																								Token:   tk[0],
-																							},
-																							Parsing: "LeftHandSideExpression",
-																							Token:   tk[0],
-																						},
-																						Parsing: "UpdateExpression",
-																						Token:   tk[0],
-																					},
-																					Parsing: "UnaryExpression",
-																					Token:   tk[0],
-																				},
-																				Parsing: "ExponentiationExpression",
-																				Token:   tk[0],
-																			},
-																			Parsing: "MultiplicativeExpression",
-																			Token:   tk[0],
-																		},
-																		Parsing: "AdditiveExpression",
-																		Token:   tk[0],
-																	},
-																	Parsing: "ShiftExpression",
-																	Token:   tk[0],
-																},
-																Parsing: "RelationalExpression",
-																Token:   tk[0],
-															},
-															Parsing: "EqualityExpression",
-															Token:   tk[0],
-														},
-														Parsing: "BitwiseANDExpression",
-														Token:   tk[0],
-													},
-													Parsing: "BitwiseXORExpression",
-													Token:   tk[0],
-												},
-												Parsing: "BitwiseORExpression",
-												Token:   tk[0],
+												Err:     ErrMissingClosingBracket,
+												Parsing: "ArrayBindingPattern",
+												Token:   tk[4],
 											},
-											Parsing: "LogicalANDExpression",
-											Token:   tk[0],
+											Parsing: "BindingElement",
+											Token:   tk[1],
 										},
-										Parsing: "LogicalORExpression",
-										Token:   tk[0],
+										Parsing: "FormalParameters",
+										Token:   tk[1],
 									},
-									Parsing: "ConditionalExpression",
+									Parsing: "ArrowFunction",
 									Token:   tk[0],
 								},
 								Parsing: "AssignmentExpression",
@@ -3292,6 +3224,7 @@ case "b":
 		}},
 		{`([a]: number = !) => null`, func(t *test, tk Tokens) { // 85
 			t.Typescript = true
+
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3319,135 +3252,71 @@ case "b":
 																											Err: Error{
 																												Err: Error{
 																													Err: Error{
-																														Err: Error{
-																															Err: Error{
-																																Err: Error{
-																																	Err: Error{
-																																		Err: Error{
-																																			Err: Error{
-																																				Err: Error{
-																																					Err: Error{
-																																						Err: Error{
-																																							Err: Error{
-																																								Err: Error{
-																																									Err: Error{
-																																										Err: Error{
-																																											Err: Error{
-																																												Err: Error{
-																																													Err: Error{
-																																														Err:     ErrNoIdentifier,
-																																														Parsing: "PrimaryExpression",
-																																														Token:   tk[11],
-																																													},
-																																													Parsing: "MemberExpression",
-																																													Token:   tk[11],
-																																												},
-																																												Parsing: "NewExpression",
-																																												Token:   tk[11],
-																																											},
-																																											Parsing: "LeftHandSideExpression",
-																																											Token:   tk[11],
-																																										},
-																																										Parsing: "UpdateExpression",
-																																										Token:   tk[11],
-																																									},
-																																									Parsing: "UnaryExpression",
-																																									Token:   tk[11],
-																																								},
-																																								Parsing: "ExponentiationExpression",
-																																								Token:   tk[10],
-																																							},
-																																							Parsing: "MultiplicativeExpression",
-																																							Token:   tk[10],
-																																						},
-																																						Parsing: "AdditiveExpression",
-																																						Token:   tk[10],
-																																					},
-																																					Parsing: "ShiftExpression",
-																																					Token:   tk[10],
-																																				},
-																																				Parsing: "RelationalExpression",
-																																				Token:   tk[10],
-																																			},
-																																			Parsing: "EqualityExpression",
-																																			Token:   tk[10],
-																																		},
-																																		Parsing: "BitwiseANDExpression",
-																																		Token:   tk[10],
-																																	},
-																																	Parsing: "BitwiseXORExpression",
-																																	Token:   tk[10],
-																																},
-																																Parsing: "BitwiseORExpression",
-																																Token:   tk[10],
-																															},
-																															Parsing: "LogicalANDExpression",
-																															Token:   tk[10],
-																														},
-																														Parsing: "LogicalORExpression",
-																														Token:   tk[10],
+																														Err:     ErrNoIdentifier,
+																														Parsing: "PrimaryExpression",
+																														Token:   tk[11],
 																													},
-																													Parsing: "ConditionalExpression",
-																													Token:   tk[10],
+																													Parsing: "MemberExpression",
+																													Token:   tk[11],
 																												},
-																												Parsing: "AssignmentExpression",
-																												Token:   tk[10],
+																												Parsing: "NewExpression",
+																												Token:   tk[11],
 																											},
-																											Parsing: "ParenthesizedExpression",
-																											Token:   tk[10],
+																											Parsing: "LeftHandSideExpression",
+																											Token:   tk[11],
 																										},
-																										Parsing: "PrimaryExpression",
-																										Token:   tk[0],
+																										Parsing: "UpdateExpression",
+																										Token:   tk[11],
 																									},
-																									Parsing: "MemberExpression",
-																									Token:   tk[0],
+																									Parsing: "UnaryExpression",
+																									Token:   tk[11],
 																								},
-																								Parsing: "NewExpression",
-																								Token:   tk[0],
+																								Parsing: "ExponentiationExpression",
+																								Token:   tk[10],
 																							},
-																							Parsing: "LeftHandSideExpression",
-																							Token:   tk[0],
+																							Parsing: "MultiplicativeExpression",
+																							Token:   tk[10],
 																						},
-																						Parsing: "UpdateExpression",
-																						Token:   tk[0],
+																						Parsing: "AdditiveExpression",
+																						Token:   tk[10],
 																					},
-																					Parsing: "UnaryExpression",
-																					Token:   tk[0],
+																					Parsing: "ShiftExpression",
+																					Token:   tk[10],
 																				},
-																				Parsing: "ExponentiationExpression",
-																				Token:   tk[0],
+																				Parsing: "RelationalExpression",
+																				Token:   tk[10],
 																			},
-																			Parsing: "MultiplicativeExpression",
-																			Token:   tk[0],
+																			Parsing: "EqualityExpression",
+																			Token:   tk[10],
 																		},
-																		Parsing: "AdditiveExpression",
-																		Token:   tk[0],
+																		Parsing: "BitwiseANDExpression",
+																		Token:   tk[10],
 																	},
-																	Parsing: "ShiftExpression",
-																	Token:   tk[0],
+																	Parsing: "BitwiseXORExpression",
+																	Token:   tk[10],
 																},
-																Parsing: "RelationalExpression",
-																Token:   tk[0],
+																Parsing: "BitwiseORExpression",
+																Token:   tk[10],
 															},
-															Parsing: "EqualityExpression",
-															Token:   tk[0],
+															Parsing: "LogicalANDExpression",
+															Token:   tk[10],
 														},
-														Parsing: "BitwiseANDExpression",
-														Token:   tk[0],
+														Parsing: "LogicalORExpression",
+														Token:   tk[10],
 													},
-													Parsing: "BitwiseXORExpression",
-													Token:   tk[0],
+													Parsing: "ConditionalExpression",
+													Token:   tk[10],
 												},
-												Parsing: "BitwiseORExpression",
-												Token:   tk[0],
+												Parsing: "AssignmentExpression",
+												Token:   tk[10],
 											},
-											Parsing: "LogicalANDExpression",
-											Token:   tk[0],
+											Parsing: "BindingElement",
+											Token:   tk[10],
 										},
-										Parsing: "LogicalORExpression",
-										Token:   tk[0],
+										Parsing: "FormalParameters",
+										Token:   tk[1],
 									},
-									Parsing: "ConditionalExpression",
+									Parsing: "ArrowFunction",
 									Token:   tk[0],
 								},
 								Parsing: "AssignmentExpression",
@@ -4011,7 +3880,7 @@ function a() {}`, func(t *test, tk Tokens) { // 103
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
-																Tokens:            tk[7:8],
+																Tokens:            tk[7:11],
 															},
 														},
 														Tokens: tk[6:12],

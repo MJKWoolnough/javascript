@@ -981,53 +981,34 @@ type ArrowFunction struct {
 	Tokens               Tokens
 }
 
-func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, await bool) error {
-	if pe == nil {
-		if !j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
-			return j.Error("ArrowFunction", ErrInvalidAsyncArrowFunction)
-		}
+func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
+	af.Async = j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"})
 
-		af.Async = true
+	j.AcceptRunWhitespaceNoNewLine()
 
+	if j.SkipGeneric() {
 		j.AcceptRunWhitespaceNoNewLine()
+	}
 
-		if j.SkipGeneric() {
-			j.AcceptRunWhitespaceNoNewLine()
-		}
-
-		if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
-			g := j.NewGoal()
-			af.FormalParameters = new(FormalParameters)
-
-			if err := af.FormalParameters.parse(&g, yield, await); err != nil {
-				return j.Error("ArrowFunction", err)
-			}
-
-			j.Score(g)
-			j.AcceptRunWhitespaceNoNewLine()
-			j.SkipReturnType()
-		} else {
-			g := j.NewGoal()
-
-			if af.BindingIdentifier = g.parseIdentifier(yield, await); af.BindingIdentifier == nil {
-				return j.Error("ArrowFunction", ErrNoIdentifier)
-			}
-
-			j.Score(g)
-		}
-	} else if pe.ParenthesizedExpression != nil {
+	if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
+		g := j.NewGoal()
 		af.FormalParameters = new(FormalParameters)
 
-		if err := af.FormalParameters.from(pe.ParenthesizedExpression); err != nil {
-			z := jsParser(pe.ParenthesizedExpression.Tokens[:0])
-
-			return z.Error("ArrowFunction", err)
+		if err := af.FormalParameters.parse(&g, yield, await); err != nil {
+			return j.Error("ArrowFunction", err)
 		}
 
+		j.Score(g)
 		j.AcceptRunWhitespaceNoNewLine()
 		j.SkipReturnType()
 	} else {
-		af.BindingIdentifier = pe.IdentifierReference
+		g := j.NewGoal()
+
+		if af.BindingIdentifier = g.parseIdentifier(yield, await); af.BindingIdentifier == nil {
+			return j.Error("ArrowFunction", ErrNoIdentifier)
+		}
+
+		j.Score(g)
 	}
 
 	j.AcceptRunWhitespaceNoNewLine()

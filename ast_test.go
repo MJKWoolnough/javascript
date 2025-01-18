@@ -2586,7 +2586,7 @@ func TestArrowFunction(t *testing.T) {
 	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
 			t.Err = Error{
-				Err:     ErrInvalidAsyncArrowFunction,
+				Err:     ErrNoIdentifier,
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
 			}
@@ -3100,9 +3100,13 @@ func TestArrowFunction(t *testing.T) {
 		{"(()=>a) => b", func(t *test, tk Tokens) { // 28
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrNoIdentifier,
+					Err: Error{
+						Err:     ErrNoIdentifier,
+						Parsing: "BindingElement",
+						Token:   tk[1],
+					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3111,13 +3115,9 @@ func TestArrowFunction(t *testing.T) {
 		{"(a/=b) => b", func(t *test, tk Tokens) { // 29
 			t.Err = Error{
 				Err: Error{
-					Err: Error{
-						Err:     ErrInvalidAssignment,
-						Parsing: "BindingElement",
-						Token:   tk[1],
-					},
+					Err:     ErrMissingComma,
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[2],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3128,19 +3128,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidAssignment,
-								Parsing: "BindingElement",
-								Token:   tk[2],
-							},
+							Err:     ErrMissingComma,
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[4],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3151,19 +3147,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidAssignment,
-								Parsing: "BindingElement",
-								Token:   tk[3],
-							},
+							Err:     ErrMissingClosingBracket,
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[5],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3174,15 +3166,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err:     ErrNoIdentifier,
+							Err:     ErrMissingComma,
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[3],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3193,19 +3185,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidAssignment,
-								Parsing: "BindingElement",
-								Token:   tk[5],
-							},
+							Err:     ErrMissingComma,
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[7],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3216,15 +3204,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err:     ErrNoIdentifier,
+							Err:     ErrMissingClosingBrace,
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[4],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3239,7 +3227,7 @@ func TestArrowFunction(t *testing.T) {
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3254,7 +3242,7 @@ func TestArrowFunction(t *testing.T) {
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3271,13 +3259,13 @@ func TestArrowFunction(t *testing.T) {
 								Token:   tk[2],
 							},
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[2],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3289,8 +3277,7 @@ func TestArrowFunction(t *testing.T) {
 					FormalParameterList: []BindingElement{
 						{
 							ObjectBindingPattern: &ObjectBindingPattern{
-								BindingPropertyList: []BindingProperty{},
-								Tokens:              tk[1:3],
+								Tokens: tk[1:3],
 							},
 							Initializer: &AssignmentExpression{
 								ConditionalExpression: WrapConditional(&ObjectLiteral{
@@ -3319,7 +3306,6 @@ func TestArrowFunction(t *testing.T) {
 					FormalParameterList: []BindingElement{
 						{
 							ArrayBindingPattern: &ArrayBindingPattern{
-								BindingElementList: []BindingElement{},
 								BindingRestElement: &BindingElement{
 									SingleNameBinding: &tk[3],
 									Tokens:            tk[3:4],
@@ -3352,19 +3338,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err: Error{
-								Err:     ErrNoIdentifier,
-								Parsing: "BindingElement",
-								Token:   tk[3],
-							},
+							Err:     ErrMissingClosingBracket,
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[4],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3417,23 +3399,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err:     ErrNoIdentifier,
-									Parsing: "BindingElement",
-									Token:   tk[5],
-								},
-								Parsing: "BindingProperty",
-								Token:   tk[2],
-							},
+							Err:     ErrMissingComma,
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[6],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3445,7 +3419,6 @@ func TestArrowFunction(t *testing.T) {
 					FormalParameterList: []BindingElement{
 						{
 							ObjectBindingPattern: &ObjectBindingPattern{
-								BindingPropertyList: []BindingProperty{},
 								BindingRestProperty: &tk[3],
 								Tokens:              tk[1:5],
 							},
@@ -3475,15 +3448,15 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err:     ErrBadRestElement,
+							Err:     ErrMissingClosingBrace,
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[4],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3503,8 +3476,7 @@ func TestArrowFunction(t *testing.T) {
 										},
 										BindingElement: BindingElement{
 											ArrayBindingPattern: &ArrayBindingPattern{
-												BindingElementList: []BindingElement{},
-												Tokens:             tk[5:7],
+												Tokens: tk[5:7],
 											},
 											Tokens: tk[5:7],
 										},
@@ -3542,24 +3514,24 @@ func TestArrowFunction(t *testing.T) {
 							Err: Error{
 								Err: Error{
 									Err: Error{
-										Err:     ErrNoIdentifier,
-										Parsing: "BindingElement",
-										Token:   tk[6],
+										Err:     ErrMissingComma,
+										Parsing: "ArrayBindingPattern",
+										Token:   tk[7],
 									},
-									Parsing: "ArrayBindingPattern",
+									Parsing: "BindingElement",
 									Token:   tk[5],
 								},
 								Parsing: "BindingProperty",
-								Token:   tk[2],
+								Token:   tk[5],
 							},
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[2],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3579,8 +3551,7 @@ func TestArrowFunction(t *testing.T) {
 										},
 										BindingElement: BindingElement{
 											ObjectBindingPattern: &ObjectBindingPattern{
-												BindingPropertyList: []BindingProperty{},
-												Tokens:              tk[5:7],
+												Tokens: tk[5:7],
 											},
 											Tokens: tk[5:7],
 										},
@@ -3618,28 +3589,24 @@ func TestArrowFunction(t *testing.T) {
 							Err: Error{
 								Err: Error{
 									Err: Error{
-										Err: Error{
-											Err:     ErrNoIdentifier,
-											Parsing: "BindingElement",
-											Token:   tk[9],
-										},
-										Parsing: "BindingProperty",
-										Token:   tk[6],
+										Err:     ErrMissingComma,
+										Parsing: "ObjectBindingPattern",
+										Token:   tk[10],
 									},
-									Parsing: "ObjectBindingPattern",
+									Parsing: "BindingElement",
 									Token:   tk[5],
 								},
 								Parsing: "BindingProperty",
-								Token:   tk[2],
+								Token:   tk[5],
 							},
 							Parsing: "ObjectBindingPattern",
-							Token:   tk[1],
+							Token:   tk[2],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3765,25 +3732,21 @@ func TestArrowFunction(t *testing.T) {
 						Err: Error{
 							Err: Error{
 								Err: Error{
-									Err: Error{
-										Err:     ErrNoIdentifier,
-										Parsing: "BindingElement",
-										Token:   tk[3],
-									},
+									Err:     ErrMissingComma,
 									Parsing: "ArrayBindingPattern",
-									Token:   tk[2],
+									Token:   tk[4],
 								},
 								Parsing: "BindingElement",
 								Token:   tk[2],
 							},
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[2],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3922,29 +3885,21 @@ func TestArrowFunction(t *testing.T) {
 						Err: Error{
 							Err: Error{
 								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err:     ErrNoIdentifier,
-											Parsing: "BindingElement",
-											Token:   tk[6],
-										},
-										Parsing: "BindingProperty",
-										Token:   tk[3],
-									},
+									Err:     ErrMissingComma,
 									Parsing: "ObjectBindingPattern",
-									Token:   tk[2],
+									Token:   tk[7],
 								},
 								Parsing: "BindingElement",
 								Token:   tk[2],
 							},
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[2],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
@@ -3955,36 +3910,24 @@ func TestArrowFunction(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err:     ErrBadRestElement,
+							Err:     ErrMissingClosingBracket,
 							Parsing: "ArrayBindingPattern",
-							Token:   tk[1],
+							Token:   tk[4],
 						},
 						Parsing: "BindingElement",
 						Token:   tk[1],
 					},
 					Parsing: "FormalParameters",
-					Token:   tk[0],
+					Token:   tk[1],
 				},
 				Parsing: "ArrowFunction",
 				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var (
-			pe  PrimaryExpression
-			af  ArrowFunction
-			err error
-		)
+		var af ArrowFunction
 
-		g := t.Tokens.NewGoal()
-
-		if err = pe.parse(&g, t.Yield, t.Await); err == nil {
-			t.Tokens.Score(g)
-
-			err = af.parse(&t.Tokens, &pe, t.In, t.Yield, t.Await)
-		} else {
-			err = af.parse(&t.Tokens, nil, t.In, t.Yield, t.Await)
-		}
+		err := af.parse(&t.Tokens, t.In, t.Yield, t.Await)
 
 		return af, err
 	})

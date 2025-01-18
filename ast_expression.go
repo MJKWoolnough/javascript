@@ -149,7 +149,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			g := j.NewGoal()
 
 			ae.ArrowFunction = new(ArrowFunction)
-			if err := ae.ArrowFunction.parse(&g, nil, in, yield, await); err != nil {
+			if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
 				return j.Error("AssignmentExpression", err)
 			}
 
@@ -163,18 +163,38 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		if g.SkipGeneric() {
 			g.AcceptRunWhitespaceNoNewLine()
 
-			h := g.NewGoal()
+			ae.ArrowFunction = new(ArrowFunction)
+			if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
+				return j.Error("AssignmentExpression", err)
+			}
 
-			var pe ParenthesizedExpression
+			j.Score(g)
 
-			if pe.parse(&h, yield, await) == nil {
-				g.Score(h)
+			done = true
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+			count := 1
+
+			for count > 0 {
+				if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+					count++
+				} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+					count--
+				} else {
+					g.Skip()
+				}
+			}
+
+			g.AcceptRunWhitespaceNoNewLine()
+
+			if g.SkipReturnType() {
+				g.AcceptRunWhitespaceNoNewLine()
+			}
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
+				g = j.NewGoal()
 
 				ae.ArrowFunction = new(ArrowFunction)
-				if err := ae.ArrowFunction.parse(&g, &PrimaryExpression{
-					ParenthesizedExpression: &pe,
-					Tokens:                  pe.Tokens,
-				}, in, yield, await); err != nil {
+				if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
 					return j.Error("AssignmentExpression", err)
 				}
 
@@ -205,10 +225,11 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 					}
 
 					if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "=>"}) {
+						g = j.NewGoal()
 						ae.ConditionalExpression = nil
 						ae.ArrowFunction = new(ArrowFunction)
 
-						if err := ae.ArrowFunction.parse(&g, lhs.NewExpression.MemberExpression.PrimaryExpression, in, yield, await); err != nil {
+						if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
 							return j.Error("AssignmentExpression", err)
 						}
 					} else if cpe := lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression; cpe != nil && (cpe.bindingIdentifier != nil || cpe.arrayBindingPattern != nil || cpe.objectBindingPattern != nil) {
