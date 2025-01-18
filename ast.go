@@ -999,7 +999,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 			g := j.NewGoal()
 			af.FormalParameters = new(FormalParameters)
 
-			if err := af.FormalParameters.parse(&g, false, true); err != nil {
+			if err := af.FormalParameters.parse(&g, yield, await); err != nil {
 				return j.Error("ArrowFunction", err)
 			}
 
@@ -1009,7 +1009,7 @@ func (af *ArrowFunction) parse(j *jsParser, pe *PrimaryExpression, in, yield, aw
 		} else {
 			g := j.NewGoal()
 
-			if af.BindingIdentifier = g.parseIdentifier(yield, true); af.BindingIdentifier == nil {
+			if af.BindingIdentifier = g.parseIdentifier(yield, await); af.BindingIdentifier == nil {
 				return j.Error("ArrowFunction", ErrNoIdentifier)
 			}
 
