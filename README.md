@@ -1939,16 +1939,12 @@ Format implements the fmt.Formatter interface
 ```go
 type ParenthesizedExpression struct {
 	Expressions []AssignmentExpression
-
-	Tokens Tokens
+	Tokens      Tokens
 }
 ```
 
 ParenthesizedExpression as defined in ECMA-262
 https://262.ecma-international.org/11.0/#prod-ParenthesizedExpression
-
-It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
-ObjectBindingPattern to be non-nil
 
 #### func (ParenthesizedExpression) Format
 
