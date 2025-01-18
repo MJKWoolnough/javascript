@@ -1875,11 +1875,7 @@ func TestAssignmentExpression(t *testing.T) {
 			}
 		}},
 		{"(...a)", func(t *test, tk Tokens) { // 40
-			t.Err = Error{
-				Err:     ErrMissingArrow,
-				Parsing: "AssignmentExpression",
-				Token:   tk[4],
-			}
+			t.Err = assignmentCustomError(tk[1], ErrNoIdentifier)
 		}},
 		{"[1] =", func(t *test, tk Tokens) { // 41
 			t.Err = Error{
@@ -3663,101 +3659,16 @@ func TestParenthesizedExpression(t *testing.T) {
 			}
 		}},
 		{"(\n...\n[{,}])", func(t *test, tk Tokens) { // 3
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err:     ErrInvalidPropertyName,
-									Parsing: "PropertyName",
-									Token:   tk[6],
-								},
-								Parsing: "BindingProperty",
-								Token:   tk[6],
-							},
-							Parsing: "ObjectBindingPattern",
-							Token:   tk[6],
-						},
-						Parsing: "BindingElement",
-						Token:   tk[5],
-					},
-					Parsing: "ArrayBindingPattern",
-					Token:   tk[5],
-				},
-				Parsing: "ParenthesizedExpression",
-				Token:   tk[4],
-			}
+			t.Err = assignmentCustomError(tk[2], ErrNoIdentifier)
 		}},
-		{"(\n...\n[a]\n)", func(t *test, tk Tokens) { // 4
-			t.Output = ParenthesizedExpression{
-				arrayBindingPattern: &ArrayBindingPattern{
-					BindingElementList: []BindingElement{
-						{
-							SingleNameBinding: &tk[5],
-							Tokens:            tk[5:6],
-						},
-					},
-					Tokens: tk[4:7],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{"(\n...\n{,})", func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrInvalidPropertyName,
-							Parsing: "PropertyName",
-							Token:   tk[5],
-						},
-						Parsing: "BindingProperty",
-						Token:   tk[5],
-					},
-					Parsing: "ObjectBindingPattern",
-					Token:   tk[5],
-				},
-				Parsing: "ParenthesizedExpression",
-				Token:   tk[4],
-			}
-		}},
-		{"(\n...\n{}\n)", func(t *test, tk Tokens) { // 6
-			t.Output = ParenthesizedExpression{
-				objectBindingPattern: &ObjectBindingPattern{
-					Tokens: tk[4:6],
-				},
-				Tokens: tk[:8],
-			}
-		}},
-		{"(\n...\n1\n)", func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err:     ErrNoIdentifier,
-				Parsing: "ParenthesizedExpression",
-				Token:   tk[4],
-			}
-		}},
-		{"(\n...\na\n)", func(t *test, tk Tokens) { // 8
-			t.Output = ParenthesizedExpression{
-				bindingIdentifier: &tk[4],
-				Tokens:            tk[:7],
-			}
-		}},
-		{"(\n...\na\n,)", func(t *test, tk Tokens) { // 9
-			t.Err = Error{
-				Err:     ErrMissingClosingParenthesis,
-				Parsing: "ParenthesizedExpression",
-				Token:   tk[6],
-			}
-		}},
-		{"(\n,)", func(t *test, tk Tokens) { // 10
+		{"(\n,)", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err:     assignmentError(tk[2]),
 				Parsing: "ParenthesizedExpression",
 				Token:   tk[2],
 			}
 		}},
-		{"(\n1\n)", func(t *test, tk Tokens) { // 11
+		{"(\n1\n)", func(t *test, tk Tokens) { // 5
 			lit1 := makeConditionLiteral(tk, 2)
 			t.Output = ParenthesizedExpression{
 				Expressions: []AssignmentExpression{
@@ -3769,14 +3680,14 @@ func TestParenthesizedExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"(\n1\n2)", func(t *test, tk Tokens) { // 12
+		{"(\n1\n2)", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ParenthesizedExpression",
 				Token:   tk[4],
 			}
 		}},
-		{"(\n1\n,\n2\n)", func(t *test, tk Tokens) { // 13
+		{"(\n1\n,\n2\n)", func(t *test, tk Tokens) { // 7
 			lit1 := makeConditionLiteral(tk, 2)
 			lit2 := makeConditionLiteral(tk, 6)
 			t.Output = ParenthesizedExpression{
@@ -3791,19 +3702,6 @@ func TestParenthesizedExpression(t *testing.T) {
 					},
 				},
 				Tokens: tk[:9],
-			}
-		}},
-		{"(\n1\n,\n...\na\n)", func(t *test, tk Tokens) { // 14
-			lit1 := makeConditionLiteral(tk, 2)
-			t.Output = ParenthesizedExpression{
-				Expressions: []AssignmentExpression{
-					{
-						ConditionalExpression: &lit1,
-						Tokens:                tk[2:3],
-					},
-				},
-				bindingIdentifier: &tk[8],
-				Tokens:            tk[:11],
 			}
 		}},
 	}, func(t *test) (Type, error) {

@@ -1958,27 +1958,6 @@ func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
 		pp.Print("\nExpressions: []")
 	}
 
-	if f.bindingIdentifier != nil {
-		pp.Print("\nbindingIdentifier: ")
-		f.bindingIdentifier.printType(&pp, v)
-	} else if v {
-		pp.Print("\nbindingIdentifier: nil")
-	}
-
-	if f.arrayBindingPattern != nil {
-		pp.Print("\narrayBindingPattern: ")
-		f.arrayBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Print("\narrayBindingPattern: nil")
-	}
-
-	if f.objectBindingPattern != nil {
-		pp.Print("\nobjectBindingPattern: ")
-		f.objectBindingPattern.printType(&pp, v)
-	} else if v {
-		pp.Print("\nobjectBindingPattern: nil")
-	}
-
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 

@@ -196,34 +196,6 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-func (fp *FormalParameters) from(ce *ParenthesizedExpression) error {
-	for n := range ce.Expressions {
-		ae := &ce.Expressions[n]
-
-		if ae.Yield || ae.ArrowFunction != nil {
-			z := jsParser(ce.Tokens[:0])
-
-			return z.Error("FormalParameters", ErrNoIdentifier)
-		}
-
-		var be BindingElement
-
-		if err := be.from(ae); err != nil {
-			z := jsParser(ce.Tokens[:0])
-			return z.Error("FormalParameters", err)
-		}
-
-		fp.FormalParameterList = append(fp.FormalParameterList, be)
-	}
-
-	fp.BindingIdentifier = ce.bindingIdentifier
-	fp.ArrayBindingPattern = ce.arrayBindingPattern
-	fp.ObjectBindingPattern = ce.objectBindingPattern
-	fp.Tokens = ce.Tokens
-
-	return nil
-}
-
 // BindingElement as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingElement
 //

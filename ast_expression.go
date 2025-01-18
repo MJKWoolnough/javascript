@@ -232,8 +232,6 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
 							return j.Error("AssignmentExpression", err)
 						}
-					} else if cpe := lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression; cpe != nil && (cpe.bindingIdentifier != nil || cpe.arrayBindingPattern != nil || cpe.objectBindingPattern != nil) {
-						return h.Error("AssignmentExpression", ErrMissingArrow)
 					}
 				}
 
@@ -1317,11 +1315,8 @@ func (pe *PrimaryExpression) IsSimple() bool {
 // It is valid for only one of BindingIdentifier, ArrayBindingPattern, and
 // ObjectBindingPattern to be non-nil
 type ParenthesizedExpression struct {
-	Expressions          []AssignmentExpression
-	bindingIdentifier    *Token
-	arrayBindingPattern  *ArrayBindingPattern
-	objectBindingPattern *ObjectBindingPattern
-	Tokens               Tokens
+	Expressions []AssignmentExpression
+	Tokens      Tokens
 }
 
 func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
@@ -1333,39 +1328,6 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
-			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-				j.AcceptRunWhitespace()
-
-				g := j.NewGoal()
-
-				if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
-					cp.arrayBindingPattern = new(ArrayBindingPattern)
-					if err := cp.arrayBindingPattern.parse(&g, yield, await); err != nil {
-						return j.Error("ParenthesizedExpression", err)
-					}
-				} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
-					cp.objectBindingPattern = new(ObjectBindingPattern)
-					if err := cp.objectBindingPattern.parse(&g, yield, await); err != nil {
-						return j.Error("ParenthesizedExpression", err)
-					}
-				} else if cp.bindingIdentifier = g.parseIdentifier(yield, await); cp.bindingIdentifier == nil {
-					return j.Error("ParenthesizedExpression", ErrNoIdentifier)
-				}
-
-				j.Score(g)
-				j.AcceptRunWhitespace()
-
-				if j.SkipOptionalColonType() {
-					j.AcceptRunWhitespace()
-				}
-
-				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-					return j.Error("ParenthesizedExpression", ErrMissingClosingParenthesis)
-				}
-
-				break
-			}
-
 			g := j.NewGoal()
 			e := len(cp.Expressions)
 
