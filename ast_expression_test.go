@@ -1875,7 +1875,11 @@ func TestAssignmentExpression(t *testing.T) {
 			}
 		}},
 		{"(...a)", func(t *test, tk Tokens) { // 40
-			t.Err = assignmentCustomError(tk[1], ErrNoIdentifier)
+			t.Err = assignmentCustomError(tk[0], Error{
+				Err:     assignmentCustomError(tk[1], ErrNoIdentifier),
+				Parsing: "ParenthesizedExpression",
+				Token:   tk[1],
+			})
 		}},
 		{"[1] =", func(t *test, tk Tokens) { // 41
 			t.Err = Error{
@@ -3659,7 +3663,11 @@ func TestParenthesizedExpression(t *testing.T) {
 			}
 		}},
 		{"(\n...\n[{,}])", func(t *test, tk Tokens) { // 3
-			t.Err = assignmentCustomError(tk[2], ErrNoIdentifier)
+			t.Err = Error{
+				Err:     assignmentCustomError(tk[2], ErrNoIdentifier),
+				Parsing: "ParenthesizedExpression",
+				Token:   tk[2],
+			}
 		}},
 		{"(\n,)", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
