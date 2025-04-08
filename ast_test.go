@@ -40,7 +40,7 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 
 		tt.Fn(&ts, Tokens(ts.Tokens[:cap(ts.Tokens)]))
 
-		if output, err := fn(&ts); !errors.Is(err, ts.Err) {
+		if output, err := fn(&ts); !reflect.DeepEqual(err, ts.Err) {
 			t.Errorf("test %d: expecting error: %v, got %v", n+1, ts.Err, err)
 		} else if ts.Output != nil && !reflect.DeepEqual(output, ts.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, ts.Output, output)
