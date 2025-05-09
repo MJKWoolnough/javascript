@@ -121,6 +121,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
+	*WithClause
 	Tokens Tokens
 }
 
@@ -154,12 +155,36 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 
 	j.Score(g)
 
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"}) {
+		h := g.NewGoal()
+		id.WithClause = new(WithClause)
+
+		if err := id.WithClause.parse(&h); err != nil {
+			return g.Error("ImportDeclaration", err)
+		}
+
+		g.Score(h)
+		j.Score(g)
+	}
+
 	if !j.parseSemicolon() {
 		return j.Error("ImportDeclaration", ErrMissingSemiColon)
 	}
 
 	id.Tokens = j.ToTokens()
 
+	return nil
+}
+
+type WithClause struct {
+	Tokens Tokens
+}
+
+func (w *WithClause) parse(j *jsParser) error {
 	return nil
 }
 
