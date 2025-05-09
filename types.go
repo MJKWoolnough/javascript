@@ -166,4 +166,6 @@ func (UpdateExpression) javascriptType() {}
 
 func (VariableStatement) javascriptType() {}
 
+func (WithClause) javascriptType() {}
+
 func (WithStatement) javascriptType() {}

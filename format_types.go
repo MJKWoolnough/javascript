@@ -1212,6 +1212,13 @@ func (f *ImportDeclaration) printType(w io.Writer, v bool) {
 	pp.Print("\nFromClause: ")
 	f.FromClause.printType(&pp, v)
 
+	if f.WithClause != nil {
+		pp.Print("\nWithClause: ")
+		f.WithClause.printType(&pp, v)
+	} else if v {
+		pp.Print("\nWithClause: nil")
+	}
+
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
@@ -2572,6 +2579,17 @@ func (f *VariableStatement) printType(w io.Writer, v bool) {
 	} else if v {
 		pp.Print("\nVariableDeclarationList: []")
 	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
+func (f *WithClause) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("WithClause {")
 
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
