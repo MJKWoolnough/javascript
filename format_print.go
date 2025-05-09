@@ -1822,6 +1822,22 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 }
 
 func (wc WithClause) printSource(w io.Writer, v bool) {
+	w.Write(withOpen[:5])
+	w.Write(blockOpen)
+
+	if len(wc.WithEntries) > 0 {
+		wc.WithEntries[0].printSource(w, v)
+
+		for _, we := range wc.WithEntries[1:] {
+			w.Write(commaSep)
+			we.printSource(w, v)
+		}
+	}
+
+	w.Write(blockClose)
+}
+
+func (we WithEntry) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportClause) printSource(w io.Writer, v bool) {
