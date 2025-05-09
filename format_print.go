@@ -1773,6 +1773,11 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 		io.WriteString(w, i.FromClause.ModuleSpecifier.Data)
 	}
 
+	if i.WithClause != nil {
+		w.Write(space)
+		i.WithClause.printSource(w, v)
+	}
+
 	w.Write(semiColon)
 }
 
@@ -1814,6 +1819,9 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 		e.DefaultAssignmentExpression.printSource(w, v)
 		w.Write(semiColon)
 	}
+}
+
+func (wc WithClause) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportClause) printSource(w io.Writer, v bool) {
