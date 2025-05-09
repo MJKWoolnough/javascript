@@ -154,12 +154,15 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	}
 
 	j.Score(g)
+	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
 
 	g.AcceptRunWhitespace()
 
 	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"}) {
+		g.AcceptRunWhitespace()
+
 		h := g.NewGoal()
 		id.WithClause = new(WithClause)
 
@@ -169,6 +172,8 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 
 		g.Score(h)
 		j.Score(g)
+
+		j.AcceptRunWhitespace()
 	}
 
 	if !j.parseSemicolon() {
@@ -181,10 +186,50 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 }
 
 type WithClause struct {
-	Tokens Tokens
+	WithEntries []WithEntry
+	Tokens      Tokens
 }
 
 func (w *WithClause) parse(j *jsParser) error {
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		return j.Error("WithClause", ErrMissingOpeningBrace)
+	}
+
+	j.AcceptRunWhitespace()
+
+	for !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
+		g := j.NewGoal()
+
+		var we WithEntry
+
+		if err := we.parse(&g); err != nil {
+			return j.Error("WithClause", err)
+		}
+
+		w.WithEntries = append(w.WithEntries, we)
+
+		j.Score(g)
+		j.AcceptRunWhitespace()
+
+		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
+			break
+		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return j.Error("WithClause", ErrMissingComma)
+		}
+
+		j.AcceptRunWhitespace()
+	}
+
+	w.Tokens = j.ToTokens()
+
+	return nil
+}
+
+type WithEntry struct {
+	Tokens Tokens
+}
+
+func (w *WithEntry) parse(j *jsParser) error {
 	return nil
 }
 
