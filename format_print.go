@@ -1838,16 +1838,13 @@ func (wc WithClause) printSource(w io.Writer, v bool) {
 }
 
 func (we WithEntry) printSource(w io.Writer, v bool) {
-	if we.Value == nil {
+	if we.AttributeKey == nil || we.Value == nil {
 		return
 	}
 
-	we.AttributeKey.printSource(w, v)
+	io.WriteString(w, we.AttributeKey.Data)
 	w.Write(colonSep)
 	io.WriteString(w, we.Value.Data)
-}
-
-func (a AttributeKey) printSource(w io.Writer, v bool) {
 }
 
 func (i ImportClause) printSource(w io.Writer, v bool) {

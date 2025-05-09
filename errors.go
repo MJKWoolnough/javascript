@@ -71,4 +71,6 @@ var (
 	ErrInvalidAssignmentProperty            = errors.New("invalid assignment property")
 	ErrInvalidDestructuringAssignmentTarget = errors.New("invalid DestructuringAssignmentTarget")
 	ErrNotSimple                            = errors.New("not a simple expression")
+	ErrMissingString                        = errors.New("missing string value")
+	ErrMissingAttributeKey                  = errors.New("missing attribute key")
 )

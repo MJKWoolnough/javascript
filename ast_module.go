@@ -154,7 +154,6 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	}
 
 	j.Score(g)
-	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
 
@@ -172,8 +171,6 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 
 		g.Score(h)
 		j.Score(g)
-
-		j.AcceptRunWhitespace()
 	}
 
 	if !j.parseSemicolon() {
@@ -226,17 +223,19 @@ func (w *WithClause) parse(j *jsParser) error {
 }
 
 type WithEntry struct {
-	AttributeKey
-	Value  *Token
-	Tokens Tokens
+	AttributeKey *Token
+	Value        *Token
+	Tokens       Tokens
 }
 
 func (w *WithEntry) parse(j *jsParser) error {
 	g := j.NewGoal()
 
-	if err := w.AttributeKey.parse(&g); err != nil {
-		return j.Error("WithEntry", err)
+	if !j.Accept(TokenIdentifier, TokenStringLiteral) {
+		return j.Error("WithEntry", ErrMissingAttributeKey)
 	}
+
+	w.AttributeKey = j.GetLastToken()
 
 	j.Score(g)
 	j.AcceptRunWhitespace()
@@ -255,14 +254,6 @@ func (w *WithEntry) parse(j *jsParser) error {
 
 	w.Tokens = j.ToTokens()
 
-	return nil
-}
-
-type AttributeKey struct {
-	Tokens Tokens
-}
-
-func (a *AttributeKey) parse(j *jsParser) error {
 	return nil
 }
 

@@ -364,17 +364,6 @@ func (f *AssignmentProperty) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n}")
 }
 
-func (f *AttributeKey) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
-
-	pp.Print("AttributeKey {")
-
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
-
-	io.WriteString(w, "\n}")
-}
-
 func (f *BindingElement) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 
@@ -2630,8 +2619,12 @@ func (f *WithEntry) printType(w io.Writer, v bool) {
 
 	pp.Print("WithEntry {")
 
-	pp.Print("\nAttributeKey: ")
-	f.AttributeKey.printType(&pp, v)
+	if f.AttributeKey != nil {
+		pp.Print("\nAttributeKey: ")
+		f.AttributeKey.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAttributeKey: nil")
+	}
 
 	if f.Value != nil {
 		pp.Print("\nValue: ")
