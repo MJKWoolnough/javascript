@@ -2591,6 +2591,34 @@ func (f *WithClause) printType(w io.Writer, v bool) {
 
 	pp.Print("WithClause {")
 
+	if f.WithEntries == nil {
+		pp.Print("\nWithEntries: nil")
+	} else if len(f.WithEntries) > 0 {
+		pp.Print("\nWithEntries: [")
+
+		ipp := indentPrinter{&pp}
+
+		for n, e := range f.WithEntries {
+			ipp.Printf("\n%d: ", n)
+			e.printType(&ipp, v)
+		}
+
+		pp.Print("\n]")
+	} else if v {
+		pp.Print("\nWithEntries: []")
+	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
+func (f *WithEntry) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("WithEntry {")
+
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 

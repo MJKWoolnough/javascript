@@ -168,4 +168,6 @@ func (VariableStatement) javascriptType() {}
 
 func (WithClause) javascriptType() {}
 
+func (WithEntry) javascriptType() {}
+
 func (WithStatement) javascriptType() {}

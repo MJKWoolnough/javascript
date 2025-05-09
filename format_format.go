@@ -929,6 +929,18 @@ func (f WithClause) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f WithEntry) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = WithEntry
+		type WithEntry X
+
+		fmt.Fprintf(s, "%#v", WithEntry(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f WithStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = WithStatement
