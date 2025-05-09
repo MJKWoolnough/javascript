@@ -149,6 +149,18 @@ func (f AssignmentProperty) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f AttributeKey) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = AttributeKey
+		type AttributeKey X
+
+		fmt.Fprintf(s, "%#v", AttributeKey(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f BindingElement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = BindingElement

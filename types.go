@@ -38,6 +38,8 @@ func (AssignmentPattern) javascriptType() {}
 
 func (AssignmentProperty) javascriptType() {}
 
+func (AttributeKey) javascriptType() {}
+
 func (BindingElement) javascriptType() {}
 
 func (BindingProperty) javascriptType() {}
