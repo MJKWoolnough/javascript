@@ -226,10 +226,43 @@ func (w *WithClause) parse(j *jsParser) error {
 }
 
 type WithEntry struct {
+	AttributeKey
+	Value  *Token
 	Tokens Tokens
 }
 
 func (w *WithEntry) parse(j *jsParser) error {
+	g := j.NewGoal()
+
+	if err := w.AttributeKey.parse(&g); err != nil {
+		return j.Error("WithEntry", err)
+	}
+
+	j.Score(g)
+	j.AcceptRunWhitespace()
+
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+		return j.Error("WithEntry", ErrMissingColon)
+	}
+
+	j.AcceptRunWhitespace()
+
+	if !j.Accept(TokenStringLiteral) {
+		return j.Error("WithEntry", ErrMissingString)
+	}
+
+	w.Value = j.GetLastToken()
+
+	w.Tokens = j.ToTokens()
+
+	return nil
+}
+
+type AttributeKey struct {
+	Tokens Tokens
+}
+
+func (a *AttributeKey) parse(j *jsParser) error {
 	return nil
 }
 
