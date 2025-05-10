@@ -194,7 +194,7 @@ func (w *WithClause) parse(j *jsParser) error {
 
 	j.AcceptRunWhitespace()
 
-	for !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
+	for !j.Accept(TokenRightBracePunctuator) {
 		g := j.NewGoal()
 
 		var we WithEntry
@@ -208,7 +208,7 @@ func (w *WithClause) parse(j *jsParser) error {
 		j.Score(g)
 		j.AcceptRunWhitespace()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
+		if j.Accept(TokenRightBracePunctuator) {
 			break
 		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			return j.Error("WithClause", ErrMissingComma)
