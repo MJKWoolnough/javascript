@@ -958,6 +958,29 @@ func TestImportDeclaration(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
+		{"import a from 'b' with {c:'d'}", func(t *test, tk Tokens) { // 10
+			t.Output = ImportDeclaration{
+				ImportClause: &ImportClause{
+					ImportedDefaultBinding: &tk[2],
+					Tokens:                 tk[2:3],
+				},
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[6],
+					Tokens:          tk[4:7],
+				},
+				WithClause: &WithClause{
+					WithEntries: []WithEntry{
+						{
+							AttributeKey: &tk[11],
+							Value:        &tk[13],
+							Tokens:       tk[11:14],
+						},
+					},
+					Tokens: tk[10:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var id ImportDeclaration
 
