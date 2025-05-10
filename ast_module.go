@@ -117,7 +117,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 }
 
 // ImportDeclaration as defined in ECMA-262
-// https://262.ecma-international.org/11.0/#prod-ImportDeclaration
+// https://tc39.es/ecma262/#prod-ImportDeclaration
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
@@ -182,6 +182,8 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	return nil
 }
 
+// WithClause as defined in ECMA-262
+// https://tc39.es/ecma262/#prod-WithClause
 type WithClause struct {
 	WithEntries []WithEntry
 	Tokens      Tokens
@@ -222,6 +224,8 @@ func (w *WithClause) parse(j *jsParser) error {
 	return nil
 }
 
+// WithEntry as defined in ECMA-262
+// https://tc39.es/ecma262/#prod-WithEntries
 type WithEntry struct {
 	AttributeKey *Token
 	Value        *Token
