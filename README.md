@@ -100,6 +100,8 @@ var (
 	ErrInvalidAssignmentProperty            = errors.New("invalid assignment property")
 	ErrInvalidDestructuringAssignmentTarget = errors.New("invalid DestructuringAssignmentTarget")
 	ErrNotSimple                            = errors.New("not a simple expression")
+	ErrMissingString                        = errors.New("missing string value")
+	ErrMissingAttributeKey                  = errors.New("missing attribute key")
 )
 ```
 Errors
@@ -1319,12 +1321,13 @@ Format implements the fmt.Formatter interface
 type ImportDeclaration struct {
 	*ImportClause
 	FromClause
+	*WithClause
 	Tokens Tokens
 }
 ```
 
 ImportDeclaration as defined in ECMA-262
-https://262.ecma-international.org/11.0/#prod-ImportDeclaration
+https://tc39.es/ecma262/#prod-ImportDeclaration
 
 #### func (ImportDeclaration) Format
 
@@ -2570,6 +2573,43 @@ VariableDeclarationList must have a length or at least one.
 
 ```go
 func (f VariableStatement) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type WithClause
+
+```go
+type WithClause struct {
+	WithEntries []WithEntry
+	Tokens      Tokens
+}
+```
+
+WithClause as defined in ECMA-262 https://tc39.es/ecma262/#prod-WithClause
+
+#### func (WithClause) Format
+
+```go
+func (f WithClause) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
+#### type WithEntry
+
+```go
+type WithEntry struct {
+	AttributeKey *Token
+	Value        *Token
+	Tokens       Tokens
+}
+```
+
+WithEntry as defined in ECMA-262 https://tc39.es/ecma262/#prod-WithEntries
+
+#### func (WithEntry) Format
+
+```go
+func (f WithEntry) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
