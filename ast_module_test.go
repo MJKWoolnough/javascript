@@ -1301,6 +1301,100 @@ func TestImportSpecifier(t *testing.T) {
 	})
 }
 
+func TestWithClause(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingOpeningBrace,
+				Parsing: "WithClause",
+				Token:   tk[0],
+			}
+		}},
+		{`{}`, func(t *test, tk Tokens) { // 2
+			t.Output = WithClause{
+				Tokens: tk[:2],
+			}
+		}},
+		{`{a}`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingColon,
+					Parsing: "WithEntry",
+					Token:   tk[2],
+				},
+				Parsing: "WithClause",
+				Token:   tk[1],
+			}
+		}},
+		{`{a:"b"}`, func(t *test, tk Tokens) { // 4
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[1],
+						Value:        &tk[3],
+						Tokens:       tk[1:4],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`{a:"b"c}`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "WithClause",
+				Token:   tk[4],
+			}
+		}},
+		{`{a:"b",}`, func(t *test, tk Tokens) { // 6
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[1],
+						Value:        &tk[3],
+						Tokens:       tk[1:4],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`{a:"b" ,}`, func(t *test, tk Tokens) { // 7
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[1],
+						Value:        &tk[3],
+						Tokens:       tk[1:4],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`{a:"b", "c": "d"}`, func(t *test, tk Tokens) { // 8
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[1],
+						Value:        &tk[3],
+						Tokens:       tk[1:4],
+					},
+					{
+						AttributeKey: &tk[6],
+						Value:        &tk[9],
+						Tokens:       tk[6:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var wc WithClause
+
+		err := wc.parse(&t.Tokens)
+
+		return wc, err
+	})
+}
+
 func TestWithEntry(t *testing.T) {
 	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
