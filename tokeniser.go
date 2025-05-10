@@ -390,6 +390,7 @@ Loop:
 			return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidRegexpCharacter, t.Get()))
 		}
 	}
+
 	for {
 		if c := t.Peek(); !internal.IsIDContinue(c) || c == '\\' {
 			break
