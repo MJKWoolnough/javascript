@@ -1301,6 +1301,73 @@ func TestImportSpecifier(t *testing.T) {
 	})
 }
 
+func TestWithEntry(t *testing.T) {
+	doTests(t, []sourceFn{
+		{``, func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err:     ErrMissingAttributeKey,
+				Parsing: "WithEntry",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "WithEntry",
+				Token:   tk[1],
+			}
+		}},
+		{`a `, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "WithEntry",
+				Token:   tk[2],
+			}
+		}},
+		{`a:`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingString,
+				Parsing: "WithEntry",
+				Token:   tk[2],
+			}
+		}},
+		{`a: `, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingString,
+				Parsing: "WithEntry",
+				Token:   tk[3],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingString,
+				Parsing: "WithEntry",
+				Token:   tk[2],
+			}
+		}},
+		{`a:"b"`, func(t *test, tk Tokens) { // 7
+			t.Output = WithEntry{
+				AttributeKey: &tk[0],
+				Value:        &tk[2],
+				Tokens:       tk[:3],
+			}
+		}},
+		{`"a":"b"`, func(t *test, tk Tokens) { // 8
+			t.Output = WithEntry{
+				AttributeKey: &tk[0],
+				Value:        &tk[2],
+				Tokens:       tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var we WithEntry
+
+		err := we.parse(&t.Tokens)
+
+		return we, err
+	})
+}
+
 func TestExportDeclaration(t *testing.T) {
 	doTests(t, []sourceFn{
 		{``, func(t *test, tk Tokens) { // 1
