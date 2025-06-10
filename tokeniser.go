@@ -48,7 +48,7 @@ const (
 )
 
 type jsTokeniser struct {
-	tokenDepth      []byte
+	state           []byte
 	divisionAllowed bool
 }
 
@@ -77,7 +77,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 
 	switch c := t.Peek(); c {
 	case -1:
-		if len(j.tokenDepth) == 0 {
+		if len(j.state) == 0 {
 			return t.Done()
 		}
 
@@ -119,13 +119,13 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 	case '}':
 		t.Next()
 
-		switch j.lastDepth() {
+		switch j.lastState() {
 		case '{':
-			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
+			j.state = j.state[:len(j.state)-1]
 
 			return t.Return(TokenRightBracePunctuator, j.inputElement)
 		case '$':
-			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
+			j.state = j.state[:len(j.state)-1]
 
 			return j.template(t)
 		}
@@ -225,7 +225,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 
 		switch c {
 		case '{', '(', '[':
-			j.tokenDepth = append(j.tokenDepth, byte(c))
+			j.state = append(j.state, byte(c))
 		case '?':
 			if t.Accept("?") {
 				t.Accept("=")
@@ -234,12 +234,12 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			}
 		case ';', ',', ':', '~', '>':
 		case ')', ']':
-			if ld := j.lastDepth(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
+			if ld := j.lastState(); !(ld == '(' && c == ')') && !(ld == '[' && c == ']') {
 				return t.ReturnError(fmt.Errorf("%w: %s", ErrInvalidCharacter, t.Get()))
 			}
 
 			j.divisionAllowed = true
-			j.tokenDepth = j.tokenDepth[:len(j.tokenDepth)-1]
+			j.state = j.state[:len(j.state)-1]
 		case '.':
 			if t.Accept(".") {
 				if !t.Accept(".") { // ...
@@ -545,12 +545,12 @@ func (j *jsTokeniser) unicodeEscapeSequence(t *parser.Tokeniser) bool {
 	return true
 }
 
-func (j *jsTokeniser) lastDepth() rune {
-	if len(j.tokenDepth) == 0 {
+func (j *jsTokeniser) lastState() rune {
+	if len(j.state) == 0 {
 		return -1
 	}
 
-	return rune(j.tokenDepth[len(j.tokenDepth)-1])
+	return rune(j.state[len(j.state)-1])
 }
 
 func (j *jsTokeniser) escapeSequence(t *parser.Tokeniser) bool {
@@ -635,7 +635,7 @@ Loop:
 			t.Next()
 
 			if t.Accept("{") {
-				j.tokenDepth = append(j.tokenDepth, '$')
+				j.state = append(j.state, '$')
 				v := t.Get()
 
 				var typ parser.TokenType
