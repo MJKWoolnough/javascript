@@ -1,7 +1,7 @@
 #!/bin/bash
 
 types() {
-	for file in ast_class.go ast_conditional.go ast_expression.go ast_function.go ast.go ast_module.go ast_statement.go ; do
+	for file in ast_class.go ast_conditional.go ast_expression.go ast_function.go ast.go ast_module.go ast_statement.go; do
 		while read type; do
 			echo "$type" "$file";
 		done < <(grep "type .* struct {" "$file" | cut -d' ' -f2);
