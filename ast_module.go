@@ -523,7 +523,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			fallthrough
 		default:
 			ed.DefaultAssignmentExpression = new(AssignmentExpression)
-			if err := ed.DefaultAssignmentExpression.parse(&g, true, false, false); err != nil {
+			if err := ed.DefaultAssignmentExpression.parse(&g, true, false, true); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
 
@@ -563,7 +563,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		}
 	} else if g := j.NewGoal(); g.Peek() == (parser.Token{Type: TokenKeyword, Data: "var"}) {
 		ed.VariableStatement = new(VariableStatement)
-		if err := ed.VariableStatement.parse(&g, false, false); err != nil {
+		if err := ed.VariableStatement.parse(&g, false, true); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
 
@@ -601,7 +601,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		}
 	} else {
 		ed.Declaration = new(Declaration)
-		if err := ed.Declaration.parse(&g, false, false); err != nil {
+		if err := ed.Declaration.parse(&g, false, true); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
 
