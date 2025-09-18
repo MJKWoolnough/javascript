@@ -1789,6 +1789,26 @@ func TestPrintingModule(t *testing.T) {
 			"import a from 'b' with {'a': \"b\", c: 'd'};",
 			"import a from 'b' with {'a': \"b\", c: 'd'};",
 		},
+		{ // 28
+			"const a = await b;",
+			"const a = await b;",
+			"const a = await b;",
+		},
+		{ // 29
+			"export const a = await b;",
+			"export const a = await b;",
+			"export const a = await b;",
+		},
+		{ // 30
+			"export var a = await b;",
+			"export var a = await b;",
+			"export var a = await b;",
+		},
+		{ // 31
+			"export default await b;",
+			"export default await b;",
+			"export default await b;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
