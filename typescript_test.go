@@ -5144,7 +5144,7 @@ func TestTypescriptTypes(t *testing.T) {
 			} else if !g.ReadType() {
 				t.Errorf("test %d: failed on generic type fn", n+1)
 			} else if len(j) != len(g) {
-				t.Errorf("test %d: inconsistant number of tokens read. %d != %d", n+1, len(j), len(g))
+				t.Errorf("test %d: inconsistent number of tokens read. %d != %d", n+1, len(j), len(g))
 			}
 		}
 	}
