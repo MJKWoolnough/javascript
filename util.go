@@ -273,32 +273,33 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 // *ConditionalExpression.
 //
 // The accepted types/pointers are as follows:
-//    ConditionalExpression
-//    LogicalORExpression
-//    LogicalANDExpression
-//    BitwiseORExpression
-//    BitwiseXORExpression
-//    BitwiseANDExpression
-//    EqualityExpression
-//    RelationalExpression
-//    ShiftExpression
-//    AdditiveExpression
-//    MultiplicativeExpression
-//    ExponentiationExpression
-//    UnaryExpression
-//    UpdateExpression
-//    LeftHandSideExpression
-//    CallExpression
-//    OptionalExpression
-//    NewExpression
-//    MemberExpression
-//    PrimaryExpression
-//    ArrayLiteral
-//    ObjectLiteral
-//    FunctionDeclaration (FunctionExpression)
-//    ClassDeclaration (ClassExpression)
-//    TemplateLiteral
-//    ParenthesizedExpression
+//
+//	ConditionalExpression
+//	LogicalORExpression
+//	LogicalANDExpression
+//	BitwiseORExpression
+//	BitwiseXORExpression
+//	BitwiseANDExpression
+//	EqualityExpression
+//	RelationalExpression
+//	ShiftExpression
+//	AdditiveExpression
+//	MultiplicativeExpression
+//	ExponentiationExpression
+//	UnaryExpression
+//	UpdateExpression
+//	LeftHandSideExpression
+//	CallExpression
+//	OptionalExpression
+//	NewExpression
+//	MemberExpression
+//	PrimaryExpression
+//	ArrayLiteral
+//	ObjectLiteral
+//	FunctionDeclaration (FunctionExpression)
+//	ClassDeclaration (ClassExpression)
+//	TemplateLiteral
+//	ParenthesizedExpression
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -577,31 +578,32 @@ logicalORExpression:
 // that contains all of the information required to rebuild the lower chain.
 //
 // Possible returns types are as follows:
-//    *ConditionalExpression
-//    *LogicalORExpression
-//    *LogicalANDExpression
-//    *BitwiseORExpression
-//    *BitwiseXORExpression
-//    *BitwiseANDExpression
-//    *EqualityExpression
-//    *RelationalExpression
-//    *ShiftExpression
-//    *AdditiveExpression
-//    *MultiplicativeExpression
-//    *ExponentiationExpression
-//    *UnaryExpression
-//    *UpdateExpression
-//    *CallExpression
-//    *OptionalExpression
-//    *NewExpression
-//    *MemberExpression
-//    *PrimaryExpression
-//    *ArrayLiteral
-//    *ObjectLiteral
-//    *FunctionDeclaration (FunctionExpression)
-//    *ClassDeclaration (ClassExpression)
-//    *TemplateLiteral
-//    *ParenthesizedExpression
+//
+//	*ConditionalExpression
+//	*LogicalORExpression
+//	*LogicalANDExpression
+//	*BitwiseORExpression
+//	*BitwiseXORExpression
+//	*BitwiseANDExpression
+//	*EqualityExpression
+//	*RelationalExpression
+//	*ShiftExpression
+//	*AdditiveExpression
+//	*MultiplicativeExpression
+//	*ExponentiationExpression
+//	*UnaryExpression
+//	*UpdateExpression
+//	*CallExpression
+//	*OptionalExpression
+//	*NewExpression
+//	*MemberExpression
+//	*PrimaryExpression
+//	*ArrayLiteral
+//	*ObjectLiteral
+//	*FunctionDeclaration (FunctionExpression)
+//	*ClassDeclaration (ClassExpression)
+//	*TemplateLiteral
+//	*ParenthesizedExpression
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c == nil {
 		return nil
