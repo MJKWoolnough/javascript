@@ -1269,7 +1269,7 @@ func TestIsStatementListItemExpression(t *testing.T) {
 	}
 }
 
-func TestleftMostLHS(t *testing.T) {
+func TestLeftMostLHS(t *testing.T) {
 	for n, test := range [...]struct {
 		Input  javascript.ConditionalWrappable
 		Output *javascript.LeftHandSideExpression
@@ -1356,7 +1356,7 @@ func TestleftMostLHS(t *testing.T) {
 				},
 			}),
 			&javascript.LeftHandSideExpression{
-				NewExpression: &javascript.NewExpression{},
+				OptionalExpression: &javascript.OptionalExpression{},
 			},
 		},
 	} {
