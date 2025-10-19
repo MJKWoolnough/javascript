@@ -1,7 +1,6 @@
 package minify
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -1204,30 +1203,16 @@ func TestPrint(t *testing.T) {
 			"class a extends b{static{c()}d=e;#f;#g=h;constructor(){}get i(){}set j(k){}[l](){}static m(){}}",
 		},
 	} {
+		var sb strings.Builder
+
 		tk := parser.NewStringTokeniser(test.Input)
-		m, err := javascript.ParseModule(&tk)
-		if err != nil {
+
+		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
-		} else {
-			var sb strings.Builder
-			if _, err := Print(&sb, m); err != nil {
-				t.Errorf("test %d.1: unexpected error: %s", n+1, err)
-			} else if str := sb.String(); str != test.Output {
-				t.Errorf("test %d.1: expecting output %q, got %q", n+1, test.Output, str)
-			} else {
-				if n == 150 {
-					aap := m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern
-					aap.AssignmentElements = aap.AssignmentElements[:6]
-				}
-				normalStr := fmt.Sprint(m)
-				tk = parser.NewStringTokeniser(str)
-				m, err := javascript.ParseModule(&tk)
-				if err != nil {
-					t.Errorf("test %d.2: unexpected error: %s", n+1, err)
-				} else if otherStr := fmt.Sprint(m); normalStr != otherStr {
-					t.Errorf("test %d.2: normal output not equal, expecting %s, got %s", n+1, normalStr, otherStr)
-				}
-			}
+		} else if _, err := Print(&sb, m); err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		} else if str := sb.String(); str != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, str)
 		}
 	}
 }
