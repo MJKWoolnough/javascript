@@ -16,6 +16,8 @@ type Token struct {
 // Tokens is a collection of Token values.
 type Tokens []Token
 
+type Comments []Token
+
 type jsParser Tokens
 
 // Tokeniser is an interface representing a tokeniser.
@@ -212,6 +214,29 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 
 func (j *jsParser) AcceptRunWhitespaceNoComment() parser.TokenType {
 	return j.AcceptRun(TokenWhitespace, TokenLineTerminator)
+}
+
+func (j *jsParser) AcceptRunWhitespaceComments() Comments {
+	var c Comments
+
+	g := j.NewGoal()
+
+Loop:
+	for {
+		switch g.AcceptRunWhitespaceNoComment() {
+		case TokenSingleLineComment, TokenMultiLineComment:
+		default:
+			break Loop
+		}
+
+		c = append(c, g.Next())
+
+		j.Score(g)
+
+		g = j.NewGoal()
+	}
+
+	return c
 }
 
 func (j *jsParser) AcceptRunWhitespaceNoNewLineNoComment() parser.TokenType {
