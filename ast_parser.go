@@ -214,6 +214,10 @@ func (j *jsParser) AcceptRunWhitespaceNoComment() parser.TokenType {
 	return j.AcceptRun(TokenWhitespace, TokenLineTerminator)
 }
 
+func (j *jsParser) AcceptRunWhitespaceNoNewLineNoComment() parser.TokenType {
+	return j.AcceptRun(TokenWhitespace)
+}
+
 func (j *jsParser) GetLastToken() *Token {
 	return &(*j)[len(*j)-1]
 }
