@@ -16,6 +16,7 @@ type Token struct {
 // Tokens is a collection of Token values.
 type Tokens []Token
 
+// Comments is a collection of Comment Tokens.
 type Comments []Token
 
 type jsParser Tokens
