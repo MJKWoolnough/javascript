@@ -158,6 +158,10 @@ func (j *jsParser) Skip() {
 	j.next()
 }
 
+func (j *jsParser) Next() Token {
+	return j.next()
+}
+
 func (j *jsParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
 	for {
 		tt := j.next().Type
