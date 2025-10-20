@@ -243,6 +243,37 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLineNoComment() parser.TokenType {
 	return j.AcceptRun(TokenWhitespace)
 }
 
+func (j *jsParser) AcceptRunWhitespaceNoNewlineComments() Comments {
+	var c Comments
+
+	g := j.NewGoal()
+
+Loop:
+	for {
+		switch g.AcceptRunWhitespaceNoNewLineNoComment() {
+		case TokenSingleLineComment, TokenMultiLineComment:
+		default:
+			break Loop
+		}
+
+		c = append(c, g.Next())
+
+		j.Score(g)
+
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespaceNoNewLineNoComment()
+
+		if g.Accept(TokenLineTerminator) {
+			if l := g.GetLastToken().Data; l != "\n" && l != "\r\n" {
+				break
+			}
+		}
+	}
+
+	return c
+}
+
 func (j *jsParser) GetLastToken() *Token {
 	return &(*j)[len(*j)-1]
 }
