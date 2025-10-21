@@ -204,12 +204,12 @@ func (t Tokens) Format(s fmt.State, v rune) {
 
 func (t Tokens) printType(w writer, v bool) {
 	if len(t) == 0 {
-		io.WriteString(w, "[]")
+		w.WriteString("[]")
 
 		return
 	}
 
-	io.WriteString(w, "[")
+	w.WriteString("[")
 
 	ipp := w.Indent()
 
@@ -218,7 +218,7 @@ func (t Tokens) printType(w writer, v bool) {
 		t.printType(w, v)
 	}
 
-	io.WriteString(w, "\n]")
+	w.WriteString("\n]")
 }
 
 func (c Comments) printType(w writer, v bool) {
@@ -255,8 +255,8 @@ func (ft FunctionType) String() string {
 	}
 }
 
-func (ft FunctionType) printType(w io.Writer, _ bool) {
-	io.WriteString(w, ft.String())
+func (ft FunctionType) printType(w writer, _ bool) {
+	w.WriteString(ft.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -279,8 +279,8 @@ func (mt MethodType) String() string {
 	}
 }
 
-func (mt MethodType) printType(w io.Writer, _ bool) {
-	io.WriteString(w, mt.String())
+func (mt MethodType) printType(w writer, _ bool) {
+	w.WriteString(mt.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -301,8 +301,8 @@ func (st StatementType) String() string {
 	}
 }
 
-func (st StatementType) printType(w io.Writer, _ bool) {
-	io.WriteString(w, st.String())
+func (st StatementType) printType(w writer, _ bool) {
+	w.WriteString(st.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -345,8 +345,8 @@ func (ft ForType) String() string {
 	}
 }
 
-func (ft ForType) printType(w io.Writer, _ bool) {
-	io.WriteString(w, ft.String())
+func (ft ForType) printType(w writer, _ bool) {
+	w.WriteString(ft.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -367,8 +367,8 @@ func (e EqualityOperator) String() string {
 	}
 }
 
-func (e EqualityOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, e.String())
+func (e EqualityOperator) printType(w writer, _ bool) {
+	w.WriteString(e.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -393,8 +393,8 @@ func (r RelationshipOperator) String() string {
 	}
 }
 
-func (r RelationshipOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, r.String())
+func (r RelationshipOperator) printType(w writer, _ bool) {
+	w.WriteString(r.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -413,8 +413,8 @@ func (s ShiftOperator) String() string {
 	}
 }
 
-func (s ShiftOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, s.String())
+func (s ShiftOperator) printType(w writer, _ bool) {
+	w.WriteString(s.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -431,8 +431,8 @@ func (a AdditiveOperator) String() string {
 	}
 }
 
-func (a AdditiveOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, a.String())
+func (a AdditiveOperator) printType(w writer, _ bool) {
+	w.WriteString(a.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -451,8 +451,8 @@ func (m MultiplicativeOperator) String() string {
 	}
 }
 
-func (m MultiplicativeOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, m.String())
+func (m MultiplicativeOperator) printType(w writer, _ bool) {
+	w.WriteString(m.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -481,8 +481,8 @@ func (u UnaryOperator) String() string {
 	}
 }
 
-func (u UnaryOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, u.String())
+func (u UnaryOperator) printType(w writer, _ bool) {
+	w.WriteString(u.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -503,8 +503,8 @@ func (u UpdateOperator) String() string {
 	}
 }
 
-func (u UpdateOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, u.String())
+func (u UpdateOperator) printType(w writer, _ bool) {
+	w.WriteString(u.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -516,8 +516,8 @@ func (l LetOrConst) String() string {
 	return "Let"
 }
 
-func (l LetOrConst) printType(w io.Writer, _ bool) {
-	io.WriteString(w, l.String())
+func (l LetOrConst) printType(w writer, _ bool) {
+	w.WriteString(l.String())
 }
 
 // String implements the fmt.Stringer interface
@@ -562,8 +562,8 @@ func (a AssignmentOperator) String() string {
 	}
 }
 
-func (a AssignmentOperator) printType(w io.Writer, _ bool) {
-	io.WriteString(w, a.String())
+func (a AssignmentOperator) printType(w writer, _ bool) {
+	w.WriteString(a.String())
 }
 
 const unknown = "Unknown"
