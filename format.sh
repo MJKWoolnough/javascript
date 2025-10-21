@@ -55,7 +55,17 @@ HEREDOC
 				echo "		pp.WriteString(\"\\n$fieldName: []\")";
 				echo "	}";
 			elif [ "${fieldType:0:1}" = "[" ]; then
-				echo -n;
+				echo;
+				echo "	pp.WriteString(\"\\n$fieldName: [\")";
+				echo;
+				echo "	ipp := pp.Indent()";
+				echo;
+				echo "	for n, e := range f.$fieldName {";
+				echo "		ipp.Printf(\"\n%d: \", n)";
+				echo "		e.printType(ipp, v)";
+				echo "	}";
+				echo;
+				echo "	pp.WriteString(\"\n]\")";
 			elif [ "${fieldType:0:1}" = "*" ]; then
 				echo;
 				echo "	if f.$fieldName != nil {";
