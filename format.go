@@ -3,15 +3,27 @@ package javascript
 import (
 	"fmt"
 	"io"
+	"unsafe"
 
 	"vimagination.zapto.org/parser"
 )
 
-type indentPrinter struct {
+var indent = []byte{'\t'}
+
+type writer interface {
 	io.Writer
+	WriteString(string)
+	Underlying() writer
+	LastChar() byte
+	Pos() int
+	Indent() writer
+	Printf(string, ...any)
 }
 
-var indent = []byte{'	'}
+type indentPrinter struct {
+	writer
+	hadNewline bool
+}
 
 func (i *indentPrinter) Write(p []byte) (int, error) {
 	var (
@@ -21,24 +33,30 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 
 	for n, c := range p {
 		if c == '\n' {
-			m, err := i.Writer.Write(p[last : n+1])
+			if last != n {
+				if err := i.printIndent(); err != nil {
+					return total, err
+				}
+			}
+
+			m, err := i.writer.Write(p[last : n+1])
 			total += m
 
 			if err != nil {
 				return total, err
 			}
 
-			_, err = i.Writer.Write(indent)
-			if err != nil {
-				return total, err
-			}
-
+			i.hadNewline = true
 			last = n + 1
 		}
 	}
 
 	if last != len(p) {
-		m, err := i.Writer.Write(p[last:])
+		if err := i.printIndent(); err != nil {
+			return total, err
+		}
+
+		m, err := i.writer.Write(p[last:])
 		total += m
 
 		if err != nil {
@@ -49,16 +67,72 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 	return total, nil
 }
 
-func (i *indentPrinter) Print(args ...interface{}) {
-	fmt.Fprint(i, args...)
+func (i *indentPrinter) printIndent() error {
+	if i.hadNewline {
+		if _, err := i.writer.Write(indent); err != nil {
+			return err
+		}
+
+		i.hadNewline = false
+	}
+
+	return nil
 }
 
-func (i *indentPrinter) Printf(format string, args ...interface{}) {
+func (i *indentPrinter) Printf(format string, args ...any) {
 	fmt.Fprintf(i, format, args...)
 }
 
-func (i *indentPrinter) WriteString(s string) (int, error) {
-	return i.Write([]byte(s))
+func (i *indentPrinter) WriteString(s string) {
+	i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+}
+
+func (i *indentPrinter) Indent() writer {
+	return &indentPrinter{writer: i}
+}
+
+type underlyingWriter struct {
+	io.Writer
+	lastChar byte
+	pos      int
+}
+
+func (u *underlyingWriter) Write(p []byte) (int, error) {
+	for _, b := range p {
+		if b == '\n' {
+			u.pos = 0
+		} else if b != '\t' || u.pos > 0 {
+			u.pos++
+		}
+
+		u.lastChar = b
+	}
+
+	return u.Writer.Write(p)
+}
+
+func (u *underlyingWriter) WriteString(s string) {
+	u.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+}
+
+func (u *underlyingWriter) Underlying() writer {
+	return u
+}
+
+func (u *underlyingWriter) LastChar() byte {
+	return u.lastChar
+}
+
+func (u *underlyingWriter) Pos() int {
+	return u.pos
+}
+
+func (u *underlyingWriter) Indent() writer {
+	return &indentPrinter{writer: u}
+}
+
+func (u *underlyingWriter) Printf(format string, args ...any) {
+	fmt.Fprintf(u, format, args...)
 }
 
 // Format implements the fmt.Formatter interface
@@ -125,10 +199,10 @@ func (t Token) printType(w io.Writer, v bool) {
 
 // Format implements the fmt.Formatter interface
 func (t Tokens) Format(s fmt.State, v rune) {
-	t.printType(s, s.Flag('+'))
+	t.printType(&underlyingWriter{Writer: s}, s.Flag('+'))
 }
 
-func (t Tokens) printType(w io.Writer, v bool) {
+func (t Tokens) printType(w writer, v bool) {
 	if len(t) == 0 {
 		io.WriteString(w, "[]")
 
@@ -137,7 +211,7 @@ func (t Tokens) printType(w io.Writer, v bool) {
 
 	io.WriteString(w, "[")
 
-	ipp := indentPrinter{w}
+	ipp := w.Indent()
 
 	for n, t := range t {
 		ipp.Printf("\n%d: ", n)
@@ -147,21 +221,21 @@ func (t Tokens) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n]")
 }
 
-func (c Comments) printType(w io.Writer, v bool) {
+func (c Comments) printType(w writer, v bool) {
 	Tokens(c).printType(w, v)
 }
 
 type formatter interface {
-	printType(io.Writer, bool)
-	printSource(io.Writer, bool)
+	printType(writer, bool)
+	printSource(writer, bool)
 }
 
 func format(f formatter, s fmt.State, v rune) {
 	switch v {
 	case 'v':
-		f.printType(s, s.Flag('+'))
+		f.printType(&underlyingWriter{Writer: s}, s.Flag('+'))
 	case 's':
-		f.printSource(s, s.Flag('+'))
+		f.printSource(&underlyingWriter{Writer: s}, s.Flag('+'))
 	}
 }
 
