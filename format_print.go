@@ -129,7 +129,7 @@ var (
 	space                        = []byte{' '}
 )
 
-func (s Script) printSource(w io.Writer, v bool) {
+func (s Script) printSource(w writer, v bool) {
 	if len(s.StatementList) > 0 {
 		s.StatementList[0].printSource(w, v)
 
@@ -140,7 +140,7 @@ func (s Script) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (s StatementListItem) printSource(w io.Writer, v bool) {
+func (s StatementListItem) printSource(w writer, v bool) {
 	if s.Statement != nil {
 		s.Statement.printSource(w, v)
 	} else if s.Declaration != nil {
@@ -148,7 +148,7 @@ func (s StatementListItem) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (s Statement) printSource(w io.Writer, v bool) {
+func (s Statement) printSource(w writer, v bool) {
 	switch s.Type {
 	case StatementNormal:
 		if s.BlockStatement != nil {
@@ -216,7 +216,7 @@ func (s Statement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (d Declaration) printSource(w io.Writer, v bool) {
+func (d Declaration) printSource(w writer, v bool) {
 	if d.ClassDeclaration != nil {
 		d.ClassDeclaration.printSource(w, v)
 	} else if d.FunctionDeclaration != nil {
@@ -226,7 +226,7 @@ func (d Declaration) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (b Block) printSource(w io.Writer, v bool) {
+func (b Block) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	var lastLine uint64
@@ -235,7 +235,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 		lastLine = b.Tokens[0].Line
 	}
 
-	pp := indentPrinter{w}
+	pp := w.Indent()
 
 	for _, stmt := range b.StatementList {
 		if v {
@@ -256,7 +256,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 			pp.Write(newLine)
 		}
 
-		stmt.printSource(&pp, v)
+		stmt.printSource(pp, v)
 	}
 
 	if len(b.StatementList) > 0 {
@@ -274,7 +274,7 @@ func (b Block) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (vs VariableStatement) printSource(w io.Writer, v bool) {
+func (vs VariableStatement) printSource(w writer, v bool) {
 	if len(vs.VariableDeclarationList) == 0 {
 		return
 	}
@@ -308,7 +308,7 @@ func (vs VariableStatement) printSource(w io.Writer, v bool) {
 	w.Write(semiColon)
 }
 
-func (e Expression) printSource(w io.Writer, v bool) {
+func (e Expression) printSource(w writer, v bool) {
 	if len(e.Expressions) == 0 {
 		return
 	}
@@ -337,11 +337,11 @@ func (e Expression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (i IfStatement) printSource(w io.Writer, v bool) {
+func (i IfStatement) printSource(w writer, v bool) {
 	w.Write(ifOpen)
 
 	if v {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		var nl bool
 
@@ -351,7 +351,7 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 			pp.Write(newLine)
 		}
 
-		i.Expression.printSource(&pp, true)
+		i.Expression.printSource(pp, true)
 
 		if nl {
 			w.Write(newLine)
@@ -369,13 +369,13 @@ func (i IfStatement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (i IterationStatementDo) printSource(w io.Writer, v bool) {
+func (i IterationStatementDo) printSource(w writer, v bool) {
 	w.Write(doOpen)
 	i.Statement.printSource(w, v)
 	w.Write(doWhileOpen)
 
 	if v {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		var nl bool
 
@@ -385,7 +385,7 @@ func (i IterationStatementDo) printSource(w io.Writer, v bool) {
 			pp.Write(newLine)
 		}
 
-		i.Expression.printSource(&pp, true)
+		i.Expression.printSource(pp, true)
 
 		if nl {
 			w.Write(newLine)
@@ -397,11 +397,11 @@ func (i IterationStatementDo) printSource(w io.Writer, v bool) {
 	w.Write(doWhileClose)
 }
 
-func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
+func (i IterationStatementWhile) printSource(w writer, v bool) {
 	w.Write(whileOpen)
 
 	if v {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		var nl bool
 
@@ -411,7 +411,7 @@ func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
 			nl = true
 		}
 
-		i.Expression.printSource(&pp, true)
+		i.Expression.printSource(pp, true)
 
 		if nl {
 			w.Write(newLine)
@@ -424,7 +424,7 @@ func (i IterationStatementWhile) printSource(w io.Writer, v bool) {
 	i.Statement.printSource(w, v)
 }
 
-func (i IterationStatementFor) printSource(w io.Writer, v bool) {
+func (i IterationStatementFor) printSource(w writer, v bool) {
 	switch i.Type {
 	case ForNormal:
 		if i.InitVar != nil || i.InitLexical != nil || i.InitExpression != nil {
@@ -472,7 +472,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 		w.Write(forOpen)
 	}
 
-	pp := indentPrinter{w}
+	pp := w.Indent()
 
 	var lastLine uint64
 
@@ -494,8 +494,8 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
 		}
 
-		w.Write(varOpen)
-		LexicalBinding(i.InitVar[0]).printSource(&pp, v)
+		pp.Write(varOpen)
+		LexicalBinding(i.InitVar[0]).printSource(pp, v)
 
 		for _, vd := range i.InitVar[1:] {
 			if v && len(vd.Tokens) > 0 {
@@ -508,7 +508,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				pp.Write(commaSep)
 			}
 
-			LexicalBinding(vd).printSource(&pp, v)
+			LexicalBinding(vd).printSource(pp, v)
 		}
 
 		w.Write(semiColon)
@@ -523,7 +523,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
 		}
 
-		i.InitLexical.printSource(&pp, v)
+		i.InitLexical.printSource(pp, v)
 	case ForNormalExpression:
 		if v && len(i.InitExpression.Tokens) > 0 {
 			if i.InitExpression.Tokens[0].Line > lastLine {
@@ -535,7 +535,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
 		}
 
-		i.InitExpression.printSource(&pp, v)
+		i.InitExpression.printSource(pp, v)
 		w.Write(semiColon)
 	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
 		if v {
@@ -550,7 +550,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 			}
 		}
 
-		i.LeftHandSideExpression.printSource(&pp, v)
+		i.LeftHandSideExpression.printSource(pp, v)
 	default:
 		switch i.Type {
 		case ForInVar, ForOfVar, ForAwaitOfVar:
@@ -587,7 +587,7 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				w.Write(space)
 			}
 
-			i.Conditional.printSource(&pp, v)
+			i.Conditional.printSource(pp, v)
 		}
 
 		w.Write(semiColon)
@@ -605,14 +605,14 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 				w.Write(space)
 			}
 
-			i.Afterthought.printSource(&pp, v)
+			i.Afterthought.printSource(pp, v)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
 		w.Write(forIn)
-		i.In.printSource(&pp, v)
+		i.In.printSource(pp, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
 		w.Write(forOf)
-		i.Of.printSource(&pp, v)
+		i.Of.printSource(pp, v)
 	}
 
 	if endline {
@@ -623,11 +623,11 @@ func (i IterationStatementFor) printSource(w io.Writer, v bool) {
 	i.Statement.printSource(w, v)
 }
 
-func (s SwitchStatement) printSource(w io.Writer, v bool) {
+func (s SwitchStatement) printSource(w writer, v bool) {
 	w.Write(switchOpen)
 
 	if v {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		var nl bool
 
@@ -637,7 +637,7 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 			pp.Write(newLine)
 		}
 
-		s.Expression.printSource(&pp, true)
+		s.Expression.printSource(pp, true)
 
 		if nl {
 			w.Write(newLine)
@@ -660,11 +660,11 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 	if s.DefaultClause != nil {
 		w.Write(defaultCase)
 
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		for _, stmt := range s.DefaultClause {
 			pp.Write(newLine)
-			stmt.printSource(&pp, v)
+			stmt.printSource(pp, v)
 		}
 
 		w.Write(newLine)
@@ -678,11 +678,11 @@ func (s SwitchStatement) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (ws WithStatement) printSource(w io.Writer, v bool) {
+func (ws WithStatement) printSource(w writer, v bool) {
 	w.Write(withOpen)
 
 	if v {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		var nl bool
 
@@ -692,7 +692,7 @@ func (ws WithStatement) printSource(w io.Writer, v bool) {
 			pp.Write(newLine)
 		}
 
-		ws.Expression.printSource(&pp, true)
+		ws.Expression.printSource(pp, true)
 
 		if nl {
 			w.Write(newLine)
@@ -705,7 +705,7 @@ func (ws WithStatement) printSource(w io.Writer, v bool) {
 	ws.Statement.printSource(w, v)
 }
 
-func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
+func (f FunctionDeclaration) printSource(w writer, v bool) {
 	switch f.Type {
 	case FunctionNormal:
 		w.Write(funcOpen)
@@ -723,11 +723,11 @@ func (f FunctionDeclaration) printSource(w io.Writer, v bool) {
 		io.WriteString(w, f.BindingIdentifier.Data)
 	}
 
-	f.FormalParameters.printSource(&indentPrinter{w}, v)
+	f.FormalParameters.printSource(w.Indent(), v)
 	f.FunctionBody.printSource(w, v)
 }
 
-func (t TryStatement) printSource(w io.Writer, v bool) {
+func (t TryStatement) printSource(w writer, v bool) {
 	w.Write(tryOpen)
 	t.TryBlock.printSource(w, v)
 
@@ -757,7 +757,7 @@ func (t TryStatement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (c ClassDeclaration) printSource(w io.Writer, v bool) {
+func (c ClassDeclaration) printSource(w writer, v bool) {
 	w.Write(classOpen)
 
 	if c.BindingIdentifier != nil {
@@ -774,11 +774,11 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(blockOpen)
 
 	if len(c.ClassBody) > 0 {
-		pp := indentPrinter{w}
+		pp := w.Indent()
 
 		for _, ce := range c.ClassBody {
 			pp.Write(newLine)
-			ce.printSource(&pp, v)
+			ce.printSource(pp, v)
 		}
 
 		w.Write(newLine)
@@ -787,7 +787,7 @@ func (c ClassDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
+func (l LexicalDeclaration) printSource(w writer, v bool) {
 	if len(l.BindingList) == 0 {
 		return
 	}
@@ -813,7 +813,7 @@ func (l LexicalDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(semiColon)
 }
 
-func (l LexicalBinding) printSource(w io.Writer, v bool) {
+func (l LexicalBinding) printSource(w writer, v bool) {
 	if l.BindingIdentifier != nil {
 		io.WriteString(w, l.BindingIdentifier.Data)
 	} else if l.ArrayBindingPattern != nil {
@@ -830,7 +830,7 @@ func (l LexicalBinding) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a AssignmentExpression) printSource(w io.Writer, v bool) {
+func (a AssignmentExpression) printSource(w writer, v bool) {
 	if a.Yield && a.AssignmentExpression != nil {
 		w.Write(yield)
 
@@ -892,7 +892,7 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
+func (l LeftHandSideExpression) printSource(w writer, v bool) {
 	if l.NewExpression != nil {
 		l.NewExpression.printSource(w, v)
 	} else if l.CallExpression != nil {
@@ -902,7 +902,7 @@ func (l LeftHandSideExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a AssignmentPattern) printSource(w io.Writer, v bool) {
+func (a AssignmentPattern) printSource(w writer, v bool) {
 	if a.ArrayAssignmentPattern != nil {
 		a.ArrayAssignmentPattern.printSource(w, v)
 	} else if a.ObjectAssignmentPattern != nil {
@@ -910,7 +910,7 @@ func (a AssignmentPattern) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a ArrayAssignmentPattern) printSource(w io.Writer, v bool) {
+func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 	w.Write(bracketOpen)
 
 	for n, ae := range a.AssignmentElements {
@@ -933,7 +933,7 @@ func (a ArrayAssignmentPattern) printSource(w io.Writer, v bool) {
 	w.Write(bracketClose)
 }
 
-func (o ObjectAssignmentPattern) printSource(w io.Writer, v bool) {
+func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	for n, ap := range o.AssignmentPropertyList {
@@ -956,7 +956,7 @@ func (o ObjectAssignmentPattern) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (a AssignmentElement) printSource(w io.Writer, v bool) {
+func (a AssignmentElement) printSource(w writer, v bool) {
 	a.DestructuringAssignmentTarget.printSource(w, v)
 
 	if a.Initializer != nil {
@@ -965,7 +965,7 @@ func (a AssignmentElement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a AssignmentProperty) printSource(w io.Writer, v bool) {
+func (a AssignmentProperty) printSource(w writer, v bool) {
 	a.PropertyName.printSource(w, v)
 
 	if a.DestructuringAssignmentTarget != nil {
@@ -983,7 +983,7 @@ func (a AssignmentProperty) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (d DestructuringAssignmentTarget) printSource(w io.Writer, v bool) {
+func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 	if d.LeftHandSideExpression != nil {
 		d.LeftHandSideExpression.printSource(w, v)
 	} else if d.AssignmentPattern != nil {
@@ -991,7 +991,7 @@ func (d DestructuringAssignmentTarget) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
+func (o ObjectBindingPattern) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	for n, bp := range o.BindingPropertyList {
@@ -1014,7 +1014,7 @@ func (o ObjectBindingPattern) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
+func (a ArrayBindingPattern) printSource(w writer, v bool) {
 	w.Write(bracketOpen)
 
 	for n, be := range a.BindingElementList {
@@ -1037,20 +1037,20 @@ func (a ArrayBindingPattern) printSource(w io.Writer, v bool) {
 	w.Write(bracketClose)
 }
 
-func (c CaseClause) printSource(w io.Writer, v bool) {
+func (c CaseClause) printSource(w writer, v bool) {
 	w.Write(caseOpen)
 	c.Expression.printSource(w, v)
 	w.Write(caseClose)
 
-	pp := indentPrinter{w}
+	pp := w.Indent()
 
 	for _, stmt := range c.StatementList {
 		pp.Write(newLine)
-		stmt.printSource(&pp, v)
+		stmt.printSource(pp, v)
 	}
 }
 
-func (f FormalParameters) printSource(w io.Writer, v bool) {
+func (f FormalParameters) printSource(w writer, v bool) {
 	w.Write(parenOpen)
 
 	if len(f.FormalParameterList) > 0 {
@@ -1080,7 +1080,7 @@ func (f FormalParameters) printSource(w io.Writer, v bool) {
 	w.Write(parenCloseSpace)
 }
 
-func (m MethodDefinition) printSource(w io.Writer, v bool) {
+func (m MethodDefinition) printSource(w writer, v bool) {
 	switch m.Type {
 	case MethodNormal:
 	case MethodGenerator:
@@ -1102,7 +1102,7 @@ func (m MethodDefinition) printSource(w io.Writer, v bool) {
 	m.FunctionBody.printSource(w, v)
 }
 
-func (ce ClassElement) printSource(w io.Writer, v bool) {
+func (ce ClassElement) printSource(w writer, v bool) {
 	if ce.Static {
 		w.Write(methodStatic)
 	}
@@ -1116,7 +1116,7 @@ func (ce ClassElement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (fd FieldDefinition) printSource(w io.Writer, v bool) {
+func (fd FieldDefinition) printSource(w writer, v bool) {
 	fd.ClassElementName.printSource(w, v)
 
 	if fd.Initializer != nil {
@@ -1127,7 +1127,7 @@ func (fd FieldDefinition) printSource(w io.Writer, v bool) {
 	w.Write(semiColon)
 }
 
-func (cen ClassElementName) printSource(w io.Writer, v bool) {
+func (cen ClassElementName) printSource(w writer, v bool) {
 	if cen.PropertyName != nil {
 		cen.PropertyName.printSource(w, v)
 	} else if cen.PrivateIdentifier != nil {
@@ -1135,7 +1135,7 @@ func (cen ClassElementName) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (c ConditionalExpression) printSource(w io.Writer, v bool) {
+func (c ConditionalExpression) printSource(w writer, v bool) {
 	if c.LogicalORExpression != nil {
 		c.LogicalORExpression.printSource(w, v)
 	} else if c.CoalesceExpression != nil {
@@ -1150,7 +1150,7 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a ArrowFunction) printSource(w io.Writer, v bool) {
+func (a ArrowFunction) printSource(w writer, v bool) {
 	if a.FunctionBody == nil && a.AssignmentExpression == nil || (a.BindingIdentifier == nil && a.FormalParameters == nil) {
 		return
 	}
@@ -1175,7 +1175,7 @@ func (a ArrowFunction) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (n NewExpression) printSource(w io.Writer, v bool) {
+func (n NewExpression) printSource(w writer, v bool) {
 	for i := uint(0); i < n.News; i++ {
 		w.Write(news)
 	}
@@ -1183,7 +1183,7 @@ func (n NewExpression) printSource(w io.Writer, v bool) {
 	n.MemberExpression.printSource(w, v)
 }
 
-func (c CallExpression) printSource(w io.Writer, v bool) {
+func (c CallExpression) printSource(w writer, v bool) {
 	if c.SuperCall && c.Arguments != nil {
 		w.Write(super)
 		c.Arguments.printSource(w, v)
@@ -1228,7 +1228,7 @@ func (c CallExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (b BindingProperty) printSource(w io.Writer, v bool) {
+func (b BindingProperty) printSource(w writer, v bool) {
 	if !v && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
 		b.BindingElement.printSource(w, v)
 	} else {
@@ -1238,7 +1238,7 @@ func (b BindingProperty) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (b BindingElement) printSource(w io.Writer, v bool) {
+func (b BindingElement) printSource(w writer, v bool) {
 	if b.SingleNameBinding != nil {
 		io.WriteString(w, b.SingleNameBinding.Data)
 	} else if b.ArrayBindingPattern != nil {
@@ -1255,7 +1255,7 @@ func (b BindingElement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (p PropertyName) printSource(w io.Writer, v bool) {
+func (p PropertyName) printSource(w writer, v bool) {
 	if p.LiteralPropertyName != nil {
 		io.WriteString(w, p.LiteralPropertyName.Data)
 	} else if p.ComputedPropertyName != nil {
@@ -1265,7 +1265,7 @@ func (p PropertyName) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (l LogicalORExpression) printSource(w io.Writer, v bool) {
+func (l LogicalORExpression) printSource(w writer, v bool) {
 	if l.LogicalORExpression != nil {
 		l.LogicalORExpression.printSource(w, v)
 		w.Write(logicalOR)
@@ -1274,7 +1274,7 @@ func (l LogicalORExpression) printSource(w io.Writer, v bool) {
 	l.LogicalANDExpression.printSource(w, v)
 }
 
-func (c ParenthesizedExpression) printSource(w io.Writer, v bool) {
+func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	w.Write(parenOpen)
 
 	if len(c.Expressions) > 0 {
@@ -1289,7 +1289,7 @@ func (c ParenthesizedExpression) printSource(w io.Writer, v bool) {
 	w.Write(parenClose)
 }
 
-func (m MemberExpression) printSource(w io.Writer, v bool) {
+func (m MemberExpression) printSource(w writer, v bool) {
 	if m.MemberExpression != nil {
 		if m.Arguments != nil {
 			w.Write(news)
@@ -1342,7 +1342,7 @@ func (m MemberExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (a Argument) printSource(w io.Writer, v bool) {
+func (a Argument) printSource(w writer, v bool) {
 	if a.Spread {
 		w.Write(ellipsis)
 	}
@@ -1350,7 +1350,7 @@ func (a Argument) printSource(w io.Writer, v bool) {
 	a.AssignmentExpression.printSource(w, v)
 }
 
-func (a Arguments) printSource(w io.Writer, v bool) {
+func (a Arguments) printSource(w writer, v bool) {
 	w.Write(parenOpen)
 
 	if len(a.ArgumentList) > 0 {
@@ -1365,34 +1365,31 @@ func (a Arguments) printSource(w io.Writer, v bool) {
 	w.Write(parenClose)
 }
 
-func (t TemplateLiteral) printSource(w io.Writer, v bool) {
-	x := w
-
-	for {
-		j, ok := x.(*indentPrinter)
-		if !ok {
-			break
-		}
-
-		x = j.Writer
-	}
+func (t TemplateLiteral) printSource(w writer, v bool) {
+	x := w.Underlying()
 
 	if t.NoSubstitutionTemplate != nil {
-		io.WriteString(x, t.NoSubstitutionTemplate.Data)
-	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions) == len(t.TemplateMiddleList)+1 {
-		io.WriteString(x, t.TemplateHead.Data)
-		t.Expressions[0].printSource(w, v)
-
-		for n, e := range t.Expressions[1:] {
-			io.WriteString(x, t.TemplateMiddleList[n].Data)
-			e.printSource(w, v)
+		if len(t.NoSubstitutionTemplate.Data) > 0 {
+			w.WriteString(t.NoSubstitutionTemplate.Data[:1])
+			x.WriteString(t.NoSubstitutionTemplate.Data[1:])
 		}
+	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions) == len(t.TemplateMiddleList)+1 {
+		if len(t.TemplateHead.Data) > 0 {
+			w.WriteString(t.TemplateHead.Data[:1])
+			x.WriteString(t.TemplateHead.Data[1:])
+			t.Expressions[0].printSource(w, v)
 
-		io.WriteString(x, t.TemplateTail.Data)
+			for n, e := range t.Expressions[1:] {
+				x.WriteString(t.TemplateMiddleList[n].Data)
+				e.printSource(w, v)
+			}
+
+			x.WriteString(t.TemplateTail.Data)
+		}
 	}
 }
 
-func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
+func (l LogicalANDExpression) printSource(w writer, v bool) {
 	if l.LogicalANDExpression != nil {
 		l.LogicalANDExpression.printSource(w, v)
 		w.Write(logicalAND)
@@ -1401,7 +1398,7 @@ func (l LogicalANDExpression) printSource(w io.Writer, v bool) {
 	l.BitwiseORExpression.printSource(w, v)
 }
 
-func (p PrimaryExpression) printSource(w io.Writer, v bool) {
+func (p PrimaryExpression) printSource(w writer, v bool) {
 	if p.This != nil {
 		w.Write(this)
 	} else if p.IdentifierReference != nil {
@@ -1423,7 +1420,7 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
+func (b BitwiseORExpression) printSource(w writer, v bool) {
 	if b.BitwiseORExpression != nil {
 		b.BitwiseORExpression.printSource(w, v)
 		w.Write(bitwiseOR)
@@ -1432,7 +1429,7 @@ func (b BitwiseORExpression) printSource(w io.Writer, v bool) {
 	b.BitwiseXORExpression.printSource(w, v)
 }
 
-func (a ArrayElement) printSource(w io.Writer, v bool) {
+func (a ArrayElement) printSource(w writer, v bool) {
 	if a.Spread {
 		w.Write(ellipsis)
 	}
@@ -1440,7 +1437,7 @@ func (a ArrayElement) printSource(w io.Writer, v bool) {
 	a.AssignmentExpression.printSource(w, v)
 }
 
-func (a ArrayLiteral) printSource(w io.Writer, v bool) {
+func (a ArrayLiteral) printSource(w writer, v bool) {
 	w.Write(bracketOpen)
 
 	if len(a.ElementList) > 0 {
@@ -1455,7 +1452,7 @@ func (a ArrayLiteral) printSource(w io.Writer, v bool) {
 	w.Write(bracketClose)
 }
 
-func (o ObjectLiteral) printSource(w io.Writer, v bool) {
+func (o ObjectLiteral) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	if len(o.PropertyDefinitionList) > 0 {
@@ -1465,7 +1462,7 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 
 		if v && len(o.Tokens) > 0 {
 			lastLine = o.Tokens[0].Line
-			x = &indentPrinter{w}
+			x = w.Indent()
 		}
 
 		for n, pd := range o.PropertyDefinitionList {
@@ -1501,7 +1498,7 @@ func (o ObjectLiteral) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
+func (b BitwiseXORExpression) printSource(w writer, v bool) {
 	if b.BitwiseXORExpression != nil {
 		b.BitwiseXORExpression.printSource(w, v)
 		w.Write(bitwiseXOR)
@@ -1510,7 +1507,7 @@ func (b BitwiseXORExpression) printSource(w io.Writer, v bool) {
 	b.BitwiseANDExpression.printSource(w, v)
 }
 
-func (p PropertyDefinition) printSource(w io.Writer, v bool) {
+func (p PropertyDefinition) printSource(w writer, v bool) {
 	if p.AssignmentExpression != nil {
 		if p.PropertyName != nil {
 			p.PropertyName.printSource(w, v)
@@ -1543,7 +1540,7 @@ func (p PropertyDefinition) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
+func (b BitwiseANDExpression) printSource(w writer, v bool) {
 	if b.BitwiseANDExpression != nil {
 		b.BitwiseANDExpression.printSource(w, v)
 		w.Write(bitwiseAND)
@@ -1552,7 +1549,7 @@ func (b BitwiseANDExpression) printSource(w io.Writer, v bool) {
 	b.EqualityExpression.printSource(w, v)
 }
 
-func (e EqualityExpression) printSource(w io.Writer, v bool) {
+func (e EqualityExpression) printSource(w writer, v bool) {
 	if e.EqualityExpression != nil {
 		var eo []byte
 
@@ -1576,7 +1573,7 @@ func (e EqualityExpression) printSource(w io.Writer, v bool) {
 	e.RelationalExpression.printSource(w, v)
 }
 
-func (r RelationalExpression) printSource(w io.Writer, v bool) {
+func (r RelationalExpression) printSource(w writer, v bool) {
 	if r.PrivateIdentifier != nil {
 		io.WriteString(w, r.PrivateIdentifier.Data)
 		w.Write(relationshipIn)
@@ -1607,7 +1604,7 @@ func (r RelationalExpression) printSource(w io.Writer, v bool) {
 	r.ShiftExpression.printSource(w, v)
 }
 
-func (s ShiftExpression) printSource(w io.Writer, v bool) {
+func (s ShiftExpression) printSource(w writer, v bool) {
 	if s.ShiftExpression != nil {
 		var so []byte
 
@@ -1629,7 +1626,7 @@ func (s ShiftExpression) printSource(w io.Writer, v bool) {
 	s.AdditiveExpression.printSource(w, v)
 }
 
-func (a AdditiveExpression) printSource(w io.Writer, v bool) {
+func (a AdditiveExpression) printSource(w writer, v bool) {
 	if a.AdditiveExpression != nil {
 		var ao []byte
 
@@ -1649,7 +1646,7 @@ func (a AdditiveExpression) printSource(w io.Writer, v bool) {
 	a.MultiplicativeExpression.printSource(w, v)
 }
 
-func (m MultiplicativeExpression) printSource(w io.Writer, v bool) {
+func (m MultiplicativeExpression) printSource(w writer, v bool) {
 	if m.MultiplicativeExpression != nil {
 		var mo []byte
 
@@ -1671,7 +1668,7 @@ func (m MultiplicativeExpression) printSource(w io.Writer, v bool) {
 	m.ExponentiationExpression.printSource(w, v)
 }
 
-func (e ExponentiationExpression) printSource(w io.Writer, v bool) {
+func (e ExponentiationExpression) printSource(w writer, v bool) {
 	if e.ExponentiationExpression != nil {
 		e.ExponentiationExpression.printSource(w, v)
 		w.Write(exponentionation)
@@ -1680,7 +1677,7 @@ func (e ExponentiationExpression) printSource(w io.Writer, v bool) {
 	e.UnaryExpression.printSource(w, v)
 }
 
-func (u UnaryExpression) printSource(w io.Writer, v bool) {
+func (u UnaryExpression) printSource(w writer, v bool) {
 	for _, uo := range u.UnaryOperators {
 		switch uo {
 		case UnaryDelete:
@@ -1705,7 +1702,7 @@ func (u UnaryExpression) printSource(w io.Writer, v bool) {
 	u.UpdateExpression.printSource(w, v)
 }
 
-func (u UpdateExpression) printSource(w io.Writer, v bool) {
+func (u UpdateExpression) printSource(w writer, v bool) {
 	if u.LeftHandSideExpression != nil {
 		var uo []byte
 
@@ -1738,7 +1735,7 @@ func (u UpdateExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (m Module) printSource(w io.Writer, v bool) {
+func (m Module) printSource(w writer, v bool) {
 	if len(m.ModuleListItems) > 0 {
 		m.ModuleListItems[0].printSource(w, v)
 
@@ -1749,7 +1746,7 @@ func (m Module) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (m ModuleItem) printSource(w io.Writer, v bool) {
+func (m ModuleItem) printSource(w writer, v bool) {
 	if m.ImportDeclaration != nil {
 		m.ImportDeclaration.printSource(w, v)
 	} else if m.ExportDeclaration != nil {
@@ -1759,7 +1756,7 @@ func (m ModuleItem) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (i ImportDeclaration) printSource(w io.Writer, v bool) {
+func (i ImportDeclaration) printSource(w writer, v bool) {
 	if i.ImportClause == nil && i.FromClause.ModuleSpecifier == nil {
 		return
 	}
@@ -1781,7 +1778,7 @@ func (i ImportDeclaration) printSource(w io.Writer, v bool) {
 	w.Write(semiColon)
 }
 
-func (e ExportDeclaration) printSource(w io.Writer, v bool) {
+func (e ExportDeclaration) printSource(w writer, v bool) {
 	if e.FromClause != nil {
 		w.Write(exportc)
 
@@ -1821,7 +1818,7 @@ func (e ExportDeclaration) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (wc WithClause) printSource(w io.Writer, v bool) {
+func (wc WithClause) printSource(w writer, v bool) {
 	w.Write(withOpen[:5])
 	w.Write(blockOpen)
 
@@ -1837,7 +1834,7 @@ func (wc WithClause) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (we WithEntry) printSource(w io.Writer, v bool) {
+func (we WithEntry) printSource(w writer, v bool) {
 	if we.AttributeKey == nil || we.Value == nil {
 		return
 	}
@@ -1847,7 +1844,7 @@ func (we WithEntry) printSource(w io.Writer, v bool) {
 	io.WriteString(w, we.Value.Data)
 }
 
-func (i ImportClause) printSource(w io.Writer, v bool) {
+func (i ImportClause) printSource(w writer, v bool) {
 	if i.ImportedDefaultBinding != nil {
 		io.WriteString(w, i.ImportedDefaultBinding.Data)
 
@@ -1864,7 +1861,7 @@ func (i ImportClause) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f FromClause) printSource(w io.Writer, v bool) {
+func (f FromClause) printSource(w writer, v bool) {
 	if f.ModuleSpecifier == nil {
 		return
 	}
@@ -1873,7 +1870,7 @@ func (f FromClause) printSource(w io.Writer, v bool) {
 	io.WriteString(w, f.ModuleSpecifier.Data)
 }
 
-func (e ExportClause) printSource(w io.Writer, v bool) {
+func (e ExportClause) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	if len(e.ExportList) > 0 {
@@ -1888,7 +1885,7 @@ func (e ExportClause) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (n NamedImports) printSource(w io.Writer, v bool) {
+func (n NamedImports) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	if len(n.ImportList) > 0 {
@@ -1903,7 +1900,7 @@ func (n NamedImports) printSource(w io.Writer, v bool) {
 	w.Write(blockClose)
 }
 
-func (e ExportSpecifier) printSource(w io.Writer, v bool) {
+func (e ExportSpecifier) printSource(w writer, v bool) {
 	if e.IdentifierName == nil {
 		return
 	}
@@ -1916,7 +1913,7 @@ func (e ExportSpecifier) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (i ImportSpecifier) printSource(w io.Writer, v bool) {
+func (i ImportSpecifier) printSource(w writer, v bool) {
 	if i.ImportedBinding == nil {
 		return
 	}
@@ -1929,7 +1926,7 @@ func (i ImportSpecifier) printSource(w io.Writer, v bool) {
 	io.WriteString(w, i.ImportedBinding.Data)
 }
 
-func (oe OptionalExpression) printSource(w io.Writer, v bool) {
+func (oe OptionalExpression) printSource(w writer, v bool) {
 	if oe.MemberExpression != nil {
 		oe.MemberExpression.printSource(w, v)
 	} else if oe.CallExpression != nil {
@@ -1941,7 +1938,7 @@ func (oe OptionalExpression) printSource(w io.Writer, v bool) {
 	oe.OptionalChain.printSource(w, v)
 }
 
-func (oe OptionalChain) printSource(w io.Writer, v bool) {
+func (oe OptionalChain) printSource(w writer, v bool) {
 	if oe.OptionalChain != nil {
 		oe.OptionalChain.printSource(w, v)
 	} else {
@@ -1971,7 +1968,7 @@ func (oe OptionalChain) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (ce CoalesceExpression) printSource(w io.Writer, v bool) {
+func (ce CoalesceExpression) printSource(w writer, v bool) {
 	if ce.CoalesceExpressionHead != nil {
 		ce.CoalesceExpressionHead.printSource(w, v)
 		w.Write(coalesceOperator)
