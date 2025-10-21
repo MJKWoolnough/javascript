@@ -2,289 +2,287 @@ package javascript
 
 // File automatically generated with format.sh.
 
-import "io"
+func (f *AdditiveExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-func (f *AdditiveExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
-
-	pp.Print("AdditiveExpression {")
+	pp.WriteString("AdditiveExpression {")
 
 	if f.AdditiveExpression != nil {
-		pp.Print("\nAdditiveExpression: ")
-		f.AdditiveExpression.printType(&pp, v)
+		pp.WriteString("\nAdditiveExpression: ")
+		f.AdditiveExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nAdditiveExpression: nil")
+		pp.WriteString("\nAdditiveExpression: nil")
 	}
 
-	pp.Print("\nAdditiveOperator: ")
-	f.AdditiveOperator.printType(&pp, v)
+	pp.WriteString("\nAdditiveOperator: ")
+	f.AdditiveOperator.printType(pp, v)
 
-	pp.Print("\nMultiplicativeExpression: ")
-	f.MultiplicativeExpression.printType(&pp, v)
+	pp.WriteString("\nMultiplicativeExpression: ")
+	f.MultiplicativeExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Argument) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Argument) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Argument {")
+	pp.WriteString("Argument {")
 
 	if f.Spread || v {
 		pp.Printf("\nSpread: %v", f.Spread)
 	}
 
-	pp.Print("\nAssignmentExpression: ")
-	f.AssignmentExpression.printType(&pp, v)
+	pp.WriteString("\nAssignmentExpression: ")
+	f.AssignmentExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Arguments) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Arguments) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Arguments {")
+	pp.WriteString("Arguments {")
 
 	if f.ArgumentList == nil {
-		pp.Print("\nArgumentList: nil")
+		pp.WriteString("\nArgumentList: nil")
 	} else if len(f.ArgumentList) > 0 {
-		pp.Print("\nArgumentList: [")
+		pp.WriteString("\nArgumentList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ArgumentList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nArgumentList: []")
+		pp.WriteString("\nArgumentList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ArrayAssignmentPattern) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ArrayAssignmentPattern) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ArrayAssignmentPattern {")
+	pp.WriteString("ArrayAssignmentPattern {")
 
 	if f.AssignmentElements == nil {
-		pp.Print("\nAssignmentElements: nil")
+		pp.WriteString("\nAssignmentElements: nil")
 	} else if len(f.AssignmentElements) > 0 {
-		pp.Print("\nAssignmentElements: [")
+		pp.WriteString("\nAssignmentElements: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.AssignmentElements {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nAssignmentElements: []")
+		pp.WriteString("\nAssignmentElements: []")
 	}
 
 	if f.AssignmentRestElement != nil {
-		pp.Print("\nAssignmentRestElement: ")
-		f.AssignmentRestElement.printType(&pp, v)
+		pp.WriteString("\nAssignmentRestElement: ")
+		f.AssignmentRestElement.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentRestElement: nil")
+		pp.WriteString("\nAssignmentRestElement: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ArrayBindingPattern) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ArrayBindingPattern) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ArrayBindingPattern {")
+	pp.WriteString("ArrayBindingPattern {")
 
 	if f.BindingElementList == nil {
-		pp.Print("\nBindingElementList: nil")
+		pp.WriteString("\nBindingElementList: nil")
 	} else if len(f.BindingElementList) > 0 {
-		pp.Print("\nBindingElementList: [")
+		pp.WriteString("\nBindingElementList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.BindingElementList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nBindingElementList: []")
+		pp.WriteString("\nBindingElementList: []")
 	}
 
 	if f.BindingRestElement != nil {
-		pp.Print("\nBindingRestElement: ")
-		f.BindingRestElement.printType(&pp, v)
+		pp.WriteString("\nBindingRestElement: ")
+		f.BindingRestElement.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingRestElement: nil")
+		pp.WriteString("\nBindingRestElement: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ArrayElement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ArrayElement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ArrayElement {")
+	pp.WriteString("ArrayElement {")
 
 	if f.Spread || v {
 		pp.Printf("\nSpread: %v", f.Spread)
 	}
 
-	pp.Print("\nAssignmentExpression: ")
-	f.AssignmentExpression.printType(&pp, v)
+	pp.WriteString("\nAssignmentExpression: ")
+	f.AssignmentExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ArrayLiteral) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ArrayLiteral) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ArrayLiteral {")
+	pp.WriteString("ArrayLiteral {")
 
 	if f.ElementList == nil {
-		pp.Print("\nElementList: nil")
+		pp.WriteString("\nElementList: nil")
 	} else if len(f.ElementList) > 0 {
-		pp.Print("\nElementList: [")
+		pp.WriteString("\nElementList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ElementList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nElementList: []")
+		pp.WriteString("\nElementList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ArrowFunction) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ArrowFunction) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ArrowFunction {")
+	pp.WriteString("ArrowFunction {")
 
 	if f.Async || v {
 		pp.Printf("\nAsync: %v", f.Async)
 	}
 
 	if f.BindingIdentifier != nil {
-		pp.Print("\nBindingIdentifier: ")
-		f.BindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nBindingIdentifier: ")
+		f.BindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingIdentifier: nil")
+		pp.WriteString("\nBindingIdentifier: nil")
 	}
 
 	if f.FormalParameters != nil {
-		pp.Print("\nFormalParameters: ")
-		f.FormalParameters.printType(&pp, v)
+		pp.WriteString("\nFormalParameters: ")
+		f.FormalParameters.printType(pp, v)
 	} else if v {
-		pp.Print("\nFormalParameters: nil")
+		pp.WriteString("\nFormalParameters: nil")
 	}
 
 	if f.AssignmentExpression != nil {
-		pp.Print("\nAssignmentExpression: ")
-		f.AssignmentExpression.printType(&pp, v)
+		pp.WriteString("\nAssignmentExpression: ")
+		f.AssignmentExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentExpression: nil")
+		pp.WriteString("\nAssignmentExpression: nil")
 	}
 
 	if f.FunctionBody != nil {
-		pp.Print("\nFunctionBody: ")
-		f.FunctionBody.printType(&pp, v)
+		pp.WriteString("\nFunctionBody: ")
+		f.FunctionBody.printType(pp, v)
 	} else if v {
-		pp.Print("\nFunctionBody: nil")
+		pp.WriteString("\nFunctionBody: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *AssignmentElement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *AssignmentElement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("AssignmentElement {")
+	pp.WriteString("AssignmentElement {")
 
-	pp.Print("\nDestructuringAssignmentTarget: ")
-	f.DestructuringAssignmentTarget.printType(&pp, v)
+	pp.WriteString("\nDestructuringAssignmentTarget: ")
+	f.DestructuringAssignmentTarget.printType(pp, v)
 
 	if f.Initializer != nil {
-		pp.Print("\nInitializer: ")
-		f.Initializer.printType(&pp, v)
+		pp.WriteString("\nInitializer: ")
+		f.Initializer.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitializer: nil")
+		pp.WriteString("\nInitializer: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *AssignmentExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *AssignmentExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("AssignmentExpression {")
+	pp.WriteString("AssignmentExpression {")
 
 	if f.ConditionalExpression != nil {
-		pp.Print("\nConditionalExpression: ")
-		f.ConditionalExpression.printType(&pp, v)
+		pp.WriteString("\nConditionalExpression: ")
+		f.ConditionalExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nConditionalExpression: nil")
+		pp.WriteString("\nConditionalExpression: nil")
 	}
 
 	if f.ArrowFunction != nil {
-		pp.Print("\nArrowFunction: ")
-		f.ArrowFunction.printType(&pp, v)
+		pp.WriteString("\nArrowFunction: ")
+		f.ArrowFunction.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrowFunction: nil")
+		pp.WriteString("\nArrowFunction: nil")
 	}
 
 	if f.LeftHandSideExpression != nil {
-		pp.Print("\nLeftHandSideExpression: ")
-		f.LeftHandSideExpression.printType(&pp, v)
+		pp.WriteString("\nLeftHandSideExpression: ")
+		f.LeftHandSideExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLeftHandSideExpression: nil")
+		pp.WriteString("\nLeftHandSideExpression: nil")
 	}
 
 	if f.AssignmentPattern != nil {
-		pp.Print("\nAssignmentPattern: ")
-		f.AssignmentPattern.printType(&pp, v)
+		pp.WriteString("\nAssignmentPattern: ")
+		f.AssignmentPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentPattern: nil")
+		pp.WriteString("\nAssignmentPattern: nil")
 	}
 
 	if f.Yield || v {
@@ -295,232 +293,232 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 		pp.Printf("\nDelegate: %v", f.Delegate)
 	}
 
-	pp.Print("\nAssignmentOperator: ")
-	f.AssignmentOperator.printType(&pp, v)
+	pp.WriteString("\nAssignmentOperator: ")
+	f.AssignmentOperator.printType(pp, v)
 
 	if f.AssignmentExpression != nil {
-		pp.Print("\nAssignmentExpression: ")
-		f.AssignmentExpression.printType(&pp, v)
+		pp.WriteString("\nAssignmentExpression: ")
+		f.AssignmentExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentExpression: nil")
+		pp.WriteString("\nAssignmentExpression: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *AssignmentPattern) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *AssignmentPattern) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("AssignmentPattern {")
+	pp.WriteString("AssignmentPattern {")
 
 	if f.ObjectAssignmentPattern != nil {
-		pp.Print("\nObjectAssignmentPattern: ")
-		f.ObjectAssignmentPattern.printType(&pp, v)
+		pp.WriteString("\nObjectAssignmentPattern: ")
+		f.ObjectAssignmentPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nObjectAssignmentPattern: nil")
+		pp.WriteString("\nObjectAssignmentPattern: nil")
 	}
 
 	if f.ArrayAssignmentPattern != nil {
-		pp.Print("\nArrayAssignmentPattern: ")
-		f.ArrayAssignmentPattern.printType(&pp, v)
+		pp.WriteString("\nArrayAssignmentPattern: ")
+		f.ArrayAssignmentPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrayAssignmentPattern: nil")
+		pp.WriteString("\nArrayAssignmentPattern: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *AssignmentProperty) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *AssignmentProperty) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("AssignmentProperty {")
+	pp.WriteString("AssignmentProperty {")
 
-	pp.Print("\nPropertyName: ")
-	f.PropertyName.printType(&pp, v)
+	pp.WriteString("\nPropertyName: ")
+	f.PropertyName.printType(pp, v)
 
 	if f.DestructuringAssignmentTarget != nil {
-		pp.Print("\nDestructuringAssignmentTarget: ")
-		f.DestructuringAssignmentTarget.printType(&pp, v)
+		pp.WriteString("\nDestructuringAssignmentTarget: ")
+		f.DestructuringAssignmentTarget.printType(pp, v)
 	} else if v {
-		pp.Print("\nDestructuringAssignmentTarget: nil")
+		pp.WriteString("\nDestructuringAssignmentTarget: nil")
 	}
 
 	if f.Initializer != nil {
-		pp.Print("\nInitializer: ")
-		f.Initializer.printType(&pp, v)
+		pp.WriteString("\nInitializer: ")
+		f.Initializer.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitializer: nil")
+		pp.WriteString("\nInitializer: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *BindingElement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *BindingElement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("BindingElement {")
+	pp.WriteString("BindingElement {")
 
 	if f.SingleNameBinding != nil {
-		pp.Print("\nSingleNameBinding: ")
-		f.SingleNameBinding.printType(&pp, v)
+		pp.WriteString("\nSingleNameBinding: ")
+		f.SingleNameBinding.printType(pp, v)
 	} else if v {
-		pp.Print("\nSingleNameBinding: nil")
+		pp.WriteString("\nSingleNameBinding: nil")
 	}
 
 	if f.ArrayBindingPattern != nil {
-		pp.Print("\nArrayBindingPattern: ")
-		f.ArrayBindingPattern.printType(&pp, v)
+		pp.WriteString("\nArrayBindingPattern: ")
+		f.ArrayBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrayBindingPattern: nil")
+		pp.WriteString("\nArrayBindingPattern: nil")
 	}
 
 	if f.ObjectBindingPattern != nil {
-		pp.Print("\nObjectBindingPattern: ")
-		f.ObjectBindingPattern.printType(&pp, v)
+		pp.WriteString("\nObjectBindingPattern: ")
+		f.ObjectBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nObjectBindingPattern: nil")
+		pp.WriteString("\nObjectBindingPattern: nil")
 	}
 
 	if f.Initializer != nil {
-		pp.Print("\nInitializer: ")
-		f.Initializer.printType(&pp, v)
+		pp.WriteString("\nInitializer: ")
+		f.Initializer.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitializer: nil")
+		pp.WriteString("\nInitializer: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *BindingProperty) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *BindingProperty) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("BindingProperty {")
+	pp.WriteString("BindingProperty {")
 
-	pp.Print("\nPropertyName: ")
-	f.PropertyName.printType(&pp, v)
+	pp.WriteString("\nPropertyName: ")
+	f.PropertyName.printType(pp, v)
 
-	pp.Print("\nBindingElement: ")
-	f.BindingElement.printType(&pp, v)
+	pp.WriteString("\nBindingElement: ")
+	f.BindingElement.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *BitwiseANDExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *BitwiseANDExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("BitwiseANDExpression {")
+	pp.WriteString("BitwiseANDExpression {")
 
 	if f.BitwiseANDExpression != nil {
-		pp.Print("\nBitwiseANDExpression: ")
-		f.BitwiseANDExpression.printType(&pp, v)
+		pp.WriteString("\nBitwiseANDExpression: ")
+		f.BitwiseANDExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nBitwiseANDExpression: nil")
+		pp.WriteString("\nBitwiseANDExpression: nil")
 	}
 
-	pp.Print("\nEqualityExpression: ")
-	f.EqualityExpression.printType(&pp, v)
+	pp.WriteString("\nEqualityExpression: ")
+	f.EqualityExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *BitwiseORExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *BitwiseORExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("BitwiseORExpression {")
+	pp.WriteString("BitwiseORExpression {")
 
 	if f.BitwiseORExpression != nil {
-		pp.Print("\nBitwiseORExpression: ")
-		f.BitwiseORExpression.printType(&pp, v)
+		pp.WriteString("\nBitwiseORExpression: ")
+		f.BitwiseORExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nBitwiseORExpression: nil")
+		pp.WriteString("\nBitwiseORExpression: nil")
 	}
 
-	pp.Print("\nBitwiseXORExpression: ")
-	f.BitwiseXORExpression.printType(&pp, v)
+	pp.WriteString("\nBitwiseXORExpression: ")
+	f.BitwiseXORExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *BitwiseXORExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *BitwiseXORExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("BitwiseXORExpression {")
+	pp.WriteString("BitwiseXORExpression {")
 
 	if f.BitwiseXORExpression != nil {
-		pp.Print("\nBitwiseXORExpression: ")
-		f.BitwiseXORExpression.printType(&pp, v)
+		pp.WriteString("\nBitwiseXORExpression: ")
+		f.BitwiseXORExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nBitwiseXORExpression: nil")
+		pp.WriteString("\nBitwiseXORExpression: nil")
 	}
 
-	pp.Print("\nBitwiseANDExpression: ")
-	f.BitwiseANDExpression.printType(&pp, v)
+	pp.WriteString("\nBitwiseANDExpression: ")
+	f.BitwiseANDExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Block) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Block) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Block {")
+	pp.WriteString("Block {")
 
 	if f.StatementList == nil {
-		pp.Print("\nStatementList: nil")
+		pp.WriteString("\nStatementList: nil")
 	} else if len(f.StatementList) > 0 {
-		pp.Print("\nStatementList: [")
+		pp.WriteString("\nStatementList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nStatementList: []")
+		pp.WriteString("\nStatementList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *CallExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *CallExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("CallExpression {")
+	pp.WriteString("CallExpression {")
 
 	if f.MemberExpression != nil {
-		pp.Print("\nMemberExpression: ")
-		f.MemberExpression.printType(&pp, v)
+		pp.WriteString("\nMemberExpression: ")
+		f.MemberExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nMemberExpression: nil")
+		pp.WriteString("\nMemberExpression: nil")
 	}
 
 	if f.SuperCall || v {
@@ -528,1048 +526,1048 @@ func (f *CallExpression) printType(w io.Writer, v bool) {
 	}
 
 	if f.ImportCall != nil {
-		pp.Print("\nImportCall: ")
-		f.ImportCall.printType(&pp, v)
+		pp.WriteString("\nImportCall: ")
+		f.ImportCall.printType(pp, v)
 	} else if v {
-		pp.Print("\nImportCall: nil")
+		pp.WriteString("\nImportCall: nil")
 	}
 
 	if f.CallExpression != nil {
-		pp.Print("\nCallExpression: ")
-		f.CallExpression.printType(&pp, v)
+		pp.WriteString("\nCallExpression: ")
+		f.CallExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nCallExpression: nil")
+		pp.WriteString("\nCallExpression: nil")
 	}
 
 	if f.Arguments != nil {
-		pp.Print("\nArguments: ")
-		f.Arguments.printType(&pp, v)
+		pp.WriteString("\nArguments: ")
+		f.Arguments.printType(pp, v)
 	} else if v {
-		pp.Print("\nArguments: nil")
+		pp.WriteString("\nArguments: nil")
 	}
 
 	if f.Expression != nil {
-		pp.Print("\nExpression: ")
-		f.Expression.printType(&pp, v)
+		pp.WriteString("\nExpression: ")
+		f.Expression.printType(pp, v)
 	} else if v {
-		pp.Print("\nExpression: nil")
+		pp.WriteString("\nExpression: nil")
 	}
 
 	if f.IdentifierName != nil {
-		pp.Print("\nIdentifierName: ")
-		f.IdentifierName.printType(&pp, v)
+		pp.WriteString("\nIdentifierName: ")
+		f.IdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierName: nil")
+		pp.WriteString("\nIdentifierName: nil")
 	}
 
 	if f.TemplateLiteral != nil {
-		pp.Print("\nTemplateLiteral: ")
-		f.TemplateLiteral.printType(&pp, v)
+		pp.WriteString("\nTemplateLiteral: ")
+		f.TemplateLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateLiteral: nil")
+		pp.WriteString("\nTemplateLiteral: nil")
 	}
 
 	if f.PrivateIdentifier != nil {
-		pp.Print("\nPrivateIdentifier: ")
-		f.PrivateIdentifier.printType(&pp, v)
+		pp.WriteString("\nPrivateIdentifier: ")
+		f.PrivateIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrivateIdentifier: nil")
+		pp.WriteString("\nPrivateIdentifier: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *CaseClause) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *CaseClause) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("CaseClause {")
+	pp.WriteString("CaseClause {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
 	if f.StatementList == nil {
-		pp.Print("\nStatementList: nil")
+		pp.WriteString("\nStatementList: nil")
 	} else if len(f.StatementList) > 0 {
-		pp.Print("\nStatementList: [")
+		pp.WriteString("\nStatementList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nStatementList: []")
+		pp.WriteString("\nStatementList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ClassDeclaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ClassDeclaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ClassDeclaration {")
+	pp.WriteString("ClassDeclaration {")
 
 	if f.BindingIdentifier != nil {
-		pp.Print("\nBindingIdentifier: ")
-		f.BindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nBindingIdentifier: ")
+		f.BindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingIdentifier: nil")
+		pp.WriteString("\nBindingIdentifier: nil")
 	}
 
 	if f.ClassHeritage != nil {
-		pp.Print("\nClassHeritage: ")
-		f.ClassHeritage.printType(&pp, v)
+		pp.WriteString("\nClassHeritage: ")
+		f.ClassHeritage.printType(pp, v)
 	} else if v {
-		pp.Print("\nClassHeritage: nil")
+		pp.WriteString("\nClassHeritage: nil")
 	}
 
 	if f.ClassBody == nil {
-		pp.Print("\nClassBody: nil")
+		pp.WriteString("\nClassBody: nil")
 	} else if len(f.ClassBody) > 0 {
-		pp.Print("\nClassBody: [")
+		pp.WriteString("\nClassBody: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ClassBody {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nClassBody: []")
+		pp.WriteString("\nClassBody: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ClassElement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ClassElement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ClassElement {")
+	pp.WriteString("ClassElement {")
 
 	if f.Static || v {
 		pp.Printf("\nStatic: %v", f.Static)
 	}
 
 	if f.MethodDefinition != nil {
-		pp.Print("\nMethodDefinition: ")
-		f.MethodDefinition.printType(&pp, v)
+		pp.WriteString("\nMethodDefinition: ")
+		f.MethodDefinition.printType(pp, v)
 	} else if v {
-		pp.Print("\nMethodDefinition: nil")
+		pp.WriteString("\nMethodDefinition: nil")
 	}
 
 	if f.FieldDefinition != nil {
-		pp.Print("\nFieldDefinition: ")
-		f.FieldDefinition.printType(&pp, v)
+		pp.WriteString("\nFieldDefinition: ")
+		f.FieldDefinition.printType(pp, v)
 	} else if v {
-		pp.Print("\nFieldDefinition: nil")
+		pp.WriteString("\nFieldDefinition: nil")
 	}
 
 	if f.ClassStaticBlock != nil {
-		pp.Print("\nClassStaticBlock: ")
-		f.ClassStaticBlock.printType(&pp, v)
+		pp.WriteString("\nClassStaticBlock: ")
+		f.ClassStaticBlock.printType(pp, v)
 	} else if v {
-		pp.Print("\nClassStaticBlock: nil")
+		pp.WriteString("\nClassStaticBlock: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ClassElementName) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ClassElementName) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ClassElementName {")
+	pp.WriteString("ClassElementName {")
 
 	if f.PropertyName != nil {
-		pp.Print("\nPropertyName: ")
-		f.PropertyName.printType(&pp, v)
+		pp.WriteString("\nPropertyName: ")
+		f.PropertyName.printType(pp, v)
 	} else if v {
-		pp.Print("\nPropertyName: nil")
+		pp.WriteString("\nPropertyName: nil")
 	}
 
 	if f.PrivateIdentifier != nil {
-		pp.Print("\nPrivateIdentifier: ")
-		f.PrivateIdentifier.printType(&pp, v)
+		pp.WriteString("\nPrivateIdentifier: ")
+		f.PrivateIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrivateIdentifier: nil")
+		pp.WriteString("\nPrivateIdentifier: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *CoalesceExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *CoalesceExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("CoalesceExpression {")
+	pp.WriteString("CoalesceExpression {")
 
 	if f.CoalesceExpressionHead != nil {
-		pp.Print("\nCoalesceExpressionHead: ")
-		f.CoalesceExpressionHead.printType(&pp, v)
+		pp.WriteString("\nCoalesceExpressionHead: ")
+		f.CoalesceExpressionHead.printType(pp, v)
 	} else if v {
-		pp.Print("\nCoalesceExpressionHead: nil")
+		pp.WriteString("\nCoalesceExpressionHead: nil")
 	}
 
-	pp.Print("\nBitwiseORExpression: ")
-	f.BitwiseORExpression.printType(&pp, v)
+	pp.WriteString("\nBitwiseORExpression: ")
+	f.BitwiseORExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ConditionalExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ConditionalExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ConditionalExpression {")
+	pp.WriteString("ConditionalExpression {")
 
 	if f.LogicalORExpression != nil {
-		pp.Print("\nLogicalORExpression: ")
-		f.LogicalORExpression.printType(&pp, v)
+		pp.WriteString("\nLogicalORExpression: ")
+		f.LogicalORExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLogicalORExpression: nil")
+		pp.WriteString("\nLogicalORExpression: nil")
 	}
 
 	if f.CoalesceExpression != nil {
-		pp.Print("\nCoalesceExpression: ")
-		f.CoalesceExpression.printType(&pp, v)
+		pp.WriteString("\nCoalesceExpression: ")
+		f.CoalesceExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nCoalesceExpression: nil")
+		pp.WriteString("\nCoalesceExpression: nil")
 	}
 
 	if f.True != nil {
-		pp.Print("\nTrue: ")
-		f.True.printType(&pp, v)
+		pp.WriteString("\nTrue: ")
+		f.True.printType(pp, v)
 	} else if v {
-		pp.Print("\nTrue: nil")
+		pp.WriteString("\nTrue: nil")
 	}
 
 	if f.False != nil {
-		pp.Print("\nFalse: ")
-		f.False.printType(&pp, v)
+		pp.WriteString("\nFalse: ")
+		f.False.printType(pp, v)
 	} else if v {
-		pp.Print("\nFalse: nil")
+		pp.WriteString("\nFalse: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Declaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Declaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Declaration {")
+	pp.WriteString("Declaration {")
 
 	if f.ClassDeclaration != nil {
-		pp.Print("\nClassDeclaration: ")
-		f.ClassDeclaration.printType(&pp, v)
+		pp.WriteString("\nClassDeclaration: ")
+		f.ClassDeclaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nClassDeclaration: nil")
+		pp.WriteString("\nClassDeclaration: nil")
 	}
 
 	if f.FunctionDeclaration != nil {
-		pp.Print("\nFunctionDeclaration: ")
-		f.FunctionDeclaration.printType(&pp, v)
+		pp.WriteString("\nFunctionDeclaration: ")
+		f.FunctionDeclaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nFunctionDeclaration: nil")
+		pp.WriteString("\nFunctionDeclaration: nil")
 	}
 
 	if f.LexicalDeclaration != nil {
-		pp.Print("\nLexicalDeclaration: ")
-		f.LexicalDeclaration.printType(&pp, v)
+		pp.WriteString("\nLexicalDeclaration: ")
+		f.LexicalDeclaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nLexicalDeclaration: nil")
+		pp.WriteString("\nLexicalDeclaration: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *DestructuringAssignmentTarget) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *DestructuringAssignmentTarget) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("DestructuringAssignmentTarget {")
+	pp.WriteString("DestructuringAssignmentTarget {")
 
 	if f.LeftHandSideExpression != nil {
-		pp.Print("\nLeftHandSideExpression: ")
-		f.LeftHandSideExpression.printType(&pp, v)
+		pp.WriteString("\nLeftHandSideExpression: ")
+		f.LeftHandSideExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLeftHandSideExpression: nil")
+		pp.WriteString("\nLeftHandSideExpression: nil")
 	}
 
 	if f.AssignmentPattern != nil {
-		pp.Print("\nAssignmentPattern: ")
-		f.AssignmentPattern.printType(&pp, v)
+		pp.WriteString("\nAssignmentPattern: ")
+		f.AssignmentPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentPattern: nil")
+		pp.WriteString("\nAssignmentPattern: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *EqualityExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *EqualityExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("EqualityExpression {")
+	pp.WriteString("EqualityExpression {")
 
 	if f.EqualityExpression != nil {
-		pp.Print("\nEqualityExpression: ")
-		f.EqualityExpression.printType(&pp, v)
+		pp.WriteString("\nEqualityExpression: ")
+		f.EqualityExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nEqualityExpression: nil")
+		pp.WriteString("\nEqualityExpression: nil")
 	}
 
-	pp.Print("\nEqualityOperator: ")
-	f.EqualityOperator.printType(&pp, v)
+	pp.WriteString("\nEqualityOperator: ")
+	f.EqualityOperator.printType(pp, v)
 
-	pp.Print("\nRelationalExpression: ")
-	f.RelationalExpression.printType(&pp, v)
+	pp.WriteString("\nRelationalExpression: ")
+	f.RelationalExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ExponentiationExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ExponentiationExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ExponentiationExpression {")
+	pp.WriteString("ExponentiationExpression {")
 
 	if f.ExponentiationExpression != nil {
-		pp.Print("\nExponentiationExpression: ")
-		f.ExponentiationExpression.printType(&pp, v)
+		pp.WriteString("\nExponentiationExpression: ")
+		f.ExponentiationExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nExponentiationExpression: nil")
+		pp.WriteString("\nExponentiationExpression: nil")
 	}
 
-	pp.Print("\nUnaryExpression: ")
-	f.UnaryExpression.printType(&pp, v)
+	pp.WriteString("\nUnaryExpression: ")
+	f.UnaryExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ExportClause) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ExportClause) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ExportClause {")
+	pp.WriteString("ExportClause {")
 
 	if f.ExportList == nil {
-		pp.Print("\nExportList: nil")
+		pp.WriteString("\nExportList: nil")
 	} else if len(f.ExportList) > 0 {
-		pp.Print("\nExportList: [")
+		pp.WriteString("\nExportList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ExportList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nExportList: []")
+		pp.WriteString("\nExportList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ExportDeclaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ExportDeclaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ExportDeclaration {")
+	pp.WriteString("ExportDeclaration {")
 
 	if f.ExportClause != nil {
-		pp.Print("\nExportClause: ")
-		f.ExportClause.printType(&pp, v)
+		pp.WriteString("\nExportClause: ")
+		f.ExportClause.printType(pp, v)
 	} else if v {
-		pp.Print("\nExportClause: nil")
+		pp.WriteString("\nExportClause: nil")
 	}
 
 	if f.ExportFromClause != nil {
-		pp.Print("\nExportFromClause: ")
-		f.ExportFromClause.printType(&pp, v)
+		pp.WriteString("\nExportFromClause: ")
+		f.ExportFromClause.printType(pp, v)
 	} else if v {
-		pp.Print("\nExportFromClause: nil")
+		pp.WriteString("\nExportFromClause: nil")
 	}
 
 	if f.FromClause != nil {
-		pp.Print("\nFromClause: ")
-		f.FromClause.printType(&pp, v)
+		pp.WriteString("\nFromClause: ")
+		f.FromClause.printType(pp, v)
 	} else if v {
-		pp.Print("\nFromClause: nil")
+		pp.WriteString("\nFromClause: nil")
 	}
 
 	if f.VariableStatement != nil {
-		pp.Print("\nVariableStatement: ")
-		f.VariableStatement.printType(&pp, v)
+		pp.WriteString("\nVariableStatement: ")
+		f.VariableStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nVariableStatement: nil")
+		pp.WriteString("\nVariableStatement: nil")
 	}
 
 	if f.Declaration != nil {
-		pp.Print("\nDeclaration: ")
-		f.Declaration.printType(&pp, v)
+		pp.WriteString("\nDeclaration: ")
+		f.Declaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nDeclaration: nil")
+		pp.WriteString("\nDeclaration: nil")
 	}
 
 	if f.DefaultFunction != nil {
-		pp.Print("\nDefaultFunction: ")
-		f.DefaultFunction.printType(&pp, v)
+		pp.WriteString("\nDefaultFunction: ")
+		f.DefaultFunction.printType(pp, v)
 	} else if v {
-		pp.Print("\nDefaultFunction: nil")
+		pp.WriteString("\nDefaultFunction: nil")
 	}
 
 	if f.DefaultClass != nil {
-		pp.Print("\nDefaultClass: ")
-		f.DefaultClass.printType(&pp, v)
+		pp.WriteString("\nDefaultClass: ")
+		f.DefaultClass.printType(pp, v)
 	} else if v {
-		pp.Print("\nDefaultClass: nil")
+		pp.WriteString("\nDefaultClass: nil")
 	}
 
 	if f.DefaultAssignmentExpression != nil {
-		pp.Print("\nDefaultAssignmentExpression: ")
-		f.DefaultAssignmentExpression.printType(&pp, v)
+		pp.WriteString("\nDefaultAssignmentExpression: ")
+		f.DefaultAssignmentExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nDefaultAssignmentExpression: nil")
+		pp.WriteString("\nDefaultAssignmentExpression: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ExportSpecifier) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ExportSpecifier) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ExportSpecifier {")
+	pp.WriteString("ExportSpecifier {")
 
 	if f.IdentifierName != nil {
-		pp.Print("\nIdentifierName: ")
-		f.IdentifierName.printType(&pp, v)
+		pp.WriteString("\nIdentifierName: ")
+		f.IdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierName: nil")
+		pp.WriteString("\nIdentifierName: nil")
 	}
 
 	if f.EIdentifierName != nil {
-		pp.Print("\nEIdentifierName: ")
-		f.EIdentifierName.printType(&pp, v)
+		pp.WriteString("\nEIdentifierName: ")
+		f.EIdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nEIdentifierName: nil")
+		pp.WriteString("\nEIdentifierName: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Expression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Expression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Expression {")
+	pp.WriteString("Expression {")
 
 	if f.Expressions == nil {
-		pp.Print("\nExpressions: nil")
+		pp.WriteString("\nExpressions: nil")
 	} else if len(f.Expressions) > 0 {
-		pp.Print("\nExpressions: [")
+		pp.WriteString("\nExpressions: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nExpressions: []")
+		pp.WriteString("\nExpressions: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *FieldDefinition) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *FieldDefinition) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("FieldDefinition {")
+	pp.WriteString("FieldDefinition {")
 
-	pp.Print("\nClassElementName: ")
-	f.ClassElementName.printType(&pp, v)
+	pp.WriteString("\nClassElementName: ")
+	f.ClassElementName.printType(pp, v)
 
 	if f.Initializer != nil {
-		pp.Print("\nInitializer: ")
-		f.Initializer.printType(&pp, v)
+		pp.WriteString("\nInitializer: ")
+		f.Initializer.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitializer: nil")
+		pp.WriteString("\nInitializer: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *FormalParameters) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *FormalParameters) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("FormalParameters {")
+	pp.WriteString("FormalParameters {")
 
 	if f.FormalParameterList == nil {
-		pp.Print("\nFormalParameterList: nil")
+		pp.WriteString("\nFormalParameterList: nil")
 	} else if len(f.FormalParameterList) > 0 {
-		pp.Print("\nFormalParameterList: [")
+		pp.WriteString("\nFormalParameterList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.FormalParameterList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nFormalParameterList: []")
+		pp.WriteString("\nFormalParameterList: []")
 	}
 
 	if f.BindingIdentifier != nil {
-		pp.Print("\nBindingIdentifier: ")
-		f.BindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nBindingIdentifier: ")
+		f.BindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingIdentifier: nil")
+		pp.WriteString("\nBindingIdentifier: nil")
 	}
 
 	if f.ArrayBindingPattern != nil {
-		pp.Print("\nArrayBindingPattern: ")
-		f.ArrayBindingPattern.printType(&pp, v)
+		pp.WriteString("\nArrayBindingPattern: ")
+		f.ArrayBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrayBindingPattern: nil")
+		pp.WriteString("\nArrayBindingPattern: nil")
 	}
 
 	if f.ObjectBindingPattern != nil {
-		pp.Print("\nObjectBindingPattern: ")
-		f.ObjectBindingPattern.printType(&pp, v)
+		pp.WriteString("\nObjectBindingPattern: ")
+		f.ObjectBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nObjectBindingPattern: nil")
+		pp.WriteString("\nObjectBindingPattern: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *FromClause) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *FromClause) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("FromClause {")
+	pp.WriteString("FromClause {")
 
 	if f.ModuleSpecifier != nil {
-		pp.Print("\nModuleSpecifier: ")
-		f.ModuleSpecifier.printType(&pp, v)
+		pp.WriteString("\nModuleSpecifier: ")
+		f.ModuleSpecifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nModuleSpecifier: nil")
+		pp.WriteString("\nModuleSpecifier: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *FunctionDeclaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *FunctionDeclaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("FunctionDeclaration {")
+	pp.WriteString("FunctionDeclaration {")
 
-	pp.Print("\nType: ")
-	f.Type.printType(&pp, v)
+	pp.WriteString("\nType: ")
+	f.Type.printType(pp, v)
 
 	if f.BindingIdentifier != nil {
-		pp.Print("\nBindingIdentifier: ")
-		f.BindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nBindingIdentifier: ")
+		f.BindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingIdentifier: nil")
+		pp.WriteString("\nBindingIdentifier: nil")
 	}
 
-	pp.Print("\nFormalParameters: ")
-	f.FormalParameters.printType(&pp, v)
+	pp.WriteString("\nFormalParameters: ")
+	f.FormalParameters.printType(pp, v)
 
-	pp.Print("\nFunctionBody: ")
-	f.FunctionBody.printType(&pp, v)
+	pp.WriteString("\nFunctionBody: ")
+	f.FunctionBody.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *IfStatement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *IfStatement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("IfStatement {")
+	pp.WriteString("IfStatement {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
-	pp.Print("\nStatement: ")
-	f.Statement.printType(&pp, v)
+	pp.WriteString("\nStatement: ")
+	f.Statement.printType(pp, v)
 
 	if f.ElseStatement != nil {
-		pp.Print("\nElseStatement: ")
-		f.ElseStatement.printType(&pp, v)
+		pp.WriteString("\nElseStatement: ")
+		f.ElseStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nElseStatement: nil")
+		pp.WriteString("\nElseStatement: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ImportClause) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ImportClause) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ImportClause {")
+	pp.WriteString("ImportClause {")
 
 	if f.ImportedDefaultBinding != nil {
-		pp.Print("\nImportedDefaultBinding: ")
-		f.ImportedDefaultBinding.printType(&pp, v)
+		pp.WriteString("\nImportedDefaultBinding: ")
+		f.ImportedDefaultBinding.printType(pp, v)
 	} else if v {
-		pp.Print("\nImportedDefaultBinding: nil")
+		pp.WriteString("\nImportedDefaultBinding: nil")
 	}
 
 	if f.NameSpaceImport != nil {
-		pp.Print("\nNameSpaceImport: ")
-		f.NameSpaceImport.printType(&pp, v)
+		pp.WriteString("\nNameSpaceImport: ")
+		f.NameSpaceImport.printType(pp, v)
 	} else if v {
-		pp.Print("\nNameSpaceImport: nil")
+		pp.WriteString("\nNameSpaceImport: nil")
 	}
 
 	if f.NamedImports != nil {
-		pp.Print("\nNamedImports: ")
-		f.NamedImports.printType(&pp, v)
+		pp.WriteString("\nNamedImports: ")
+		f.NamedImports.printType(pp, v)
 	} else if v {
-		pp.Print("\nNamedImports: nil")
+		pp.WriteString("\nNamedImports: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ImportDeclaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ImportDeclaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ImportDeclaration {")
+	pp.WriteString("ImportDeclaration {")
 
 	if f.ImportClause != nil {
-		pp.Print("\nImportClause: ")
-		f.ImportClause.printType(&pp, v)
+		pp.WriteString("\nImportClause: ")
+		f.ImportClause.printType(pp, v)
 	} else if v {
-		pp.Print("\nImportClause: nil")
+		pp.WriteString("\nImportClause: nil")
 	}
 
-	pp.Print("\nFromClause: ")
-	f.FromClause.printType(&pp, v)
+	pp.WriteString("\nFromClause: ")
+	f.FromClause.printType(pp, v)
 
 	if f.WithClause != nil {
-		pp.Print("\nWithClause: ")
-		f.WithClause.printType(&pp, v)
+		pp.WriteString("\nWithClause: ")
+		f.WithClause.printType(pp, v)
 	} else if v {
-		pp.Print("\nWithClause: nil")
+		pp.WriteString("\nWithClause: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ImportSpecifier) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ImportSpecifier) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ImportSpecifier {")
+	pp.WriteString("ImportSpecifier {")
 
 	if f.IdentifierName != nil {
-		pp.Print("\nIdentifierName: ")
-		f.IdentifierName.printType(&pp, v)
+		pp.WriteString("\nIdentifierName: ")
+		f.IdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierName: nil")
+		pp.WriteString("\nIdentifierName: nil")
 	}
 
 	if f.ImportedBinding != nil {
-		pp.Print("\nImportedBinding: ")
-		f.ImportedBinding.printType(&pp, v)
+		pp.WriteString("\nImportedBinding: ")
+		f.ImportedBinding.printType(pp, v)
 	} else if v {
-		pp.Print("\nImportedBinding: nil")
+		pp.WriteString("\nImportedBinding: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *IterationStatementDo) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *IterationStatementDo) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("IterationStatementDo {")
+	pp.WriteString("IterationStatementDo {")
 
-	pp.Print("\nStatement: ")
-	f.Statement.printType(&pp, v)
+	pp.WriteString("\nStatement: ")
+	f.Statement.printType(pp, v)
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *IterationStatementFor) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *IterationStatementFor) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("IterationStatementFor {")
+	pp.WriteString("IterationStatementFor {")
 
-	pp.Print("\nType: ")
-	f.Type.printType(&pp, v)
+	pp.WriteString("\nType: ")
+	f.Type.printType(pp, v)
 
 	if f.InitExpression != nil {
-		pp.Print("\nInitExpression: ")
-		f.InitExpression.printType(&pp, v)
+		pp.WriteString("\nInitExpression: ")
+		f.InitExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitExpression: nil")
+		pp.WriteString("\nInitExpression: nil")
 	}
 
 	if f.InitVar == nil {
-		pp.Print("\nInitVar: nil")
+		pp.WriteString("\nInitVar: nil")
 	} else if len(f.InitVar) > 0 {
-		pp.Print("\nInitVar: [")
+		pp.WriteString("\nInitVar: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.InitVar {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nInitVar: []")
+		pp.WriteString("\nInitVar: []")
 	}
 
 	if f.InitLexical != nil {
-		pp.Print("\nInitLexical: ")
-		f.InitLexical.printType(&pp, v)
+		pp.WriteString("\nInitLexical: ")
+		f.InitLexical.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitLexical: nil")
+		pp.WriteString("\nInitLexical: nil")
 	}
 
 	if f.Conditional != nil {
-		pp.Print("\nConditional: ")
-		f.Conditional.printType(&pp, v)
+		pp.WriteString("\nConditional: ")
+		f.Conditional.printType(pp, v)
 	} else if v {
-		pp.Print("\nConditional: nil")
+		pp.WriteString("\nConditional: nil")
 	}
 
 	if f.Afterthought != nil {
-		pp.Print("\nAfterthought: ")
-		f.Afterthought.printType(&pp, v)
+		pp.WriteString("\nAfterthought: ")
+		f.Afterthought.printType(pp, v)
 	} else if v {
-		pp.Print("\nAfterthought: nil")
+		pp.WriteString("\nAfterthought: nil")
 	}
 
 	if f.LeftHandSideExpression != nil {
-		pp.Print("\nLeftHandSideExpression: ")
-		f.LeftHandSideExpression.printType(&pp, v)
+		pp.WriteString("\nLeftHandSideExpression: ")
+		f.LeftHandSideExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLeftHandSideExpression: nil")
+		pp.WriteString("\nLeftHandSideExpression: nil")
 	}
 
 	if f.ForBindingIdentifier != nil {
-		pp.Print("\nForBindingIdentifier: ")
-		f.ForBindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nForBindingIdentifier: ")
+		f.ForBindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nForBindingIdentifier: nil")
+		pp.WriteString("\nForBindingIdentifier: nil")
 	}
 
 	if f.ForBindingPatternObject != nil {
-		pp.Print("\nForBindingPatternObject: ")
-		f.ForBindingPatternObject.printType(&pp, v)
+		pp.WriteString("\nForBindingPatternObject: ")
+		f.ForBindingPatternObject.printType(pp, v)
 	} else if v {
-		pp.Print("\nForBindingPatternObject: nil")
+		pp.WriteString("\nForBindingPatternObject: nil")
 	}
 
 	if f.ForBindingPatternArray != nil {
-		pp.Print("\nForBindingPatternArray: ")
-		f.ForBindingPatternArray.printType(&pp, v)
+		pp.WriteString("\nForBindingPatternArray: ")
+		f.ForBindingPatternArray.printType(pp, v)
 	} else if v {
-		pp.Print("\nForBindingPatternArray: nil")
+		pp.WriteString("\nForBindingPatternArray: nil")
 	}
 
 	if f.In != nil {
-		pp.Print("\nIn: ")
-		f.In.printType(&pp, v)
+		pp.WriteString("\nIn: ")
+		f.In.printType(pp, v)
 	} else if v {
-		pp.Print("\nIn: nil")
+		pp.WriteString("\nIn: nil")
 	}
 
 	if f.Of != nil {
-		pp.Print("\nOf: ")
-		f.Of.printType(&pp, v)
+		pp.WriteString("\nOf: ")
+		f.Of.printType(pp, v)
 	} else if v {
-		pp.Print("\nOf: nil")
+		pp.WriteString("\nOf: nil")
 	}
 
-	pp.Print("\nStatement: ")
-	f.Statement.printType(&pp, v)
+	pp.WriteString("\nStatement: ")
+	f.Statement.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *IterationStatementWhile) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *IterationStatementWhile) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("IterationStatementWhile {")
+	pp.WriteString("IterationStatementWhile {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
-	pp.Print("\nStatement: ")
-	f.Statement.printType(&pp, v)
+	pp.WriteString("\nStatement: ")
+	f.Statement.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *LeftHandSideExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *LeftHandSideExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("LeftHandSideExpression {")
+	pp.WriteString("LeftHandSideExpression {")
 
 	if f.NewExpression != nil {
-		pp.Print("\nNewExpression: ")
-		f.NewExpression.printType(&pp, v)
+		pp.WriteString("\nNewExpression: ")
+		f.NewExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nNewExpression: nil")
+		pp.WriteString("\nNewExpression: nil")
 	}
 
 	if f.CallExpression != nil {
-		pp.Print("\nCallExpression: ")
-		f.CallExpression.printType(&pp, v)
+		pp.WriteString("\nCallExpression: ")
+		f.CallExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nCallExpression: nil")
+		pp.WriteString("\nCallExpression: nil")
 	}
 
 	if f.OptionalExpression != nil {
-		pp.Print("\nOptionalExpression: ")
-		f.OptionalExpression.printType(&pp, v)
+		pp.WriteString("\nOptionalExpression: ")
+		f.OptionalExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nOptionalExpression: nil")
+		pp.WriteString("\nOptionalExpression: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *LexicalBinding) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *LexicalBinding) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("LexicalBinding {")
+	pp.WriteString("LexicalBinding {")
 
 	if f.BindingIdentifier != nil {
-		pp.Print("\nBindingIdentifier: ")
-		f.BindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nBindingIdentifier: ")
+		f.BindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingIdentifier: nil")
+		pp.WriteString("\nBindingIdentifier: nil")
 	}
 
 	if f.ArrayBindingPattern != nil {
-		pp.Print("\nArrayBindingPattern: ")
-		f.ArrayBindingPattern.printType(&pp, v)
+		pp.WriteString("\nArrayBindingPattern: ")
+		f.ArrayBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrayBindingPattern: nil")
+		pp.WriteString("\nArrayBindingPattern: nil")
 	}
 
 	if f.ObjectBindingPattern != nil {
-		pp.Print("\nObjectBindingPattern: ")
-		f.ObjectBindingPattern.printType(&pp, v)
+		pp.WriteString("\nObjectBindingPattern: ")
+		f.ObjectBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nObjectBindingPattern: nil")
+		pp.WriteString("\nObjectBindingPattern: nil")
 	}
 
 	if f.Initializer != nil {
-		pp.Print("\nInitializer: ")
-		f.Initializer.printType(&pp, v)
+		pp.WriteString("\nInitializer: ")
+		f.Initializer.printType(pp, v)
 	} else if v {
-		pp.Print("\nInitializer: nil")
+		pp.WriteString("\nInitializer: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *LexicalDeclaration) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *LexicalDeclaration) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("LexicalDeclaration {")
+	pp.WriteString("LexicalDeclaration {")
 
-	pp.Print("\nLetOrConst: ")
-	f.LetOrConst.printType(&pp, v)
+	pp.WriteString("\nLetOrConst: ")
+	f.LetOrConst.printType(pp, v)
 
 	if f.BindingList == nil {
-		pp.Print("\nBindingList: nil")
+		pp.WriteString("\nBindingList: nil")
 	} else if len(f.BindingList) > 0 {
-		pp.Print("\nBindingList: [")
+		pp.WriteString("\nBindingList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.BindingList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nBindingList: []")
+		pp.WriteString("\nBindingList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *LogicalANDExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *LogicalANDExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("LogicalANDExpression {")
+	pp.WriteString("LogicalANDExpression {")
 
 	if f.LogicalANDExpression != nil {
-		pp.Print("\nLogicalANDExpression: ")
-		f.LogicalANDExpression.printType(&pp, v)
+		pp.WriteString("\nLogicalANDExpression: ")
+		f.LogicalANDExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLogicalANDExpression: nil")
+		pp.WriteString("\nLogicalANDExpression: nil")
 	}
 
-	pp.Print("\nBitwiseORExpression: ")
-	f.BitwiseORExpression.printType(&pp, v)
+	pp.WriteString("\nBitwiseORExpression: ")
+	f.BitwiseORExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *LogicalORExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *LogicalORExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("LogicalORExpression {")
+	pp.WriteString("LogicalORExpression {")
 
 	if f.LogicalORExpression != nil {
-		pp.Print("\nLogicalORExpression: ")
-		f.LogicalORExpression.printType(&pp, v)
+		pp.WriteString("\nLogicalORExpression: ")
+		f.LogicalORExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLogicalORExpression: nil")
+		pp.WriteString("\nLogicalORExpression: nil")
 	}
 
-	pp.Print("\nLogicalANDExpression: ")
-	f.LogicalANDExpression.printType(&pp, v)
+	pp.WriteString("\nLogicalANDExpression: ")
+	f.LogicalANDExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *MemberExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *MemberExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("MemberExpression {")
+	pp.WriteString("MemberExpression {")
 
 	if f.MemberExpression != nil {
-		pp.Print("\nMemberExpression: ")
-		f.MemberExpression.printType(&pp, v)
+		pp.WriteString("\nMemberExpression: ")
+		f.MemberExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nMemberExpression: nil")
+		pp.WriteString("\nMemberExpression: nil")
 	}
 
 	if f.PrimaryExpression != nil {
-		pp.Print("\nPrimaryExpression: ")
-		f.PrimaryExpression.printType(&pp, v)
+		pp.WriteString("\nPrimaryExpression: ")
+		f.PrimaryExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrimaryExpression: nil")
+		pp.WriteString("\nPrimaryExpression: nil")
 	}
 
 	if f.Expression != nil {
-		pp.Print("\nExpression: ")
-		f.Expression.printType(&pp, v)
+		pp.WriteString("\nExpression: ")
+		f.Expression.printType(pp, v)
 	} else if v {
-		pp.Print("\nExpression: nil")
+		pp.WriteString("\nExpression: nil")
 	}
 
 	if f.IdentifierName != nil {
-		pp.Print("\nIdentifierName: ")
-		f.IdentifierName.printType(&pp, v)
+		pp.WriteString("\nIdentifierName: ")
+		f.IdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierName: nil")
+		pp.WriteString("\nIdentifierName: nil")
 	}
 
 	if f.TemplateLiteral != nil {
-		pp.Print("\nTemplateLiteral: ")
-		f.TemplateLiteral.printType(&pp, v)
+		pp.WriteString("\nTemplateLiteral: ")
+		f.TemplateLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateLiteral: nil")
+		pp.WriteString("\nTemplateLiteral: nil")
 	}
 
 	if f.SuperProperty || v {
@@ -1585,1073 +1583,1073 @@ func (f *MemberExpression) printType(w io.Writer, v bool) {
 	}
 
 	if f.Arguments != nil {
-		pp.Print("\nArguments: ")
-		f.Arguments.printType(&pp, v)
+		pp.WriteString("\nArguments: ")
+		f.Arguments.printType(pp, v)
 	} else if v {
-		pp.Print("\nArguments: nil")
+		pp.WriteString("\nArguments: nil")
 	}
 
 	if f.PrivateIdentifier != nil {
-		pp.Print("\nPrivateIdentifier: ")
-		f.PrivateIdentifier.printType(&pp, v)
+		pp.WriteString("\nPrivateIdentifier: ")
+		f.PrivateIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrivateIdentifier: nil")
+		pp.WriteString("\nPrivateIdentifier: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *MethodDefinition) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *MethodDefinition) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("MethodDefinition {")
+	pp.WriteString("MethodDefinition {")
 
-	pp.Print("\nType: ")
-	f.Type.printType(&pp, v)
+	pp.WriteString("\nType: ")
+	f.Type.printType(pp, v)
 
-	pp.Print("\nClassElementName: ")
-	f.ClassElementName.printType(&pp, v)
+	pp.WriteString("\nClassElementName: ")
+	f.ClassElementName.printType(pp, v)
 
-	pp.Print("\nParams: ")
-	f.Params.printType(&pp, v)
+	pp.WriteString("\nParams: ")
+	f.Params.printType(pp, v)
 
-	pp.Print("\nFunctionBody: ")
-	f.FunctionBody.printType(&pp, v)
+	pp.WriteString("\nFunctionBody: ")
+	f.FunctionBody.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Module) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Module) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Module {")
+	pp.WriteString("Module {")
 
 	if f.ModuleListItems == nil {
-		pp.Print("\nModuleListItems: nil")
+		pp.WriteString("\nModuleListItems: nil")
 	} else if len(f.ModuleListItems) > 0 {
-		pp.Print("\nModuleListItems: [")
+		pp.WriteString("\nModuleListItems: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ModuleListItems {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nModuleListItems: []")
+		pp.WriteString("\nModuleListItems: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ModuleItem) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ModuleItem) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ModuleItem {")
+	pp.WriteString("ModuleItem {")
 
 	if f.ImportDeclaration != nil {
-		pp.Print("\nImportDeclaration: ")
-		f.ImportDeclaration.printType(&pp, v)
+		pp.WriteString("\nImportDeclaration: ")
+		f.ImportDeclaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nImportDeclaration: nil")
+		pp.WriteString("\nImportDeclaration: nil")
 	}
 
 	if f.StatementListItem != nil {
-		pp.Print("\nStatementListItem: ")
-		f.StatementListItem.printType(&pp, v)
+		pp.WriteString("\nStatementListItem: ")
+		f.StatementListItem.printType(pp, v)
 	} else if v {
-		pp.Print("\nStatementListItem: nil")
+		pp.WriteString("\nStatementListItem: nil")
 	}
 
 	if f.ExportDeclaration != nil {
-		pp.Print("\nExportDeclaration: ")
-		f.ExportDeclaration.printType(&pp, v)
+		pp.WriteString("\nExportDeclaration: ")
+		f.ExportDeclaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nExportDeclaration: nil")
+		pp.WriteString("\nExportDeclaration: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *MultiplicativeExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *MultiplicativeExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("MultiplicativeExpression {")
+	pp.WriteString("MultiplicativeExpression {")
 
 	if f.MultiplicativeExpression != nil {
-		pp.Print("\nMultiplicativeExpression: ")
-		f.MultiplicativeExpression.printType(&pp, v)
+		pp.WriteString("\nMultiplicativeExpression: ")
+		f.MultiplicativeExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nMultiplicativeExpression: nil")
+		pp.WriteString("\nMultiplicativeExpression: nil")
 	}
 
-	pp.Print("\nMultiplicativeOperator: ")
-	f.MultiplicativeOperator.printType(&pp, v)
+	pp.WriteString("\nMultiplicativeOperator: ")
+	f.MultiplicativeOperator.printType(pp, v)
 
-	pp.Print("\nExponentiationExpression: ")
-	f.ExponentiationExpression.printType(&pp, v)
+	pp.WriteString("\nExponentiationExpression: ")
+	f.ExponentiationExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *NamedImports) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *NamedImports) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("NamedImports {")
+	pp.WriteString("NamedImports {")
 
 	if f.ImportList == nil {
-		pp.Print("\nImportList: nil")
+		pp.WriteString("\nImportList: nil")
 	} else if len(f.ImportList) > 0 {
-		pp.Print("\nImportList: [")
+		pp.WriteString("\nImportList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.ImportList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nImportList: []")
+		pp.WriteString("\nImportList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *NewExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *NewExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("NewExpression {")
+	pp.WriteString("NewExpression {")
 
 	if f.News != 0 || v {
 		pp.Printf("\nNews: %v", f.News)
 	}
 
-	pp.Print("\nMemberExpression: ")
-	f.MemberExpression.printType(&pp, v)
+	pp.WriteString("\nMemberExpression: ")
+	f.MemberExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ObjectAssignmentPattern) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ObjectAssignmentPattern) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ObjectAssignmentPattern {")
+	pp.WriteString("ObjectAssignmentPattern {")
 
 	if f.AssignmentPropertyList == nil {
-		pp.Print("\nAssignmentPropertyList: nil")
+		pp.WriteString("\nAssignmentPropertyList: nil")
 	} else if len(f.AssignmentPropertyList) > 0 {
-		pp.Print("\nAssignmentPropertyList: [")
+		pp.WriteString("\nAssignmentPropertyList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.AssignmentPropertyList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nAssignmentPropertyList: []")
+		pp.WriteString("\nAssignmentPropertyList: []")
 	}
 
 	if f.AssignmentRestElement != nil {
-		pp.Print("\nAssignmentRestElement: ")
-		f.AssignmentRestElement.printType(&pp, v)
+		pp.WriteString("\nAssignmentRestElement: ")
+		f.AssignmentRestElement.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentRestElement: nil")
+		pp.WriteString("\nAssignmentRestElement: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ObjectBindingPattern) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ObjectBindingPattern) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ObjectBindingPattern {")
+	pp.WriteString("ObjectBindingPattern {")
 
 	if f.BindingPropertyList == nil {
-		pp.Print("\nBindingPropertyList: nil")
+		pp.WriteString("\nBindingPropertyList: nil")
 	} else if len(f.BindingPropertyList) > 0 {
-		pp.Print("\nBindingPropertyList: [")
+		pp.WriteString("\nBindingPropertyList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.BindingPropertyList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nBindingPropertyList: []")
+		pp.WriteString("\nBindingPropertyList: []")
 	}
 
 	if f.BindingRestProperty != nil {
-		pp.Print("\nBindingRestProperty: ")
-		f.BindingRestProperty.printType(&pp, v)
+		pp.WriteString("\nBindingRestProperty: ")
+		f.BindingRestProperty.printType(pp, v)
 	} else if v {
-		pp.Print("\nBindingRestProperty: nil")
+		pp.WriteString("\nBindingRestProperty: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ObjectLiteral) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ObjectLiteral) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ObjectLiteral {")
+	pp.WriteString("ObjectLiteral {")
 
 	if f.PropertyDefinitionList == nil {
-		pp.Print("\nPropertyDefinitionList: nil")
+		pp.WriteString("\nPropertyDefinitionList: nil")
 	} else if len(f.PropertyDefinitionList) > 0 {
-		pp.Print("\nPropertyDefinitionList: [")
+		pp.WriteString("\nPropertyDefinitionList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.PropertyDefinitionList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nPropertyDefinitionList: []")
+		pp.WriteString("\nPropertyDefinitionList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *OptionalChain) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *OptionalChain) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("OptionalChain {")
+	pp.WriteString("OptionalChain {")
 
 	if f.OptionalChain != nil {
-		pp.Print("\nOptionalChain: ")
-		f.OptionalChain.printType(&pp, v)
+		pp.WriteString("\nOptionalChain: ")
+		f.OptionalChain.printType(pp, v)
 	} else if v {
-		pp.Print("\nOptionalChain: nil")
+		pp.WriteString("\nOptionalChain: nil")
 	}
 
 	if f.Arguments != nil {
-		pp.Print("\nArguments: ")
-		f.Arguments.printType(&pp, v)
+		pp.WriteString("\nArguments: ")
+		f.Arguments.printType(pp, v)
 	} else if v {
-		pp.Print("\nArguments: nil")
+		pp.WriteString("\nArguments: nil")
 	}
 
 	if f.Expression != nil {
-		pp.Print("\nExpression: ")
-		f.Expression.printType(&pp, v)
+		pp.WriteString("\nExpression: ")
+		f.Expression.printType(pp, v)
 	} else if v {
-		pp.Print("\nExpression: nil")
+		pp.WriteString("\nExpression: nil")
 	}
 
 	if f.IdentifierName != nil {
-		pp.Print("\nIdentifierName: ")
-		f.IdentifierName.printType(&pp, v)
+		pp.WriteString("\nIdentifierName: ")
+		f.IdentifierName.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierName: nil")
+		pp.WriteString("\nIdentifierName: nil")
 	}
 
 	if f.TemplateLiteral != nil {
-		pp.Print("\nTemplateLiteral: ")
-		f.TemplateLiteral.printType(&pp, v)
+		pp.WriteString("\nTemplateLiteral: ")
+		f.TemplateLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateLiteral: nil")
+		pp.WriteString("\nTemplateLiteral: nil")
 	}
 
 	if f.PrivateIdentifier != nil {
-		pp.Print("\nPrivateIdentifier: ")
-		f.PrivateIdentifier.printType(&pp, v)
+		pp.WriteString("\nPrivateIdentifier: ")
+		f.PrivateIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrivateIdentifier: nil")
+		pp.WriteString("\nPrivateIdentifier: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *OptionalExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *OptionalExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("OptionalExpression {")
+	pp.WriteString("OptionalExpression {")
 
 	if f.MemberExpression != nil {
-		pp.Print("\nMemberExpression: ")
-		f.MemberExpression.printType(&pp, v)
+		pp.WriteString("\nMemberExpression: ")
+		f.MemberExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nMemberExpression: nil")
+		pp.WriteString("\nMemberExpression: nil")
 	}
 
 	if f.CallExpression != nil {
-		pp.Print("\nCallExpression: ")
-		f.CallExpression.printType(&pp, v)
+		pp.WriteString("\nCallExpression: ")
+		f.CallExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nCallExpression: nil")
+		pp.WriteString("\nCallExpression: nil")
 	}
 
 	if f.OptionalExpression != nil {
-		pp.Print("\nOptionalExpression: ")
-		f.OptionalExpression.printType(&pp, v)
+		pp.WriteString("\nOptionalExpression: ")
+		f.OptionalExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nOptionalExpression: nil")
+		pp.WriteString("\nOptionalExpression: nil")
 	}
 
-	pp.Print("\nOptionalChain: ")
-	f.OptionalChain.printType(&pp, v)
+	pp.WriteString("\nOptionalChain: ")
+	f.OptionalChain.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ParenthesizedExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ParenthesizedExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ParenthesizedExpression {")
+	pp.WriteString("ParenthesizedExpression {")
 
 	if f.Expressions == nil {
-		pp.Print("\nExpressions: nil")
+		pp.WriteString("\nExpressions: nil")
 	} else if len(f.Expressions) > 0 {
-		pp.Print("\nExpressions: [")
+		pp.WriteString("\nExpressions: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nExpressions: []")
+		pp.WriteString("\nExpressions: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *PrimaryExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *PrimaryExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("PrimaryExpression {")
+	pp.WriteString("PrimaryExpression {")
 
 	if f.This != nil {
-		pp.Print("\nThis: ")
-		f.This.printType(&pp, v)
+		pp.WriteString("\nThis: ")
+		f.This.printType(pp, v)
 	} else if v {
-		pp.Print("\nThis: nil")
+		pp.WriteString("\nThis: nil")
 	}
 
 	if f.IdentifierReference != nil {
-		pp.Print("\nIdentifierReference: ")
-		f.IdentifierReference.printType(&pp, v)
+		pp.WriteString("\nIdentifierReference: ")
+		f.IdentifierReference.printType(pp, v)
 	} else if v {
-		pp.Print("\nIdentifierReference: nil")
+		pp.WriteString("\nIdentifierReference: nil")
 	}
 
 	if f.Literal != nil {
-		pp.Print("\nLiteral: ")
-		f.Literal.printType(&pp, v)
+		pp.WriteString("\nLiteral: ")
+		f.Literal.printType(pp, v)
 	} else if v {
-		pp.Print("\nLiteral: nil")
+		pp.WriteString("\nLiteral: nil")
 	}
 
 	if f.ArrayLiteral != nil {
-		pp.Print("\nArrayLiteral: ")
-		f.ArrayLiteral.printType(&pp, v)
+		pp.WriteString("\nArrayLiteral: ")
+		f.ArrayLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nArrayLiteral: nil")
+		pp.WriteString("\nArrayLiteral: nil")
 	}
 
 	if f.ObjectLiteral != nil {
-		pp.Print("\nObjectLiteral: ")
-		f.ObjectLiteral.printType(&pp, v)
+		pp.WriteString("\nObjectLiteral: ")
+		f.ObjectLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nObjectLiteral: nil")
+		pp.WriteString("\nObjectLiteral: nil")
 	}
 
 	if f.FunctionExpression != nil {
-		pp.Print("\nFunctionExpression: ")
-		f.FunctionExpression.printType(&pp, v)
+		pp.WriteString("\nFunctionExpression: ")
+		f.FunctionExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nFunctionExpression: nil")
+		pp.WriteString("\nFunctionExpression: nil")
 	}
 
 	if f.ClassExpression != nil {
-		pp.Print("\nClassExpression: ")
-		f.ClassExpression.printType(&pp, v)
+		pp.WriteString("\nClassExpression: ")
+		f.ClassExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nClassExpression: nil")
+		pp.WriteString("\nClassExpression: nil")
 	}
 
 	if f.TemplateLiteral != nil {
-		pp.Print("\nTemplateLiteral: ")
-		f.TemplateLiteral.printType(&pp, v)
+		pp.WriteString("\nTemplateLiteral: ")
+		f.TemplateLiteral.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateLiteral: nil")
+		pp.WriteString("\nTemplateLiteral: nil")
 	}
 
 	if f.ParenthesizedExpression != nil {
-		pp.Print("\nParenthesizedExpression: ")
-		f.ParenthesizedExpression.printType(&pp, v)
+		pp.WriteString("\nParenthesizedExpression: ")
+		f.ParenthesizedExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nParenthesizedExpression: nil")
+		pp.WriteString("\nParenthesizedExpression: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *PropertyDefinition) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *PropertyDefinition) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("PropertyDefinition {")
+	pp.WriteString("PropertyDefinition {")
 
 	if f.IsCoverInitializedName || v {
 		pp.Printf("\nIsCoverInitializedName: %v", f.IsCoverInitializedName)
 	}
 
 	if f.PropertyName != nil {
-		pp.Print("\nPropertyName: ")
-		f.PropertyName.printType(&pp, v)
+		pp.WriteString("\nPropertyName: ")
+		f.PropertyName.printType(pp, v)
 	} else if v {
-		pp.Print("\nPropertyName: nil")
+		pp.WriteString("\nPropertyName: nil")
 	}
 
 	if f.AssignmentExpression != nil {
-		pp.Print("\nAssignmentExpression: ")
-		f.AssignmentExpression.printType(&pp, v)
+		pp.WriteString("\nAssignmentExpression: ")
+		f.AssignmentExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nAssignmentExpression: nil")
+		pp.WriteString("\nAssignmentExpression: nil")
 	}
 
 	if f.MethodDefinition != nil {
-		pp.Print("\nMethodDefinition: ")
-		f.MethodDefinition.printType(&pp, v)
+		pp.WriteString("\nMethodDefinition: ")
+		f.MethodDefinition.printType(pp, v)
 	} else if v {
-		pp.Print("\nMethodDefinition: nil")
+		pp.WriteString("\nMethodDefinition: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *PropertyName) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *PropertyName) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("PropertyName {")
+	pp.WriteString("PropertyName {")
 
 	if f.LiteralPropertyName != nil {
-		pp.Print("\nLiteralPropertyName: ")
-		f.LiteralPropertyName.printType(&pp, v)
+		pp.WriteString("\nLiteralPropertyName: ")
+		f.LiteralPropertyName.printType(pp, v)
 	} else if v {
-		pp.Print("\nLiteralPropertyName: nil")
+		pp.WriteString("\nLiteralPropertyName: nil")
 	}
 
 	if f.ComputedPropertyName != nil {
-		pp.Print("\nComputedPropertyName: ")
-		f.ComputedPropertyName.printType(&pp, v)
+		pp.WriteString("\nComputedPropertyName: ")
+		f.ComputedPropertyName.printType(pp, v)
 	} else if v {
-		pp.Print("\nComputedPropertyName: nil")
+		pp.WriteString("\nComputedPropertyName: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *RelationalExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *RelationalExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("RelationalExpression {")
+	pp.WriteString("RelationalExpression {")
 
 	if f.PrivateIdentifier != nil {
-		pp.Print("\nPrivateIdentifier: ")
-		f.PrivateIdentifier.printType(&pp, v)
+		pp.WriteString("\nPrivateIdentifier: ")
+		f.PrivateIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nPrivateIdentifier: nil")
+		pp.WriteString("\nPrivateIdentifier: nil")
 	}
 
 	if f.RelationalExpression != nil {
-		pp.Print("\nRelationalExpression: ")
-		f.RelationalExpression.printType(&pp, v)
+		pp.WriteString("\nRelationalExpression: ")
+		f.RelationalExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nRelationalExpression: nil")
+		pp.WriteString("\nRelationalExpression: nil")
 	}
 
-	pp.Print("\nRelationshipOperator: ")
-	f.RelationshipOperator.printType(&pp, v)
+	pp.WriteString("\nRelationshipOperator: ")
+	f.RelationshipOperator.printType(pp, v)
 
-	pp.Print("\nShiftExpression: ")
-	f.ShiftExpression.printType(&pp, v)
+	pp.WriteString("\nShiftExpression: ")
+	f.ShiftExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Script) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Script) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Script {")
+	pp.WriteString("Script {")
 
 	if f.StatementList == nil {
-		pp.Print("\nStatementList: nil")
+		pp.WriteString("\nStatementList: nil")
 	} else if len(f.StatementList) > 0 {
-		pp.Print("\nStatementList: [")
+		pp.WriteString("\nStatementList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.StatementList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nStatementList: []")
+		pp.WriteString("\nStatementList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *ShiftExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *ShiftExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("ShiftExpression {")
+	pp.WriteString("ShiftExpression {")
 
 	if f.ShiftExpression != nil {
-		pp.Print("\nShiftExpression: ")
-		f.ShiftExpression.printType(&pp, v)
+		pp.WriteString("\nShiftExpression: ")
+		f.ShiftExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nShiftExpression: nil")
+		pp.WriteString("\nShiftExpression: nil")
 	}
 
-	pp.Print("\nShiftOperator: ")
-	f.ShiftOperator.printType(&pp, v)
+	pp.WriteString("\nShiftOperator: ")
+	f.ShiftOperator.printType(pp, v)
 
-	pp.Print("\nAdditiveExpression: ")
-	f.AdditiveExpression.printType(&pp, v)
+	pp.WriteString("\nAdditiveExpression: ")
+	f.AdditiveExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *Statement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *Statement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("Statement {")
+	pp.WriteString("Statement {")
 
-	pp.Print("\nType: ")
-	f.Type.printType(&pp, v)
+	pp.WriteString("\nType: ")
+	f.Type.printType(pp, v)
 
 	if f.BlockStatement != nil {
-		pp.Print("\nBlockStatement: ")
-		f.BlockStatement.printType(&pp, v)
+		pp.WriteString("\nBlockStatement: ")
+		f.BlockStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nBlockStatement: nil")
+		pp.WriteString("\nBlockStatement: nil")
 	}
 
 	if f.VariableStatement != nil {
-		pp.Print("\nVariableStatement: ")
-		f.VariableStatement.printType(&pp, v)
+		pp.WriteString("\nVariableStatement: ")
+		f.VariableStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nVariableStatement: nil")
+		pp.WriteString("\nVariableStatement: nil")
 	}
 
 	if f.ExpressionStatement != nil {
-		pp.Print("\nExpressionStatement: ")
-		f.ExpressionStatement.printType(&pp, v)
+		pp.WriteString("\nExpressionStatement: ")
+		f.ExpressionStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nExpressionStatement: nil")
+		pp.WriteString("\nExpressionStatement: nil")
 	}
 
 	if f.IfStatement != nil {
-		pp.Print("\nIfStatement: ")
-		f.IfStatement.printType(&pp, v)
+		pp.WriteString("\nIfStatement: ")
+		f.IfStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nIfStatement: nil")
+		pp.WriteString("\nIfStatement: nil")
 	}
 
 	if f.IterationStatementDo != nil {
-		pp.Print("\nIterationStatementDo: ")
-		f.IterationStatementDo.printType(&pp, v)
+		pp.WriteString("\nIterationStatementDo: ")
+		f.IterationStatementDo.printType(pp, v)
 	} else if v {
-		pp.Print("\nIterationStatementDo: nil")
+		pp.WriteString("\nIterationStatementDo: nil")
 	}
 
 	if f.IterationStatementWhile != nil {
-		pp.Print("\nIterationStatementWhile: ")
-		f.IterationStatementWhile.printType(&pp, v)
+		pp.WriteString("\nIterationStatementWhile: ")
+		f.IterationStatementWhile.printType(pp, v)
 	} else if v {
-		pp.Print("\nIterationStatementWhile: nil")
+		pp.WriteString("\nIterationStatementWhile: nil")
 	}
 
 	if f.IterationStatementFor != nil {
-		pp.Print("\nIterationStatementFor: ")
-		f.IterationStatementFor.printType(&pp, v)
+		pp.WriteString("\nIterationStatementFor: ")
+		f.IterationStatementFor.printType(pp, v)
 	} else if v {
-		pp.Print("\nIterationStatementFor: nil")
+		pp.WriteString("\nIterationStatementFor: nil")
 	}
 
 	if f.SwitchStatement != nil {
-		pp.Print("\nSwitchStatement: ")
-		f.SwitchStatement.printType(&pp, v)
+		pp.WriteString("\nSwitchStatement: ")
+		f.SwitchStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nSwitchStatement: nil")
+		pp.WriteString("\nSwitchStatement: nil")
 	}
 
 	if f.WithStatement != nil {
-		pp.Print("\nWithStatement: ")
-		f.WithStatement.printType(&pp, v)
+		pp.WriteString("\nWithStatement: ")
+		f.WithStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nWithStatement: nil")
+		pp.WriteString("\nWithStatement: nil")
 	}
 
 	if f.LabelIdentifier != nil {
-		pp.Print("\nLabelIdentifier: ")
-		f.LabelIdentifier.printType(&pp, v)
+		pp.WriteString("\nLabelIdentifier: ")
+		f.LabelIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nLabelIdentifier: nil")
+		pp.WriteString("\nLabelIdentifier: nil")
 	}
 
 	if f.LabelledItemFunction != nil {
-		pp.Print("\nLabelledItemFunction: ")
-		f.LabelledItemFunction.printType(&pp, v)
+		pp.WriteString("\nLabelledItemFunction: ")
+		f.LabelledItemFunction.printType(pp, v)
 	} else if v {
-		pp.Print("\nLabelledItemFunction: nil")
+		pp.WriteString("\nLabelledItemFunction: nil")
 	}
 
 	if f.LabelledItemStatement != nil {
-		pp.Print("\nLabelledItemStatement: ")
-		f.LabelledItemStatement.printType(&pp, v)
+		pp.WriteString("\nLabelledItemStatement: ")
+		f.LabelledItemStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nLabelledItemStatement: nil")
+		pp.WriteString("\nLabelledItemStatement: nil")
 	}
 
 	if f.TryStatement != nil {
-		pp.Print("\nTryStatement: ")
-		f.TryStatement.printType(&pp, v)
+		pp.WriteString("\nTryStatement: ")
+		f.TryStatement.printType(pp, v)
 	} else if v {
-		pp.Print("\nTryStatement: nil")
+		pp.WriteString("\nTryStatement: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *StatementListItem) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *StatementListItem) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("StatementListItem {")
+	pp.WriteString("StatementListItem {")
 
 	if f.Statement != nil {
-		pp.Print("\nStatement: ")
-		f.Statement.printType(&pp, v)
+		pp.WriteString("\nStatement: ")
+		f.Statement.printType(pp, v)
 	} else if v {
-		pp.Print("\nStatement: nil")
+		pp.WriteString("\nStatement: nil")
 	}
 
 	if f.Declaration != nil {
-		pp.Print("\nDeclaration: ")
-		f.Declaration.printType(&pp, v)
+		pp.WriteString("\nDeclaration: ")
+		f.Declaration.printType(pp, v)
 	} else if v {
-		pp.Print("\nDeclaration: nil")
+		pp.WriteString("\nDeclaration: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *SwitchStatement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *SwitchStatement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("SwitchStatement {")
+	pp.WriteString("SwitchStatement {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
 	if f.CaseClauses == nil {
-		pp.Print("\nCaseClauses: nil")
+		pp.WriteString("\nCaseClauses: nil")
 	} else if len(f.CaseClauses) > 0 {
-		pp.Print("\nCaseClauses: [")
+		pp.WriteString("\nCaseClauses: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.CaseClauses {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nCaseClauses: []")
+		pp.WriteString("\nCaseClauses: []")
 	}
 
 	if f.DefaultClause == nil {
-		pp.Print("\nDefaultClause: nil")
+		pp.WriteString("\nDefaultClause: nil")
 	} else if len(f.DefaultClause) > 0 {
-		pp.Print("\nDefaultClause: [")
+		pp.WriteString("\nDefaultClause: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.DefaultClause {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nDefaultClause: []")
+		pp.WriteString("\nDefaultClause: []")
 	}
 
 	if f.PostDefaultCaseClauses == nil {
-		pp.Print("\nPostDefaultCaseClauses: nil")
+		pp.WriteString("\nPostDefaultCaseClauses: nil")
 	} else if len(f.PostDefaultCaseClauses) > 0 {
-		pp.Print("\nPostDefaultCaseClauses: [")
+		pp.WriteString("\nPostDefaultCaseClauses: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.PostDefaultCaseClauses {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nPostDefaultCaseClauses: []")
+		pp.WriteString("\nPostDefaultCaseClauses: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *TemplateLiteral) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *TemplateLiteral) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("TemplateLiteral {")
+	pp.WriteString("TemplateLiteral {")
 
 	if f.NoSubstitutionTemplate != nil {
-		pp.Print("\nNoSubstitutionTemplate: ")
-		f.NoSubstitutionTemplate.printType(&pp, v)
+		pp.WriteString("\nNoSubstitutionTemplate: ")
+		f.NoSubstitutionTemplate.printType(pp, v)
 	} else if v {
-		pp.Print("\nNoSubstitutionTemplate: nil")
+		pp.WriteString("\nNoSubstitutionTemplate: nil")
 	}
 
 	if f.TemplateHead != nil {
-		pp.Print("\nTemplateHead: ")
-		f.TemplateHead.printType(&pp, v)
+		pp.WriteString("\nTemplateHead: ")
+		f.TemplateHead.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateHead: nil")
+		pp.WriteString("\nTemplateHead: nil")
 	}
 
 	if f.Expressions == nil {
-		pp.Print("\nExpressions: nil")
+		pp.WriteString("\nExpressions: nil")
 	} else if len(f.Expressions) > 0 {
-		pp.Print("\nExpressions: [")
+		pp.WriteString("\nExpressions: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.Expressions {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nExpressions: []")
+		pp.WriteString("\nExpressions: []")
 	}
 
 	if f.TemplateMiddleList == nil {
-		pp.Print("\nTemplateMiddleList: nil")
+		pp.WriteString("\nTemplateMiddleList: nil")
 	} else if len(f.TemplateMiddleList) > 0 {
-		pp.Print("\nTemplateMiddleList: [")
+		pp.WriteString("\nTemplateMiddleList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.TemplateMiddleList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nTemplateMiddleList: []")
+		pp.WriteString("\nTemplateMiddleList: []")
 	}
 
 	if f.TemplateTail != nil {
-		pp.Print("\nTemplateTail: ")
-		f.TemplateTail.printType(&pp, v)
+		pp.WriteString("\nTemplateTail: ")
+		f.TemplateTail.printType(pp, v)
 	} else if v {
-		pp.Print("\nTemplateTail: nil")
+		pp.WriteString("\nTemplateTail: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *TryStatement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *TryStatement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("TryStatement {")
+	pp.WriteString("TryStatement {")
 
-	pp.Print("\nTryBlock: ")
-	f.TryBlock.printType(&pp, v)
+	pp.WriteString("\nTryBlock: ")
+	f.TryBlock.printType(pp, v)
 
 	if f.CatchParameterBindingIdentifier != nil {
-		pp.Print("\nCatchParameterBindingIdentifier: ")
-		f.CatchParameterBindingIdentifier.printType(&pp, v)
+		pp.WriteString("\nCatchParameterBindingIdentifier: ")
+		f.CatchParameterBindingIdentifier.printType(pp, v)
 	} else if v {
-		pp.Print("\nCatchParameterBindingIdentifier: nil")
+		pp.WriteString("\nCatchParameterBindingIdentifier: nil")
 	}
 
 	if f.CatchParameterObjectBindingPattern != nil {
-		pp.Print("\nCatchParameterObjectBindingPattern: ")
-		f.CatchParameterObjectBindingPattern.printType(&pp, v)
+		pp.WriteString("\nCatchParameterObjectBindingPattern: ")
+		f.CatchParameterObjectBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nCatchParameterObjectBindingPattern: nil")
+		pp.WriteString("\nCatchParameterObjectBindingPattern: nil")
 	}
 
 	if f.CatchParameterArrayBindingPattern != nil {
-		pp.Print("\nCatchParameterArrayBindingPattern: ")
-		f.CatchParameterArrayBindingPattern.printType(&pp, v)
+		pp.WriteString("\nCatchParameterArrayBindingPattern: ")
+		f.CatchParameterArrayBindingPattern.printType(pp, v)
 	} else if v {
-		pp.Print("\nCatchParameterArrayBindingPattern: nil")
+		pp.WriteString("\nCatchParameterArrayBindingPattern: nil")
 	}
 
 	if f.CatchBlock != nil {
-		pp.Print("\nCatchBlock: ")
-		f.CatchBlock.printType(&pp, v)
+		pp.WriteString("\nCatchBlock: ")
+		f.CatchBlock.printType(pp, v)
 	} else if v {
-		pp.Print("\nCatchBlock: nil")
+		pp.WriteString("\nCatchBlock: nil")
 	}
 
 	if f.FinallyBlock != nil {
-		pp.Print("\nFinallyBlock: ")
-		f.FinallyBlock.printType(&pp, v)
+		pp.WriteString("\nFinallyBlock: ")
+		f.FinallyBlock.printType(pp, v)
 	} else if v {
-		pp.Print("\nFinallyBlock: nil")
+		pp.WriteString("\nFinallyBlock: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *UnaryExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *UnaryExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("UnaryExpression {")
+	pp.WriteString("UnaryExpression {")
 
 	if f.UnaryOperators == nil {
-		pp.Print("\nUnaryOperators: nil")
+		pp.WriteString("\nUnaryOperators: nil")
 	} else if len(f.UnaryOperators) > 0 {
-		pp.Print("\nUnaryOperators: [")
+		pp.WriteString("\nUnaryOperators: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.UnaryOperators {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nUnaryOperators: []")
+		pp.WriteString("\nUnaryOperators: []")
 	}
 
-	pp.Print("\nUpdateExpression: ")
-	f.UpdateExpression.printType(&pp, v)
+	pp.WriteString("\nUpdateExpression: ")
+	f.UpdateExpression.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *UpdateExpression) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *UpdateExpression) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("UpdateExpression {")
+	pp.WriteString("UpdateExpression {")
 
 	if f.LeftHandSideExpression != nil {
-		pp.Print("\nLeftHandSideExpression: ")
-		f.LeftHandSideExpression.printType(&pp, v)
+		pp.WriteString("\nLeftHandSideExpression: ")
+		f.LeftHandSideExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nLeftHandSideExpression: nil")
+		pp.WriteString("\nLeftHandSideExpression: nil")
 	}
 
-	pp.Print("\nUpdateOperator: ")
-	f.UpdateOperator.printType(&pp, v)
+	pp.WriteString("\nUpdateOperator: ")
+	f.UpdateOperator.printType(pp, v)
 
 	if f.UnaryExpression != nil {
-		pp.Print("\nUnaryExpression: ")
-		f.UnaryExpression.printType(&pp, v)
+		pp.WriteString("\nUnaryExpression: ")
+		f.UnaryExpression.printType(pp, v)
 	} else if v {
-		pp.Print("\nUnaryExpression: nil")
+		pp.WriteString("\nUnaryExpression: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *VariableStatement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *VariableStatement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("VariableStatement {")
+	pp.WriteString("VariableStatement {")
 
 	if f.VariableDeclarationList == nil {
-		pp.Print("\nVariableDeclarationList: nil")
+		pp.WriteString("\nVariableDeclarationList: nil")
 	} else if len(f.VariableDeclarationList) > 0 {
-		pp.Print("\nVariableDeclarationList: [")
+		pp.WriteString("\nVariableDeclarationList: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.VariableDeclarationList {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nVariableDeclarationList: []")
+		pp.WriteString("\nVariableDeclarationList: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *WithClause) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *WithClause) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("WithClause {")
+	pp.WriteString("WithClause {")
 
 	if f.WithEntries == nil {
-		pp.Print("\nWithEntries: nil")
+		pp.WriteString("\nWithEntries: nil")
 	} else if len(f.WithEntries) > 0 {
-		pp.Print("\nWithEntries: [")
+		pp.WriteString("\nWithEntries: [")
 
-		ipp := indentPrinter{&pp}
+		ipp := pp.Indent()
 
 		for n, e := range f.WithEntries {
 			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
+			e.printType(ipp, v)
 		}
 
-		pp.Print("\n]")
+		pp.WriteString("\n]")
 	} else if v {
-		pp.Print("\nWithEntries: []")
+		pp.WriteString("\nWithEntries: []")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *WithEntry) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *WithEntry) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("WithEntry {")
+	pp.WriteString("WithEntry {")
 
 	if f.AttributeKey != nil {
-		pp.Print("\nAttributeKey: ")
-		f.AttributeKey.printType(&pp, v)
+		pp.WriteString("\nAttributeKey: ")
+		f.AttributeKey.printType(pp, v)
 	} else if v {
-		pp.Print("\nAttributeKey: nil")
+		pp.WriteString("\nAttributeKey: nil")
 	}
 
 	if f.Value != nil {
-		pp.Print("\nValue: ")
-		f.Value.printType(&pp, v)
+		pp.WriteString("\nValue: ")
+		f.Value.printType(pp, v)
 	} else if v {
-		pp.Print("\nValue: nil")
+		pp.WriteString("\nValue: nil")
 	}
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
 
-func (f *WithStatement) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
+func (f *WithStatement) printType(w writer, v bool) {
+	pp := w.Indent()
 
-	pp.Print("WithStatement {")
+	pp.WriteString("WithStatement {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
+	pp.WriteString("\nExpression: ")
+	f.Expression.printType(pp, v)
 
-	pp.Print("\nStatement: ")
-	f.Statement.printType(&pp, v)
+	pp.WriteString("\nStatement: ")
+	f.Statement.printType(pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
 
-	io.WriteString(w, "\n}")
+	w.WriteString("\n}")
 }
