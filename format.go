@@ -147,6 +147,10 @@ func (t Tokens) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n]")
 }
 
+func (c Comments) printType(w io.Writer, v bool) {
+	Tokens(c).printType(w, v)
+}
+
 type formatter interface {
 	printType(io.Writer, bool)
 	printSource(io.Writer, bool)
