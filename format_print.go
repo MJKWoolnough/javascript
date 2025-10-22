@@ -1732,6 +1732,11 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 }
 
 func (m Module) printSource(w writer, v bool) {
+	if v && len(m.Comments[0]) > 0 {
+		m.Comments[0].printSource(w, true)
+		w.WriteString("\n")
+	}
+
 	if len(m.ModuleListItems) > 0 {
 		m.ModuleListItems[0].printSource(w, v)
 
@@ -1739,6 +1744,11 @@ func (m Module) printSource(w writer, v bool) {
 			w.Write(doubleNewLine)
 			mi.printSource(w, v)
 		}
+	}
+
+	if v && len(m.Comments[1]) > 0 {
+		w.WriteString("\n")
+		m.Comments[1].printSource(w, true)
 	}
 }
 
