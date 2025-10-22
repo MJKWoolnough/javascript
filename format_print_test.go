@@ -1809,7 +1809,26 @@ func TestPrintingModule(t *testing.T) {
 			"export default await b;",
 			"export default await b;",
 		},
+		{ // 32
+			"// A\n// B\n\nexport default await b;\n// C\n// D\n",
+			"export default await b;",
+			"// A\n// B\n\nexport default await b;\n// C\n// D\n",
+		},
+		{ // 33
+			"/* A *//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /* F */\n",
+			"export default await b;",
+			"/* A */ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /* F */\n",
+		},
+		{ // 34
+			"/*\nA\n*//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /*\n\nF\n\n*/\n",
+			"export default await b;",
+			"/*\nA\n*/ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /*\n\nF\n\n*/\n",
+		},
 	} {
+		if n != 32 {
+			continue
+		}
+
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
 			if err != nil {
