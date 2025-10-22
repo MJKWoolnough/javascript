@@ -681,6 +681,35 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"// A\na\n// B", func(t *test, tk Tokens) { // 5
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Statement: &Statement{
+								ExpressionStatement: &Expression{
+									Expressions: []AssignmentExpression{
+										{
+											ConditionalExpression: WrapConditional(&PrimaryExpression{
+												IdentifierReference: &tk[2],
+												Tokens:              tk[2:3],
+											}),
+											Tokens: tk[2:3],
+										},
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var m Module
 
