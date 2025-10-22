@@ -126,6 +126,11 @@ var (
 )
 
 func (s Script) printSource(w writer, v bool) {
+	if v && len(s.Comments[0]) > 0 {
+		s.Comments[0].printSource(w, true)
+		w.WriteString("\n")
+	}
+
 	if len(s.StatementList) > 0 {
 		s.StatementList[0].printSource(w, v)
 
@@ -133,6 +138,11 @@ func (s Script) printSource(w writer, v bool) {
 			w.Write(doubleNewLine)
 			stmt.printSource(w, v)
 		}
+	}
+
+	if v && len(s.Comments[1]) > 0 {
+		w.WriteString("\n")
+		s.Comments[1].printSource(w, true)
 	}
 }
 
