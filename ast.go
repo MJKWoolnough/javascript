@@ -32,6 +32,7 @@ func ParseScript(t Tokeniser) (*Script, error) {
 func ScriptToModule(s *Script) *Module {
 	m := &Module{
 		ModuleListItems: make([]ModuleItem, len(s.StatementList)),
+		Comments:        s.Comments,
 		Tokens:          s.Tokens,
 	}
 
