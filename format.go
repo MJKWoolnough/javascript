@@ -1,8 +1,10 @@
 package javascript
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"strings"
 	"unsafe"
 
 	"vimagination.zapto.org/parser"
@@ -223,6 +225,82 @@ func (t Tokens) printType(w writer, v bool) {
 
 func (c Comments) printType(w writer, v bool) {
 	Tokens(c).printType(w, v)
+}
+
+func (c Comments) printSource(w writer, v bool) {
+	if len(c) > 0 {
+		switch w.LastChar() {
+		case 0, ' ', '\n', '\t':
+		default:
+			w.WriteString(" ")
+		}
+
+		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
+		pos := w.Pos()
+
+		lastWasMulti := printComment(w, c[0], 0)
+
+		if !lastWasMulti {
+			line++
+		}
+
+		for _, c := range c[1:] {
+			if line < c.Line {
+				if !lastWasMulti {
+					w.WriteString("\n")
+				}
+
+				w.WriteString("\n")
+
+				line++
+				pos = 0
+			} else if lastWasMulti {
+				w.WriteString(" ")
+			} else {
+				w.WriteString("\n")
+			}
+
+			if lastWasMulti = printComment(w, c, pos); lastWasMulti {
+				line += uint64(strings.Count(c.Data, "\n"))
+			} else {
+				line++
+			}
+		}
+
+		if v {
+			w.WriteString("\n")
+		}
+	}
+}
+
+func printComment(w writer, c Token, pos int) bool {
+	w.Write(bytes.Repeat(space, pos))
+
+	var checkClose bool
+
+	if isSingleLine(c) {
+		if !strings.HasPrefix(c.Data, "//") {
+			w.WriteString("// ")
+		}
+	} else {
+		checkClose = true
+
+		if !strings.HasPrefix(c.Data, "/*") {
+			w.WriteString("/* ")
+		}
+	}
+
+	w.WriteString(strings.TrimSpace(c.Data))
+
+	if checkClose && !strings.HasSuffix(c.Data, "*/") {
+		w.WriteString(" */")
+	}
+
+	return checkClose
+}
+
+func isSingleLine(c Token) bool {
+	return c.Type == TokenSingleLineComment && !strings.Contains(c.Data, "\n")
 }
 
 type formatter interface {
