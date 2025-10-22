@@ -470,7 +470,7 @@ for(
 						Tokens: tk[50:91],
 					},
 				},
-				Tokens: tk[:92],
+				Tokens: tk[:91],
 			}
 		}},
 		{`if (typeof a === "b" && typeof c.d == "e") {}`, func(t *test, tk Tokens) { // 2

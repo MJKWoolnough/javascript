@@ -7,6 +7,7 @@ import (
 // Script represents the top-level of a parsed javascript text
 type Script struct {
 	StatementList []StatementListItem
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
@@ -45,8 +46,17 @@ func ScriptToModule(s *Script) *Module {
 }
 
 func (s *Script) parse(j *jsParser) error {
-	for j.AcceptRunWhitespace() != parser.TokenDone {
-		g := j.NewGoal()
+	s.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+	g := j.NewGoal()
+
+	for g.AcceptRunWhitespace() != parser.TokenDone {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespaceNoComment()
+
+		j.Score(g)
+
+		g = j.NewGoal()
 		si := len(s.StatementList)
 		s.StatementList = append(s.StatementList, StatementListItem{})
 
@@ -55,8 +65,11 @@ func (s *Script) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
+
+		g = j.NewGoal()
 	}
 
+	s.Comments[1] = j.AcceptRunWhitespaceComments()
 	s.Tokens = j.ToTokens()
 
 	return nil
