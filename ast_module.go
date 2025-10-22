@@ -7,6 +7,7 @@ import (
 // Module represents the top-level of a parsed javascript module
 type Module struct {
 	ModuleListItems []ModuleItem
+	Comments        [2]Comments
 	Tokens          Tokens
 }
 
@@ -26,8 +27,18 @@ func ParseModule(t Tokeniser) (*Module, error) {
 }
 
 func (m *Module) parse(j *jsParser) error {
-	for j.AcceptRunWhitespace() != parser.TokenDone {
-		g := j.NewGoal()
+	m.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+	g := j.NewGoal()
+
+	for g.AcceptRunWhitespace() != parser.TokenDone {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespaceNoComment()
+
+		j.Score(g)
+
+		g = j.NewGoal()
+
 		ml := len(m.ModuleListItems)
 
 		m.ModuleListItems = append(m.ModuleListItems, ModuleItem{})
@@ -36,8 +47,11 @@ func (m *Module) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
+
+		g = j.NewGoal()
 	}
 
+	m.Comments[1] = j.AcceptRunWhitespaceComments()
 	m.Tokens = j.ToTokens()
 
 	return nil
