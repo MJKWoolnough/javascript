@@ -2607,6 +2607,27 @@ func TestStatementListItem(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
+		{"// A\n// B\na // C\n\n// D", func(t *test, tk Tokens) { // 16
+			t.Output = StatementListItem{
+				Statement: &Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									IdentifierReference: &tk[4],
+									Tokens:              tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Comments: [2]Comments{{tk[0], tk[2]}, {tk[6]}},
+				Tokens:   tk[:7],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var si StatementListItem
 
