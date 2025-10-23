@@ -1844,6 +1844,11 @@ func TestPrintingModule(t *testing.T) {
 			"export default await b;",
 			"/*\nA\n*/ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /*\n\nF\n\n*/\n",
 		},
+		{ // 35
+			"/*\nA\n*//* B */\n// C\n\n// D\nimport a from './b'; // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
+			"import a from './b';",
+			"/*\nA\n*/ /* B */\n// C\n\n// D\nimport a from './b'; // E\n                     // F\n\n// G\n/* H */ /*\n\nI\n\n*/\n",
+		},
 	} {
 		if n != 32 {
 			continue
