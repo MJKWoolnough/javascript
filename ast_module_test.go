@@ -1010,6 +1010,16 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
+		{"// A\nimport \"a\"; // B\n\n// C", func(t *test, tk Tokens) { // 11
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[4],
+					Tokens:          tk[4:5],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[7]}},
+				Tokens:   tk[:8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var id ImportDeclaration
 
