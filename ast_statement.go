@@ -44,10 +44,15 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 type StatementListItem struct {
 	Statement   *Statement
 	Declaration *Declaration
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
 func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
+	si.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if j.SkipType() || j.SkipInterface() || j.SkipDeclare() {
 		si.Statement = &Statement{Tokens: j.ToTokens()}
 		si.Tokens = j.ToTokens()
@@ -116,6 +121,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 
 	j.Score(g)
 
+	si.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 	si.Tokens = j.ToTokens()
 
 	return nil
