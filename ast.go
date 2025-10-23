@@ -101,7 +101,7 @@ func (j *jsParser) parseSemicolon() bool {
 
 	g.AcceptRunWhitespaceNoNewLine()
 
-	if t := g.Peek().Type; t == TokenLineTerminator || t == parser.TokenDone {
+	if t := g.Peek().Type; t == TokenLineTerminator || t == TokenSingleLineComment || t == parser.TokenDone {
 		return true
 	}
 
