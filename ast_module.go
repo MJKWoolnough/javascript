@@ -136,10 +136,15 @@ type ImportDeclaration struct {
 	*ImportClause
 	FromClause
 	*WithClause
-	Tokens Tokens
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (id *ImportDeclaration) parse(j *jsParser) error {
+	id.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) {
 		return j.Error("ImportDeclaration", ErrInvalidImport)
 	}
@@ -191,6 +196,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		return j.Error("ImportDeclaration", ErrMissingSemiColon)
 	}
 
+	id.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 	id.Tokens = j.ToTokens()
 
 	return nil
