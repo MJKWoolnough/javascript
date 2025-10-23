@@ -1781,6 +1781,10 @@ func (m ModuleItem) printSource(w writer, v bool) {
 }
 
 func (i ImportDeclaration) printSource(w writer, v bool) {
+	if v {
+		i.Comments[0].printSource(w, true)
+	}
+
 	if i.ImportClause == nil && i.FromClause.ModuleSpecifier == nil {
 		return
 	}
@@ -1800,6 +1804,9 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 	}
 
 	w.Write(semiColon)
+	if v {
+		i.Comments[1].printSource(w, true)
+	}
 }
 
 func (e ExportDeclaration) printSource(w writer, v bool) {
