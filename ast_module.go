@@ -388,11 +388,17 @@ func (ni *NamedImports) parse(j *jsParser) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		g := j.NewGoal()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
+			j.Score(g)
+
 			break
 		}
+
+		j.AcceptRunWhitespaceNoComment()
 
 		if !j.SkipTypeImport() {
 			g := j.NewGoal()
@@ -434,10 +440,15 @@ func (ni *NamedImports) parse(j *jsParser) error {
 type ImportSpecifier struct {
 	IdentifierName  *Token
 	ImportedBinding *Token
+	Comments        [4]Comments
 	Tokens          Tokens
 }
 
 func (is *ImportSpecifier) parse(j *jsParser) error {
+	is.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.Accept(TokenIdentifier, TokenKeyword) {
 		return j.Error("ImportSpecifier", ErrInvalidImportSpecifier)
 	}
@@ -449,7 +460,16 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
-			g.AcceptRunWhitespace()
+			is.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Next()
+
+			is.Comments[2] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+
+			g = j.NewGoal()
 
 			is.IdentifierName = is.ImportedBinding
 			if is.ImportedBinding = g.parseIdentifier(false, false); is.ImportedBinding == nil {
@@ -467,6 +487,16 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 			Line:    is.ImportedBinding.Line,
 			LinePos: is.ImportedBinding.LinePos,
 		}
+	}
+
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		is.Comments[3] = j.AcceptRunWhitespaceComments()
+	} else {
+		is.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
 	}
 
 	is.Tokens = j.ToTokens()
