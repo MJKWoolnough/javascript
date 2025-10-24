@@ -1354,6 +1354,30 @@ func TestImportSpecifier(t *testing.T) {
 				Tokens:          tk[:5],
 			}
 		}},
+		{"/* A */ a // B", func(t *test, tk Tokens) { // 8
+			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[2],
+				ImportedBinding: &tk[2],
+				Comments:        [4]Comments{{tk[0]}, nil, nil, {tk[4]}},
+				Tokens:          tk[:5],
+			}
+		}},
+		{"// A\na /* B */ as // C\nb // D\n\n// E\n,", func(t *test, tk Tokens) { // 9
+			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[2],
+				ImportedBinding: &tk[10],
+				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12], tk[14]}},
+				Tokens:          tk[:15],
+			}
+		}},
+		{"// A\na /* B */ as // C\nb // D\n\n// E", func(t *test, tk Tokens) { // 9
+			t.Output = ImportSpecifier{
+				IdentifierName:  &tk[2],
+				ImportedBinding: &tk[10],
+				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12]}},
+				Tokens:          tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var is ImportSpecifier
 
