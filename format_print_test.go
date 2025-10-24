@@ -1627,17 +1627,17 @@ func TestPrintingScript(t *testing.T) {
 		{ // 321
 			"/* A *//* B */\n// C\n\na();\n// D\n/* E */   /* F */\n",
 			"a();",
-			"/* A */ /* B */\n// C\n\na();\n// D\n/* E */ /* F */\n",
+			"/* A */ /* B */\n// C\n\na();\n// D\n/* E */ /* F */",
 		},
 		{ // 322
 			"/*\nA\n*//* B */\n// C\n\na();\n// D\n/* E */   /*\n\nF\n\n*/\n",
 			"a();",
-			"/*\nA\n*/ /* B */\n// C\n\na();\n// D\n/* E */ /*\n\nF\n\n*/\n",
+			"/*\nA\n*/ /* B */\n// C\n\na();\n// D\n/* E */ /*\n\nF\n\n*/",
 		},
 		{ // 323
 			"/*\nA\n*//* B */\n// C\n\n// D\na(); // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
 			"a();",
-			"/*\nA\n*/ /* B */\n// C\n\n// D\na(); // E\n     // F\n\n// G\n/* H */ /*\n\nI\n\n*/\n",
+			"/*\nA\n*/ /* B */\n// C\n\n// D\na(); // E\n     // F\n\n// G\n/* H */ /*\n\nI\n\n*/",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
@@ -1837,27 +1837,27 @@ func TestPrintingModule(t *testing.T) {
 		{ // 33
 			"/* A *//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /* F */\n",
 			"export default await b;",
-			"/* A */ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /* F */\n",
+			"/* A */ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /* F */",
 		},
 		{ // 34
 			"/*\nA\n*//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /*\n\nF\n\n*/\n",
 			"export default await b;",
-			"/*\nA\n*/ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /*\n\nF\n\n*/\n",
+			"/*\nA\n*/ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /*\n\nF\n\n*/",
 		},
 		{ // 35
 			"/*\nA\n*//* B */\n// C\n\n// D\nimport a from './b'; // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
 			"import a from './b';",
-			"/*\nA\n*/ /* B */\n// C\n\n// D\nimport a from './b'; // E\n                     // F\n\n// G\n/* H */ /*\n\nI\n\n*/\n",
+			"/*\nA\n*/ /* B */\n// C\n\n// D\nimport a from './b'; // E\n                     // F\n\n// G\n/* H */ /*\n\nI\n\n*/",
 		},
 		{ // 36
 			"import {\n// A\na // B\n} from './b';",
 			"import {a} from './b';",
 			"import {\n\t// A\n\ta as a // B\n} from './b';",
 		},
-		{ // 36
+		{ // 37
 			"import {\n// A\na /* B */ as // C\nb // D\n} from './b';",
 			"import {a as b} from './b';",
-			"import {\n\t// A\n\ta /* B */ as // C\n\ta // D\n} from './b';",
+			"import {\n\t// A\n\ta /* B */ as // C\n\tb // D\n} from './b';",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
