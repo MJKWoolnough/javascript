@@ -267,7 +267,7 @@ func (c Comments) printSource(w writer, v bool) {
 			}
 		}
 
-		if v {
+		if v && c[len(c)-1].Type == TokenSingleLineComment {
 			w.WriteString("\n")
 		}
 	}
