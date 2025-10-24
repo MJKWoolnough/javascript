@@ -31,14 +31,9 @@ func (m *Module) parse(j *jsParser) error {
 	g := j.NewGoal()
 
 	for g.AcceptRunWhitespace() != parser.TokenDone {
-		g = j.NewGoal()
-
-		g.AcceptRunWhitespaceNoComment()
-
-		j.Score(g)
+		j.AcceptRunWhitespaceNoComment()
 
 		g = j.NewGoal()
-
 		ml := len(m.ModuleListItems)
 
 		m.ModuleListItems = append(m.ModuleListItems, ModuleItem{})
@@ -71,6 +66,8 @@ type ModuleItem struct {
 
 func (ml *ModuleItem) parse(j *jsParser) error {
 	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
 
 	switch g.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "export"}:
@@ -107,7 +104,9 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 		h.AcceptRunWhitespace()
 
 		if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) && !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+			g = j.NewGoal()
 			ml.ImportDeclaration = new(ImportDeclaration)
+
 			if err := ml.ImportDeclaration.parse(&g); err != nil {
 				return j.Error("ModuleItem", err)
 			}
