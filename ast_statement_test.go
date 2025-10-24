@@ -2607,7 +2607,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{"// A\n// B\na // C\n\n// D", func(t *test, tk Tokens) { // 16
+		{"// A\n// B\na // C\n\n// D", func(t *test, tk Tokens) { // 17
 			t.Output = StatementListItem{
 				Statement: &Statement{
 					ExpressionStatement: &Expression{
