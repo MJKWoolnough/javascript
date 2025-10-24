@@ -1920,11 +1920,13 @@ func (n NamedImports) printSource(w writer, v bool) {
 	w.Write(blockOpen)
 
 	if len(n.ImportList) > 0 {
-		n.ImportList[0].printSource(w, v)
+		ip := w.Indent()
+
+		n.ImportList[0].printSource(ip, v)
 
 		for _, is := range n.ImportList[1:] {
-			w.Write(commaSep)
-			is.printSource(w, v)
+			ip.Write(commaSep)
+			is.printSource(ip, v)
 		}
 	}
 
@@ -1949,12 +1951,30 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 		return
 	}
 
+	if v && len(i.Comments[0]) > 0 {
+		w.WriteString("\n")
+		i.Comments[0].printSource(w, v)
+	}
+
 	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
 		w.WriteString(i.IdentifierName.Data)
+
+		if v {
+			i.Comments[1].printSource(w, v)
+		}
+
 		w.Write(as)
+
+		if v {
+			i.Comments[2].printSource(w, v)
+		}
 	}
 
 	w.WriteString(i.ImportedBinding.Data)
+
+	if v {
+		i.Comments[3].printSource(w, v)
+	}
 }
 
 func (oe OptionalExpression) printSource(w writer, v bool) {
