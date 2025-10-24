@@ -1370,7 +1370,7 @@ func TestImportSpecifier(t *testing.T) {
 				Tokens:          tk[:15],
 			}
 		}},
-		{"// A\na /* B */ as // C\nb // D\n\n// E", func(t *test, tk Tokens) { // 9
+		{"// A\na /* B */ as // C\nb // D\n\n// E", func(t *test, tk Tokens) { // 10
 			t.Output = ImportSpecifier{
 				IdentifierName:  &tk[2],
 				ImportedBinding: &tk[10],
