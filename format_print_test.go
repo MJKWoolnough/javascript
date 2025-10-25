@@ -1859,6 +1859,11 @@ func TestPrintingModule(t *testing.T) {
 			"import {a as b} from './b';",
 			"import {\n\t// A\n\ta /* B */ as // C\n\tb // D\n} from './b';",
 		},
+		{ // 38
+			"import { // A\n\n/* B */ a /* C */\n\n// D\n, // E\nb // F\n\n/* G */} from './c';",
+			"import {a, b} from './c';",
+			"import { // A\n\n\t/* B */ a as a /* C */\n\t// D\n\t, // E\n\tb as b // F\n\n/* G */} from './c';",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
