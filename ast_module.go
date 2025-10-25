@@ -378,6 +378,7 @@ func (fc *FromClause) parse(j *jsParser) error {
 // https://262.ecma-international.org/11.0/#prod-NamedImports
 type NamedImports struct {
 	ImportList []ImportSpecifier
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
@@ -386,14 +387,14 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		return j.Error("NamedImports", ErrInvalidNamedImport)
 	}
 
+	ni.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	for {
 		g := j.NewGoal()
 
 		g.AcceptRunWhitespace()
 
 		if g.Accept(TokenRightBracePunctuator) {
-			j.Score(g)
-
 			break
 		}
 
@@ -418,14 +419,23 @@ func (ni *NamedImports) parse(j *jsParser) error {
 			j.Score(g)
 		}
 
-		j.AcceptRunWhitespace()
+		g = j.NewGoal()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("NamedImports", ErrInvalidNamedImport)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("NamedImports", ErrInvalidNamedImport)
 		}
+
+		j.Score(g)
 	}
+
+	ni.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	ni.Tokens = j.ToTokens()
 
