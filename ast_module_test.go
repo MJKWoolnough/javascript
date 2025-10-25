@@ -1294,6 +1294,39 @@ func TestNamedImports(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
+		{"{ // A\na\n // B\n}", func(t *test, tk Tokens) { // 12
+			t.Output = NamedImports{
+				ImportList: []ImportSpecifier{
+					{
+						IdentifierName:  &tk[4],
+						ImportedBinding: &tk[4],
+						Tokens:          tk[4:5],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[7]}},
+				Tokens:   tk[:10],
+			}
+		}},
+		{"{ // A\n\n/* B */ a /* C */\n\n// D\n, // E\nb // F\n\n/* G */}", func(t *test, tk Tokens) { // 13
+			t.Output = NamedImports{
+				ImportList: []ImportSpecifier{
+					{
+						IdentifierName:  &tk[6],
+						ImportedBinding: &tk[6],
+						Comments:        [4]Comments{{tk[4]}, nil, nil, {tk[8], tk[10]}},
+						Tokens:          tk[4:11],
+					},
+					{
+						IdentifierName:  &tk[16],
+						ImportedBinding: &tk[16],
+						Comments:        [4]Comments{{tk[14]}, nil, nil, {tk[18]}},
+						Tokens:          tk[14:19],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[20]}},
+				Tokens:   tk[:22],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ni NamedImports
 
