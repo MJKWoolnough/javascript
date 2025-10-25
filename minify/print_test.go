@@ -1016,7 +1016,7 @@ func TestPrint(t *testing.T) {
 			"[ a , b ]",
 			"[a,b]",
 		},
-		{ // 253
+		{ // 252
 			"[ a ] . length",
 			"[a].length",
 		},
