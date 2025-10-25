@@ -1,130 +1,5 @@
 package javascript
 
-var (
-	blockOpen                    = []byte{'{'}
-	blockClose                   = []byte{'}'}
-	commaSep                     = []byte{',', ' '}
-	commaSepNL                   = []byte{',', '\n'}
-	doubleNewLine                = []byte{'\n', '\n'}
-	newLine                      = doubleNewLine[:1]
-	conditionalStart             = []byte{' ', '?', ' '}
-	conditionalSep               = []byte{' ', ':', ' '}
-	labelPost                    = conditionalSep[1:]
-	semiColon                    = []byte{';'}
-	ifOpen                       = []byte{'i', 'f', ' ', '('}
-	parenCloseSpace              = []byte{')', ' '}
-	parenClose                   = parenCloseSpace[:1]
-	elseOpen                     = []byte{' ', 'e', 'l', 's', 'e', ' '}
-	doOpen                       = []byte{'d', 'o', ' '}
-	doWhileOpen                  = []byte{' ', 'w', 'h', 'i', 'l', 'e', ' ', '('}
-	doWhileClose                 = []byte{')', ';'}
-	whileOpen                    = doWhileOpen[1:]
-	forOpen                      = []byte{'f', 'o', 'r', ' ', '('}
-	forAwaitOpen                 = []byte{'f', 'o', 'r', ' ', 'a', 'w', 'a', 'i', 't', ' ', '('}
-	switchOpen                   = []byte{'s', 'w', 'i', 't', 'c', 'h', ' ', '('}
-	switchClose                  = []byte{')', ' ', '{'}
-	caseOpen                     = []byte{'c', 'a', 's', 'e', ' '}
-	caseClose                    = labelPost[:1]
-	defaultCase                  = []byte{'d', 'e', 'f', 'a', 'u', 'l', 't', ':'}
-	withOpen                     = []byte{'w', 'i', 't', 'h', ' ', '('}
-	forIn                        = []byte{' ', 'i', 'n', ' '}
-	forOf                        = []byte{' ', 'o', 'f', ' '}
-	varOpen                      = []byte{'v', 'a', 'r', ' '}
-	letOpen                      = []byte{'l', 'e', 't', ' '}
-	constOpen                    = []byte{'c', 'o', 'n', 's', 't', ' '}
-	funcOpen                     = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	asyncFuncOpen                = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ' '}
-	genFuncOpen                  = []byte{'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
-	asyncGenFuncOpen             = []byte{'a', 's', 'y', 'n', 'c', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', '*', ' '}
-	parenOpen                    = []byte{'('}
-	tryOpen                      = []byte{'t', 'r', 'y', ' '}
-	catchParenOpen               = []byte{' ', 'c', 'a', 't', 'c', 'h', ' ', '('}
-	catchOpen                    = catchParenOpen[:7]
-	finallyOpen                  = []byte{' ', 'f', 'i', 'n', 'a', 'l', 'l', 'y', ' '}
-	classOpen                    = []byte{'c', 'l', 'a', 's', 's', ' '}
-	extends                      = []byte{'e', 'x', 't', 'e', 'n', 'd', 's', ' '}
-	assignment                   = []byte{' ', '=', ' '}
-	assignmentMultiply           = []byte{' ', '*', '=', ' '}
-	assignmentDivide             = []byte{' ', '/', '=', ' '}
-	assignmentRemainder          = []byte{' ', '%', '=', ' '}
-	assignmentAdd                = []byte{' ', '+', '=', ' '}
-	assignmentSubtract           = []byte{' ', '-', '=', ' '}
-	assignmentLeftShift          = []byte{' ', '<', '<', '=', ' '}
-	assignmentSignRightShift     = []byte{' ', '>', '>', '=', ' '}
-	assignmentZeroRightShift     = []byte{' ', '>', '>', '>', '=', ' '}
-	assignmentAND                = []byte{' ', '&', '=', ' '}
-	assignmentXOR                = []byte{' ', '^', '=', ' '}
-	assignmentOR                 = []byte{' ', '|', '=', ' '}
-	assignmentExponentiation     = []byte{' ', '*', '*', '=', ' '}
-	assignmentLogicalAnd         = []byte{' ', '&', '&', '=', ' '}
-	assignmentLogicalOr          = []byte{' ', '|', '|', '=', ' '}
-	assignmentNullish            = []byte{' ', '?', '?', '=', ' '}
-	yield                        = []byte{'y', 'i', 'e', 'l', 'd', ' '}
-	delegate                     = []byte{'*', ' '}
-	ellipsis                     = []byte{'.', '.', '.'}
-	bracketOpen                  = []byte{'['}
-	bracketClose                 = []byte{']'}
-	methodAsyncGenerator         = []byte{'a', 's', 'y', 'n', 'c', ' ', '*', ' '}
-	methodAsync                  = methodAsyncGenerator[0:6]
-	methodGenerator              = methodAsyncGenerator[6:8]
-	methodGet                    = []byte{'g', 'e', 't', ' '}
-	methodSet                    = []byte{'s', 'e', 't', ' '}
-	methodStatic                 = []byte{'s', 't', 'a', 't', 'i', 'c', ' '}
-	arrow                        = []byte{'=', '>', ' '}
-	news                         = []byte{'n', 'e', 'w', ' '}
-	super                        = []byte{'s', 'u', 'p', 'e', 'r'}
-	colonSep                     = []byte{':', ' '}
-	logicalOR                    = []byte{' ', '|', '|', ' '}
-	newTarget                    = []byte{'n', 'e', 'w', '.', 't', 'a', 'r', 'g', 'e', 't'}
-	importMeta                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '.', 'm', 'e', 't', 'a'}
-	dot                          = ellipsis[:1]
-	logicalAND                   = []byte{' ', '&', '&', ' '}
-	this                         = []byte{'t', 'h', 'i', 's'}
-	bitwiseOR                    = []byte{' ', '|', ' '}
-	bitwiseXOR                   = []byte{' ', '^', ' '}
-	bitwiseAND                   = []byte{' ', '&', ' '}
-	equalityEqual                = []byte{' ', '=', '=', ' '}
-	equalityNotEqual             = []byte{' ', '!', '=', ' '}
-	equalityStrictEqual          = []byte{' ', '=', '=', '=', ' '}
-	equalityStrictNotEqual       = []byte{' ', '!', '=', '=', ' '}
-	relationshipLessThan         = []byte{' ', '<', ' '}
-	relationshipGreaterThan      = []byte{' ', '>', ' '}
-	relationshipLessThanEqual    = []byte{' ', '<', '=', ' '}
-	relationshipGreaterThanEqual = []byte{' ', '>', '=', ' '}
-	relationshipInstanceOf       = []byte{' ', 'i', 'n', 's', 't', 'a', 'n', 'c', 'e', 'o', 'f', ' '}
-	relationshipIn               = forIn
-	shiftLeft                    = []byte{' ', '<', '<', ' '}
-	shiftRight                   = []byte{' ', '>', '>', ' '}
-	shiftUnsignedRight           = []byte{' ', '>', '>', '>', ' '}
-	additiveAdd                  = []byte{' ', '+', ' '}
-	additiveMinus                = []byte{' ', '-', ' '}
-	multiplicativeMultiply       = []byte{' ', '*', ' '}
-	multiplicativeDivide         = []byte{' ', '/', ' '}
-	multiplicativeRemainder      = []byte{' ', '%', ' '}
-	exponentionation             = []byte{' ', '*', '*', ' '}
-	unaryDelete                  = []byte{'d', 'e', 'l', 'e', 't', 'e', ' '}
-	unaryVoid                    = []byte{'v', 'o', 'i', 'd', ' '}
-	unaryTypeOf                  = []byte{'t', 'y', 'p', 'e', 'o', 'f', ' '}
-	unaryAdd                     = []byte{'+'}
-	unaryMinus                   = []byte{'-'}
-	unaryBitwiseNot              = []byte{'~'}
-	unaryLogicalNot              = []byte{'!'}
-	unaryAwait                   = []byte{'a', 'w', 'a', 'i', 't', ' '}
-	updateIncrement              = []byte{'+', '+'}
-	updateDecrement              = []byte{'-', '-'}
-	importc                      = []byte{'i', 'm', 'p', 'o', 'r', 't', ' '}
-	from                         = []byte{' ', 'f', 'r', 'o', 'm', ' '}
-	exportAll                    = exponentionation[1:2]
-	exportd                      = []byte{'e', 'x', 'p', 'o', 'r', 't', ' ', 'd', 'e', 'f', 'a', 'u', 'l', 't', ' '}
-	exportc                      = exportd[:7]
-	namespaceImport              = []byte{'*', ' ', 'a', 's', ' '}
-	as                           = namespaceImport[1:]
-	importCall                   = []byte{'i', 'm', 'p', 'o', 'r', 't', '('}
-	optionalChain                = []byte{'?', '.'}
-	coalesceOperator             = []byte{' ', '?', '?', ' '}
-	space                        = []byte{' '}
-)
-
 func (s Script) printSource(w writer, v bool) {
 	if v && len(s.Comments[0]) > 0 {
 		s.Comments[0].printSource(w, true)
@@ -135,7 +10,7 @@ func (s Script) printSource(w writer, v bool) {
 		s.StatementList[0].printSource(w, v)
 
 		for _, stmt := range s.StatementList[1:] {
-			w.Write(doubleNewLine)
+			w.WriteString("\n\n")
 			stmt.printSource(w, v)
 		}
 	}
@@ -171,7 +46,7 @@ func (s Statement) printSource(w writer, v bool) {
 			s.VariableStatement.printSource(w, v)
 		} else if s.ExpressionStatement != nil {
 			s.ExpressionStatement.printSource(w, v)
-			w.Write(semiColon)
+			w.WriteString(";")
 		} else if s.IfStatement != nil {
 			s.IfStatement.printSource(w, v)
 		} else if s.IterationStatementDo != nil {
@@ -186,7 +61,7 @@ func (s Statement) printSource(w writer, v bool) {
 			s.WithStatement.printSource(w, v)
 		} else if s.LabelIdentifier != nil {
 			w.WriteString(s.LabelIdentifier.Data)
-			w.Write(labelPost)
+			w.WriteString(": ")
 			if s.LabelledItemFunction != nil {
 				s.LabelledItemFunction.printSource(w, v)
 			} else if s.LabelledItemStatement != nil {
@@ -201,7 +76,7 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("continue ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.Write(semiColon)
+			w.WriteString(";")
 		}
 	case StatementBreak:
 		if s.LabelIdentifier == nil {
@@ -209,7 +84,7 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("break ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.Write(semiColon)
+			w.WriteString(";")
 		}
 	case StatementReturn:
 		if s.ExpressionStatement == nil {
@@ -217,13 +92,13 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("return ")
 			s.ExpressionStatement.printSource(w, v)
-			w.Write(semiColon)
+			w.WriteString(";")
 		}
 	case StatementThrow:
 		if s.ExpressionStatement != nil {
 			w.WriteString("throw ")
 			s.ExpressionStatement.printSource(w, v)
-			w.Write(semiColon)
+			w.WriteString(";")
 		}
 	case StatementDebugger:
 		w.WriteString("debugger;")
@@ -241,7 +116,7 @@ func (d Declaration) printSource(w writer, v bool) {
 }
 
 func (b Block) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	var lastLine uint64
 
@@ -257,17 +132,17 @@ func (b Block) printSource(w writer, v bool) {
 				ll := stmt.Tokens[0].Line
 
 				if ll > lastLine {
-					pp.Write(newLine)
+					pp.WriteString("\n")
 				} else {
-					pp.Write(space)
+					pp.WriteString(" ")
 				}
 
 				lastLine = ll
 			} else {
-				pp.Write(newLine)
+				pp.WriteString("\n")
 			}
 		} else {
-			pp.Write(newLine)
+			pp.WriteString("\n")
 		}
 
 		stmt.printSource(pp, v)
@@ -276,16 +151,16 @@ func (b Block) printSource(w writer, v bool) {
 	if len(b.StatementList) > 0 {
 		if v && len(b.Tokens) > 0 {
 			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
-				w.Write(newLine)
+				w.WriteString("\n")
 			} else {
-				pp.Write(space)
+				pp.WriteString(" ")
 			}
 		} else {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (vs VariableStatement) printSource(w writer, v bool) {
@@ -307,19 +182,19 @@ func (vs VariableStatement) printSource(w writer, v bool) {
 				if ll := vd.Tokens[0].Line; ll > lastLine {
 					lastLine = ll
 
-					w.Write(commaSepNL)
+					w.WriteString(",\n")
 				} else {
-					w.Write(commaSep)
+					w.WriteString(", ")
 				}
 			} else {
-				w.Write(commaSep)
+				w.WriteString(", ")
 			}
 		}
 
 		vd.printSource(w, v)
 	}
 
-	w.Write(semiColon)
+	w.WriteString(";")
 }
 
 func (e Expression) printSource(w writer, v bool) {
@@ -339,12 +214,12 @@ func (e Expression) printSource(w writer, v bool) {
 		if v && len(ae.Tokens) > 0 {
 			if ll := ae.Tokens[0].Line; ll > lastLine {
 				lastLine = ll
-				w.Write(commaSepNL)
+				w.WriteString(",\n")
 			} else {
-				w.Write(commaSep)
+				w.WriteString(", ")
 			}
 		} else {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		ae.printSource(w, v)
@@ -352,7 +227,7 @@ func (e Expression) printSource(w writer, v bool) {
 }
 
 func (i IfStatement) printSource(w writer, v bool) {
-	w.Write(ifOpen)
+	w.WriteString("if (")
 
 	if v {
 		pp := w.Indent()
@@ -362,31 +237,31 @@ func (i IfStatement) printSource(w writer, v bool) {
 		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
 			nl = true
 
-			pp.Write(newLine)
+			pp.WriteString("\n")
 		}
 
 		i.Expression.printSource(pp, true)
 
 		if nl {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	} else {
 		i.Expression.printSource(w, false)
 	}
 
-	w.Write(parenCloseSpace)
+	w.WriteString(") ")
 	i.Statement.printSource(w, v)
 
 	if i.ElseStatement != nil {
-		w.Write(elseOpen)
+		w.WriteString(" else ")
 		i.ElseStatement.printSource(w, v)
 	}
 }
 
 func (i IterationStatementDo) printSource(w writer, v bool) {
-	w.Write(doOpen)
+	w.WriteString("do ")
 	i.Statement.printSource(w, v)
-	w.Write(doWhileOpen)
+	w.WriteString(" while (")
 
 	if v {
 		pp := w.Indent()
@@ -396,23 +271,23 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 		if len(i.Expression.Tokens) > 0 && len(i.Tokens) > 0 && i.Expression.Tokens[0].Line < i.Tokens[len(i.Tokens)-1].Line {
 			nl = true
 
-			pp.Write(newLine)
+			pp.WriteString("\n")
 		}
 
 		i.Expression.printSource(pp, true)
 
 		if nl {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	} else {
 		i.Expression.printSource(w, false)
 	}
 
-	w.Write(doWhileClose)
+	w.WriteString(");")
 }
 
 func (i IterationStatementWhile) printSource(w writer, v bool) {
-	w.Write(whileOpen)
+	w.WriteString("while (")
 
 	if v {
 		pp := w.Indent()
@@ -420,7 +295,7 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 		var nl bool
 
 		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
-			pp.Write(newLine)
+			pp.WriteString("\n")
 
 			nl = true
 		}
@@ -428,13 +303,13 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 		i.Expression.printSource(pp, true)
 
 		if nl {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	} else {
 		i.Expression.printSource(w, false)
 	}
 
-	w.Write(parenCloseSpace)
+	w.WriteString(") ")
 	i.Statement.printSource(w, v)
 }
 
@@ -481,9 +356,9 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	switch i.Type {
 	case ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
-		w.Write(forAwaitOpen)
+		w.WriteString("for await (")
 	default:
-		w.Write(forOpen)
+		w.WriteString("for (")
 	}
 
 	pp := w.Indent()
@@ -498,40 +373,40 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	switch i.Type {
 	case ForNormal:
-		w.Write(semiColon)
+		w.WriteString(";")
 	case ForNormalVar:
 		if v && len(i.InitVar[0].Tokens) > 0 {
 			if i.InitVar[0].Tokens[0].Line > lastLine {
-				pp.Write(newLine)
+				pp.WriteString("\n")
 			}
 
 			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
 		}
 
-		pp.Write(varOpen)
+		pp.WriteString("var ")
 		LexicalBinding(i.InitVar[0]).printSource(pp, v)
 
 		for _, vd := range i.InitVar[1:] {
 			if v && len(vd.Tokens) > 0 {
 				if vd.Tokens[0].Line > lastLine {
-					pp.Write(commaSepNL)
+					pp.WriteString(",\n")
 				} else {
-					pp.Write(commaSep)
+					pp.WriteString(", ")
 				}
 			} else {
-				pp.Write(commaSep)
+				pp.WriteString(", ")
 			}
 
 			LexicalBinding(vd).printSource(pp, v)
 		}
 
-		w.Write(semiColon)
+		w.WriteString(";")
 	case ForNormalLexicalDeclaration:
 		if v && len(i.InitLexical.Tokens) > 0 {
 			if i.InitLexical.Tokens[0].Line > lastLine {
 				endline = true
 
-				pp.Write(newLine)
+				pp.WriteString("\n")
 			}
 
 			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
@@ -543,21 +418,21 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 			if i.InitExpression.Tokens[0].Line > lastLine {
 				endline = true
 
-				pp.Write(newLine)
+				pp.WriteString("\n")
 			}
 
 			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
 		}
 
 		i.InitExpression.printSource(pp, v)
-		w.Write(semiColon)
+		w.WriteString(";")
 	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
 		if v {
 			if len(i.LeftHandSideExpression.Tokens) > 0 {
 				if i.LeftHandSideExpression.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.Write(newLine)
+					pp.WriteString("\n")
 				}
 
 				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
@@ -568,11 +443,11 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	default:
 		switch i.Type {
 		case ForInVar, ForOfVar, ForAwaitOfVar:
-			w.Write(varOpen)
+			w.WriteString("var ")
 		case ForInLet, ForOfLet, ForAwaitOfLet:
-			w.Write(letOpen)
+			w.WriteString("let ")
 		case ForInConst, ForOfConst, ForAwaitOfConst:
-			w.Write(constOpen)
+			w.WriteString("const ")
 		}
 
 		if i.ForBindingIdentifier != nil {
@@ -591,54 +466,54 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 				if i.Conditional.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.Write(newLine)
+					pp.WriteString("\n")
 				} else {
-					w.Write(space)
+					w.WriteString(" ")
 				}
 
 				lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
 			} else {
-				w.Write(space)
+				w.WriteString(" ")
 			}
 
 			i.Conditional.printSource(pp, v)
 		}
 
-		w.Write(semiColon)
+		w.WriteString(";")
 
 		if i.Afterthought != nil {
 			if v && len(i.Afterthought.Tokens) > 0 {
 				if i.Afterthought.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.Write(newLine)
+					pp.WriteString("\n")
 				} else {
-					w.Write(space)
+					w.WriteString(" ")
 				}
 			} else {
-				w.Write(space)
+				w.WriteString(" ")
 			}
 
 			i.Afterthought.printSource(pp, v)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
-		w.Write(forIn)
+		w.WriteString(" in ")
 		i.In.printSource(pp, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
-		w.Write(forOf)
+		w.WriteString(" of ")
 		i.Of.printSource(pp, v)
 	}
 
 	if endline {
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
-	w.Write(parenCloseSpace)
+	w.WriteString(") ")
 	i.Statement.printSource(w, v)
 }
 
 func (s SwitchStatement) printSource(w writer, v bool) {
-	w.Write(switchOpen)
+	w.WriteString("switch (")
 
 	if v {
 		pp := w.Indent()
@@ -648,52 +523,52 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 		if len(s.Tokens) > 0 && len(s.Expression.Tokens) > 0 && s.Expression.Tokens[0].Line > s.Tokens[0].Line {
 			nl = true
 
-			pp.Write(newLine)
+			pp.WriteString("\n")
 		}
 
 		s.Expression.printSource(pp, true)
 
 		if nl {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	} else {
 		s.Expression.printSource(w, false)
 	}
 
-	w.Write(switchClose)
+	w.WriteString(") {")
 
 	if len(s.CaseClauses) > 0 || s.DefaultClause != nil || len(s.PostDefaultCaseClauses) > 0 {
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
 	for _, c := range s.CaseClauses {
 		c.printSource(w, v)
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
 	if s.DefaultClause != nil {
-		w.Write(defaultCase)
+		w.WriteString("default:")
 
 		pp := w.Indent()
 
 		for _, stmt := range s.DefaultClause {
-			pp.Write(newLine)
+			pp.WriteString("\n")
 			stmt.printSource(pp, v)
 		}
 
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
 	for _, c := range s.PostDefaultCaseClauses {
 		c.printSource(w, v)
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (ws WithStatement) printSource(w writer, v bool) {
-	w.Write(withOpen)
+	w.WriteString("with (")
 
 	if v {
 		pp := w.Indent()
@@ -703,32 +578,32 @@ func (ws WithStatement) printSource(w writer, v bool) {
 		if len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line {
 			nl = true
 
-			pp.Write(newLine)
+			pp.WriteString("\n")
 		}
 
 		ws.Expression.printSource(pp, true)
 
 		if nl {
-			w.Write(newLine)
+			w.WriteString("\n")
 		}
 	} else {
 		ws.Expression.printSource(w, false)
 	}
 
-	w.Write(parenCloseSpace)
+	w.WriteString(") ")
 	ws.Statement.printSource(w, v)
 }
 
 func (f FunctionDeclaration) printSource(w writer, v bool) {
 	switch f.Type {
 	case FunctionNormal:
-		w.Write(funcOpen)
+		w.WriteString("function ")
 	case FunctionGenerator:
-		w.Write(genFuncOpen)
+		w.WriteString("function* ")
 	case FunctionAsync:
-		w.Write(asyncFuncOpen)
+		w.WriteString("async function ")
 	case FunctionAsyncGenerator:
-		w.Write(asyncGenFuncOpen)
+		w.WriteString("async function* ")
 	default:
 		return
 	}
@@ -742,63 +617,63 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 }
 
 func (t TryStatement) printSource(w writer, v bool) {
-	w.Write(tryOpen)
+	w.WriteString("try ")
 	t.TryBlock.printSource(w, v)
 
 	if t.CatchBlock != nil {
 		if t.CatchParameterBindingIdentifier != nil {
-			w.Write(catchParenOpen)
+			w.WriteString(" catch (")
 			w.WriteString(t.CatchParameterBindingIdentifier.Data)
-			w.Write(parenCloseSpace)
+			w.WriteString(") ")
 		} else if t.CatchParameterArrayBindingPattern != nil {
-			w.Write(catchParenOpen)
+			w.WriteString(" catch (")
 			t.CatchParameterArrayBindingPattern.printSource(w, v)
-			w.Write(parenCloseSpace)
+			w.WriteString(") ")
 		} else if t.CatchParameterObjectBindingPattern != nil {
-			w.Write(catchParenOpen)
+			w.WriteString(" catch (")
 			t.CatchParameterObjectBindingPattern.printSource(w, v)
-			w.Write(parenCloseSpace)
+			w.WriteString(") ")
 		} else {
-			w.Write(catchOpen)
+			w.WriteString(" catch ")
 		}
 
 		t.CatchBlock.printSource(w, v)
 	}
 
 	if t.FinallyBlock != nil {
-		w.Write(finallyOpen)
+		w.WriteString(" finally ")
 		t.FinallyBlock.printSource(w, v)
 	}
 }
 
 func (c ClassDeclaration) printSource(w writer, v bool) {
-	w.Write(classOpen)
+	w.WriteString("class ")
 
 	if c.BindingIdentifier != nil {
 		w.WriteString(c.BindingIdentifier.Data)
-		w.Write(space)
+		w.WriteString(" ")
 	}
 
 	if c.ClassHeritage != nil {
-		w.Write(extends)
+		w.WriteString("extends ")
 		c.ClassHeritage.printSource(w, v)
-		w.Write(space)
+		w.WriteString(" ")
 	}
 
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	if len(c.ClassBody) > 0 {
 		pp := w.Indent()
 
 		for _, ce := range c.ClassBody {
-			pp.Write(newLine)
+			pp.WriteString("\n")
 			ce.printSource(pp, v)
 		}
 
-		w.Write(newLine)
+		w.WriteString("\n")
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (l LexicalDeclaration) printSource(w writer, v bool) {
@@ -807,24 +682,24 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 	}
 
 	if l.LetOrConst == Let {
-		w.Write(letOpen)
+		w.WriteString("let ")
 	} else if l.LetOrConst == Const {
-		w.Write(constOpen)
+		w.WriteString("const ")
 	}
 
 	l.BindingList[0].printSource(w, v)
 
 	for _, lb := range l.BindingList[1:] {
 		if v {
-			w.Write(commaSepNL)
+			w.WriteString(",\n")
 		} else {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		lb.printSource(w, v)
 	}
 
-	w.Write(semiColon)
+	w.WriteString(";")
 }
 
 func (l LexicalBinding) printSource(w writer, v bool) {
@@ -839,67 +714,67 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 	}
 
 	if l.Initializer != nil {
-		w.Write(assignment)
+		w.WriteString(" = ")
 		l.Initializer.printSource(w, v)
 	}
 }
 
 func (a AssignmentExpression) printSource(w writer, v bool) {
 	if a.Yield && a.AssignmentExpression != nil {
-		w.Write(yield)
+		w.WriteString("yield ")
 
 		if a.Delegate {
-			w.Write(delegate)
+			w.WriteString("* ")
 		}
 
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ArrowFunction != nil {
 		a.ArrowFunction.printSource(w, v)
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
-		ao := assignment
+		ao := " = "
 
 		switch a.AssignmentOperator {
 		case AssignmentAssign:
 		case AssignmentMultiply:
-			ao = assignmentMultiply
+			ao = " *= "
 		case AssignmentDivide:
-			ao = assignmentDivide
+			ao = " /= "
 		case AssignmentRemainder:
-			ao = assignmentRemainder
+			ao = " %= "
 		case AssignmentAdd:
-			ao = assignmentAdd
+			ao = " += "
 		case AssignmentSubtract:
-			ao = assignmentSubtract
+			ao = " -= "
 		case AssignmentLeftShift:
-			ao = assignmentLeftShift
+			ao = " <<= "
 		case AssignmentSignPropagatingRightShift:
-			ao = assignmentSignRightShift
+			ao = " >>= "
 		case AssignmentZeroFillRightShift:
-			ao = assignmentZeroRightShift
+			ao = " >>>= "
 		case AssignmentBitwiseAND:
-			ao = assignmentAND
+			ao = " &= "
 		case AssignmentBitwiseXOR:
-			ao = assignmentXOR
+			ao = " ^= "
 		case AssignmentBitwiseOR:
-			ao = assignmentOR
+			ao = " |= "
 		case AssignmentExponentiation:
-			ao = assignmentExponentiation
+			ao = " **= "
 		case AssignmentLogicalAnd:
-			ao = assignmentLogicalAnd
+			ao = " &&= "
 		case AssignmentLogicalOr:
-			ao = assignmentLogicalOr
+			ao = " ||= "
 		case AssignmentNullish:
-			ao = assignmentNullish
+			ao = " ??= "
 		default:
 			return
 		}
 
 		a.LeftHandSideExpression.printSource(w, v)
-		w.Write(ao)
+		w.WriteString(ao)
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.AssignmentPattern != nil && a.AssignmentExpression != nil && a.AssignmentOperator == AssignmentAssign {
 		a.AssignmentPattern.printSource(w, v)
-		w.Write(assignment)
+		w.WriteString(" = ")
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ConditionalExpression != nil {
 		a.ConditionalExpression.printSource(w, v)
@@ -925,11 +800,11 @@ func (a AssignmentPattern) printSource(w writer, v bool) {
 }
 
 func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
-	w.Write(bracketOpen)
+	w.WriteString("[")
 
 	for n, ae := range a.AssignmentElements {
 		if n > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		ae.printSource(w, v)
@@ -937,22 +812,22 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 
 	if a.AssignmentRestElement != nil {
 		if len(a.AssignmentElements) > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
-		w.Write(ellipsis)
+		w.WriteString("...")
 		a.AssignmentRestElement.printSource(w, v)
 	}
 
-	w.Write(bracketClose)
+	w.WriteString("]")
 }
 
 func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	for n, ap := range o.AssignmentPropertyList {
 		if n > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		ap.printSource(w, v)
@@ -960,21 +835,21 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 
 	if o.AssignmentRestElement != nil {
 		if len(o.AssignmentPropertyList) > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
-		w.Write(ellipsis)
+		w.WriteString("...")
 		o.AssignmentRestElement.printSource(w, v)
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (a AssignmentElement) printSource(w writer, v bool) {
 	a.DestructuringAssignmentTarget.printSource(w, v)
 
 	if a.Initializer != nil {
-		w.Write(assignment)
+		w.WriteString(" = ")
 		a.Initializer.printSource(w, v)
 	}
 }
@@ -987,12 +862,12 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 			return
 		}
 
-		w.Write(colonSep)
+		w.WriteString(": ")
 		a.DestructuringAssignmentTarget.printSource(w, v)
 	}
 
 	if a.Initializer != nil {
-		w.Write(assignment)
+		w.WriteString(" = ")
 		a.Initializer.printSource(w, v)
 	}
 }
@@ -1006,11 +881,11 @@ func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 }
 
 func (o ObjectBindingPattern) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	for n, bp := range o.BindingPropertyList {
 		if n > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		bp.printSource(w, v)
@@ -1018,22 +893,22 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 
 	if o.BindingRestProperty != nil {
 		if len(o.BindingPropertyList) > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
-		w.Write(ellipsis)
+		w.WriteString("...")
 		w.WriteString(o.BindingRestProperty.Data)
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (a ArrayBindingPattern) printSource(w writer, v bool) {
-	w.Write(bracketOpen)
+	w.WriteString("[")
 
 	for n, be := range a.BindingElementList {
 		if n > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
 		be.printSource(w, v)
@@ -1041,72 +916,72 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 
 	if a.BindingRestElement != nil {
 		if len(a.BindingElementList) > 0 {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 
-		w.Write(ellipsis)
+		w.WriteString("...")
 		a.BindingRestElement.printSource(w, v)
 	}
 
-	w.Write(bracketClose)
+	w.WriteString("]")
 }
 
 func (c CaseClause) printSource(w writer, v bool) {
-	w.Write(caseOpen)
+	w.WriteString("case ")
 	c.Expression.printSource(w, v)
-	w.Write(caseClose)
+	w.WriteString(":")
 
 	pp := w.Indent()
 
 	for _, stmt := range c.StatementList {
-		pp.Write(newLine)
+		pp.WriteString("\n")
 		stmt.printSource(pp, v)
 	}
 }
 
 func (f FormalParameters) printSource(w writer, v bool) {
-	w.Write(parenOpen)
+	w.WriteString("(")
 
 	if len(f.FormalParameterList) > 0 {
 		f.FormalParameterList[0].printSource(w, v)
 
 		for _, be := range f.FormalParameterList[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			be.printSource(w, v)
 		}
 
 		if f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 	}
 
 	if f.BindingIdentifier != nil {
-		w.Write(ellipsis)
+		w.WriteString("...")
 		w.WriteString(f.BindingIdentifier.Data)
 	} else if f.ArrayBindingPattern != nil {
-		w.Write(ellipsis)
+		w.WriteString("...")
 		f.ArrayBindingPattern.printSource(w, v)
 	} else if f.ObjectBindingPattern != nil {
-		w.Write(ellipsis)
+		w.WriteString("...")
 		f.ObjectBindingPattern.printSource(w, v)
 	}
 
-	w.Write(parenCloseSpace)
+	w.WriteString(") ")
 }
 
 func (m MethodDefinition) printSource(w writer, v bool) {
 	switch m.Type {
 	case MethodNormal:
 	case MethodGenerator:
-		w.Write(methodGenerator)
+		w.WriteString("* ")
 	case MethodAsync:
-		w.Write(methodAsync)
+		w.WriteString("async ")
 	case MethodAsyncGenerator:
-		w.Write(methodAsyncGenerator)
+		w.WriteString("async * ")
 	case MethodGetter:
-		w.Write(methodGet)
+		w.WriteString("get ")
 	case MethodSetter:
-		w.Write(methodSet)
+		w.WriteString("set ")
 	default:
 		return
 	}
@@ -1118,7 +993,7 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 
 func (ce ClassElement) printSource(w writer, v bool) {
 	if ce.Static {
-		w.Write(methodStatic)
+		w.WriteString("static ")
 	}
 
 	if ce.MethodDefinition != nil {
@@ -1134,11 +1009,11 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 	fd.ClassElementName.printSource(w, v)
 
 	if fd.Initializer != nil {
-		w.Write(assignment)
+		w.WriteString(" = ")
 		fd.Initializer.printSource(w, v)
 	}
 
-	w.Write(semiColon)
+	w.WriteString(";")
 }
 
 func (cen ClassElementName) printSource(w writer, v bool) {
@@ -1157,9 +1032,9 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 	}
 
 	if c.True != nil && c.False != nil {
-		w.Write(conditionalStart)
+		w.WriteString(" ? ")
 		c.True.printSource(w, v)
-		w.Write(conditionalSep)
+		w.WriteString(" : ")
 		c.False.printSource(w, v)
 	}
 }
@@ -1170,17 +1045,17 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 	}
 
 	if a.Async {
-		w.Write(methodAsync)
+		w.WriteString("async ")
 	}
 
 	if a.BindingIdentifier != nil {
 		w.WriteString(a.BindingIdentifier.Data)
-		w.Write(space)
+		w.WriteString(" ")
 	} else if a.FormalParameters != nil {
 		a.FormalParameters.printSource(w, v)
 	}
 
-	w.Write(arrow)
+	w.WriteString("=> ")
 
 	if a.FunctionBody != nil {
 		a.FunctionBody.printSource(w, v)
@@ -1191,7 +1066,7 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 
 func (n NewExpression) printSource(w writer, v bool) {
 	for i := uint(0); i < n.News; i++ {
-		w.Write(news)
+		w.WriteString("new ")
 	}
 
 	n.MemberExpression.printSource(w, v)
@@ -1199,12 +1074,12 @@ func (n NewExpression) printSource(w writer, v bool) {
 
 func (c CallExpression) printSource(w writer, v bool) {
 	if c.SuperCall && c.Arguments != nil {
-		w.Write(super)
+		w.WriteString("super")
 		c.Arguments.printSource(w, v)
 	} else if c.ImportCall != nil {
-		w.Write(importCall)
+		w.WriteString("import(")
 		c.ImportCall.printSource(w, v)
-		w.Write(parenClose)
+		w.WriteString(")")
 	} else if c.MemberExpression != nil && c.Arguments != nil {
 		c.MemberExpression.printSource(w, v)
 		c.Arguments.printSource(w, v)
@@ -1214,17 +1089,17 @@ func (c CallExpression) printSource(w writer, v bool) {
 			c.Arguments.printSource(w, v)
 		} else if c.Expression != nil {
 			c.CallExpression.printSource(w, v)
-			w.Write(bracketOpen)
+			w.WriteString("[")
 			c.Expression.printSource(w, v)
-			w.Write(bracketClose)
+			w.WriteString("]")
 		} else if c.IdentifierName != nil {
 			c.CallExpression.printSource(w, v)
 
 			if v && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
-				w.Write(newLine)
+				w.WriteString("\n")
 			}
 
-			w.Write(dot)
+			w.WriteString(".")
 			w.WriteString(c.IdentifierName.Data)
 		} else if c.TemplateLiteral != nil {
 			c.CallExpression.printSource(w, v)
@@ -1233,10 +1108,10 @@ func (c CallExpression) printSource(w writer, v bool) {
 			c.CallExpression.printSource(w, v)
 
 			if v && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
-				w.Write(newLine)
+				w.WriteString("\n")
 			}
 
-			w.Write(dot)
+			w.WriteString(".")
 			w.WriteString(c.PrivateIdentifier.Data)
 		}
 	}
@@ -1247,7 +1122,7 @@ func (b BindingProperty) printSource(w writer, v bool) {
 		b.BindingElement.printSource(w, v)
 	} else {
 		b.PropertyName.printSource(w, v)
-		w.Write(colonSep)
+		w.WriteString(": ")
 		b.BindingElement.printSource(w, v)
 	}
 }
@@ -1264,7 +1139,7 @@ func (b BindingElement) printSource(w writer, v bool) {
 	}
 
 	if b.Initializer != nil {
-		w.Write(assignment)
+		w.WriteString(" = ")
 		b.Initializer.printSource(w, v)
 	}
 }
@@ -1273,64 +1148,64 @@ func (p PropertyName) printSource(w writer, v bool) {
 	if p.LiteralPropertyName != nil {
 		w.WriteString(p.LiteralPropertyName.Data)
 	} else if p.ComputedPropertyName != nil {
-		w.Write(bracketOpen)
+		w.WriteString("[")
 		p.ComputedPropertyName.printSource(w, v)
-		w.Write(bracketClose)
+		w.WriteString("]")
 	}
 }
 
 func (l LogicalORExpression) printSource(w writer, v bool) {
 	if l.LogicalORExpression != nil {
 		l.LogicalORExpression.printSource(w, v)
-		w.Write(logicalOR)
+		w.WriteString(" || ")
 	}
 
 	l.LogicalANDExpression.printSource(w, v)
 }
 
 func (c ParenthesizedExpression) printSource(w writer, v bool) {
-	w.Write(parenOpen)
+	w.WriteString("(")
 
 	if len(c.Expressions) > 0 {
 		c.Expressions[0].printSource(w, v)
 
 		for _, e := range c.Expressions[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			e.printSource(w, v)
 		}
 	}
 
-	w.Write(parenClose)
+	w.WriteString(")")
 }
 
 func (m MemberExpression) printSource(w writer, v bool) {
 	if m.MemberExpression != nil {
 		if m.Arguments != nil {
-			w.Write(news)
+			w.WriteString("new ")
 			m.MemberExpression.printSource(w, v)
 			m.Arguments.printSource(w, v)
 		} else if m.Expression != nil {
 			m.MemberExpression.printSource(w, v)
-			w.Write(bracketOpen)
+			w.WriteString("[")
 			m.Expression.printSource(w, v)
-			w.Write(bracketClose)
+			w.WriteString("]")
 		} else if m.IdentifierName != nil {
 			m.MemberExpression.printSource(w, v)
 
 			if v && len(m.MemberExpression.Tokens) > 0 && m.IdentifierName.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
-				w.Write(newLine)
+				w.WriteString("\n")
 			}
 
-			w.Write(dot)
+			w.WriteString(".")
 			w.WriteString(m.IdentifierName.Data)
 		} else if m.PrivateIdentifier != nil {
 			m.MemberExpression.printSource(w, v)
 
 			if v && len(m.MemberExpression.Tokens) > 0 && m.PrivateIdentifier.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
-				w.Write(newLine)
+				w.WriteString("\n")
 			}
 
-			w.Write(dot)
+			w.WriteString(".")
 			w.WriteString(m.PrivateIdentifier.Data)
 		} else if m.TemplateLiteral != nil {
 			m.MemberExpression.printSource(w, v)
@@ -1340,43 +1215,43 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		m.PrimaryExpression.printSource(w, v)
 	} else if m.SuperProperty {
 		if m.Expression != nil {
-			w.Write(super)
-			w.Write(bracketOpen)
+			w.WriteString("super")
+			w.WriteString("[")
 			m.Expression.printSource(w, v)
-			w.Write(bracketClose)
+			w.WriteString("]")
 		} else if m.IdentifierName != nil {
-			w.Write(super)
-			w.Write(dot)
+			w.WriteString("super")
+			w.WriteString(".")
 			w.WriteString(m.IdentifierName.Data)
 		}
 	} else if m.NewTarget {
-		w.Write(newTarget)
+		w.WriteString("new.target")
 	} else if m.ImportMeta {
-		w.Write(importMeta)
+		w.WriteString("import.meta")
 	}
 }
 
 func (a Argument) printSource(w writer, v bool) {
 	if a.Spread {
-		w.Write(ellipsis)
+		w.WriteString("...")
 	}
 
 	a.AssignmentExpression.printSource(w, v)
 }
 
 func (a Arguments) printSource(w writer, v bool) {
-	w.Write(parenOpen)
+	w.WriteString("(")
 
 	if len(a.ArgumentList) > 0 {
 		a.ArgumentList[0].printSource(w, v)
 
 		for _, ae := range a.ArgumentList[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			ae.printSource(w, v)
 		}
 	}
 
-	w.Write(parenClose)
+	w.WriteString(")")
 }
 
 func (t TemplateLiteral) printSource(w writer, v bool) {
@@ -1406,7 +1281,7 @@ func (t TemplateLiteral) printSource(w writer, v bool) {
 func (l LogicalANDExpression) printSource(w writer, v bool) {
 	if l.LogicalANDExpression != nil {
 		l.LogicalANDExpression.printSource(w, v)
-		w.Write(logicalAND)
+		w.WriteString(" && ")
 	}
 
 	l.BitwiseORExpression.printSource(w, v)
@@ -1414,7 +1289,7 @@ func (l LogicalANDExpression) printSource(w writer, v bool) {
 
 func (p PrimaryExpression) printSource(w writer, v bool) {
 	if p.This != nil {
-		w.Write(this)
+		w.WriteString("this")
 	} else if p.IdentifierReference != nil {
 		w.WriteString(p.IdentifierReference.Data)
 	} else if p.Literal != nil {
@@ -1437,7 +1312,7 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 func (b BitwiseORExpression) printSource(w writer, v bool) {
 	if b.BitwiseORExpression != nil {
 		b.BitwiseORExpression.printSource(w, v)
-		w.Write(bitwiseOR)
+		w.WriteString(" | ")
 	}
 
 	b.BitwiseXORExpression.printSource(w, v)
@@ -1445,29 +1320,29 @@ func (b BitwiseORExpression) printSource(w writer, v bool) {
 
 func (a ArrayElement) printSource(w writer, v bool) {
 	if a.Spread {
-		w.Write(ellipsis)
+		w.WriteString("...")
 	}
 
 	a.AssignmentExpression.printSource(w, v)
 }
 
 func (a ArrayLiteral) printSource(w writer, v bool) {
-	w.Write(bracketOpen)
+	w.WriteString("[")
 
 	if len(a.ElementList) > 0 {
 		a.ElementList[0].printSource(w, v)
 
 		for _, ae := range a.ElementList[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			ae.printSource(w, v)
 		}
 	}
 
-	w.Write(bracketClose)
+	w.WriteString("]")
 }
 
 func (o ObjectLiteral) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	if len(o.PropertyDefinitionList) > 0 {
 		var lastLine uint64
@@ -1485,18 +1360,18 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 					if ll := pd.Tokens[0].Line; ll > lastLine {
 						lastLine = ll
 
-						x.Write(commaSepNL)
+						x.WriteString(",\n")
 					} else {
-						x.Write(commaSep)
+						x.WriteString(", ")
 					}
 				} else {
-					x.Write(commaSep)
+					x.WriteString(", ")
 				}
 			} else if v && len(pd.Tokens) > 0 {
 				if ll := pd.Tokens[0].Line; ll > lastLine {
 					lastLine = ll
 
-					x.Write(newLine)
+					x.WriteString("\n")
 				}
 			}
 
@@ -1504,18 +1379,18 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 		}
 		if v && len(o.Tokens) > 0 {
 			if ll := o.Tokens[len(o.Tokens)-1].Line; ll > lastLine {
-				w.Write(newLine)
+				w.WriteString("\n")
 			}
 		}
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (b BitwiseXORExpression) printSource(w writer, v bool) {
 	if b.BitwiseXORExpression != nil {
 		b.BitwiseXORExpression.printSource(w, v)
-		w.Write(bitwiseXOR)
+		w.WriteString(" ^ ")
 	}
 
 	b.BitwiseANDExpression.printSource(w, v)
@@ -1538,15 +1413,15 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 
 			if !done {
 				if p.IsCoverInitializedName {
-					w.Write(assignment)
+					w.WriteString(" = ")
 				} else {
-					w.Write(colonSep)
+					w.WriteString(": ")
 				}
 
 				p.AssignmentExpression.printSource(w, v)
 			}
 		} else {
-			w.Write(ellipsis)
+			w.WriteString("...")
 			p.AssignmentExpression.printSource(w, v)
 		}
 	} else if p.MethodDefinition != nil {
@@ -1557,7 +1432,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 func (b BitwiseANDExpression) printSource(w writer, v bool) {
 	if b.BitwiseANDExpression != nil {
 		b.BitwiseANDExpression.printSource(w, v)
-		w.Write(bitwiseAND)
+		w.WriteString(" & ")
 	}
 
 	b.EqualityExpression.printSource(w, v)
@@ -1565,23 +1440,23 @@ func (b BitwiseANDExpression) printSource(w writer, v bool) {
 
 func (e EqualityExpression) printSource(w writer, v bool) {
 	if e.EqualityExpression != nil {
-		var eo []byte
+		var eo string
 
 		switch e.EqualityOperator {
 		case EqualityEqual:
-			eo = equalityEqual
+			eo = " == "
 		case EqualityNotEqual:
-			eo = equalityNotEqual
+			eo = " != "
 		case EqualityStrictEqual:
-			eo = equalityStrictEqual
+			eo = " === "
 		case EqualityStrictNotEqual:
-			eo = equalityStrictNotEqual
+			eo = " !== "
 		default:
 			return
 		}
 
 		e.EqualityExpression.printSource(w, v)
-		w.Write(eo)
+		w.WriteString(eo)
 	}
 
 	e.RelationalExpression.printSource(w, v)
@@ -1590,29 +1465,29 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 func (r RelationalExpression) printSource(w writer, v bool) {
 	if r.PrivateIdentifier != nil {
 		w.WriteString(r.PrivateIdentifier.Data)
-		w.Write(relationshipIn)
+		w.WriteString(" in ")
 	} else if r.RelationalExpression != nil {
-		var ro []byte
+		var ro string
 
 		switch r.RelationshipOperator {
 		case RelationshipLessThan:
-			ro = relationshipLessThan
+			ro = " < "
 		case RelationshipGreaterThan:
-			ro = relationshipGreaterThan
+			ro = " > "
 		case RelationshipLessThanEqual:
-			ro = relationshipLessThanEqual
+			ro = " <= "
 		case RelationshipGreaterThanEqual:
-			ro = relationshipGreaterThanEqual
+			ro = " >= "
 		case RelationshipInstanceOf:
-			ro = relationshipInstanceOf
+			ro = " instanceof "
 		case RelationshipIn:
-			ro = relationshipIn
+			ro = " in "
 		default:
 			return
 		}
 
 		r.RelationalExpression.printSource(w, v)
-		w.Write(ro)
+		w.WriteString(ro)
 	}
 
 	r.ShiftExpression.printSource(w, v)
@@ -1620,21 +1495,21 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 
 func (s ShiftExpression) printSource(w writer, v bool) {
 	if s.ShiftExpression != nil {
-		var so []byte
+		var so string
 
 		switch s.ShiftOperator {
 		case ShiftLeft:
-			so = shiftLeft
+			so = " << "
 		case ShiftRight:
-			so = shiftRight
+			so = " >> "
 		case ShiftUnsignedRight:
-			so = shiftUnsignedRight
+			so = " >>> "
 		default:
 			return
 		}
 
 		s.ShiftExpression.printSource(w, v)
-		w.Write(so)
+		w.WriteString(so)
 	}
 
 	s.AdditiveExpression.printSource(w, v)
@@ -1642,19 +1517,19 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 
 func (a AdditiveExpression) printSource(w writer, v bool) {
 	if a.AdditiveExpression != nil {
-		var ao []byte
+		var ao string
 
 		switch a.AdditiveOperator {
 		case AdditiveAdd:
-			ao = additiveAdd
+			ao = " + "
 		case AdditiveMinus:
-			ao = additiveMinus
+			ao = " - "
 		default:
 			return
 		}
 
 		a.AdditiveExpression.printSource(w, v)
-		w.Write(ao)
+		w.WriteString(ao)
 	}
 
 	a.MultiplicativeExpression.printSource(w, v)
@@ -1662,21 +1537,21 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 
 func (m MultiplicativeExpression) printSource(w writer, v bool) {
 	if m.MultiplicativeExpression != nil {
-		var mo []byte
+		var mo string
 
 		switch m.MultiplicativeOperator {
 		case MultiplicativeMultiply:
-			mo = multiplicativeMultiply
+			mo = " * "
 		case MultiplicativeDivide:
-			mo = multiplicativeDivide
+			mo = " / "
 		case MultiplicativeRemainder:
-			mo = multiplicativeRemainder
+			mo = " % "
 		default:
 			return
 		}
 
 		m.MultiplicativeExpression.printSource(w, v)
-		w.Write(mo)
+		w.WriteString(mo)
 	}
 
 	m.ExponentiationExpression.printSource(w, v)
@@ -1685,7 +1560,7 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 func (e ExponentiationExpression) printSource(w writer, v bool) {
 	if e.ExponentiationExpression != nil {
 		e.ExponentiationExpression.printSource(w, v)
-		w.Write(exponentionation)
+		w.WriteString(" ** ")
 	}
 
 	e.UnaryExpression.printSource(w, v)
@@ -1695,21 +1570,21 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 	for _, uo := range u.UnaryOperators {
 		switch uo {
 		case UnaryDelete:
-			w.Write(unaryDelete)
+			w.WriteString("delete ")
 		case UnaryVoid:
-			w.Write(unaryVoid)
+			w.WriteString("void ")
 		case UnaryTypeOf:
-			w.Write(unaryTypeOf)
+			w.WriteString("typeof ")
 		case UnaryAdd:
-			w.Write(unaryAdd)
+			w.WriteString("+")
 		case UnaryMinus:
-			w.Write(unaryMinus)
+			w.WriteString("-")
 		case UnaryBitwiseNot:
-			w.Write(unaryBitwiseNot)
+			w.WriteString("~")
 		case UnaryLogicalNot:
-			w.Write(unaryLogicalNot)
+			w.WriteString("!")
 		case UnaryAwait:
-			w.Write(unaryAwait)
+			w.WriteString("await ")
 		}
 	}
 
@@ -1718,13 +1593,13 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 
 func (u UpdateExpression) printSource(w writer, v bool) {
 	if u.LeftHandSideExpression != nil {
-		var uo []byte
+		var uo string
 
 		switch u.UpdateOperator {
 		case UpdatePostIncrement:
-			uo = updateIncrement
+			uo = "++"
 		case UpdatePostDecrement:
-			uo = updateDecrement
+			uo = "--"
 		case UpdatePreIncrement, UpdatePreDecrement:
 			return
 		default:
@@ -1733,14 +1608,14 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 		u.LeftHandSideExpression.printSource(w, v)
 
 		if len(uo) > 0 {
-			w.Write(uo)
+			w.WriteString(uo)
 		}
 	} else if u.UnaryExpression != nil {
 		switch u.UpdateOperator {
 		case UpdatePreIncrement:
-			w.Write(updateIncrement)
+			w.WriteString("++")
 		case UpdatePreDecrement:
-			w.Write(updateDecrement)
+			w.WriteString("--")
 		default:
 			return
 		}
@@ -1759,7 +1634,7 @@ func (m Module) printSource(w writer, v bool) {
 		m.ModuleListItems[0].printSource(w, v)
 
 		for _, mi := range m.ModuleListItems[1:] {
-			w.Write(doubleNewLine)
+			w.WriteString("\n\n")
 			mi.printSource(w, v)
 		}
 	}
@@ -1789,7 +1664,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		return
 	}
 
-	w.Write(importc)
+	w.WriteString("import ")
 
 	if i.ImportClause != nil {
 		i.ImportClause.printSource(w, v)
@@ -1799,11 +1674,11 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 	}
 
 	if i.WithClause != nil {
-		w.Write(space)
+		w.WriteString(" ")
 		i.WithClause.printSource(w, v)
 	}
 
-	w.Write(semiColon)
+	w.WriteString(";")
 	if v {
 		i.Comments[1].printSource(w, true)
 	}
@@ -1811,58 +1686,58 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 
 func (e ExportDeclaration) printSource(w writer, v bool) {
 	if e.FromClause != nil {
-		w.Write(exportc)
+		w.WriteString("export ")
 
 		if e.ExportClause != nil {
 			e.ExportClause.printSource(w, v)
 		} else {
-			w.Write(exportAll)
+			w.WriteString("*")
 
 			if e.ExportFromClause != nil {
-				w.Write(as)
+				w.WriteString(" as ")
 				w.WriteString(e.ExportFromClause.Data)
 			}
 		}
 
 		e.FromClause.printSource(w, v)
-		w.Write(semiColon)
+		w.WriteString(";")
 	} else if e.ExportClause != nil {
-		w.Write(exportc)
+		w.WriteString("export ")
 		e.ExportClause.printSource(w, v)
-		w.Write(semiColon)
+		w.WriteString(";")
 	} else if e.VariableStatement != nil {
-		w.Write(exportc)
+		w.WriteString("export ")
 		e.VariableStatement.printSource(w, v)
 	} else if e.Declaration != nil {
-		w.Write(exportc)
+		w.WriteString("export ")
 		e.Declaration.printSource(w, v)
 	} else if e.DefaultFunction != nil {
-		w.Write(exportd)
+		w.WriteString("export default ")
 		e.DefaultFunction.printSource(w, v)
 	} else if e.DefaultClass != nil {
-		w.Write(exportd)
+		w.WriteString("export default ")
 		e.DefaultClass.printSource(w, v)
 	} else if e.DefaultAssignmentExpression != nil {
-		w.Write(exportd)
+		w.WriteString("export default ")
 		e.DefaultAssignmentExpression.printSource(w, v)
-		w.Write(semiColon)
+		w.WriteString(";")
 	}
 }
 
 func (wc WithClause) printSource(w writer, v bool) {
-	w.Write(withOpen[:5])
-	w.Write(blockOpen)
+	w.WriteString("with ")
+	w.WriteString("{")
 
 	if len(wc.WithEntries) > 0 {
 		wc.WithEntries[0].printSource(w, v)
 
 		for _, we := range wc.WithEntries[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			we.printSource(w, v)
 		}
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (we WithEntry) printSource(w writer, v bool) {
@@ -1871,7 +1746,7 @@ func (we WithEntry) printSource(w writer, v bool) {
 	}
 
 	w.WriteString(we.AttributeKey.Data)
-	w.Write(colonSep)
+	w.WriteString(": ")
 	w.WriteString(we.Value.Data)
 }
 
@@ -1880,12 +1755,12 @@ func (i ImportClause) printSource(w writer, v bool) {
 		w.WriteString(i.ImportedDefaultBinding.Data)
 
 		if i.NameSpaceImport != nil || i.NamedImports != nil {
-			w.Write(commaSep)
+			w.WriteString(", ")
 		}
 	}
 
 	if i.NameSpaceImport != nil {
-		w.Write(namespaceImport)
+		w.WriteString("* as ")
 		w.WriteString(i.NameSpaceImport.Data)
 	} else if i.NamedImports != nil {
 		i.NamedImports.printSource(w, v)
@@ -1897,27 +1772,27 @@ func (f FromClause) printSource(w writer, v bool) {
 		return
 	}
 
-	w.Write(from)
+	w.WriteString(" from ")
 	w.WriteString(f.ModuleSpecifier.Data)
 }
 
 func (e ExportClause) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	if len(e.ExportList) > 0 {
 		e.ExportList[0].printSource(w, v)
 
 		for _, es := range e.ExportList[1:] {
-			w.Write(commaSep)
+			w.WriteString(", ")
 			es.printSource(w, v)
 		}
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (n NamedImports) printSource(w writer, v bool) {
-	w.Write(blockOpen)
+	w.WriteString("{")
 
 	if len(n.ImportList) > 0 {
 		ip := w.Indent()
@@ -1925,12 +1800,12 @@ func (n NamedImports) printSource(w writer, v bool) {
 		n.ImportList[0].printSource(ip, v)
 
 		for _, is := range n.ImportList[1:] {
-			ip.Write(commaSep)
+			ip.WriteString(", ")
 			is.printSource(ip, v)
 		}
 	}
 
-	w.Write(blockClose)
+	w.WriteString("}")
 }
 
 func (e ExportSpecifier) printSource(w writer, v bool) {
@@ -1941,7 +1816,7 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 	w.WriteString(e.IdentifierName.Data)
 
 	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v) {
-		w.Write(as)
+		w.WriteString(" as ")
 		w.WriteString(e.EIdentifierName.Data)
 	}
 }
@@ -1963,7 +1838,7 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 			i.Comments[1].printSource(w, v)
 		}
 
-		w.Write(as)
+		w.WriteString(" as ")
 
 		if v {
 			i.Comments[2].printSource(w, v)
@@ -1993,18 +1868,18 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 	if oe.OptionalChain != nil {
 		oe.OptionalChain.printSource(w, v)
 	} else {
-		w.Write(optionalChain)
+		w.WriteString("?.")
 	}
 
 	if oe.Arguments != nil {
 		oe.Arguments.printSource(w, v)
 	} else if oe.Expression != nil {
-		w.Write(bracketOpen)
+		w.WriteString("[")
 		oe.Expression.printSource(w, v)
-		w.Write(bracketClose)
+		w.WriteString("]")
 	} else if oe.IdentifierName != nil {
 		if oe.OptionalChain != nil {
-			w.Write(dot)
+			w.WriteString(".")
 		}
 
 		w.WriteString(oe.IdentifierName.Data)
@@ -2012,7 +1887,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		oe.TemplateLiteral.printSource(w, v)
 	} else if oe.PrivateIdentifier != nil {
 		if oe.OptionalChain != nil {
-			w.Write(dot)
+			w.WriteString(".")
 		}
 
 		w.WriteString(oe.PrivateIdentifier.Data)
@@ -2022,7 +1897,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 func (ce CoalesceExpression) printSource(w writer, v bool) {
 	if ce.CoalesceExpressionHead != nil {
 		ce.CoalesceExpressionHead.printSource(w, v)
-		w.Write(coalesceOperator)
+		w.WriteString(" ?? ")
 	}
 
 	ce.BitwiseORExpression.printSource(w, v)
