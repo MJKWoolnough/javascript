@@ -1794,8 +1794,16 @@ func (e ExportClause) printSource(w writer, v bool) {
 func (n NamedImports) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	if v {
+		n.Comments[0].printSource(w, true)
+	}
+
 	if len(n.ImportList) > 0 {
 		ip := w.Indent()
+
+		if v && len(n.ImportList[0].Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
 
 		n.ImportList[0].printSource(ip, v)
 
@@ -1803,6 +1811,11 @@ func (n NamedImports) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 			is.printSource(ip, v)
 		}
+	}
+
+	if v && len(n.Comments[1]) > 0 {
+		w.WriteString("\n")
+		n.Comments[1].printSource(w, true)
 	}
 
 	w.WriteString("}")
@@ -1827,8 +1840,11 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 	}
 
 	if v && len(i.Comments[0]) > 0 {
-		w.WriteString("\n")
-		i.Comments[0].printSource(w, v)
+		i.Comments[0].printSource(w, true)
+
+		if i.Comments[0][len(i.Comments[0])-1].Type == TokenMultiLineComment {
+			w.WriteString(" ")
+		}
 	}
 
 	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
