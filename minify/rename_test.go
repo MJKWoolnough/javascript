@@ -130,7 +130,7 @@ func TestRename(t *testing.T) {
 			"class aClass {}",
 			"class _ {}",
 		},
-		{ // 9
+		{ // 10
 			"class aClass {}\nclass bClass extends aClass {}",
 			"class _ {}\n\nclass $ extends _ {}",
 		},
