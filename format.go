@@ -1,7 +1,6 @@
 package javascript
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -274,7 +273,7 @@ func (c Comments) printSource(w writer, v bool) {
 }
 
 func printComment(w writer, c Token, pos int) bool {
-	w.Write(bytes.Repeat(space, pos))
+	w.WriteString(strings.Repeat(" ", pos))
 
 	var checkClose bool
 
