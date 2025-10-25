@@ -3228,7 +3228,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 10
+		{ // 11
 			"const aClass = class b {}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
