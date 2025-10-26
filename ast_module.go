@@ -148,14 +148,23 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		return j.Error("ImportDeclaration", ErrInvalidImport)
 	}
 
-	j.AcceptRunWhitespace()
-
 	g := j.NewGoal()
 
+	g.AcceptRunWhitespace()
+
 	if g.Accept(TokenStringLiteral) {
+		j.AcceptRunWhitespace()
+
+		g = j.NewGoal()
+
+		g.Next()
+
 		id.FromClause.Tokens = g.ToTokens()
 		id.ModuleSpecifier = &id.FromClause.Tokens[0]
 	} else {
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 		id.ImportClause = new(ImportClause)
 		if err := id.ImportClause.parse(&g); err != nil {
 			return j.Error("ImportDeclaration", err)
@@ -291,10 +300,15 @@ type ImportClause struct {
 	ImportedDefaultBinding *Token
 	NameSpaceImport        *Token
 	NamedImports           *NamedImports
+	Comments               [6]Comments
 	Tokens                 Tokens
 }
 
 func (ic *ImportClause) parse(j *jsParser) error {
+	ic.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if t := j.Peek().Type; t == TokenIdentifier || t == TokenKeyword {
 		g := j.NewGoal()
 
@@ -304,26 +318,37 @@ func (ic *ImportClause) parse(j *jsParser) error {
 
 		j.Score(g)
 
+		ic.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		g = j.NewGoal()
 
 		g.AcceptRunWhitespace()
 
 		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			ic.Comments[5] = ic.Comments[1]
+			ic.Comments[1] = nil
 			ic.Tokens = j.ToTokens()
 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
 		j.Score(g)
+
+		ic.Comments[2] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
 	}
-	if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "*"}) {
-		j.Skip()
+
+	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
+		ic.Comments[3] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
 			return j.Error("ImportClause", ErrInvalidNameSpaceImport)
 		}
+
+		ic.Comments[4] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
 
@@ -343,6 +368,7 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		return j.Error("ImportClause", ErrInvalidImport)
 	}
 
+	ic.Comments[5] = j.AcceptRunWhitespaceComments()
 	ic.Tokens = j.ToTokens()
 
 	return nil
