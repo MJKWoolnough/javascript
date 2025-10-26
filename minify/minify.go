@@ -15,12 +15,15 @@ type Minifier struct {
 
 func New(opts ...Option) *Minifier {
 	m := new(Minifier)
+
 	if len(opts) == 0 {
 		m.Option = Safe
 	}
+
 	for _, opt := range opts {
 		m.Option |= opt
 	}
+
 	return m
 }
 
@@ -32,6 +35,7 @@ func (w *walker) Handle(t javascript.Type) error {
 	if err := walk.Walk(t, w); err != nil {
 		return err
 	}
+
 	switch t := t.(type) {
 	case *javascript.TemplateLiteral:
 		w.minifyTemplates(t)
@@ -89,6 +93,7 @@ func (m *Minifier) Process(jm *javascript.Module) {
 	if m.Has(RemoveDeadCode) {
 		removeDeadCode(jm)
 	}
+
 	walk.Walk(jm, &walker{Minifier: m})
 
 	if m.Has(RenameIdentifiers) {
@@ -102,6 +107,7 @@ func minifyTemplate(t *javascript.Token) {
 		if err != nil {
 			return
 		}
+
 		res := javascript.QuoteTemplate(str, javascript.TokenTypeToTemplateType(t.Type))
 		if len(res) < len(t.Data) {
 			t.Data = res
@@ -113,9 +119,11 @@ func (m *Minifier) minifyTemplates(t *javascript.TemplateLiteral) {
 	if m.Has(Literals) {
 		minifyTemplate(t.NoSubstitutionTemplate)
 		minifyTemplate(t.TemplateHead)
+
 		for _, m := range t.TemplateMiddleList {
 			minifyTemplate(m)
 		}
+
 		minifyTemplate(t.TemplateTail)
 	}
 }
@@ -136,6 +144,7 @@ func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 				if err != nil {
 					return
 				}
+
 				tmpl := javascript.QuoteTemplate(str, javascript.TemplateNoSubstitution)
 				if len(tmpl) < len(pe.Literal.Data) {
 					pe.TemplateLiteral = &javascript.TemplateLiteral{
@@ -156,6 +165,7 @@ func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 			if err != nil {
 				return
 			}
+
 			asStrLit := strconv.Quote(str)
 			if len(asStrLit) < len(pe.TemplateLiteral.NoSubstitutionTemplate.Data) {
 				tk := pe.TemplateLiteral.NoSubstitutionTemplate
@@ -169,11 +179,12 @@ func (m *Minifier) minifyLiterals(pe *javascript.PrimaryExpression) {
 }
 
 func minifyNumbers(nt *javascript.Token) {
-	d := nt.Data
-	d = strings.ReplaceAll(d, "_", "")
+	d := strings.ReplaceAll(nt.Data, "_", "")
+
 	if len(d) < len(nt.Data) {
 		nt.Data = d
 	}
+
 	if !strings.HasSuffix(d, "n") {
 		var n float64
 		if strings.HasPrefix(d, "0o") || strings.HasPrefix(d, "0O") {
@@ -181,43 +192,54 @@ func minifyNumbers(nt *javascript.Token) {
 			if err != nil {
 				return
 			}
+
 			n = float64(h)
 		} else if strings.HasPrefix(d, "0b") || strings.HasPrefix(d, "0B") {
 			h, err := strconv.ParseUint(d[2:], 2, 64)
 			if err != nil {
 				return
 			}
+
 			n = float64(h)
 		} else if strings.HasPrefix(d, "0x") || strings.HasPrefix(d, "0X") {
 			h, err := strconv.ParseUint(d[2:], 16, 64)
 			if err != nil {
 				return
 			}
+
 			n = float64(h)
 		} else {
 			f, err := strconv.ParseFloat(nt.Data, 64)
 			if err != nil {
 				return
 			}
+
 			n = f
 		}
+
 		d = strconv.FormatFloat(n, 'f', -1, 64)
+
 		if strings.HasSuffix(d, "000") {
 			var e uint64
+
 			for strings.HasSuffix(d, "0") {
 				d = d[:len(d)-1]
 				e++
 			}
+
 			d += "e" + strconv.FormatUint(e, 10)
 		} else if strings.HasPrefix(d, "0.00") {
 			for strings.HasSuffix(d, "0") {
 				d = d[:len(d)-1]
 			}
+
 			d = d[2:]
 			e := uint64(len(d))
+
 			for strings.HasPrefix(d, "0") {
 				d = d[1:]
 			}
+
 			d = d + "e-" + strconv.FormatUint(e, 10)
 		} else if !strings.Contains(d, ".") && n >= 999999999999 {
 			d = "0x" + strconv.FormatUint(uint64(n), 16)
@@ -225,6 +247,7 @@ func minifyNumbers(nt *javascript.Token) {
 			d = strconv.FormatFloat(n, 'f', -1, 64)
 		}
 	}
+
 	if len(d) < len(nt.Data) {
 		nt.Data = d
 	}
@@ -245,6 +268,7 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 					af.FormalParameters = nil
 				}
 			}
+
 			expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(af.FunctionBody.StatementList)
 			if hasReturn {
 				if len(expressions) == 1 {
@@ -268,13 +292,16 @@ func (m *Minifier) minifyArrowFunc(af *javascript.ArrowFunction) {
 func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 	if m.Has(IfToConditional) && s.IfStatement != nil && s.IfStatement.ElseStatement != nil {
 		last := s.IfStatement.Expression.Expressions[len(s.IfStatement.Expression.Expressions)-1]
+
 		if last.AssignmentOperator != javascript.AssignmentNone || last.ConditionalExpression == nil || last.ArrowFunction != nil || last.AssignmentExpression != nil || last.AssignmentPattern != nil || last.Delegate || last.LeftHandSideExpression != nil || last.Yield {
 			return
 		}
+
 		var (
 			ifExpressions, elseExpressions []javascript.AssignmentExpression
 			ifReturn, elseReturn           bool
 		)
+
 		if isNonEmptyReturnStatement(&s.IfStatement.Statement) {
 			ifReturn = true
 			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
@@ -283,9 +310,11 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 		} else if s.IfStatement.Statement.BlockStatement != nil {
 			ifExpressions, ifReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.Statement.BlockStatement.StatementList)
 		}
+
 		if len(ifExpressions) == 0 {
 			return
 		}
+
 		if isNonEmptyReturnStatement(s.IfStatement.ElseStatement) {
 			elseReturn = true
 			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
@@ -294,9 +323,11 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 		} else if s.IfStatement.ElseStatement.BlockStatement != nil {
 			elseExpressions, elseReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.ElseStatement.BlockStatement.StatementList)
 		}
+
 		if ifReturn != elseReturn {
 			return
 		}
+
 		if len(elseExpressions) == 0 {
 			return
 		} else if len(elseExpressions) == 1 {
@@ -310,6 +341,7 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 				Tokens: s.IfStatement.ElseStatement.Tokens,
 			}
 		}
+
 		if len(ifExpressions) == 1 {
 			last.ConditionalExpression.True = &ifExpressions[0]
 		} else {
@@ -321,9 +353,11 @@ func (m *Minifier) minifyIfToConditional(s *javascript.Statement) {
 				Tokens: s.IfStatement.Statement.Tokens,
 			}
 		}
+
 		if ifReturn {
 			s.Type = javascript.StatementReturn
 		}
+
 		s.ExpressionStatement = &s.IfStatement.Expression
 		s.IfStatement = nil
 	}
@@ -364,6 +398,7 @@ func (m *Minifier) minifyObjectKeys(p *javascript.PropertyName) {
 				p.ComputedPropertyName = nil
 			}
 		}
+
 		if p.LiteralPropertyName != nil && p.LiteralPropertyName.Type == javascript.TokenStringLiteral {
 			key, err := javascript.Unquote(p.LiteralPropertyName.Data)
 			if err == nil {
@@ -398,11 +433,14 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 			if err != nil {
 				return
 			}
+
 			_, hasArguments := s.Bindings["arguments"]
 			_, hasThis := s.Bindings["this"]
+
 			if hasArguments || hasThis {
 				return
 			}
+
 			ae.ArrowFunction = &javascript.ArrowFunction{
 				Async:            fe.Type == javascript.FunctionAsync,
 				FormalParameters: &fe.FormalParameters,
@@ -410,6 +448,7 @@ func (m *Minifier) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignment
 				Tokens:           fe.Tokens,
 			}
 			ae.ConditionalExpression = nil
+
 			m.minifyArrowFunc(ae.ArrowFunction)
 		}
 	}
@@ -437,6 +476,7 @@ func (w *Minifier) minifyParens(e []javascript.AssignmentExpression) []javascrip
 			i += len(pe.Expressions) - 1
 		}
 	}
+
 	return e
 }
 
@@ -562,8 +602,7 @@ func (m *Minifier) minifyConditionExpressionParens(ce *javascript.ConditionalExp
 
 func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpression) {
 	if m.Has(UnwrapParens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
-		ce := meAsCE(&lhs.NewExpression.MemberExpression)
-		if ce != nil {
+		if ce := meAsCE(&lhs.NewExpression.MemberExpression); ce != nil {
 			lhs.CallExpression = ce
 			lhs.NewExpression = nil
 		}
@@ -634,9 +673,11 @@ func (m *Minifier) minifyRemoveDeadCode(b *javascript.Block) {
 		for n := range b.StatementList {
 			if isReturnStatement(b.StatementList[n].Statement) {
 				retPos = n
+
 				break
 			}
 		}
+
 		if retPos >= 0 {
 			for i := retPos + 1; i < len(b.StatementList); i++ {
 				if !isHoistable(&b.StatementList[i]) {
@@ -651,6 +692,7 @@ func (m *Minifier) minifyRemoveDeadCode(b *javascript.Block) {
 func (m *Minifier) minifyLexical(jm *javascript.Module) {
 	if m.Has(MergeLexical) {
 		last := bindableNone
+
 		for i := 0; i < len(jm.ModuleListItems); i++ {
 			next := sliBindable(jm.ModuleListItems[i].StatementListItem)
 			if last == next {
@@ -667,6 +709,7 @@ func (m *Minifier) minifyLexical(jm *javascript.Module) {
 					i--
 				}
 			}
+
 			last = next
 		}
 	}
@@ -677,6 +720,7 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 		for i := 2; i < len(jm.ModuleListItems); i++ {
 			if last := sliBindable(jm.ModuleListItems[i-2].StatementListItem); (last == bindableLet || last == bindableConst || last == bindableVar) && isStatementListItemExpression(jm.ModuleListItems[i-1].StatementListItem) && sliBindable(jm.ModuleListItems[i].StatementListItem) == last {
 				var flbs, lbs []javascript.LexicalBinding
+
 				if last == bindableVar {
 					flbs = jm.ModuleListItems[i-2].StatementListItem.Statement.VariableStatement.VariableDeclarationList
 					lbs = jm.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList
@@ -684,11 +728,14 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 					flbs = jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList
 					lbs = jm.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList
 				}
+
 				back := 0
+
 				for n := range lbs {
 					if pe := aeAsParen(lbs[n].Initializer); pe != nil {
 						pe.Expressions = append(jm.ModuleListItems[i-1].StatementListItem.Statement.ExpressionStatement.Expressions, pe.Expressions...)
 						back = 1
+
 						break
 					} else if !isSimpleAE(lbs[n].Initializer) {
 						lbs[n].Initializer = &javascript.AssignmentExpression{
@@ -697,15 +744,19 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 							}),
 						}
 						back = 1
+
 						break
 					}
 				}
+
 				flbs = append(flbs, lbs...)
+
 				if last == bindableVar {
 					jm.ModuleListItems[i-2].StatementListItem.Statement.VariableStatement.VariableDeclarationList = flbs
 				} else {
 					jm.ModuleListItems[i-2].StatementListItem.Declaration.LexicalDeclaration.BindingList = flbs
 				}
+
 				jm.ModuleListItems = append(jm.ModuleListItems[:i-back], jm.ModuleListItems[i+1:]...)
 				i--
 			}
