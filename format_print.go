@@ -1751,19 +1751,48 @@ func (we WithEntry) printSource(w writer, v bool) {
 }
 
 func (i ImportClause) printSource(w writer, v bool) {
+	if v {
+		i.Comments[0].printSource(w, true, false)
+	}
+
 	if i.ImportedDefaultBinding != nil {
 		w.WriteString(i.ImportedDefaultBinding.Data)
 
+		if v {
+			i.Comments[1].printSource(w, true, false)
+		}
+
 		if i.NameSpaceImport != nil || i.NamedImports != nil {
 			w.WriteString(", ")
+
+			if v {
+				i.Comments[2].printSource(w, true, false)
+			}
 		}
 	}
 
 	if i.NameSpaceImport != nil {
-		w.WriteString("* as ")
+		w.WriteString("*")
+
+		if v && len(i.Comments[3]) > 0 {
+			i.Comments[3].printSource(w, true, false)
+		} else {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("as ")
+
+		if v {
+			i.Comments[4].printSource(w, true, false)
+		}
+
 		w.WriteString(i.NameSpaceImport.Data)
 	} else if i.NamedImports != nil {
 		i.NamedImports.printSource(w, v)
+	}
+
+	if v {
+		i.Comments[5].printSource(w, false, false)
 	}
 }
 
