@@ -2,7 +2,7 @@ package javascript
 
 func (s Script) printSource(w writer, v bool) {
 	if v && len(s.Comments[0]) > 0 {
-		s.Comments[0].printSource(w, true)
+		s.Comments[0].printSource(w, true, true)
 		w.WriteString("\n")
 	}
 
@@ -17,13 +17,13 @@ func (s Script) printSource(w writer, v bool) {
 
 	if v && len(s.Comments[1]) > 0 {
 		w.WriteString("\n")
-		s.Comments[1].printSource(w, true)
+		s.Comments[1].printSource(w, false, false)
 	}
 }
 
 func (s StatementListItem) printSource(w writer, v bool) {
 	if v {
-		s.Comments[0].printSource(w, true)
+		s.Comments[0].printSource(w, true, false)
 	}
 
 	if s.Statement != nil {
@@ -33,7 +33,7 @@ func (s StatementListItem) printSource(w writer, v bool) {
 	}
 
 	if v {
-		s.Comments[1].printSource(w, true)
+		s.Comments[1].printSource(w, true, false)
 	}
 }
 
@@ -1626,7 +1626,7 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 
 func (m Module) printSource(w writer, v bool) {
 	if v && len(m.Comments[0]) > 0 {
-		m.Comments[0].printSource(w, true)
+		m.Comments[0].printSource(w, false, true)
 		w.WriteString("\n")
 	}
 
@@ -1641,7 +1641,7 @@ func (m Module) printSource(w writer, v bool) {
 
 	if v && len(m.Comments[1]) > 0 {
 		w.WriteString("\n")
-		m.Comments[1].printSource(w, true)
+		m.Comments[1].printSource(w, false, false)
 	}
 }
 
@@ -1657,7 +1657,7 @@ func (m ModuleItem) printSource(w writer, v bool) {
 
 func (i ImportDeclaration) printSource(w writer, v bool) {
 	if v {
-		i.Comments[0].printSource(w, true)
+		i.Comments[0].printSource(w, true, false)
 	}
 
 	if i.ImportClause == nil && i.FromClause.ModuleSpecifier == nil {
@@ -1680,7 +1680,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 
 	w.WriteString(";")
 	if v {
-		i.Comments[1].printSource(w, true)
+		i.Comments[1].printSource(w, false, false)
 	}
 }
 
@@ -1794,8 +1794,8 @@ func (e ExportClause) printSource(w writer, v bool) {
 func (n NamedImports) printSource(w writer, v bool) {
 	w.WriteString("{")
 
-	if v {
-		n.Comments[0].printSource(w, true)
+	if v && len(n.Comments[0]) > 0 {
+		n.Comments[0].printSource(w, false, true)
 	}
 
 	if len(n.ImportList) > 0 {
@@ -1815,7 +1815,7 @@ func (n NamedImports) printSource(w writer, v bool) {
 
 	if v && len(n.Comments[1]) > 0 {
 		w.WriteString("\n")
-		n.Comments[1].printSource(w, true)
+		n.Comments[1].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
@@ -1840,31 +1840,27 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 	}
 
 	if v && len(i.Comments[0]) > 0 {
-		i.Comments[0].printSource(w, true)
-
-		if i.Comments[0][len(i.Comments[0])-1].Type == TokenMultiLineComment {
-			w.WriteString(" ")
-		}
+		i.Comments[0].printSource(w, true, false)
 	}
 
 	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
 		w.WriteString(i.IdentifierName.Data)
 
 		if v {
-			i.Comments[1].printSource(w, v)
+			i.Comments[1].printSource(w, false, false)
 		}
 
 		w.WriteString(" as ")
 
 		if v {
-			i.Comments[2].printSource(w, v)
+			i.Comments[2].printSource(w, true, false)
 		}
 	}
 
 	w.WriteString(i.ImportedBinding.Data)
 
 	if v {
-		i.Comments[3].printSource(w, v)
+		i.Comments[3].printSource(w, false, false)
 	}
 }
 
