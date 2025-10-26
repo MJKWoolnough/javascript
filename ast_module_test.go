@@ -1153,6 +1153,47 @@ func TestImportClause(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
+		{"// A\na // B\n", func(t *test, tk Tokens) { // 16
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[2],
+				Comments:               [6]Comments{{tk[0]}, nil, nil, nil, nil, {tk[4]}},
+				Tokens:                 tk[:5],
+			}
+		}},
+		{"// A\n{} // B\n", func(t *test, tk Tokens) { // 17
+			t.Output = ImportClause{
+				NamedImports: &NamedImports{
+					Tokens: tk[2:4],
+				},
+				Comments: [6]Comments{{tk[0]}, nil, nil, nil, nil, {tk[5]}},
+				Tokens:   tk[:6],
+			}
+		}},
+		{"// A\na /* B */,/* C */ {} /* D */", func(t *test, tk Tokens) { // 18
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[2],
+				NamedImports: &NamedImports{
+					Tokens: tk[8:10],
+				},
+				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[6]}, nil, nil, {tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
+		{"/* A */ * // B\nas // C\nb // D\n", func(t *test, tk Tokens) { // 19
+			t.Output = ImportClause{
+				NameSpaceImport: &tk[10],
+				Comments:        [6]Comments{{tk[0]}, nil, nil, {tk[4]}, {tk[8]}, {tk[12]}},
+				Tokens:          tk[:13],
+			}
+		}},
+		{"// A\na // B\n, // C\n* // D\nas // E\n b // F\n", func(t *test, tk Tokens) { // 20
+			t.Output = ImportClause{
+				ImportedDefaultBinding: &tk[2],
+				NameSpaceImport:        &tk[19],
+				Comments:               [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[16]}, {tk[21]}},
+				Tokens:                 tk[:22],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ic ImportClause
 
