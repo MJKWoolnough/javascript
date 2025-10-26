@@ -226,7 +226,7 @@ func (c Comments) printType(w writer, v bool) {
 	Tokens(c).printType(w, v)
 }
 
-func (c Comments) printSource(w writer, v bool) {
+func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 	if len(c) > 0 {
 		switch w.LastChar() {
 		case 0, ' ', '\n', '\t':
@@ -266,8 +266,10 @@ func (c Comments) printSource(w writer, v bool) {
 			}
 		}
 
-		if v && c[len(c)-1].Type == TokenSingleLineComment {
+		if postNewline || c[len(c)-1].Type == TokenSingleLineComment {
 			w.WriteString("\n")
+		} else if postSpace {
+			w.WriteString(" ")
 		}
 	}
 }
