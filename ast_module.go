@@ -187,16 +187,15 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	g.AcceptRunWhitespace()
 
 	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"}) {
-		g.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
-		h := g.NewGoal()
+		g = j.NewGoal()
 		id.WithClause = new(WithClause)
 
-		if err := id.WithClause.parse(&h); err != nil {
-			return g.Error("ImportDeclaration", err)
+		if err := id.WithClause.parse(&g); err != nil {
+			return j.Error("ImportDeclaration", err)
 		}
 
-		g.Score(h)
 		j.Score(g)
 	}
 
@@ -214,13 +213,22 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 // https://tc39.es/ecma262/#prod-WithClause
 type WithClause struct {
 	WithEntries []WithEntry
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 
 func (w *WithClause) parse(j *jsParser) error {
+	j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"})
+
+	w.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("WithClause", ErrMissingOpeningBrace)
 	}
+
+	w.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	g := j.NewGoal()
 
@@ -257,6 +265,8 @@ func (w *WithClause) parse(j *jsParser) error {
 
 		g.AcceptRunWhitespace()
 	}
+
+	w.Comments[2] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 	j.Next()
