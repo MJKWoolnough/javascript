@@ -1613,6 +1613,22 @@ func TestWithEntry(t *testing.T) {
 				Tokens:       tk[:3],
 			}
 		}},
+		{"// A\na /* B */:/* C */\"b\" // D\n\n// E\n", func(t *test, tk Tokens) { // 9
+			t.Output = WithEntry{
+				AttributeKey: &tk[2],
+				Value:        &tk[7],
+				Comments:     [4]Comments{{tk[0]}, {tk[4]}, {tk[6]}, {tk[9]}},
+				Tokens:       tk[:10],
+			}
+		}},
+		{"// A\na /* B */:/* C */\"b\" // D\n\n// E\n,", func(t *test, tk Tokens) { // 10
+			t.Output = WithEntry{
+				AttributeKey: &tk[2],
+				Value:        &tk[7],
+				Comments:     [4]Comments{{tk[0]}, {tk[4]}, {tk[6]}, {tk[9], tk[11]}},
+				Tokens:       tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var we WithEntry
 
