@@ -1726,7 +1726,16 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 
 func (wc WithClause) printSource(w writer, v bool) {
 	w.WriteString("with ")
+
+	if v {
+		wc.Comments[0].printSource(w, true, false)
+	}
+
 	w.WriteString("{")
+
+	if v {
+		wc.Comments[1].printSource(w, false, true)
+	}
 
 	if len(wc.WithEntries) > 0 {
 		ip := w.Indent()
@@ -1741,6 +1750,11 @@ func (wc WithClause) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 			we.printSource(ip, v)
 		}
+	}
+
+	if v && len(wc.Comments[2]) > 0 {
+		w.WriteString("\n")
+		wc.Comments[2].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
