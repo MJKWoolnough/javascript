@@ -1875,9 +1875,14 @@ func TestPrintingModule(t *testing.T) {
 			"import // A\na, /* B */ * // C\nas /* D */ b /* E */ from './c';",
 		},
 		{ // 41
-			"import // A\n{} /* B */ from './c';",
-			"import {} from './c';",
-			"import // A\n{} /* B */ from './c';",
+			"import // A\n{} /* B */ from './a';",
+			"import {} from './a';",
+			"import // A\n{} /* B */ from './a';",
+		},
+		{ // 42
+			"import {} from './a' with {\n// A\nb/* B */:/* C */\"c\"// D\n\n// E\n, d:\"e\"};",
+			"import {} from './a' with {b: \"c\", d: \"e\"};",
+			"import {} from './a' with {\n\t// A\n\tb /* B */: /* C */ \"c\" // D\n\n\t// E\n\t, d: \"e\"};",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
