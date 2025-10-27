@@ -1729,11 +1729,17 @@ func (wc WithClause) printSource(w writer, v bool) {
 	w.WriteString("{")
 
 	if len(wc.WithEntries) > 0 {
-		wc.WithEntries[0].printSource(w, v)
+		ip := w.Indent()
+
+		if v && len(wc.WithEntries[0].Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		wc.WithEntries[0].printSource(ip, v)
 
 		for _, we := range wc.WithEntries[1:] {
-			w.WriteString(", ")
-			we.printSource(w, v)
+			ip.WriteString(", ")
+			we.printSource(ip, v)
 		}
 	}
 
@@ -1745,9 +1751,27 @@ func (we WithEntry) printSource(w writer, v bool) {
 		return
 	}
 
+	if v {
+		we.Comments[0].printSource(w, true, false)
+	}
+
 	w.WriteString(we.AttributeKey.Data)
+
+	if v {
+		we.Comments[1].printSource(w, false, false)
+	}
+
 	w.WriteString(": ")
+
+	if v {
+		we.Comments[2].printSource(w, true, false)
+	}
+
 	w.WriteString(we.Value.Data)
+
+	if v {
+		we.Comments[3].printSource(w, false, false)
+	}
 }
 
 func (i ImportClause) printSource(w writer, v bool) {
