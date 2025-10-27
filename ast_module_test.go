@@ -1005,7 +1005,7 @@ func TestImportDeclaration(t *testing.T) {
 							Tokens:       tk[11:14],
 						},
 					},
-					Tokens: tk[10:15],
+					Tokens: tk[8:15],
 				},
 				Tokens: tk[:15],
 			}
@@ -1544,6 +1544,38 @@ func TestWithClause(t *testing.T) {
 					},
 				},
 				Tokens: tk[:11],
+			}
+		}},
+		{"/* A */{// B\na:\"b\"\n// C\n}", func(t *test, tk Tokens) { // 9
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[4],
+						Value:        &tk[6],
+						Tokens:       tk[4:7],
+					},
+				},
+				Comments: [3]Comments{{tk[0]}, {tk[2]}, {tk[8]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{"{/* A */\n\n// B\na:\"b\"\n// C\n, \"c\": \"d\"\n// E\n}", func(t *test, tk Tokens) { // 10
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[5],
+						Value:        &tk[7],
+						Comments:     [4]Comments{{tk[3]}, nil, nil, {tk[9]}},
+						Tokens:       tk[3:10],
+					},
+					{
+						AttributeKey: &tk[13],
+						Value:        &tk[16],
+						Tokens:       tk[13:17],
+					},
+				},
+				Comments: [3]Comments{nil, {tk[1]}, {tk[18]}},
+				Tokens:   tk[:21],
 			}
 		}},
 	}, func(t *test) (Type, error) {
