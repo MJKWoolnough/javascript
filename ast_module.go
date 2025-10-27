@@ -222,10 +222,14 @@ func (w *WithClause) parse(j *jsParser) error {
 		return j.Error("WithClause", ErrMissingOpeningBrace)
 	}
 
-	j.AcceptRunWhitespace()
+	g := j.NewGoal()
 
-	for !j.Accept(TokenRightBracePunctuator) {
-		g := j.NewGoal()
+	g.AcceptRunWhitespace()
+
+	for !g.Accept(TokenRightBracePunctuator) {
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 
 		var we WithEntry
 
@@ -236,16 +240,26 @@ func (w *WithClause) parse(j *jsParser) error {
 		w.WithEntries = append(w.WithEntries, we)
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("WithClause", ErrMissingComma)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("WithClause", ErrMissingComma)
 		}
 
-		j.AcceptRunWhitespace()
+		j.Score(g)
+
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
 	}
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	w.Tokens = j.ToTokens()
 
@@ -257,10 +271,15 @@ func (w *WithClause) parse(j *jsParser) error {
 type WithEntry struct {
 	AttributeKey *Token
 	Value        *Token
+	Comments     [4]Comments
 	Tokens       Tokens
 }
 
 func (w *WithEntry) parse(j *jsParser) error {
+	w.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	g := j.NewGoal()
 
 	if !j.Accept(TokenIdentifier, TokenStringLiteral) {
@@ -270,11 +289,16 @@ func (w *WithEntry) parse(j *jsParser) error {
 	w.AttributeKey = j.GetLastToken()
 
 	j.Score(g)
+
+	w.Comments[1] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
 		return j.Error("WithEntry", ErrMissingColon)
 	}
+
+	w.Comments[2] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -283,6 +307,16 @@ func (w *WithEntry) parse(j *jsParser) error {
 	}
 
 	w.Value = j.GetLastToken()
+
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		w.Comments[3] = j.AcceptRunWhitespaceComments()
+	} else {
+		w.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
+	}
 
 	w.Tokens = j.ToTokens()
 
