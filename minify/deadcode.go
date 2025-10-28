@@ -21,10 +21,12 @@ func removeDeadCode(m *javascript.Module) {
 
 func clearSinglesFromScope(s *scope.Scope) bool {
 	changed := false
+
 	for name, bindings := range s.Bindings {
 		if name == "this" || name == "arguments" || len(bindings) != 1 {
 			continue
 		}
+
 		bindings[0].Token.Data = ""
 		changed = true
 	}
@@ -49,6 +51,7 @@ func deadWalker(t javascript.Type) error {
 	default:
 		deadWalker(t)
 	}
+
 	return nil
 }
 
@@ -56,8 +59,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 	for i := 0; i < len(m.ModuleListItems); i++ {
 		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
 		case bindableConst, bindableLet:
-			ld := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration
-			if removeDeadLexicalBindings(&m.ModuleListItems, i, &ld.BindingList, lexicalMaker(ld.LetOrConst)) {
+			if ld := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration; removeDeadLexicalBindings(&m.ModuleListItems, i, &ld.BindingList, lexicalMaker(ld.LetOrConst)) {
 				i--
 			}
 		case bindableVar:
@@ -66,6 +68,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 			}
 		case bindableBare:
 			expr := m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement
+
 			if pe, ok := javascript.UnwrapConditional(expr.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil && pe.IdentifierReference.Data == "" {
 				expr.Expressions[0] = *expr.Expressions[0].AssignmentExpression
 				i--
@@ -76,8 +79,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 				i--
 			}
 		case bindableClass:
-			cd := m.ModuleListItems[i].StatementListItem.Declaration.ClassDeclaration
-			if cd.BindingIdentifier.Data == "" {
+			if cd := m.ModuleListItems[i].StatementListItem.Declaration.ClassDeclaration; cd.BindingIdentifier.Data == "" {
 				mis := extractStatementsFromClass(cd)
 				m.ModuleListItems = append(m.ModuleListItems[:i], append(mis, m.ModuleListItems[i+1:]...)...)
 				i--
@@ -88,6 +90,7 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 
 func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.ModuleItem {
 	var mis []javascript.ModuleItem
+
 	if cd.ClassHeritage != nil {
 		mis = append(mis, javascript.ModuleItem{
 			StatementListItem: &javascript.StatementListItem{
@@ -103,9 +106,11 @@ func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.Mo
 			},
 		})
 	}
+
 	for _, ce := range cd.ClassBody {
 		if ce.FieldDefinition != nil {
 			fd := ce.FieldDefinition
+
 			if fd.ClassElementName.PropertyName != nil && fd.ClassElementName.PropertyName.ComputedPropertyName != nil {
 				mis = append(mis, javascript.ModuleItem{
 					StatementListItem: &javascript.StatementListItem{
@@ -117,6 +122,7 @@ func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.Mo
 					},
 				})
 			}
+
 			if fd.Initializer != nil {
 				mis = append(mis, javascript.ModuleItem{
 					StatementListItem: &javascript.StatementListItem{
@@ -129,8 +135,7 @@ func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.Mo
 				})
 			}
 		} else if ce.MethodDefinition != nil {
-			md := ce.MethodDefinition
-			if md.ClassElementName.PropertyName != nil && md.ClassElementName.PropertyName.ComputedPropertyName != nil {
+			if md := ce.MethodDefinition; md.ClassElementName.PropertyName != nil && md.ClassElementName.PropertyName.ComputedPropertyName != nil {
 				mis = append(mis, javascript.ModuleItem{
 					StatementListItem: &javascript.StatementListItem{
 						Statement: &javascript.Statement{
@@ -179,10 +184,12 @@ func removeDeadLexicalBindings(mlis *[]javascript.ModuleItem, pos int, lds *[]ja
 		if ld.BindingIdentifier != nil && ld.BindingIdentifier.Data == "" {
 			toAdd := make([]javascript.ModuleItem, 0, 3+len(*mlis)-pos)
 			rest := (*lds)[n+1:]
+
 			if n > 0 {
 				toAdd = append(toAdd, (*mlis)[pos])
 				*lds = (*lds)[:n]
 			}
+
 			if ld.Initializer != nil {
 				toAdd = append(toAdd, javascript.ModuleItem{
 					StatementListItem: &javascript.StatementListItem{
@@ -194,13 +201,17 @@ func removeDeadLexicalBindings(mlis *[]javascript.ModuleItem, pos int, lds *[]ja
 					},
 				})
 			}
+
 			if len(rest) > 0 {
 				toAdd = append(toAdd, sm(rest))
 			}
+
 			*mlis = append((*mlis)[:pos], append(toAdd, (*mlis)[pos+1:]...)...)
+
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -223,6 +234,7 @@ func sliBindable(sli *javascript.StatementListItem) bindable {
 				if sli.Declaration.LexicalDeclaration.LetOrConst == javascript.Const {
 					return bindableConst
 				}
+
 				return bindableLet
 			} else if sli.Declaration.ClassDeclaration != nil {
 				return bindableClass
@@ -230,28 +242,29 @@ func sliBindable(sli *javascript.StatementListItem) bindable {
 				return bindableFunction
 			}
 		}
+
 		if sli.Statement != nil && sli.Statement.VariableStatement != nil {
 			return bindableVar
 		}
+
 		if isStatementExpression(sli.Statement) {
 			if sli.Statement.ExpressionStatement.Expressions[0].AssignmentOperator == javascript.AssignmentAssign {
 				return bindableBare
 			}
 		}
 	}
+
 	return bindableNone
 }
 
 func removeDeadSLI(sli *javascript.StatementListItem) bool {
 	switch sliBindable(sli) {
 	case bindableConst, bindableLet:
-		lb := sli.Declaration.LexicalDeclaration.BindingList[0]
-		if lb.BindingIdentifier != nil {
+		if lb := sli.Declaration.LexicalDeclaration.BindingList[0]; lb.BindingIdentifier != nil {
 			return lb.BindingIdentifier.Data == ""
 		}
 	case bindableVar:
-		vd := sli.Statement.VariableStatement.VariableDeclarationList[0]
-		if vd.BindingIdentifier != nil {
+		if vd := sli.Statement.VariableStatement.VariableDeclarationList[0]; vd.BindingIdentifier != nil {
 			return vd.BindingIdentifier.Data == ""
 		}
 	case bindableClass:
