@@ -427,6 +427,7 @@ func (ic *ImportClause) parse(j *jsParser) error {
 // ModuleSpecifier must be non-nil.
 type FromClause struct {
 	ModuleSpecifier *Token
+	Comments        Comments
 	Tokens          Tokens
 }
 
@@ -435,14 +436,16 @@ func (fc *FromClause) parse(j *jsParser) error {
 		return j.Error("FromClause", ErrMissingFrom)
 	}
 
+	fc.Comments = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.Accept(TokenStringLiteral) {
 		return j.Error("FromClause", ErrMissingModuleSpecifier)
 	}
 
+	fc.ModuleSpecifier = j.GetLastToken()
 	fc.Tokens = j.ToTokens()
-	fc.ModuleSpecifier = &fc.Tokens[len(fc.Tokens)-1]
 
 	return nil
 }
