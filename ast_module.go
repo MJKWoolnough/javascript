@@ -213,14 +213,17 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 // https://tc39.es/ecma262/#prod-WithClause
 type WithClause struct {
 	WithEntries []WithEntry
-	Comments    [3]Comments
+	Comments    [4]Comments
 	Tokens      Tokens
 }
 
 func (w *WithClause) parse(j *jsParser) error {
+	w.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
 	j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"})
 
-	w.Comments[0] = j.AcceptRunWhitespaceComments()
+	w.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -228,7 +231,7 @@ func (w *WithClause) parse(j *jsParser) error {
 		return j.Error("WithClause", ErrMissingOpeningBrace)
 	}
 
-	w.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+	w.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	g := j.NewGoal()
 
@@ -266,7 +269,7 @@ func (w *WithClause) parse(j *jsParser) error {
 		g.AcceptRunWhitespace()
 	}
 
-	w.Comments[2] = j.AcceptRunWhitespaceComments()
+	w.Comments[3] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 	j.Next()

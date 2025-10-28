@@ -1555,7 +1555,7 @@ func TestWithClause(t *testing.T) {
 						Tokens:       tk[4:7],
 					},
 				},
-				Comments: [3]Comments{{tk[0]}, {tk[2]}, {tk[8]}},
+				Comments: [4]Comments{{tk[0]}, nil, {tk[2]}, {tk[8]}},
 				Tokens:   tk[:11],
 			}
 		}},
@@ -1574,7 +1574,7 @@ func TestWithClause(t *testing.T) {
 						Tokens:       tk[13:17],
 					},
 				},
-				Comments: [3]Comments{nil, {tk[1]}, {tk[18]}},
+				Comments: [4]Comments{nil, nil, {tk[1]}, {tk[18]}},
 				Tokens:   tk[:21],
 			}
 		}},
