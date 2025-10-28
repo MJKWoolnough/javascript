@@ -1894,6 +1894,11 @@ func TestPrintingModule(t *testing.T) {
 			"import {} from './a' with {b: \"c\", d: \"e\"};",
 			"import {} from './a' /* A */ with /* B */ { // C\n\n\t// D\n\tb /* E */: /* F */ \"c\" // G\n\n\t// H\n\t, d: \"e\" // I\n\n// J\n};",
 		},
+		{ // 45
+			"import a from /* A */ './b';",
+			"import a from './b';",
+			"import a from /* A */ './b';",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
