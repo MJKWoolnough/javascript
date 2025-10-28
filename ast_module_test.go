@@ -1578,6 +1578,19 @@ func TestWithClause(t *testing.T) {
 				Tokens:   tk[:21],
 			}
 		}},
+		{"/* A */ with // B\n{// C\na:\"b\"\n// D\n}", func(t *test, tk Tokens) { // 11
+			t.Output = WithClause{
+				WithEntries: []WithEntry{
+					{
+						AttributeKey: &tk[9],
+						Value:        &tk[11],
+						Tokens:       tk[9:12],
+					},
+				},
+				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[7]}, {tk[13]}},
+				Tokens:   tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var wc WithClause
 
