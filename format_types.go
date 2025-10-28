@@ -1106,6 +1106,9 @@ func (f *FromClause) printType(w writer, v bool) {
 		pp.WriteString("\nModuleSpecifier: nil")
 	}
 
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
