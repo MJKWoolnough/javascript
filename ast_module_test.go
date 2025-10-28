@@ -1225,6 +1225,13 @@ func TestFromClause(t *testing.T) {
 				Tokens:          tk[:3],
 			}
 		}},
+		{"from /* A */ \"\"", func(t *test, tk Tokens) { // 4
+			t.Output = FromClause{
+				ModuleSpecifier: &tk[4],
+				Comments:        Comments{tk[2]},
+				Tokens:          tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var fc FromClause
 
