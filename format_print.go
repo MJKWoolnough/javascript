@@ -1844,6 +1844,11 @@ func (f FromClause) printSource(w writer, v bool) {
 	}
 
 	w.WriteString(" from ")
+
+	if v {
+		f.Comments.printSource(w, true, false)
+	}
+
 	w.WriteString(f.ModuleSpecifier.Data)
 }
 
