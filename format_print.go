@@ -1865,11 +1865,17 @@ func (e ExportClause) printSource(w writer, v bool) {
 	w.WriteString("{")
 
 	if len(e.ExportList) > 0 {
-		e.ExportList[0].printSource(w, v)
+		ip := w.Indent()
+
+		if v && len(e.ExportList[0].Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		e.ExportList[0].printSource(ip, v)
 
 		for _, es := range e.ExportList[1:] {
-			w.WriteString(", ")
-			es.printSource(w, v)
+			ip.WriteString(", ")
+			es.printSource(ip, v)
 		}
 	}
 
@@ -1907,6 +1913,10 @@ func (n NamedImports) printSource(w writer, v bool) {
 }
 
 func (e ExportSpecifier) printSource(w writer, v bool) {
+	if v {
+		e.Comments[0].printSource(w, true, false)
+	}
+
 	if e.IdentifierName == nil {
 		return
 	}
@@ -1914,8 +1924,21 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 	w.WriteString(e.IdentifierName.Data)
 
 	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v) {
+		if v {
+			e.Comments[1].printSource(w, false, false)
+		}
+
 		w.WriteString(" as ")
+
+		if v {
+			e.Comments[2].printSource(w, true, false)
+		}
+
 		w.WriteString(e.EIdentifierName.Data)
+	}
+
+	if v {
+		e.Comments[3].printSource(w, false, false)
 	}
 }
 
