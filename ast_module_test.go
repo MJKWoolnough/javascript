@@ -2121,6 +2121,22 @@ func TestExportSpecifier(t *testing.T) {
 				Tokens:          tk[:5],
 			}
 		}},
+		{"// A\na // B\n\n// C\n", func(t *test, tk Tokens) { // 8
+			t.Output = ExportSpecifier{
+				IdentifierName:  &tk[2],
+				EIdentifierName: &tk[2],
+				Comments:        [4]Comments{{tk[0]}, nil, nil, {tk[4]}},
+				Tokens:          tk[:5],
+			}
+		}},
+		{"// A\na /* B */ as /* C */ b // D\n\n// E\n,", func(t *test, tk Tokens) { // 9
+			t.Output = ExportSpecifier{
+				IdentifierName:  &tk[2],
+				EIdentifierName: &tk[10],
+				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12], tk[14]}},
+				Tokens:          tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var es ExportSpecifier
 
