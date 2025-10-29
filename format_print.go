@@ -1680,7 +1680,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 
 	w.WriteString(";")
 	if v {
-		i.Comments[1].printSource(w, false, false)
+		i.Comments[3].printSource(w, false, false)
 	}
 }
 

@@ -1016,7 +1016,7 @@ func TestImportDeclaration(t *testing.T) {
 					ModuleSpecifier: &tk[4],
 					Tokens:          tk[4:5],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[7]}},
+				Comments: [4]Comments{{tk[0]}, nil, nil, {tk[7]}},
 				Tokens:   tk[:8],
 			}
 		}},

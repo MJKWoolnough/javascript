@@ -135,7 +135,7 @@ type ImportDeclaration struct {
 	*ImportClause
 	FromClause
 	*WithClause
-	Comments [2]Comments
+	Comments [4]Comments
 	Tokens   Tokens
 }
 
@@ -153,6 +153,8 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 	g.AcceptRunWhitespace()
 
 	if g.Accept(TokenStringLiteral) {
+		id.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		g = j.NewGoal()
@@ -165,6 +167,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		j.AcceptRunWhitespaceNoComment()
 
 		g = j.NewGoal()
+
 		id.ImportClause = new(ImportClause)
 		if err := id.ImportClause.parse(&g); err != nil {
 			return j.Error("ImportDeclaration", err)
@@ -199,11 +202,13 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 		j.Score(g)
 	}
 
+	id.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	if !j.parseSemicolon() {
 		return j.Error("ImportDeclaration", ErrMissingSemiColon)
 	}
 
-	id.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+	id.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
 	id.Tokens = j.ToTokens()
 
 	return nil
