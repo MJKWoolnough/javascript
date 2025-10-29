@@ -10,20 +10,22 @@ func isIdentifier(str string) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
 func isSimpleNumber(str string) bool {
 	if str == "0" {
 		return true
-	}
-	if len(str) == 0 || len(str) > len(maxSafeInt) || str[0] < '1' || str[0] > '9' {
+	} else if len(str) == 0 || len(str) > len(maxSafeInt) || str[0] < '1' || str[0] > '9' {
 		return false
 	}
+
 	for _, r := range str[1:] {
 		if r < '0' || r > '9' {
 			return false
 		}
 	}
+
 	return len(str) < len(maxSafeInt) || str <= maxSafeInt
 }
