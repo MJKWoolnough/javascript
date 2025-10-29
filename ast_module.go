@@ -766,13 +766,19 @@ func (ec *ExportClause) parse(j *jsParser) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
+			j.Score(g)
+
 			break
 		}
 
-		g := j.NewGoal()
+		g = j.NewGoal()
 		es := len(ec.ExportList)
 
 		ec.ExportList = append(ec.ExportList, ExportSpecifier{})
@@ -802,10 +808,15 @@ func (ec *ExportClause) parse(j *jsParser) error {
 type ExportSpecifier struct {
 	IdentifierName  *Token
 	EIdentifierName *Token
+	Comments        [4]Comments
 	Tokens          Tokens
 }
 
 func (es *ExportSpecifier) parse(j *jsParser) error {
+	es.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.Accept(TokenIdentifier, TokenKeyword) {
 		return j.Error("ExportSpecifier", ErrNoIdentifier)
 	}
@@ -816,7 +827,13 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 	g.AcceptRunWhitespace()
 
 	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
-		j.Score(g)
+		es.Comments[1] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+		j.Next()
+
+		es.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.Accept(TokenIdentifier, TokenKeyword) {
@@ -831,6 +848,16 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 			Line:    es.IdentifierName.Line,
 			LinePos: es.IdentifierName.LinePos,
 		}
+	}
+
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		es.Comments[3] = j.AcceptRunWhitespaceComments()
+	} else {
+		es.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
 	}
 
 	es.Tokens = j.ToTokens()
