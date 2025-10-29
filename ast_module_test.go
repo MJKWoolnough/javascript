@@ -1020,6 +1020,53 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens:   tk[:8],
 			}
 		}},
+		{"// A\nimport /* B */\"a\" /* C */; // B\n\n// C\n", func(t *test, tk Tokens) { // 12
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[5],
+					Tokens:          tk[5:6],
+				},
+				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[7]}, {tk[10]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{"// A\nimport /* B */ a /* C */ from // D\n'b' /* E */ with /* F */ {c:'d'} /* G */; // G\n", func(t *test, tk Tokens) { // 13
+			t.Output = ImportDeclaration{
+				ImportClause: &ImportClause{
+					ImportedDefaultBinding: &tk[6],
+					Comments:               [6]Comments{{tk[4]}, nil, nil, nil, nil, {tk[8]}},
+					Tokens:                 tk[4:9],
+				},
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[14],
+					Comments:        Comments{tk[12]},
+					Tokens:          tk[10:15],
+				},
+				WithClause: &WithClause{
+					WithEntries: []WithEntry{
+						{
+							AttributeKey: &tk[23],
+							Value:        &tk[25],
+							Tokens:       tk[23:26],
+						},
+					},
+					Comments: [4]Comments{{tk[16]}, {tk[20]}},
+					Tokens:   tk[16:27],
+				},
+				Comments: [4]Comments{{tk[0]}, nil, {tk[28]}, {tk[31]}},
+				Tokens:   tk[:32],
+			}
+		}},
+		{"// A\nimport /* B */ \"\" /* C */; // D\n", func(t *test, tk Tokens) { // 14
+			t.Output = ImportDeclaration{
+				FromClause: FromClause{
+					ModuleSpecifier: &tk[6],
+					Tokens:          tk[6:7],
+				},
+				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var id ImportDeclaration
 
