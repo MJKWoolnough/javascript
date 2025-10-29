@@ -1670,6 +1670,10 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		i.ImportClause.printSource(w, v)
 		i.FromClause.printSource(w, v)
 	} else if i.FromClause.ModuleSpecifier != nil {
+		if v {
+			i.Comments[1].printSource(w, true, false)
+		}
+
 		w.WriteString(i.FromClause.ModuleSpecifier.Data)
 	}
 
@@ -1678,7 +1682,12 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		i.WithClause.printSource(w, v)
 	}
 
+	if v {
+		i.Comments[2].printSource(w, false, false)
+	}
+
 	w.WriteString(";")
+
 	if v {
 		i.Comments[3].printSource(w, false, false)
 	}
