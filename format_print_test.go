@@ -1914,6 +1914,11 @@ func TestPrintingModule(t *testing.T) {
 			"export {a as b, c};",
 			"export {\n\t// A\n\ta /* B */ as /* C */ b // D\n\n\t// E\n\t, // F\n\tc as c // G\n};",
 		},
+		{ // 49
+			"export { // A\n\n// B\na /* C */ as /* D */ b // E\n\n// F\n, // G\nc // H\n\n// I\n};",
+			"export {a as b, c};",
+			"export { // A\n\n\t// B\n\ta /* C */ as /* D */ b // E\n\n\t// F\n\t, // G\n\tc as c // H\n\n// I\n};",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
