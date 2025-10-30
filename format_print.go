@@ -1695,40 +1695,149 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 
 func (e ExportDeclaration) printSource(w writer, v bool) {
 	if e.FromClause != nil {
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
 
 		if e.ExportClause != nil {
 			e.ExportClause.printSource(w, v)
 		} else {
 			w.WriteString("*")
 
+			if v && len(e.Comments[2]) > 0 {
+				w.WriteString(" ")
+				e.Comments[2].printSource(w, false, false)
+			}
+
 			if e.ExportFromClause != nil {
 				w.WriteString(" as ")
+
+				if v && len(e.Comments[3]) > 0 {
+					e.Comments[3].printSource(w, true, false)
+				}
+
 				w.WriteString(e.ExportFromClause.Data)
 			}
 		}
 
+		if v {
+			e.Comments[4].printSource(w, false, false)
+		}
+
 		e.FromClause.printSource(w, v)
+
+		if v {
+			e.Comments[5].printSource(w, false, false)
+		}
+
 		w.WriteString(";")
 	} else if e.ExportClause != nil {
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
 		e.ExportClause.printSource(w, v)
+
+		if v {
+			e.Comments[5].printSource(w, false, false)
+		}
+
 		w.WriteString(";")
 	} else if e.VariableStatement != nil {
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
 		e.VariableStatement.printSource(w, v)
 	} else if e.Declaration != nil {
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
 		e.Declaration.printSource(w, v)
 	} else if e.DefaultFunction != nil {
-		w.WriteString("export default ")
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("default ")
+
+		if v {
+			e.Comments[2].printSource(w, true, false)
+		}
+
 		e.DefaultFunction.printSource(w, v)
 	} else if e.DefaultClass != nil {
-		w.WriteString("export default ")
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("default ")
+
+		if v {
+			e.Comments[2].printSource(w, true, false)
+		}
+
 		e.DefaultClass.printSource(w, v)
 	} else if e.DefaultAssignmentExpression != nil {
-		w.WriteString("export default ")
+		if v {
+			e.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("export ")
+
+		if v {
+			e.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("default ")
+
+		if v {
+			e.Comments[2].printSource(w, true, false)
+		}
+
 		e.DefaultAssignmentExpression.printSource(w, v)
+
+		if v {
+			e.Comments[5].printSource(w, false, false)
+		}
+
 		w.WriteString(";")
 	}
 }
