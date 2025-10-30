@@ -757,6 +757,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 // https://262.ecma-international.org/11.0/#prod-ExportClause
 type ExportClause struct {
 	ExportList []ExportSpecifier
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
@@ -764,6 +765,8 @@ func (ec *ExportClause) parse(j *jsParser) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("ExportClause", ErrInvalidExportClause)
 	}
+
+	ec.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	for {
 		j.AcceptRunWhitespaceNoComment()
@@ -773,8 +776,6 @@ func (ec *ExportClause) parse(j *jsParser) error {
 		g.AcceptRunWhitespace()
 
 		if g.Accept(TokenRightBracePunctuator) {
-			j.Score(g)
-
 			break
 		}
 
@@ -787,14 +788,24 @@ func (ec *ExportClause) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("ExportClause", ErrInvalidExportClause)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("ExportClause", ErrInvalidExportClause)
 		}
+
+		j.Score(g)
 	}
+
+	ec.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	ec.Tokens = j.ToTokens()
 
