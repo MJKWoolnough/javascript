@@ -1864,6 +1864,10 @@ func (f FromClause) printSource(w writer, v bool) {
 func (e ExportClause) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	if v {
+		e.Comments[0].printSource(w, false, true)
+	}
+
 	if len(e.ExportList) > 0 {
 		ip := w.Indent()
 
@@ -1877,6 +1881,11 @@ func (e ExportClause) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 			es.printSource(ip, v)
 		}
+	}
+
+	if v && len(e.Comments[1]) > 0 {
+		w.WriteString("\n")
+		e.Comments[1].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
