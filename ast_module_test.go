@@ -2061,6 +2061,20 @@ func TestExportClause(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"{ // A\n// B\n\n// C\na // D\n// E\n\n// F\n}", func(t *test, tk Tokens) { // 8
+			t.Output = ExportClause{
+				ExportList: []ExportSpecifier{
+					{
+						IdentifierName:  &tk[8],
+						EIdentifierName: &tk[8],
+						Comments:        [4]Comments{{tk[6]}, nil, nil, {tk[10], tk[12]}},
+						Tokens:          tk[6:13],
+					},
+				},
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ec ExportClause
 
