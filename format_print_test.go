@@ -1919,6 +1919,46 @@ func TestPrintingModule(t *testing.T) {
 			"export {a as b, c};",
 			"export { // A\n\n\t// B\n\ta /* C */ as /* D */ b // E\n\n\t// F\n\t, // G\n\tc as c // H\n\n// I\n};",
 		},
+		{ // 50
+			"// A\n\n// B\nexport/* C */{ // D\n\n// E\na // F\n\n// G\n, // H\nb // I\n\n// J\n}/* K */from/* L */''/* M */;",
+			"export {a, b} from '';",
+			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t, // H\n\tb as b // I\n\n// J\n} /* K */ from /* L */ '' /* M */;",
+		},
+		{ // 51
+			"// A\n\n// B\nexport/* C */*/* D */as/* E */a/* F */from /* G */''/* H */",
+			"export * as a from '';",
+			"// A\n\n// B\nexport /* C */ * /* D */ as /* E */ a /* F */ from /* G */ '' /* H */;",
+		},
+		{ // 52
+			"// A\n\n// B\nexport/* C */{ // D\n\n// E\na // F\n\n// G\n, // H\nb // I\n\n// J\n}/* K */;",
+			"export {a, b};",
+			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t, // H\n\tb as b // I\n\n// J\n} /* K */;",
+		},
+		{ // 53
+			"// A\n\n// B\nexport/* C */var a;",
+			"export var a;",
+			"// A\n\n// B\nexport /* C */ var a;",
+		},
+		{ // 54
+			"// A\n\n// B\nexport/* C */const a = 1;",
+			"export const a = 1;",
+			"// A\n\n// B\nexport /* C */ const a = 1;",
+		},
+		{ // 55
+			"// A\n\n// B\nexport/* C */default/* D */function(){}",
+			"export default function () {}",
+			"// A\n\n// B\nexport /* C */ default /* D */ function () {}",
+		},
+		{ // 56
+			"// A\n\n// B\nexport/* C */default/* D */class{}",
+			"export default class {}",
+			"// A\n\n// B\nexport /* C */ default /* D */ class {}",
+		},
+		{ // 57
+			"// A\n\n// B\nexport/* C */default/* D */1/* E */;",
+			"export default 1;",
+			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
