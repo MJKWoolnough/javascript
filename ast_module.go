@@ -82,6 +82,8 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 			break
 		}
 
+		g = j.NewGoal()
+
 		ml.ExportDeclaration = new(ExportDeclaration)
 		if err := ml.ExportDeclaration.parse(&g); err != nil {
 			return j.Error("ModuleItem", err)
@@ -611,17 +613,26 @@ type ExportDeclaration struct {
 	DefaultFunction             *FunctionDeclaration
 	DefaultClass                *ClassDeclaration
 	DefaultAssignmentExpression *AssignmentExpression
+	Comments                    [6]Comments
 	Tokens                      Tokens
 }
 
 func (ed *ExportDeclaration) parse(j *jsParser) error {
+	ed.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "export"}) {
 		return j.Error("ExportDeclaration", ErrInvalidExportDeclaration)
 	}
 
+	ed.Comments[1] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
+		ed.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		g := j.NewGoal()
@@ -669,16 +680,22 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 
 			j.Score(g)
 
+			ed.Comments[5] = j.AcceptRunWhitespaceComments()
+
 			if !j.parseSemicolon() {
 				return j.Error("ExportDeclaration", ErrMissingSemiColon)
 			}
 		}
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
+		ed.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		g := j.NewGoal()
 
 		if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "as"}) {
+			ed.Comments[3] = g.AcceptRunWhitespaceComments()
+
 			g.AcceptRunWhitespace()
 
 			if ed.ExportFromClause = g.parseIdentifier(false, false); ed.ExportFromClause == nil {
@@ -686,6 +703,8 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			}
 
 			j.Score(g)
+
+			ed.Comments[4] = j.AcceptRunWhitespaceComments()
 			j.AcceptRunWhitespace()
 
 			g = j.NewGoal()
@@ -697,6 +716,8 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
+
+		ed.Comments[5] = j.AcceptRunWhitespaceComments()
 
 		if !j.parseSemicolon() {
 			return j.Error("ExportDeclaration", ErrMissingSemiColon)
@@ -721,20 +742,27 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		g.AcceptRunWhitespace()
 
 		if g.Peek() == (parser.Token{Type: TokenIdentifier, Data: "from"}) {
-			h := g.NewGoal()
+			j.AcceptRunWhitespaceNoComment()
 
-			h.Skip()
-			h.AcceptRunWhitespace()
+			ed.Comments[4] = j.AcceptRunWhitespaceComments()
 
-			if h.Accept(TokenStringLiteral) {
-				h = g.NewGoal()
+			j.AcceptRunWhitespace()
+
+			g = j.NewGoal()
+
+			g.Skip()
+			g.AcceptRunWhitespace()
+
+			if g.Accept(TokenStringLiteral) {
+				g = j.NewGoal()
 				ed.FromClause = new(FromClause)
-				_ = ed.FromClause.parse(&h)
+				_ = ed.FromClause.parse(&g)
 
-				g.Score(h)
 				j.Score(g)
 			}
 		}
+
+		ed.Comments[5] = j.AcceptRunWhitespaceComments()
 
 		if !j.parseSemicolon() {
 			return j.Error("ExportDeclaration", ErrMissingSemiColon)
