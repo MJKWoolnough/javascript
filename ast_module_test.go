@@ -1979,6 +1979,81 @@ func TestExportDeclaration(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
+
+		{"// A\nexport /* B */ default /* C */ function(){}", func(t *test, tk Tokens) { // 25
+			t.Output = ExportDeclaration{
+				DefaultFunction: &FunctionDeclaration{
+					FormalParameters: FormalParameters{
+						Tokens: tk[11:13],
+					},
+					FunctionBody: Block{
+						Tokens: tk[13:15],
+					},
+					Tokens: tk[10:15],
+				},
+				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
+				Tokens:   tk[:15],
+			}
+		}},
+		{"// A\nexport /* B */ default /* C */ 1 /* D */;", func(t *test, tk Tokens) { // 26
+			t.Output = ExportDeclaration{
+				DefaultAssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Literal: &tk[10],
+						Tokens:  tk[10:11],
+					}),
+					Tokens: tk[10:11],
+				},
+				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, nil, {tk[12]}},
+				Tokens:   tk[:14],
+			}
+		}},
+		{"export /* A */ * /* B */ from /* C */ '' /* D */;", func(t *test, tk Tokens) { // 27
+			t.Output = ExportDeclaration{
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[12],
+					Comments:        Comments{tk[10]},
+					Tokens:          tk[8:13],
+				},
+				Comments: [6]Comments{nil, {tk[2]}, {tk[6]}, nil, nil, {tk[14]}},
+				Tokens:   tk[:16],
+			}
+		}},
+		{"/* A */export/* B */*/* C */as/* D */a/* E */from/* F */''/* G */;", func(t *test, tk Tokens) { // 28
+			t.Output = ExportDeclaration{
+				ExportFromClause: &tk[7],
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[11],
+					Comments:        Comments{tk[10]},
+					Tokens:          tk[9:12],
+				},
+				Comments: [6]Comments{{tk[0]}, {tk[2]}, {tk[4]}, {tk[6]}, {tk[8]}, {tk[12]}},
+				Tokens:   tk[:14],
+			}
+		}},
+		{"export/* A */{}/* B */;", func(t *test, tk Tokens) { // 29
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				Comments: [6]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}},
+				Tokens:   tk[:6],
+			}
+		}},
+		{"export/* A */{}/* B */from/* C */''/* D */", func(t *test, tk Tokens) { // 30
+			t.Output = ExportDeclaration{
+				ExportClause: &ExportClause{
+					Tokens: tk[2:4],
+				},
+				FromClause: &FromClause{
+					ModuleSpecifier: &tk[7],
+					Comments:        Comments{tk[6]},
+					Tokens:          tk[5:8],
+				},
+				Comments: [6]Comments{nil, {tk[1]}, nil, nil, {tk[4]}, {tk[8]}},
+				Tokens:   tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ed ExportDeclaration
 
