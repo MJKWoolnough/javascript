@@ -54,7 +54,6 @@ func (s *Script) parse(j *jsParser) error {
 		g = j.NewGoal()
 
 		g.AcceptRunWhitespaceNoComment()
-
 		j.Score(g)
 
 		g = j.NewGoal()
