@@ -206,6 +206,8 @@ func (t Tokens) Format(s fmt.State, v rune) {
 func (t Tokens) printType(w writer, v bool) {
 	if t == nil {
 		w.WriteString("nil")
+
+		return
 	} else if len(t) == 0 {
 		w.WriteString("[]")
 
