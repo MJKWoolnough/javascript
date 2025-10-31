@@ -8,11 +8,15 @@ func blockAsModule(b *javascript.Block, fn func(*javascript.Module)) {
 	if len(b.StatementList) == 0 {
 		return
 	}
+
 	m := javascript.ScriptToModule(&javascript.Script{
 		StatementList: b.StatementList,
 	})
+
 	fn(m)
+
 	b.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
+
 	for n, mi := range m.ModuleListItems {
 		b.StatementList[n] = *mi.StatementListItem
 	}
@@ -22,9 +26,11 @@ func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module)) 
 	if len(e.Expressions) == 0 {
 		return
 	}
+
 	m := &javascript.Module{
 		ModuleListItems: make([]javascript.ModuleItem, len(e.Expressions)),
 	}
+
 	for n := range e.Expressions {
 		m.ModuleListItems[n] = javascript.ModuleItem{
 			StatementListItem: &javascript.StatementListItem{
@@ -36,8 +42,11 @@ func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module)) 
 			},
 		}
 	}
+
 	fn(m)
+
 	e.Expressions = make([]javascript.AssignmentExpression, len(m.ModuleListItems))
+
 	for n := range m.ModuleListItems {
 		e.Expressions[n] = m.ModuleListItems[n].StatementListItem.Statement.ExpressionStatement.Expressions[0]
 	}
@@ -56,8 +65,10 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 		expressions []javascript.AssignmentExpression
 		hasReturn   bool
 	)
+
 	for n := range sli {
 		s := &sli[n]
+
 		if hasReturn {
 			if isHoistable(s) {
 				return nil, true
@@ -69,11 +80,13 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 			if isEmptyStatement(s.Statement) {
 				continue
 			}
+
 			return nil, false
 		} else {
 			expressions = append(expressions, s.Statement.ExpressionStatement.Expressions...)
 		}
 	}
+
 	return expressions, hasReturn
 }
 
@@ -99,11 +112,11 @@ func aeIsCE(ae *javascript.AssignmentExpression) bool {
 
 func aeAsParen(ae *javascript.AssignmentExpression) *javascript.ParenthesizedExpression {
 	if aeIsCE(ae) {
-		pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression)
-		if ok {
+		if pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.ParenthesizedExpression); ok {
 			return pe
 		}
 	}
+
 	return nil
 }
 
@@ -113,11 +126,11 @@ func meIsSinglePe(me *javascript.MemberExpression) bool {
 
 func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
 	var ce *javascript.CallExpression
+
 	if meIsSinglePe(me) {
 		ce, _ = javascript.UnwrapConditional(me.PrimaryExpression.ParenthesizedExpression.Expressions[0].ConditionalExpression).(*javascript.CallExpression)
 	} else if me != nil && me.MemberExpression != nil && me.Arguments == nil {
-		ce = meAsCE(me.MemberExpression)
-		if ce != nil {
+		if ce = meAsCE(me.MemberExpression); ce != nil {
 			ce = &javascript.CallExpression{
 				CallExpression:    ce,
 				IdentifierName:    me.IdentifierName,
@@ -128,6 +141,7 @@ func meAsCE(me *javascript.MemberExpression) *javascript.CallExpression {
 			}
 		}
 	}
+
 	return ce
 }
 
@@ -141,9 +155,11 @@ func leftMostLHS(c javascript.ConditionalWrappable) *javascript.LeftHandSideExpr
 		case *javascript.ConditionalExpression:
 			if t.CoalesceExpression != nil {
 				ce := t.CoalesceExpression
+
 				for ce.CoalesceExpressionHead != nil {
 					ce = ce.CoalesceExpressionHead
 				}
+
 				c = &ce.BitwiseORExpression
 			} else if t.LogicalORExpression != nil {
 				c = t.LogicalORExpression
@@ -231,13 +247,15 @@ func fixWrapping(s *javascript.Statement) {
 	if s == nil || s.ExpressionStatement == nil || len(s.ExpressionStatement.Expressions) == 0 {
 		return
 	}
-	ae := &s.ExpressionStatement.Expressions[0]
-	if aeIsCE(ae) {
+
+	if ae := &s.ExpressionStatement.Expressions[0]; aeIsCE(ae) {
 		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
 			me := &lhs.NewExpression.MemberExpression
+
 			for me.MemberExpression != nil {
 				me = me.MemberExpression
 			}
+
 			if me.PrimaryExpression.ObjectLiteral != nil || me.PrimaryExpression.FunctionExpression != nil || me.PrimaryExpression.ClassExpression != nil {
 				me.PrimaryExpression = &javascript.PrimaryExpression{
 					ParenthesizedExpression: &javascript.ParenthesizedExpression{
@@ -294,6 +312,7 @@ func scoreCE(ce javascript.ConditionalWrappable) int {
 	case *javascript.NewExpression, *javascript.MemberExpression, *javascript.PrimaryExpression, *javascript.CallExpression, *javascript.OptionalExpression:
 		return 14
 	}
+
 	return -1
 }
 
@@ -302,17 +321,17 @@ func isConditionalWrappingAConditional(w javascript.ConditionalWrappable, below 
 	if !ok || len(pe.Expressions) != 1 || !aeIsCE(&pe.Expressions[0]) {
 		return nil
 	}
-	uw := javascript.UnwrapConditional(pe.Expressions[0].ConditionalExpression)
-	if scoreCE(uw) < scoreCE(below) {
+
+	if uw := javascript.UnwrapConditional(pe.Expressions[0].ConditionalExpression); scoreCE(uw) < scoreCE(below) {
 		return nil
 	}
+
 	return pe.Expressions[0].ConditionalExpression
 }
 
 func removeLastReturnStatement(b *javascript.Block) {
 	if b != nil && len(b.StatementList) > 0 {
-		s := b.StatementList[len(b.StatementList)-1].Statement
-		if isReturnStatement(s) && s.ExpressionStatement == nil {
+		if s := b.StatementList[len(b.StatementList)-1].Statement; isReturnStatement(s) && s.ExpressionStatement == nil {
 			b.StatementList = b.StatementList[:len(b.StatementList)-1]
 		}
 	}
@@ -324,5 +343,6 @@ func isSimpleAE(ae *javascript.AssignmentExpression) bool {
 			return pe.Literal != nil || pe.IdentifierReference != nil
 		}
 	}
+
 	return false
 }
