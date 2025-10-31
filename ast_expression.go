@@ -1064,8 +1064,10 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			me.MemberExpression = new(MemberExpression)
 			if err := me.MemberExpression.parse(&h, yield, await); err != nil {
 				err = j.Error("MemberExpression", err)
+
 				g.Score(h)
 				j.Score(g)
+
 				return err
 			}
 
