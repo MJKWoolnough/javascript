@@ -3118,11 +3118,7 @@ func TestStatement(t *testing.T) {
 		}},
 		{"throw\na", func(t *test, tk Tokens) { // 44
 			t.Err = Error{
-				Err: Error{
-					Err:     assignmentError(tk[1]),
-					Parsing: "Expression",
-					Token:   tk[1],
-				},
+				Err:     ErrUnexpectedLineTerminator,
 				Parsing: "Statement",
 				Token:   tk[1],
 			}

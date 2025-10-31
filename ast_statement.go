@@ -275,11 +275,17 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 
 		s.Type = StatementThrow
 
-		g.AcceptRunWhitespaceNoNewLine()
-
 		h := g.NewGoal()
 
+		if h.AcceptRunWhitespaceNoNewLine() == TokenLineTerminator {
+			return h.Error("Statement", ErrUnexpectedLineTerminator)
+		}
+
+		g.AcceptRunWhitespaceNoNewLineNoComment()
+
+		h = g.NewGoal()
 		s.ExpressionStatement = new(Expression)
+
 		if err := s.ExpressionStatement.parse(&h, true, yield, await); err != nil {
 			return g.Error("Statement", err)
 		}
