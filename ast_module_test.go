@@ -2031,13 +2031,13 @@ func TestExportDeclaration(t *testing.T) {
 				Tokens:   tk[:14],
 			}
 		}},
-		{"export/* A */{}/* B */;", func(t *test, tk Tokens) { // 29
+		{"export/* A */{}/* B */; // C\n\n// D", func(t *test, tk Tokens) { // 29
 			t.Output = ExportDeclaration{
 				ExportClause: &ExportClause{
 					Tokens: tk[2:4],
 				},
-				Comments: [7]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}},
-				Tokens:   tk[:6],
+				Comments: [7]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}, {tk[7]}},
+				Tokens:   tk[:8],
 			}
 		}},
 		{"export/* A */{}/* B */from/* C */''/* D */", func(t *test, tk Tokens) { // 30
