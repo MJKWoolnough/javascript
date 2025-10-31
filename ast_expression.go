@@ -1318,7 +1318,7 @@ type ParenthesizedExpression struct {
 	Tokens      Tokens
 }
 
-func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
+func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("ParenthesizedExpression", ErrMissingOpeningParenthesis)
 	}
@@ -1328,16 +1328,16 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
-			e := len(cp.Expressions)
+			e := len(pe.Expressions)
 
-			cp.Expressions = append(cp.Expressions, AssignmentExpression{})
-			if err := cp.Expressions[e].parse(&g, true, yield, await); err != nil {
+			pe.Expressions = append(pe.Expressions, AssignmentExpression{})
+			if err := pe.Expressions[e].parse(&g, true, yield, await); err != nil {
 				return j.Error("ParenthesizedExpression", err)
 			}
 
 			g.AcceptRunWhitespace()
 
-			if ae := &cp.Expressions[e]; ae.AssignmentOperator == AssignmentNone && g.SkipOptionalColonType() {
+			if ae := &pe.Expressions[e]; ae.AssignmentOperator == AssignmentNone && g.SkipOptionalColonType() {
 				g.AcceptRunWhitespace()
 
 				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
@@ -1386,7 +1386,7 @@ func (cp *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 		}
 	}
 
-	cp.Tokens = j.ToTokens()
+	pe.Tokens = j.ToTokens()
 
 	return nil
 }
