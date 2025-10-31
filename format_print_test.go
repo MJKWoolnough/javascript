@@ -1959,6 +1959,11 @@ func TestPrintingModule(t *testing.T) {
 			"export default 1;",
 			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */;",
 		},
+		{ // 58
+			"// A\n\n// B\nexport/* C */default/* D */1/* E */; // F\n\n// G",
+			"export default 1;",
+			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */; // F\n\n// G\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
