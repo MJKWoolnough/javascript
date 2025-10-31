@@ -1991,7 +1991,7 @@ func TestExportDeclaration(t *testing.T) {
 					},
 					Tokens: tk[10:15],
 				},
-				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
+				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
 				Tokens:   tk[:15],
 			}
 		}},
@@ -2004,7 +2004,7 @@ func TestExportDeclaration(t *testing.T) {
 					}),
 					Tokens: tk[10:11],
 				},
-				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, nil, {tk[12]}},
+				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, nil, {tk[12]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -2015,7 +2015,7 @@ func TestExportDeclaration(t *testing.T) {
 					Comments:        Comments{tk[10]},
 					Tokens:          tk[8:13],
 				},
-				Comments: [6]Comments{nil, {tk[2]}, {tk[6]}, nil, nil, {tk[14]}},
+				Comments: [7]Comments{nil, {tk[2]}, {tk[6]}, nil, nil, {tk[14]}},
 				Tokens:   tk[:16],
 			}
 		}},
@@ -2027,7 +2027,7 @@ func TestExportDeclaration(t *testing.T) {
 					Comments:        Comments{tk[10]},
 					Tokens:          tk[9:12],
 				},
-				Comments: [6]Comments{{tk[0]}, {tk[2]}, {tk[4]}, {tk[6]}, {tk[8]}, {tk[12]}},
+				Comments: [7]Comments{{tk[0]}, {tk[2]}, {tk[4]}, {tk[6]}, {tk[8]}, {tk[12]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -2036,7 +2036,7 @@ func TestExportDeclaration(t *testing.T) {
 				ExportClause: &ExportClause{
 					Tokens: tk[2:4],
 				},
-				Comments: [6]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}},
+				Comments: [7]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}},
 				Tokens:   tk[:6],
 			}
 		}},
@@ -2050,7 +2050,7 @@ func TestExportDeclaration(t *testing.T) {
 					Comments:        Comments{tk[6]},
 					Tokens:          tk[5:8],
 				},
-				Comments: [6]Comments{nil, {tk[1]}, nil, nil, {tk[4]}, {tk[8]}},
+				Comments: [7]Comments{nil, {tk[1]}, nil, nil, {tk[4]}, {tk[8]}},
 				Tokens:   tk[:9],
 			}
 		}},

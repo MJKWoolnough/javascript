@@ -613,7 +613,7 @@ type ExportDeclaration struct {
 	DefaultFunction             *FunctionDeclaration
 	DefaultClass                *ClassDeclaration
 	DefaultAssignmentExpression *AssignmentExpression
-	Comments                    [6]Comments
+	Comments                    [7]Comments
 	Tokens                      Tokens
 }
 
@@ -776,6 +776,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		j.Score(g)
 	}
 
+	ed.Comments[6] = j.AcceptRunWhitespaceNoNewlineComments()
 	ed.Tokens = j.ToTokens()
 
 	return nil
