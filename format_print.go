@@ -1840,6 +1840,10 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 
 		w.WriteString(";")
 	}
+
+	if v {
+		e.Comments[6].printSource(w, false, true)
+	}
 }
 
 func (wc WithClause) printSource(w writer, v bool) {
