@@ -100,11 +100,9 @@ func (j *jsParser) parseSemicolon() bool {
 
 	g.AcceptRunWhitespaceNoNewLine()
 
-	if t := g.Peek().Type; t == TokenLineTerminator || t == TokenSingleLineComment || t == parser.TokenDone {
-		return true
-	}
+	t := g.Peek().Type
 
-	return false
+	return t == TokenLineTerminator || t == TokenSingleLineComment || t == parser.TokenDone
 }
 
 // Declaration as defined in ECMA-262
