@@ -922,7 +922,6 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 		}
 
 		g.AcceptRunWhitespace()
-
 		j.Score(g)
 	}
 
