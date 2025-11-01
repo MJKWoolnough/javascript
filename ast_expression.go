@@ -435,6 +435,7 @@ type ObjectAssignmentPattern struct {
 
 func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 	o.AssignmentPropertyList = make([]AssignmentProperty, len(ol.PropertyDefinitionList))
+
 	for n := range ol.PropertyDefinitionList {
 		pd := &ol.PropertyDefinitionList[n]
 
