@@ -406,7 +406,6 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
-
 			g.AcceptRunWhitespace()
 
 			h := g.NewGoal()
