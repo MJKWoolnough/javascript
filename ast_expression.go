@@ -1347,12 +1347,13 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 							g.AcceptRunWhitespace()
 
 							ae.ConditionalExpression = nil
-
 							ae.LeftHandSideExpression = lhs
+
 							if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
 								ae.AssignmentPattern = new(AssignmentPattern)
 								if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 									z := jsParser(lhs.Tokens[:0])
+
 									return z.Error("ParenthesizedExpression", err)
 								}
 
