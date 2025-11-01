@@ -327,7 +327,6 @@ func (w *WithEntry) parse(j *jsParser) error {
 	}
 
 	w.Value = j.GetLastToken()
-
 	g = j.NewGoal()
 
 	g.AcceptRunWhitespace()
