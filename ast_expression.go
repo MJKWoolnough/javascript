@@ -1404,6 +1404,7 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("Arguments", ErrMissingOpeningParenthesis)
 	}
+
 	for {
 		j.AcceptRunWhitespace()
 
