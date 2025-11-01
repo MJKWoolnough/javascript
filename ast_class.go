@@ -14,6 +14,10 @@ type ClassDeclaration struct {
 }
 
 func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
+	if j.SkipAbstract() {
+		j.AcceptRunWhitespaceNoNewLine()
+	}
+
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"}) {
 		return j.Error("ClassDeclaration", ErrInvalidClassDeclaration)
 	}
