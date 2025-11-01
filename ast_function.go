@@ -284,6 +284,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 				be.ArrayBindingPattern = new(ArrayBindingPattern)
 				if err := be.ArrayBindingPattern.fromAP(ae.AssignmentPattern.ArrayAssignmentPattern); err != nil {
 					z := jsParser(ae.Tokens[:0])
+
 					return z.Error("BindingElement", err)
 				}
 
@@ -292,6 +293,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 				be.ObjectBindingPattern = new(ObjectBindingPattern)
 				if err := be.ObjectBindingPattern.fromAP(ae.AssignmentPattern.ObjectAssignmentPattern); err != nil {
 					z := jsParser(ae.Tokens[:0])
+
 					return z.Error("BindingElement", err)
 				}
 
