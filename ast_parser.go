@@ -275,6 +275,18 @@ Loop:
 	return c
 }
 
+func (j *jsParser) AccecptRunWhitespaceCommentsOnComma() Comments {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		return j.AcceptRunWhitespaceComments()
+	}
+
+	return j.AcceptRunWhitespaceNoNewlineComments()
+}
+
 func (j *jsParser) GetLastToken() *Token {
 	return &(*j)[len(*j)-1]
 }
