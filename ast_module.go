@@ -118,6 +118,9 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 
 		fallthrough
 	default:
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 		ml.StatementListItem = new(StatementListItem)
 		if err := ml.StatementListItem.parse(&g, false, true, false); err != nil {
 			return j.Error("ModuleItem", err)

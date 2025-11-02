@@ -45,7 +45,7 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
 		if !g.OnOptionalType() {
 			j.Score(g)
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 
 			g = j.NewGoal()
 
@@ -61,7 +61,7 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 				return j.Error("ConditionalExpression", ErrMissingColon)
 			}
 
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 
 			g = j.NewGoal()
 
@@ -100,7 +100,7 @@ func (ce *CoalesceExpression) parse(j *jsParser, in, yield, await bool, be Bitwi
 			break
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nce := new(CoalesceExpression)
 		*nce = *ce
@@ -145,7 +145,7 @@ func (lo *LogicalORExpression) parse(j *jsParser, in, yield, await bool) error {
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nlo := new(LogicalORExpression)
 		*nlo = *lo
@@ -182,7 +182,7 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nla := new(LogicalANDExpression)
 		*nla = *la
@@ -219,7 +219,7 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nbo := new(BitwiseORExpression)
 		*nbo = *bo
@@ -256,7 +256,7 @@ func (bx *BitwiseXORExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nbx := new(BitwiseXORExpression)
 		*nbx = *bx
@@ -293,7 +293,7 @@ func (ba *BitwiseANDExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nba := new(BitwiseANDExpression)
 		*nba = *ba
@@ -357,7 +357,7 @@ func (ee *EqualityExpression) parse(j *jsParser, in, yield, await bool) error {
 		}
 
 		g.Skip()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nee := new(EqualityExpression)
 		*nee = *ee
@@ -465,7 +465,7 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nre := new(RelationalExpression)
 		*nre = *re
@@ -533,7 +533,7 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nse := new(ShiftExpression)
 		*nse = *se
@@ -592,7 +592,7 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		g.Skip()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nae := new(AdditiveExpression)
 		*nae = *ae
@@ -654,7 +654,7 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 		}
 
 		g.Skip()
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nmw := new(MultiplicativeExpression)
 		*nmw = *me
@@ -696,7 +696,7 @@ func (ee *ExponentiationExpression) parse(j *jsParser, yield, await bool) error 
 			return nil
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		nee := new(ExponentiationExpression)
 		*nee = *ee
@@ -759,7 +759,7 @@ Loop:
 		}
 
 		j.Skip()
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 	}
 
 	g := j.NewGoal()
@@ -830,7 +830,7 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 
 		g = j.NewGoal()
 
-		g.AcceptRunWhitespaceNoNewLine()
+		g.AcceptRunWhitespaceNoNewLineNoComment()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "++"}) {
 			if !ue.LeftHandSideExpression.IsSimple() {

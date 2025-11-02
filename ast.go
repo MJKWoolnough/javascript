@@ -260,7 +260,7 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	}
 
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 		j.Score(g)
 
 		g = j.NewGoal()
@@ -660,7 +660,7 @@ func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	ae.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
 
-	g.AcceptRunWhitespace()
+	g.AcceptRunWhitespaceNoComment()
 
 	h := g.NewGoal()
 
@@ -811,7 +811,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				}
 
 				g.Score(h)
-				g.AcceptRunWhitespace()
+				g.AcceptRunWhitespaceNoComment()
 
 				h = g.NewGoal()
 				pd.AssignmentExpression = new(AssignmentExpression)
@@ -874,7 +874,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				h.AcceptRunWhitespace()
 
 				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
-					h.AcceptRunWhitespace()
+					h.AcceptRunWhitespaceNoComment()
 
 					i := h.NewGoal()
 					pd.AssignmentExpression = new(AssignmentExpression)

@@ -2613,18 +2613,22 @@ func TestStatementListItem(t *testing.T) {
 					ExpressionStatement: &Expression{
 						Expressions: []AssignmentExpression{
 							{
-								ConditionalExpression: WrapConditional(&PrimaryExpression{
-									IdentifierReference: &tk[4],
-									Tokens:              tk[4:5],
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[4],
+										Tokens:              tk[4:5],
+									},
+									Comments: [5]Comments{nil, nil, nil, nil, {tk[6]}},
+									Tokens:   tk[4:7],
 								}),
-								Tokens: tk[4:5],
+								Tokens: tk[4:7],
 							},
 						},
-						Tokens: tk[4:5],
+						Tokens: tk[4:7],
 					},
-					Tokens: tk[4:5],
+					Tokens: tk[4:7],
 				},
-				Comments: [2]Comments{{tk[0], tk[2]}, {tk[6]}},
+				Comments: [2]Comments{{tk[0], tk[2]}},
 				Tokens:   tk[:7],
 			}
 		}},

@@ -887,7 +887,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			return j.Error("IterationStatementFor", ErrInvalidForAwaitLoop)
 		}
 
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 

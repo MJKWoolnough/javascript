@@ -246,8 +246,8 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	}
 
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-		g.AcceptRunWhitespace()
 		j.Score(g)
+		j.AcceptRunWhitespaceNoComment()
 
 		g = j.NewGoal()
 

@@ -306,7 +306,7 @@ func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 		g.AcceptRunWhitespace()
 	}
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 
 		h := g.NewGoal()
 
@@ -496,7 +496,7 @@ type PropertyName struct {
 
 func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 

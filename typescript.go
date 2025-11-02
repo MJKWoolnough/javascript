@@ -826,7 +826,7 @@ func (j *jsParser) ReadParameterList() bool {
 			if optional && !opt && !init {
 				return false
 			} else if init {
-				g.AcceptRunWhitespace()
+				g.AcceptRunWhitespaceNoComment()
 
 				var ae AssignmentExpression
 

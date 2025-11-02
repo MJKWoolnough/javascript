@@ -1998,13 +1998,17 @@ func TestExportDeclaration(t *testing.T) {
 		{"// A\nexport /* B */ default /* C */ 1 /* D */;", func(t *test, tk Tokens) { // 26
 			t.Output = ExportDeclaration{
 				DefaultAssignmentExpression: &AssignmentExpression{
-					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						Literal: &tk[10],
-						Tokens:  tk[10:11],
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							Literal: &tk[10],
+							Tokens:  tk[10:11],
+						},
+						Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+						Tokens:   tk[10:13],
 					}),
-					Tokens: tk[10:11],
+					Tokens: tk[10:13],
 				},
-				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, nil, {tk[12]}},
+				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
 				Tokens:   tk[:14],
 			}
 		}},

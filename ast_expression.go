@@ -122,7 +122,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 			ae.Delegate = true
 
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 		}
 
 		g := j.NewGoal()
@@ -240,7 +240,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 
 					if err := ae.AssignmentOperator.parse(&h); err == nil {
 						g.Score(h)
-						g.AcceptRunWhitespace()
+						g.AcceptRunWhitespaceNoComment()
 
 						ae.ConditionalExpression = nil
 						ae.LeftHandSideExpression = lhs
@@ -921,7 +921,7 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 			break
 		}
 
-		g.AcceptRunWhitespace()
+		g.AcceptRunWhitespaceNoComment()
 		j.Score(g)
 	}
 
@@ -993,17 +993,26 @@ type MemberExpression struct {
 	ImportMeta        bool
 	Arguments         *Arguments
 	PrivateIdentifier *Token
+	Comments          [5]Comments
 	Tokens            Tokens
 }
 
 func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
+	me.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	g := j.NewGoal()
 	e := false
 
 	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "super"}) {
+		me.Comments[1] = g.AcceptRunWhitespaceComments()
+
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+			me.Comments[2] = g.AcceptRunWhitespaceNoNewlineComments()
+
 			g.AcceptRunWhitespace()
 
 			h := g.NewGoal()
@@ -1014,12 +1023,17 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			}
 
 			g.Score(h)
+
+			me.Comments[3] = g.AcceptRunWhitespaceComments()
+
 			g.AcceptRunWhitespace()
 
 			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 				return g.Error("MemberExpression", ErrInvalidSuperProperty)
 			}
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			me.Comments[2] = g.AcceptRunWhitespaceComments()
+
 			g.AcceptRunWhitespace()
 
 			if !g.Accept(TokenIdentifier, TokenKeyword) {
@@ -1040,9 +1054,14 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		g.Skip()
+
+		me.Comments[1] = g.AcceptRunWhitespaceComments()
+
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			me.Comments[2] = g.AcceptRunWhitespaceComments()
+
 			g.AcceptRunWhitespace()
 
 			var id string
@@ -1118,6 +1137,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	j.Score(g)
 
 	for {
+		me.Comments[4] = j.AccecptRunWhitespaceCommentsOnComma()
 		me.Tokens = j.ToTokens()
 		g := j.NewGoal()
 
@@ -1129,6 +1149,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			tl   *TemplateLiteral
 			i, p *Token
 			e    *Expression
+			c, d Comments
 		)
 
 		switch tk := h.Peek(); tk.Type {
@@ -1141,6 +1162,9 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			switch tk.Data {
 			case ".":
 				h.Skip()
+
+				c = h.AcceptRunWhitespaceComments()
+
 				h.AcceptRunWhitespace()
 
 				if !h.Accept(TokenIdentifier, TokenKeyword, TokenPrivateIdentifier) {
@@ -1153,7 +1177,10 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				}
 			case "[":
 				h.Skip()
-				h.AcceptRunWhitespace()
+
+				c = h.AcceptRunWhitespaceNoNewlineComments()
+
+				h.AcceptRunWhitespaceNoComment()
 
 				i := h.NewGoal()
 
@@ -1163,6 +1190,9 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				}
 
 				h.Score(i)
+
+				d = h.AcceptRunWhitespaceComments()
+
 				h.AcceptRunWhitespace()
 
 				if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
@@ -1193,6 +1223,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			IdentifierName:    i,
 			TemplateLiteral:   tl,
 			PrivateIdentifier: p,
+			Comments:          [5]Comments{nil, c, d},
 		}
 
 		j.Score(g)
@@ -1446,7 +1477,7 @@ type Argument struct {
 func (a *Argument) parse(j *jsParser, yield, await bool) error {
 	a.Spread = j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
 
-	j.AcceptRunWhitespace()
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -1498,7 +1529,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				return j.Error("CallExpression", ErrMissingOpeningParenthesis)
 			}
 
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 
 			g := j.NewGoal()
 
