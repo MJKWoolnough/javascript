@@ -3404,6 +3404,161 @@ func TestMemberExpression(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{"// A\nsuper // B\n[ // C\n1\n // D\n]// E\n", func(t *test, tk Tokens) { // 32
+			t.Output = MemberExpression{
+				SuperProperty: true,
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								Literal: &tk[10],
+								Tokens:  tk[10:11],
+							}),
+							Tokens: tk[10:11],
+						},
+					},
+					Tokens: tk[10:11],
+				},
+				Comments: [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[13]}, {tk[16]}},
+				Tokens:   tk[:17],
+			}
+		}},
+		{"// A\nsuper /* B */ . /* C */ a // D\n", func(t *test, tk Tokens) { // 33
+			t.Output = MemberExpression{
+				SuperProperty:  true,
+				IdentifierName: &tk[10],
+				Comments:       [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, {tk[12]}},
+				Tokens:         tk[:13],
+			}
+		}},
+		{"// A\nnew /* B */./* C */target /* D */", func(t *test, tk Tokens) { // 34
+			t.Output = MemberExpression{
+				NewTarget: true,
+				Comments:  [5]Comments{{tk[0]}, {tk[4]}, {tk[6]}, nil, {tk[9]}},
+				Tokens:    tk[:10],
+			}
+		}},
+		{"/* A */import/* B */./* C */meta/* D */", func(t *test, tk Tokens) { // 35
+			t.Output = MemberExpression{
+				ImportMeta: true,
+				Comments:   [5]Comments{{tk[0]}, {tk[2]}, {tk[4]}, nil, {tk[6]}},
+				Tokens:     tk[:7],
+			}
+		}},
+		{"// A\nnew/* B */1/* C */() // D\n", func(t *test, tk Tokens) { // 36
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Literal: &tk[4],
+						Tokens:  tk[4:5],
+					},
+					Comments: [5]Comments{nil, nil, nil, nil, {tk[5]}},
+					Tokens:   tk[4:6],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[6:8],
+				},
+				Comments: [5]Comments{{tk[0]}, {tk[3]}, nil, nil, {tk[9]}},
+				Tokens:   tk[:10],
+			}
+		}},
+		{"// A\na // B\n", func(t *test, tk Tokens) { // 37
+			t.Output = MemberExpression{
+				PrimaryExpression: &PrimaryExpression{
+					IdentifierReference: &tk[2],
+					Tokens:              tk[2:3],
+				},
+				Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+				Tokens:   tk[:5],
+			}
+		}},
+		{"// A\na /* B */``/* C */", func(t *test, tk Tokens) { // 38
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+					Tokens:   tk[0:5],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[5],
+					Tokens:                 tk[5:6],
+				},
+				Comments: [5]Comments{nil, nil, nil, nil, {tk[6]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"a/* A */./* B */#b/* C */", func(t *test, tk Tokens) { // 39
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[0],
+						Tokens:              tk[:1],
+					},
+					Comments: [5]Comments{nil, nil, nil, nil, {tk[1]}},
+					Tokens:   tk[:2],
+				},
+				PrivateIdentifier: &tk[4],
+				Comments:          [5]Comments{nil, {tk[3]}, nil, nil, {tk[5]}},
+				Tokens:            tk[:6],
+			}
+		}},
+		{"/* A */a/* B */./* C */#b/* D */./* E */c // F\n", func(t *test, tk Tokens) { // 40
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[1],
+							Tokens:              tk[1:2],
+						},
+						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[2]}},
+						Tokens:   tk[:3],
+					},
+					PrivateIdentifier: &tk[5],
+					Comments:          [5]Comments{nil, {tk[4]}, nil, nil, {tk[6]}},
+					Tokens:            tk[:7],
+				},
+				IdentifierName: &tk[9],
+				Comments:       [5]Comments{nil, {tk[8]}, nil, nil, {tk[11]}},
+				Tokens:         tk[:12],
+			}
+		}},
+		{"// A\na /* B */ . /* C */ #b /* D */ [ // E\n\"c\"\n// F\n] /* G */", func(t *test, tk Tokens) { // 41
+			t.Output = MemberExpression{
+				MemberExpression: &MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+						Tokens:   tk[:5],
+					},
+					PrivateIdentifier: &tk[10],
+					Comments:          [5]Comments{nil, {tk[8]}, nil, nil, {tk[12]}},
+					Tokens:            tk[:13],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									Literal: &tk[18],
+									Tokens:  tk[18:19],
+								},
+								Tokens: tk[18:19],
+							}),
+							Tokens: tk[18:19],
+						},
+					},
+					Tokens: tk[18:19],
+				},
+				Comments: [5]Comments{nil, {tk[16]}, {tk[20]}, nil, {tk[24]}},
+				Tokens:   tk[:25],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var me MemberExpression
 
