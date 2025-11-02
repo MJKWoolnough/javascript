@@ -289,6 +289,10 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 	}
 }
 
+func (c Comments) LastIsMulti() bool {
+	return len(c) > 0 && c[len(c)-1].Type == TokenMultiLineComment
+}
+
 func printComment(w writer, c Token, pos int) bool {
 	w.WriteString(strings.Repeat(" ", pos))
 
