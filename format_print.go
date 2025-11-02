@@ -46,7 +46,7 @@ func (s Statement) printSource(w writer, v bool) {
 			s.VariableStatement.printSource(w, v)
 		} else if s.ExpressionStatement != nil {
 			s.ExpressionStatement.printSource(w, v)
-			w.WriteString(";")
+			w.PrintSemiColon()
 		} else if s.IfStatement != nil {
 			s.IfStatement.printSource(w, v)
 		} else if s.IterationStatementDo != nil {
@@ -76,7 +76,7 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("continue ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.WriteString(";")
+			w.PrintSemiColon()
 		}
 	case StatementBreak:
 		if s.LabelIdentifier == nil {
@@ -84,7 +84,7 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("break ")
 			w.WriteString(s.LabelIdentifier.Data)
-			w.WriteString(";")
+			w.PrintSemiColon()
 		}
 	case StatementReturn:
 		if s.ExpressionStatement == nil {
@@ -92,13 +92,13 @@ func (s Statement) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("return ")
 			s.ExpressionStatement.printSource(w, v)
-			w.WriteString(";")
+			w.PrintSemiColon()
 		}
 	case StatementThrow:
 		if s.ExpressionStatement != nil {
 			w.WriteString("throw ")
 			s.ExpressionStatement.printSource(w, v)
-			w.WriteString(";")
+			w.PrintSemiColon()
 		}
 	case StatementDebugger:
 		w.WriteString("debugger;")
@@ -194,7 +194,7 @@ func (vs VariableStatement) printSource(w writer, v bool) {
 		vd.printSource(w, v)
 	}
 
-	w.WriteString(";")
+	w.PrintSemiColon()
 }
 
 func (e Expression) printSource(w writer, v bool) {
@@ -699,7 +699,7 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 		lb.printSource(w, v)
 	}
 
-	w.WriteString(";")
+	w.PrintSemiColon()
 }
 
 func (l LexicalBinding) printSource(w writer, v bool) {
@@ -1013,7 +1013,7 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 		fd.Initializer.printSource(w, v)
 	}
 
-	w.WriteString(";")
+	w.PrintSemiColon()
 }
 
 func (cen ClassElementName) printSource(w writer, v bool) {
@@ -1179,36 +1179,95 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 }
 
 func (m MemberExpression) printSource(w writer, v bool) {
+	if v {
+		m.Comments[0].printSource(w, true, false)
+	}
+
 	if m.MemberExpression != nil {
 		if m.Arguments != nil {
 			w.WriteString("new ")
+			if v {
+				m.Comments[1].printSource(w, true, false)
+			}
+
 			m.MemberExpression.printSource(w, v)
-			m.Arguments.printSource(w, v)
+
+			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+				w.WriteString(" ")
+			}
+
+			if v {
+				m.Comments[2].printSource(w, true, false)
+			}
+
+			m.Arguments.printSource(w.Indent(), v)
 		} else if m.Expression != nil {
 			m.MemberExpression.printSource(w, v)
+
+			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+				w.WriteString(" ")
+			}
+
 			w.WriteString("[")
-			m.Expression.printSource(w, v)
+
+			ip := w.Indent()
+
+			if v && len(m.Comments[1]) > 0 {
+				m.Comments[1].printSource(w, true, false)
+				ip.WriteString("\n")
+			}
+
+			m.Expression.printSource(ip, v)
+
+			if v && len(m.Comments[2]) > 0 {
+				w.WriteString("\n")
+				m.Comments[2].printSource(w, true, true)
+			}
+
 			w.WriteString("]")
 		} else if m.IdentifierName != nil {
 			m.MemberExpression.printSource(w, v)
+
+			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+				w.WriteString(" ")
+			}
 
 			if v && len(m.MemberExpression.Tokens) > 0 && m.IdentifierName.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
+
+			if v {
+				m.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteString(m.IdentifierName.Data)
 		} else if m.PrivateIdentifier != nil {
 			m.MemberExpression.printSource(w, v)
+
+			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+				w.WriteString(" ")
+			}
 
 			if v && len(m.MemberExpression.Tokens) > 0 && m.PrivateIdentifier.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
+
+			if v {
+				m.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteString(m.PrivateIdentifier.Data)
 		} else if m.TemplateLiteral != nil {
 			m.MemberExpression.printSource(w, v)
+
+			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+				w.WriteString(" ")
+			}
+
 			m.TemplateLiteral.printSource(w, v)
 		}
 	} else if m.PrimaryExpression != nil {
@@ -1216,18 +1275,75 @@ func (m MemberExpression) printSource(w writer, v bool) {
 	} else if m.SuperProperty {
 		if m.Expression != nil {
 			w.WriteString("super")
+
+			if v {
+				m.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteString("[")
-			m.Expression.printSource(w, v)
+
+			ip := w.Indent()
+
+			if v && len(m.Comments[2]) > 0 {
+				m.Comments[2].printSource(w, true, false)
+				ip.WriteString("\n")
+			}
+
+			m.Expression.printSource(ip, v)
+
+			if v && len(m.Comments[3]) > 0 {
+				w.WriteString("\n")
+				m.Comments[3].printSource(w, false, false)
+			}
+
 			w.WriteString("]")
 		} else if m.IdentifierName != nil {
 			w.WriteString("super")
+
+			if v {
+				m.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteString(".")
+
+			if v {
+				m.Comments[2].printSource(w, true, false)
+			}
+
 			w.WriteString(m.IdentifierName.Data)
 		}
 	} else if m.NewTarget {
-		w.WriteString("new.target")
+		w.WriteString("new")
+
+		if v {
+			m.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString(".")
+
+		if v {
+			m.Comments[2].printSource(w, true, false)
+		}
+
+		w.WriteString("target")
 	} else if m.ImportMeta {
-		w.WriteString("import.meta")
+		w.WriteString("import")
+
+		if v {
+			m.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString(".")
+
+		if v {
+			m.Comments[2].printSource(w, true, false)
+		}
+
+		w.WriteString("meta")
+	}
+
+	if v {
+		m.Comments[4].printSource(w, false, false)
 	}
 }
 
@@ -1686,7 +1802,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		i.Comments[2].printSource(w, false, false)
 	}
 
-	w.WriteString(";")
+	w.PrintSemiColon()
 
 	if v {
 		i.Comments[3].printSource(w, false, false)
@@ -1736,7 +1852,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 			e.Comments[5].printSource(w, false, false)
 		}
 
-		w.WriteString(";")
+		w.PrintSemiColon()
 	} else if e.ExportClause != nil {
 		if v {
 			e.Comments[0].printSource(w, true, false)
@@ -1754,7 +1870,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 			e.Comments[5].printSource(w, false, false)
 		}
 
-		w.WriteString(";")
+		w.PrintSemiColon()
 	} else if e.VariableStatement != nil {
 		if v {
 			e.Comments[0].printSource(w, true, false)
@@ -1838,7 +1954,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 			e.Comments[5].printSource(w, false, false)
 		}
 
-		w.WriteString(";")
+		w.PrintSemiColon()
 	}
 
 	if v {
