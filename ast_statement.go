@@ -333,6 +333,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 				g.Score(h)
 			}
 		}
+
 		if s.LabelIdentifier == nil {
 			g = j.NewGoal()
 
