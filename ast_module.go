@@ -327,16 +327,8 @@ func (w *WithEntry) parse(j *jsParser) error {
 	}
 
 	w.Value = j.GetLastToken()
-	g = j.NewGoal()
 
-	g.AcceptRunWhitespace()
-
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-		w.Comments[3] = j.AcceptRunWhitespaceComments()
-	} else {
-		w.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
-	}
-
+	w.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
 	w.Tokens = j.ToTokens()
 
 	return nil
@@ -580,16 +572,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 		}
 	}
 
-	g := j.NewGoal()
-
-	g.AcceptRunWhitespace()
-
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-		is.Comments[3] = j.AcceptRunWhitespaceComments()
-	} else {
-		is.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
-	}
-
+	is.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
 	is.Tokens = j.ToTokens()
 
 	return nil
@@ -632,7 +615,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
 		ed.Comments[2] = j.AcceptRunWhitespaceComments()
 
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 
@@ -889,16 +872,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 		}
 	}
 
-	g = j.NewGoal()
-
-	g.AcceptRunWhitespace()
-
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-		es.Comments[3] = j.AcceptRunWhitespaceComments()
-	} else {
-		es.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
-	}
-
+	es.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
 	es.Tokens = j.ToTokens()
 
 	return nil
