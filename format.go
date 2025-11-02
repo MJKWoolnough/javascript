@@ -9,12 +9,16 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-var indent = []byte{'\t'}
+var (
+	indent    = []byte{'\t'}
+	semiColon = []byte{';'}
+)
 
 type writer interface {
 	io.Writer
 	WriteString(string)
 	Underlying() writer
+	PrintSemiColon()
 	LastChar() byte
 	Pos() int
 	Indent() writer
@@ -118,6 +122,13 @@ func (u *underlyingWriter) WriteString(s string) {
 
 func (u *underlyingWriter) Underlying() writer {
 	return u
+}
+
+func (u *underlyingWriter) PrintSemiColon() {
+	if u.lastChar != '\n' {
+		u.Writer.Write(semiColon)
+		u.pos++
+	}
 }
 
 func (u *underlyingWriter) LastChar() byte {
