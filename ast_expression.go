@@ -1013,7 +1013,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
 			me.Comments[2] = g.AcceptRunWhitespaceNoNewlineComments()
 
-			g.AcceptRunWhitespace()
+			g.AcceptRunWhitespaceNoComment()
 
 			h := g.NewGoal()
 
