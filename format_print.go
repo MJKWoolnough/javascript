@@ -1358,13 +1358,26 @@ func (a Argument) printSource(w writer, v bool) {
 func (a Arguments) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	ip := w.Indent()
+
+	if v && len(a.Comments[0]) > 0 {
+		a.Comments[0].printSource(w, false, true)
+		ip.WriteString("\n")
+	}
+
 	if len(a.ArgumentList) > 0 {
-		a.ArgumentList[0].printSource(w, v)
+
+		a.ArgumentList[0].printSource(ip, v)
 
 		for _, ae := range a.ArgumentList[1:] {
-			w.WriteString(", ")
-			ae.printSource(w, v)
+			ip.WriteString(", ")
+			ae.printSource(ip, v)
 		}
+	}
+
+	if v && len(a.Comments[1]) > 0 {
+		w.WriteString("\n")
+		a.Comments[1].printSource(w, false, true)
 	}
 
 	w.WriteString(")")
