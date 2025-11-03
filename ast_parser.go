@@ -275,7 +275,7 @@ Loop:
 	return c
 }
 
-func (j *jsParser) AccecptRunWhitespaceCommentsOnComma() Comments {
+func (j *jsParser) AcceptRunWhitespaceCommentsInList() Comments {
 	g := j.NewGoal()
 
 	g.AcceptRunWhitespace()

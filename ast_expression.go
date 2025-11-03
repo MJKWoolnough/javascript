@@ -1137,7 +1137,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	j.Score(g)
 
 	for {
-		me.Comments[4] = j.AccecptRunWhitespaceCommentsOnComma()
+		me.Comments[4] = j.AcceptRunWhitespaceCommentsInList()
 		me.Tokens = j.ToTokens()
 		g := j.NewGoal()
 

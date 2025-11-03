@@ -331,7 +331,7 @@ func (w *WithEntry) parse(j *jsParser) error {
 
 	w.Value = j.GetLastToken()
 
-	w.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
+	w.Comments[3] = j.AcceptRunWhitespaceCommentsInList()
 	w.Tokens = j.ToTokens()
 
 	return nil
@@ -575,7 +575,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 		}
 	}
 
-	is.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
+	is.Comments[3] = j.AcceptRunWhitespaceCommentsInList()
 	is.Tokens = j.ToTokens()
 
 	return nil
@@ -875,7 +875,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 		}
 	}
 
-	es.Comments[3] = j.AccecptRunWhitespaceCommentsOnComma()
+	es.Comments[3] = j.AcceptRunWhitespaceCommentsInList()
 	es.Tokens = j.ToTokens()
 
 	return nil
