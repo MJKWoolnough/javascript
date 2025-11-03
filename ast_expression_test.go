@@ -4088,6 +4088,48 @@ func TestArguments(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"( // A\n\n// B\n)", func(t *test, tk Tokens) { // 12
+			t.Output = Arguments{
+				Comments: [2]Comments{{tk[2]}, {tk[4]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"( // A\n\n// B\na // C\n\n// D\n, // E\n\nb // F\n\n// G\n)", func(t *test, tk Tokens) { // 13
+			t.Output = Arguments{
+				ArgumentList: []Argument{
+					{
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8], tk[10]}},
+								Tokens:   tk[4:11],
+							}),
+							Tokens: tk[4:11],
+						},
+						Tokens: tk[4:11],
+					},
+					{
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[16],
+									Tokens:              tk[16:17],
+								},
+								Comments: [5]Comments{{tk[14]}, nil, nil, nil, {tk[18]}},
+								Tokens:   tk[14:19],
+							}),
+							Tokens: tk[14:19],
+						},
+						Tokens: tk[14:19],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[20]}},
+				Tokens:   tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a Arguments
 
