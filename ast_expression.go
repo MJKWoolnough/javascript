@@ -1428,6 +1428,7 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 // https://tc39.es/ecma262/#prod-Arguments
 type Arguments struct {
 	ArgumentList []Argument
+	Comments     [2]Comments
 	Tokens       Tokens
 }
 
@@ -1436,15 +1437,21 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		return j.Error("Arguments", ErrMissingOpeningParenthesis)
 	}
 
-	for {
-		j.AcceptRunWhitespace()
+	a.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+	for {
+		j.AcceptRunWhitespaceNoComment()
+
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 			break
 		}
 
 		ae := len(a.ArgumentList)
-		g := j.NewGoal()
+		g = j.NewGoal()
 
 		a.ArgumentList = append(a.ArgumentList, Argument{})
 		if err := a.ArgumentList[ae].parse(&g, yield, await); err != nil {
@@ -1452,14 +1459,24 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("Arguments", ErrMissingComma)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("Arguments", ErrMissingComma)
 		}
+
+		j.Score(g)
 	}
+
+	a.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	a.Tokens = j.ToTokens()
 
