@@ -1689,6 +1689,16 @@ func TestPrintingScript(t *testing.T) {
 			"a.#b[\"c\"];",
 			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n\t\"c\"\n// G\n] /* H */;",
 		},
+		{ // 334
+			"super[ // C\n\n// D\n1 // E\n\n// F\n]",
+			"super[1];",
+			"super[ // C\n\n\t// D\n\t1 // E\n\n// F\n];",
+		},
+		{ // 335
+			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n// G\n\"c\" // H\n\n// I\n] /* J */",
+			"a.#b[\"c\"];",
+			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n\t// G\n\t\"c\" // H\n\n// I\n] /* J */;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
