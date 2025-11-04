@@ -3925,6 +3925,25 @@ func TestParenthesizedExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"( // A\n// B\n\n// C\n1 // D\n// E\n\n// F\n)", func(t *test, tk Tokens) { // 8
+			t.Output = ParenthesizedExpression{
+				Expressions: []AssignmentExpression{
+					{
+						ConditionalExpression: WrapConditional(&MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								Literal: &tk[8],
+								Tokens:  tk[8:9],
+							},
+							Comments: [5]Comments{{tk[6]}, nil, nil, nil, {tk[10], tk[12]}},
+							Tokens:   tk[6:13],
+						}),
+						Tokens: tk[6:13],
+					},
+				},
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c ParenthesizedExpression
 
