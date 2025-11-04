@@ -1347,6 +1347,7 @@ func (pe *PrimaryExpression) IsSimple() bool {
 // https://262.ecma-international.org/11.0/#prod-ParenthesizedExpression
 type ParenthesizedExpression struct {
 	Expressions []AssignmentExpression
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
@@ -1355,9 +1356,15 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 		return j.Error("ParenthesizedExpression", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	pe.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
-	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+	j.AcceptRunWhitespaceNoComment()
+
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
 			e := len(pe.Expressions)
@@ -1367,15 +1374,17 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 				return j.Error("ParenthesizedExpression", err)
 			}
 
-			g.AcceptRunWhitespace()
+			h := g.NewGoal()
 
-			if ae := &pe.Expressions[e]; ae.AssignmentOperator == AssignmentNone && g.SkipOptionalColonType() {
-				g.AcceptRunWhitespace()
+			h.AcceptRunWhitespace()
+
+			if ae := &pe.Expressions[e]; ae.AssignmentOperator == AssignmentNone && h.SkipOptionalColonType() {
+				h.AcceptRunWhitespace()
 
 				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
 					if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
-						if ae.AssignmentOperator.parse(&g) == nil {
-							g.AcceptRunWhitespace()
+						if ae.AssignmentOperator.parse(&h) == nil {
+							h.AcceptRunWhitespace()
 
 							ae.ConditionalExpression = nil
 							ae.LeftHandSideExpression = lhs
@@ -1391,33 +1400,45 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 								ae.LeftHandSideExpression = nil
 							}
 
-							h := g.NewGoal()
+							i := h.NewGoal()
 
 							ae.AssignmentExpression = new(AssignmentExpression)
-							if err := ae.AssignmentExpression.parse(&h, true, yield, await); err != nil {
-								return g.Error("ParenthesizedExpression", err)
+							if err := ae.AssignmentExpression.parse(&i, true, yield, await); err != nil {
+								return h.Error("ParenthesizedExpression", err)
 							}
 
-							g.Score(h)
+							h.Score(i)
 
-							ae.Tokens = g.ToTokens()
+							ae.Tokens = h.ToTokens()
+
+							g.Score(h)
 						}
 					}
 				}
 			}
 
 			j.Score(g)
-			j.AcceptRunWhitespace()
 
-			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
-			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-				return j.Error("ParenthesizedExpression", ErrMissingComma)
+			} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				return g.Error("ParenthesizedExpression", ErrMissingComma)
 			}
 
-			j.AcceptRunWhitespace()
+			j.Score(g)
+
+			j.AcceptRunWhitespaceNoComment()
 		}
 	}
+
+	pe.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	pe.Tokens = j.ToTokens()
 
