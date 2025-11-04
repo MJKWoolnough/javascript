@@ -1349,6 +1349,10 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 func (a Argument) printSource(w writer, v bool) {
 	if a.Spread {
+		if v {
+			a.Comments.printSource(w, true, false)
+		}
+
 		w.WriteString("...")
 	}
 
@@ -1366,7 +1370,6 @@ func (a Arguments) printSource(w writer, v bool) {
 	}
 
 	if len(a.ArgumentList) > 0 {
-
 		a.ArgumentList[0].printSource(ip, v)
 
 		for _, ae := range a.ArgumentList[1:] {
