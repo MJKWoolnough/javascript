@@ -4130,6 +4130,30 @@ func TestArguments(t *testing.T) {
 				Tokens:   tk[:23],
 			}
 		}},
+		{"( // A\n\n// B\n...// C\na // D\n\n// E\n)", func(t *test, tk Tokens) { // 14
+			t.Output = Arguments{
+				ArgumentList: []Argument{
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Comments: [5]Comments{{tk[7]}, nil, nil, nil, {tk[11]}},
+								Tokens:   tk[7:12],
+							}),
+							Tokens: tk[7:12],
+						},
+						Comments: Comments{tk[4]},
+						Tokens:   tk[4:12],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[13]}},
+				Tokens:   tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a Arguments
 
