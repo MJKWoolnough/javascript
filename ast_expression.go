@@ -1488,15 +1488,25 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 type Argument struct {
 	Spread               bool
 	AssignmentExpression AssignmentExpression
+	Comments             Comments
 	Tokens               Tokens
 }
 
 func (a *Argument) parse(j *jsParser, yield, await bool) error {
-	a.Spread = j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if a.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); a.Spread {
+		a.Comments = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+		j.Next()
+	}
 
 	j.AcceptRunWhitespaceNoComment()
 
-	g := j.NewGoal()
+	g = j.NewGoal()
 
 	if err := a.AssignmentExpression.parse(&g, true, yield, await); err != nil {
 		return j.Error("Argument", err)
