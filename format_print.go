@@ -1166,13 +1166,25 @@ func (l LogicalORExpression) printSource(w writer, v bool) {
 func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	ip := w.Indent()
+
+	if v && len(c.Comments[0]) > 0 {
+		c.Comments[0].printSource(w, true, true)
+		ip.WriteString("\n")
+	}
+
 	if len(c.Expressions) > 0 {
-		c.Expressions[0].printSource(w, v)
+		c.Expressions[0].printSource(ip, v)
 
 		for _, e := range c.Expressions[1:] {
-			w.WriteString(", ")
-			e.printSource(w, v)
+			ip.WriteString(", ")
+			e.printSource(ip, v)
 		}
+	}
+
+	if v && len(c.Comments[1]) > 0 {
+		ip.WriteString("\n")
+		c.Comments[1].printSource(w, true, false)
 	}
 
 	w.WriteString(")")
