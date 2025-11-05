@@ -698,6 +698,7 @@ func (ae *ArrayElement) hasFirstComment() bool {
 // https://262.ecma-international.org/11.0/#prod-ArrayLiteral
 type ArrayLiteral struct {
 	ElementList []ArrayElement
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
@@ -706,14 +707,14 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 		return j.Error("ArrayLiteral", ErrMissingOpeningBracket)
 	}
 
+	al.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	for {
 		g := j.NewGoal()
 
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
-			j.Score(g)
-
 			break
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			j.Score(g)
@@ -736,14 +737,25 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 		al.ElementList = append(al.ElementList, ae)
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("ArrayLiteral", ErrMissingComma)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("ArrayLiteral", ErrMissingComma)
 		}
+
+		j.Score(g)
 	}
+
+	al.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
+	j.Next()
 
 	al.Tokens = j.ToTokens()
 
