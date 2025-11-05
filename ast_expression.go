@@ -1572,6 +1572,14 @@ func (a *Argument) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (a *Argument) hasFirstComment() bool {
+	if a.Spread {
+		return len(a.Comments) > 0
+	}
+
+	return a.AssignmentExpression.hasFirstComment()
+}
+
 // CallExpression as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-CallExpression
 //

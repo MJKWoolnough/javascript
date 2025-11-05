@@ -1378,10 +1378,13 @@ func (a Arguments) printSource(w writer, v bool) {
 
 	if v && len(a.Comments[0]) > 0 {
 		a.Comments[0].printSource(w, false, true)
-		ip.WriteString("\n")
 	}
 
 	if len(a.ArgumentList) > 0 {
+		if v && a.ArgumentList[0].hasFirstComment() {
+			ip.WriteString("\n")
+		}
+
 		a.ArgumentList[0].printSource(ip, v)
 
 		for _, ae := range a.ArgumentList[1:] {

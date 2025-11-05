@@ -1702,7 +1702,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 336
 			"a( // A\n\n// B\n)",
 			"a();",
-			"a( // A\n\n\n// B\n);",
+			"a( // A\n\n// B\n);",
 		},
 		{ // 337
 			"a( // A\n\n// B\nb // C\n\n// D\n, // E\nc // F\n\n//G\n)",
