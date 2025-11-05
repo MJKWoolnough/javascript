@@ -1482,6 +1482,10 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
+	if v && len(a.Comments[0]) > 0 {
+		a.Comments[0].printSource(w, false, true)
+	}
+
 	if len(a.ElementList) > 0 {
 		if v && a.ElementList[0].hasFirstComment() {
 			ip.WriteString("\n")
@@ -1493,6 +1497,11 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 			ae.printSource(ip, v)
 		}
+	}
+
+	if v && len(a.Comments[1]) > 0 {
+		w.WriteString("\n")
+		a.Comments[1].printSource(w, false, false)
 	}
 
 	w.WriteString("]")
