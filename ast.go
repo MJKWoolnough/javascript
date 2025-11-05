@@ -653,16 +653,26 @@ type VariableDeclaration = LexicalBinding
 type ArrayElement struct {
 	Spread               bool
 	AssignmentExpression AssignmentExpression
+	Comments             Comments
 	Tokens               Tokens
 }
 
 func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
-	ae.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."})
+	h := j.NewGoal()
 
-	g.AcceptRunWhitespaceNoComment()
+	h.AcceptRunWhitespace()
 
-	h := g.NewGoal()
+	if ae.Spread = h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); ae.Spread {
+		ae.Comments = g.AcceptRunWhitespaceComments()
+
+		g.AcceptRunWhitespace()
+		g.Next()
+
+		g.AcceptRunWhitespaceNoComment()
+	}
+
+	h = g.NewGoal()
 
 	if err := ae.AssignmentExpression.parse(&h, true, yield, await); err != nil {
 		return j.Error("ArrayElement", err)
@@ -674,6 +684,14 @@ func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
 	ae.Tokens = j.ToTokens()
 
 	return nil
+}
+
+func (ae *ArrayElement) hasFirstComment() bool {
+	if ae.Spread {
+		return len(ae.Comments) > 0
+	}
+
+	return ae.AssignmentExpression.hasFirstComment()
 }
 
 // ArrayLiteral as defined in ECMA-262
@@ -689,17 +707,25 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		g := j.NewGoal()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+			j.Score(g)
+
 			break
-		} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			j.Score(g)
+
 			al.ElementList = append(al.ElementList, ArrayElement{})
 
 			continue
 		}
 
-		g := j.NewGoal()
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 
 		var ae ArrayElement
 
