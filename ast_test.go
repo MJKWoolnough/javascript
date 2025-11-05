@@ -2040,6 +2040,29 @@ func TestArrayLiteral(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{"[\n// A\n... // B\na // C\n]", func(t *test, tk Tokens) { // 15
+			t.Output = ArrayLiteral{
+				ElementList: []ArrayElement{
+					{
+						Spread: true,
+						AssignmentExpression: AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[8],
+									Tokens:              tk[8:9],
+								},
+								Comments: [5]Comments{{tk[6]}, nil, nil, nil, {tk[10]}},
+								Tokens:   tk[6:11],
+							}),
+							Tokens: tk[6:11],
+						},
+						Comments: Comments{tk[2]},
+						Tokens:   tk[2:11],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var al ArrayLiteral
 
