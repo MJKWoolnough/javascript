@@ -79,6 +79,18 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	return nil
 }
 
+func (ce *ConditionalExpression) hasFirstComment() bool {
+	if ce.LogicalORExpression != nil {
+		return ce.LogicalORExpression.hasFirstComment()
+	}
+
+	if ce.CoalesceExpression != nil {
+		return ce.CoalesceExpression.hasFirstComment()
+	}
+
+	return false
+}
+
 // CoalesceExpression as defined in TC39
 // https://tc39.es/ecma262/#prod-CoalesceExpression
 type CoalesceExpression struct {
@@ -118,6 +130,14 @@ func (ce *CoalesceExpression) parse(j *jsParser, in, yield, await bool, be Bitwi
 	return nil
 }
 
+func (ce *CoalesceExpression) hasFirstComment() bool {
+	if ce.CoalesceExpressionHead != nil {
+		return ce.CoalesceExpressionHead.hasFirstComment()
+	}
+
+	return ce.BitwiseORExpression.hasFirstComment()
+}
+
 // LogicalORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-LogicalORExpression
 type LogicalORExpression struct {
@@ -153,6 +173,14 @@ func (lo *LogicalORExpression) parse(j *jsParser, in, yield, await bool) error {
 
 		j.Score(g)
 	}
+}
+
+func (lo *LogicalORExpression) hasFirstComment() bool {
+	if lo.LogicalORExpression != nil {
+		return lo.LogicalORExpression.hasFirstComment()
+	}
+
+	return lo.LogicalANDExpression.hasFirstComment()
 }
 
 // LogicalANDExpression as defined in ECMA-262
@@ -192,6 +220,14 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+func (la *LogicalANDExpression) hasFirstComment() bool {
+	if la.LogicalANDExpression != nil {
+		return la.hasFirstComment()
+	}
+
+	return la.BitwiseORExpression.hasFirstComment()
+}
+
 // BitwiseORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseORExpression
 type BitwiseORExpression struct {
@@ -227,6 +263,14 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 
 		j.Score(g)
 	}
+}
+
+func (bo *BitwiseORExpression) hasFirstComment() bool {
+	if bo.BitwiseORExpression != nil {
+		return bo.hasFirstComment()
+	}
+
+	return bo.BitwiseXORExpression.hasFirstComment()
 }
 
 // BitwiseXORExpression as defined in ECMA-262
@@ -266,6 +310,14 @@ func (bx *BitwiseXORExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+func (bx *BitwiseXORExpression) hasFirstComment() bool {
+	if bx.BitwiseXORExpression != nil {
+		return bx.BitwiseXORExpression.hasFirstComment()
+	}
+
+	return bx.BitwiseANDExpression.hasFirstComment()
+}
+
 // BitwiseANDExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseANDExpression
 type BitwiseANDExpression struct {
@@ -301,6 +353,14 @@ func (ba *BitwiseANDExpression) parse(j *jsParser, in, yield, await bool) error 
 
 		j.Score(g)
 	}
+}
+
+func (ba *BitwiseANDExpression) hasFirstComment() bool {
+	if ba.BitwiseANDExpression != nil {
+		return ba.BitwiseANDExpression.hasFirstComment()
+	}
+
+	return ba.EqualityExpression.hasFirstComment()
 }
 
 // EqualityOperator determines the type of EqualityExpression
@@ -365,6 +425,14 @@ func (ee *EqualityExpression) parse(j *jsParser, in, yield, await bool) error {
 
 		j.Score(g)
 	}
+}
+
+func (ee *EqualityExpression) hasFirstComment() bool {
+	if ee.EqualityExpression != nil {
+		return ee.EqualityExpression.hasFirstComment()
+	}
+
+	return ee.RelationalExpression.hasFirstComment()
 }
 
 // RelationshipOperator determines the relationship type for RelationalExpression
@@ -477,6 +545,14 @@ func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 }
 
+func (re *RelationalExpression) hasFirstComment() bool {
+	if re.RelationalExpression != nil {
+		return re.RelationalExpression.hasFirstComment()
+	}
+
+	return re.ShiftExpression.hasFirstComment()
+}
+
 // ShiftOperator determines the shift tyoe for ShiftExpression
 type ShiftOperator int
 
@@ -543,6 +619,14 @@ func (se *ShiftExpression) parse(j *jsParser, yield, await bool) error {
 	}
 }
 
+func (se *ShiftExpression) hasFirstComment() bool {
+	if se.ShiftExpression != nil {
+		return se.ShiftExpression.hasFirstComment()
+	}
+
+	return se.AdditiveExpression.hasFirstComment()
+}
+
 // AdditiveOperator determines the additive type for AdditiveExpression
 type AdditiveOperator int
 
@@ -600,6 +684,14 @@ func (ae *AdditiveExpression) parse(j *jsParser, yield, await bool) error {
 
 		j.Score(g)
 	}
+}
+
+func (ae *AdditiveExpression) hasFirstComment() bool {
+	if ae.AdditiveExpression != nil {
+		return ae.AdditiveExpression.hasFirstComment()
+	}
+
+	return ae.MultiplicativeExpression.hasFirstComment()
 }
 
 // MultiplicativeOperator determines the multiplication type for MultiplicativeExpression
@@ -664,6 +756,14 @@ func (me *MultiplicativeExpression) parse(j *jsParser, yield, await bool) error 
 	}
 }
 
+func (me *MultiplicativeExpression) hasFirstComment() bool {
+	if me.MultiplicativeExpression != nil {
+		return me.MultiplicativeExpression.hasFirstComment()
+	}
+
+	return me.ExponentiationExpression.hasFirstComment()
+}
+
 // ExponentiationExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExponentiationExpression
 type ExponentiationExpression struct {
@@ -704,6 +804,14 @@ func (ee *ExponentiationExpression) parse(j *jsParser, yield, await bool) error 
 
 		j.Score(g)
 	}
+}
+
+func (ee *ExponentiationExpression) hasFirstComment() bool {
+	if ee.ExponentiationExpression != nil {
+		return ee.ExponentiationExpression.hasFirstComment()
+	}
+
+	return ee.UnaryExpression.hasFirstComment()
 }
 
 // UnaryOperator determines a unary operator within UnaryExpression
@@ -773,6 +881,10 @@ Loop:
 	ue.Tokens = j.ToTokens()
 
 	return nil
+}
+
+func (ue *UnaryExpression) hasFirstComment() bool {
+	return ue.UpdateExpression.hasFirstComment()
 }
 
 // UpdateOperator determines the type of update operation for UpdateExpression
@@ -854,4 +966,12 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 	ue.Tokens = j.ToTokens()
 
 	return nil
+}
+
+func (ue *UpdateExpression) hasFirstComment() bool {
+	if ue.LeftHandSideExpression != nil {
+		return ue.LeftHandSideExpression.hasFirstComment()
+	}
+
+	return ue.UnaryExpression.hasFirstComment()
 }

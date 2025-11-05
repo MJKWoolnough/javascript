@@ -1463,6 +1463,10 @@ func (b BitwiseORExpression) printSource(w writer, v bool) {
 }
 
 func (a ArrayElement) printSource(w writer, v bool) {
+	if v {
+		a.Comments.printSource(w, true, false)
+	}
+
 	if a.Spread {
 		w.WriteString("...")
 	}
@@ -1473,12 +1477,18 @@ func (a ArrayElement) printSource(w writer, v bool) {
 func (a ArrayLiteral) printSource(w writer, v bool) {
 	w.WriteString("[")
 
+	ip := w.Indent()
+
 	if len(a.ElementList) > 0 {
-		a.ElementList[0].printSource(w, v)
+		if v && a.ElementList[0].hasFirstComment() {
+			ip.WriteString("\n")
+		}
+
+		a.ElementList[0].printSource(ip, v)
 
 		for _, ae := range a.ElementList[1:] {
-			w.WriteString(", ")
-			ae.printSource(w, v)
+			ip.WriteString(", ")
+			ae.printSource(ip, v)
 		}
 	}
 

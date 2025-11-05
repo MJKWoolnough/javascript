@@ -277,6 +277,14 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 	return nil
 }
 
+func (ae *AssignmentExpression) hasFirstComment() bool {
+	if ae.ConditionalExpression != nil {
+		return ae.ConditionalExpression.hasFirstComment()
+	}
+
+	return false
+}
+
 // LeftHandSideExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-LeftHandSideExpression
 //
@@ -390,6 +398,14 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 // IsSimple returns whether or not the LeftHandSideExpression is classed as 'simple'
 func (lhs *LeftHandSideExpression) IsSimple() bool {
 	return lhs.OptionalExpression == nil && (lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.IsSimple() || lhs.CallExpression != nil && lhs.CallExpression.IsSimple())
+}
+
+func (lhs *LeftHandSideExpression) hasFirstComment() bool {
+	if lhs.NewExpression != nil {
+		return lhs.NewExpression.hasFirstComment()
+	}
+
+	return false
 }
 
 // AssignmentPattern as defined in ECMA-262
@@ -970,6 +986,14 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (ne *NewExpression) hasFirstComment() bool {
+	if ne.News == 0 {
+		return ne.MemberExpression.hasFirstComment()
+	}
+
+	return false
+}
+
 // MemberExpression as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-MemberExpression
 //
@@ -1233,6 +1257,14 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 // IsSimple returns whether or not the MemberExpression is classed as 'simple'
 func (me *MemberExpression) IsSimple() bool {
 	return me.Expression != nil || me.IdentifierName != nil || me.SuperProperty || me.PrivateIdentifier != nil || (me.PrimaryExpression != nil && me.PrimaryExpression.IsSimple())
+}
+
+func (me *MemberExpression) hasFirstComment() bool {
+	if me.MemberExpression != nil {
+		return me.MemberExpression.hasFirstComment()
+	}
+
+	return len(me.Comments[0]) > 0
 }
 
 // PrimaryExpression as defined in ECMA-262
