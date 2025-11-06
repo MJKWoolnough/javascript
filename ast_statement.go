@@ -6,6 +6,7 @@ import "vimagination.zapto.org/parser"
 // https://262.ecma-international.org/11.0/#prod-Block
 type Block struct {
 	StatementList []StatementListItem
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
@@ -14,14 +15,20 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 		return j.Error("Block", ErrMissingOpeningBrace)
 	}
 
-	j.AcceptRunWhitespace()
+	b.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	for {
-		if j.Accept(TokenRightBracePunctuator) {
+		j.AcceptRunWhitespaceNoComment()
+
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
 			break
 		}
 
-		g := j.NewGoal()
+		g = j.NewGoal()
 		si := len(b.StatementList)
 
 		b.StatementList = append(b.StatementList, StatementListItem{})
@@ -30,8 +37,12 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 		}
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 	}
+
+	b.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	b.Tokens = j.ToTokens()
 
