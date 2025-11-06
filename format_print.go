@@ -124,6 +124,12 @@ func (b Block) printSource(w writer, v bool) {
 		lastLine = b.Tokens[0].Line
 	}
 
+	if v && len(b.Comments[0]) > 0 {
+		b.Comments[0].printSource(w, false, true)
+
+		lastLine = b.Comments[0][len(b.Comments[0])-1].Line
+	}
+
 	pp := w.Indent()
 
 	for _, stmt := range b.StatementList {
@@ -148,7 +154,10 @@ func (b Block) printSource(w writer, v bool) {
 		stmt.printSource(pp, v)
 	}
 
-	if len(b.StatementList) > 0 {
+	if v && len(b.Comments[1]) > 0 {
+		w.WriteString("\n")
+		b.Comments[1].printSource(w, false, true)
+	} else if len(b.StatementList) > 0 {
 		if v && len(b.Tokens) > 0 {
 			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
 				w.WriteString("\n")
