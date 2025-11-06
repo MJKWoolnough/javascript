@@ -1393,7 +1393,7 @@ func (a Arguments) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
-	if v && len(a.Comments[0]) > 0 {
+	if v {
 		a.Comments[0].printSource(w, false, true)
 	}
 
@@ -1499,7 +1499,7 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
-	if v && len(a.Comments[0]) > 0 {
+	if v {
 		a.Comments[0].printSource(w, false, true)
 	}
 
