@@ -3458,6 +3458,23 @@ func TestPropertyName(t *testing.T) {
 				Tokens:              tk[:1],
 			}
 		}},
+		{"[ // A\n\n// B\na // C\n\n// D\n]", func(t *test, tk Tokens) { // 10
+			t.Output = PropertyName{
+				ComputedPropertyName: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+						Tokens:   tk[4:9],
+					}),
+					Tokens: tk[4:9],
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[10]}},
+				Tokens:   tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pn PropertyName
 
