@@ -491,11 +491,14 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 type PropertyName struct {
 	LiteralPropertyName  *Token
 	ComputedPropertyName *AssignmentExpression
+	Comments             [2]Comments
 	Tokens               Tokens
 }
 
 func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+		pn.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
@@ -506,6 +509,9 @@ func (pn *PropertyName) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
+
+		pn.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
