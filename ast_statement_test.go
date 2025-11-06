@@ -2334,6 +2334,37 @@ func TestBlock(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{"{ // A\n\n// B\na // C\n\n// D\n}", func(t *test, tk Tokens) { // 7
+			t.Output = Block{
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: WrapConditional(&MemberExpression{
+											PrimaryExpression: &PrimaryExpression{
+												IdentifierReference: &tk[6],
+												Tokens:              tk[6:7],
+											},
+											Comments: [5]Comments{nil, nil, nil, nil, {tk[8]}},
+											Tokens:   tk[6:9],
+										}),
+										Tokens: tk[6:9],
+									},
+								},
+								Tokens: tk[6:9],
+							},
+							Tokens: tk[6:9],
+						},
+						Comments: [2]Comments{{tk[4]}},
+						Tokens:   tk[4:9],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[10]}},
+				Tokens:   tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var b Block
 
