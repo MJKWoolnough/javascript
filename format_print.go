@@ -892,21 +892,27 @@ func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 func (o ObjectBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	ip := w.Indent()
+
+	if v && len(o.BindingPropertyList) > 0 && len(o.BindingPropertyList[0].Comments[0]) > 0 {
+		ip.WriteString("\n")
+	}
+
 	for n, bp := range o.BindingPropertyList {
 		if n > 0 {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 
-		bp.printSource(w, v)
+		bp.printSource(ip, v)
 	}
 
 	if o.BindingRestProperty != nil {
 		if len(o.BindingPropertyList) > 0 {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 
-		w.WriteString("...")
-		w.WriteString(o.BindingRestProperty.Data)
+		ip.WriteString("...")
+		ip.WriteString(o.BindingRestProperty.Data)
 	}
 
 	w.WriteString("}")
@@ -1136,7 +1142,16 @@ func (b BindingProperty) printSource(w writer, v bool) {
 	if !v && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
 		b.BindingElement.printSource(w, v)
 	} else {
+		if v {
+			b.Comments[0].printSource(w, true, false)
+		}
+
 		b.PropertyName.printSource(w, v)
+
+		if v {
+			b.Comments[1].printSource(w, true, false)
+		}
+
 		w.WriteString(": ")
 		b.BindingElement.printSource(w, v)
 	}
@@ -1157,12 +1172,14 @@ func (b BindingElement) printSource(w writer, v bool) {
 		return
 	}
 
-	if v {
-		b.Comments[1].printSource(w, false, false)
+	if v && len(b.Comments[1]) > 0 {
+		b.Comments[1].printSource(w, b.Initializer != nil, false)
+	} else if b.Initializer != nil {
+		w.WriteString(" ")
 	}
 
 	if b.Initializer != nil {
-		w.WriteString(" = ")
+		w.WriteString("= ")
 		b.Initializer.printSource(w, v)
 	}
 }
