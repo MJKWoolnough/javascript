@@ -915,21 +915,27 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 func (a ArrayBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("[")
 
+	ip := w.Indent()
+
+	if v && len(a.BindingElementList) > 0 && len(a.BindingElementList[0].Comments[0]) > 0 {
+		ip.WriteString("\n")
+	}
+
 	for n, be := range a.BindingElementList {
 		if n > 0 {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 
-		be.printSource(w, v)
+		be.printSource(ip, v)
 	}
 
 	if a.BindingRestElement != nil {
 		if len(a.BindingElementList) > 0 {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 
-		w.WriteString("...")
-		a.BindingRestElement.printSource(w, v)
+		ip.WriteString("...")
+		a.BindingRestElement.printSource(ip, v)
 	}
 
 	w.WriteString("]")
@@ -1137,6 +1143,10 @@ func (b BindingProperty) printSource(w writer, v bool) {
 }
 
 func (b BindingElement) printSource(w writer, v bool) {
+	if v {
+		b.Comments[0].printSource(w, true, false)
+	}
+
 	if b.SingleNameBinding != nil {
 		w.WriteString(b.SingleNameBinding.Data)
 	} else if b.ArrayBindingPattern != nil {
@@ -1145,6 +1155,10 @@ func (b BindingElement) printSource(w writer, v bool) {
 		b.ObjectBindingPattern.printSource(w, v)
 	} else {
 		return
+	}
+
+	if v {
+		b.Comments[1].printSource(w, false, false)
 	}
 
 	if b.Initializer != nil {
