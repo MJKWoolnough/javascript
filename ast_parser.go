@@ -282,7 +282,7 @@ func (j *jsParser) AcceptRunWhitespaceCommentsInList() Comments {
 
 	if g.Accept(TokenPunctuator, TokenKeyword) {
 		switch g.GetLastToken().Data {
-		case ",", ".", "+", "-", "++", "--", "*", "**", "/", "%", "|", "||", "&", "&&", "^", "==", "!=", "===", "!==", "in", "instanceof", "<<", "<", ">", "<=", "??", "?.", "?", ":", "(", "[":
+		case ",", ".", "+", "-", "++", "--", "*", "**", "/", "%", "|", "||", "&", "&&", "^", "=", "==", "!=", "===", "!==", "in", "instanceof", "<<", "<", ">", "<=", "??", "?.", "?", ":", "(", "[":
 			return j.AcceptRunWhitespaceComments()
 		}
 	}
