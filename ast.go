@@ -571,17 +571,28 @@ func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
 type BindingProperty struct {
 	PropertyName   PropertyName
 	BindingElement BindingElement
+	Comments       [2]Comments
 	Tokens         Tokens
 }
 
 func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
+	bp.Comments[0] = g.AcceptRunWhitespaceComments()
 
-	if err := bp.PropertyName.parse(&g, yield, await); err != nil {
-		return j.Error("BindingProperty", err)
-	}
+	g.AcceptRunWhitespace()
 
 	h := g.NewGoal()
+
+	if err := bp.PropertyName.parse(&h, yield, await); err != nil {
+		return g.Error("BindingProperty", err)
+	}
+
+	g.Score(h)
+
+	h = g.NewGoal()
+
+	bp.Comments[1] = h.AcceptRunWhitespaceCommentsInList()
+
 	h.AcceptRunWhitespace()
 
 	var snb *Token
@@ -589,14 +600,19 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
 		i := j.NewGoal()
 
+		i.AcceptRunWhitespace()
+
 		if bp.PropertyName.LiteralPropertyName == nil || i.parseIdentifier(yield, await) == nil {
 			return h.Error("BindingProperty", ErrMissingColon)
 		}
 
 		lpn := *bp.PropertyName.LiteralPropertyName
 		snb = &lpn
+
+		bp.BindingElement.Comments = bp.Comments
+		bp.Comments = [2]Comments{}
 	} else {
-		h.AcceptRunWhitespace()
+		h.AcceptRunWhitespaceNoComment()
 		g.Score(h)
 		j.Score(g)
 
