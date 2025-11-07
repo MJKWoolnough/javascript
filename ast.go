@@ -294,17 +294,25 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		g := j.NewGoal()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+			j.Score(g)
+
 			break
-		} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 			ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
+
+			j.Score(g)
 
 			continue
 		}
 
-		g := j.NewGoal()
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
 			g.AcceptRunWhitespace()
@@ -427,11 +435,21 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 		return j.Error("ObjectBindingPattern", ErrMissingOpeningBrace)
 	}
 
-	j.AcceptRunWhitespace()
+	g := j.NewGoal()
 
-	if !j.Accept(TokenRightBracePunctuator) {
+	g.AcceptRunWhitespace()
+
+	if g.Accept(TokenRightBracePunctuator) {
+		j.Score(g)
+	} else {
 		for {
-			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+				j.Score(g)
+
 				j.AcceptRunWhitespace()
 
 				if ob.BindingRestProperty = j.parseIdentifier(yield, await); ob.BindingRestProperty == nil {
@@ -447,7 +465,10 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 				break
 			}
 
-			g := j.NewGoal()
+			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
+
 			bp := len(ob.BindingPropertyList)
 			ob.BindingPropertyList = append(ob.BindingPropertyList, BindingProperty{})
 
@@ -463,8 +484,6 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				return j.Error("ObjectBindingPattern", ErrMissingComma)
 			}
-
-			j.AcceptRunWhitespace()
 		}
 	}
 

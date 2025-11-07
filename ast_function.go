@@ -208,10 +208,17 @@ type BindingElement struct {
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
+	Comments             [2]Comments
 	Tokens               Tokens
 }
 
 func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, await bool) error {
+	if singleNameBinding == nil {
+		be.Comments[0] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+	}
+
 	g := j.NewGoal()
 
 	if singleNameBinding != nil {
@@ -233,6 +240,8 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	}
 
 	j.Score(g)
+
+	be.Comments[1] = j.AcceptRunWhitespaceCommentsInList()
 
 	g = j.NewGoal()
 	g.AcceptRunWhitespace()
