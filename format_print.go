@@ -945,7 +945,11 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
-	if v && len(a.BindingElementList) > 0 && len(a.BindingElementList[0].Comments[0]) > 0 {
+	if v {
+		a.Comments[0].printSource(w, false, true)
+	}
+
+	if v && (len(a.Comments[0]) > 0 || len(a.BindingElementList) > 0 && len(a.BindingElementList[0].Comments[0]) > 0) {
 		ip.WriteString("\n")
 	}
 
@@ -962,8 +966,17 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 		}
 
+		if v {
+			a.Comments[1].printSource(ip, true, false)
+		}
+
 		ip.WriteString("...")
 		a.BindingRestElement.printSource(ip, v)
+	}
+
+	if v && len(a.Comments[2]) > 0 {
+		w.WriteString("\n")
+		a.Comments[2].printSource(w, false, true)
 	}
 
 	w.WriteString("]")
