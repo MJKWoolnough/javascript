@@ -894,7 +894,11 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
-	if v && len(o.BindingPropertyList) > 0 && len(o.BindingPropertyList[0].Comments[0]) > 0 {
+	if v && len(o.Comments[0]) > 0 {
+		o.Comments[0].printSource(w, false, true)
+	}
+
+	if v && (len(o.Comments[0]) > 0 || len(o.BindingPropertyList) > 0 && len(o.BindingPropertyList[0].Comments[0]) > 0) {
 		ip.WriteString("\n")
 	}
 
@@ -911,8 +915,26 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 			ip.WriteString(", ")
 		}
 
+		if v {
+			o.Comments[1].printSource(ip, true, false)
+		}
+
 		ip.WriteString("...")
+
+		if v {
+			o.Comments[2].printSource(ip, true, false)
+		}
+
 		ip.WriteString(o.BindingRestProperty.Data)
+
+		if v {
+			o.Comments[3].printSource(ip, true, false)
+		}
+	}
+
+	if v && len(o.Comments[4]) > 0 {
+		w.WriteString("\n")
+		o.Comments[4].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
