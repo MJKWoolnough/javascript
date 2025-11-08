@@ -1468,17 +1468,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"[\n,\n]", func(t *test, tk Tokens) { // 6
-			t.Output = ArrayBindingPattern{
-				BindingElementList: []BindingElement{
-					{
-						Tokens: tk[2:2],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{"[\n,\n,\n]", func(t *test, tk Tokens) { // 7
+		{"[\n,\n,\n]", func(t *test, tk Tokens) { // 6
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1491,7 +1481,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"[\n...\na\n]", func(t *test, tk Tokens) { // 8
+		{"[\n...\na\n]", func(t *test, tk Tokens) { // 7
 			t.Output = ArrayBindingPattern{
 				BindingRestElement: &BindingElement{
 					SingleNameBinding: &tk[4],
@@ -1500,7 +1490,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"[\n...\nnull\n]", func(t *test, tk Tokens) { // 9
+		{"[\n...\nnull\n]", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
@@ -1511,14 +1501,14 @@ func TestArrayBindingPattern(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"[\n...\na\n,]", func(t *test, tk Tokens) { // 10
+		{"[\n...\na\n,]", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "ArrayBindingPattern",
 				Token:   tk[6],
 			}
 		}},
-		{"[\na\n]", func(t *test, tk Tokens) { // 11
+		{"[\na\n]", func(t *test, tk Tokens) { // 10
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1529,7 +1519,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"[\na\n,\n]", func(t *test, tk Tokens) { // 12
+		{"[\na\n,\n]", func(t *test, tk Tokens) { // 11
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1540,7 +1530,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"[\na\n,\n,\n]", func(t *test, tk Tokens) { // 13
+		{"[\na\n,\n,\n]", func(t *test, tk Tokens) { // 12
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1554,7 +1544,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"[\n,\na\n]", func(t *test, tk Tokens) { // 14
+		{"[\n,\na\n]", func(t *test, tk Tokens) { // 13
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1568,7 +1558,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"[\n,\nnull\n]", func(t *test, tk Tokens) { // 15
+		{"[\n,\nnull\n]", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrNoIdentifier,
@@ -1579,7 +1569,7 @@ func TestArrayBindingPattern(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"[\na,\n,\n...\nb\n]", func(t *test, tk Tokens) { // 16
+		{"[\na,\n,\n...\nb\n]", func(t *test, tk Tokens) { // 15
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
 					{
@@ -1597,11 +1587,50 @@ func TestArrayBindingPattern(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{"[\na\nb\n]", func(t *test, tk Tokens) { // 17
+		{"[\na\nb\n]", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ArrayBindingPattern",
 				Token:   tk[4],
+			}
+		}},
+		{"[ // A\n\n// B\n]", func(t *test, tk Tokens) { // 17
+			t.Output = ArrayBindingPattern{
+				Comments: [3]Comments{{tk[2]}, nil, {tk[4]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"[ // A\n\n// B\n...// C\na // D\n\n// E\n]", func(t *test, tk Tokens) { // 18
+			t.Output = ArrayBindingPattern{
+				BindingRestElement: &BindingElement{
+					SingleNameBinding: &tk[9],
+					Comments:          [2]Comments{{tk[7]}, {tk[11]}},
+					Tokens:            tk[7:12],
+				},
+				Comments: [3]Comments{{tk[2]}, {tk[4]}, {tk[13]}},
+				Tokens:   tk[:16],
+			}
+		}},
+		{"[ // A\n\n// B\na // C\n, // D\n\n// E\n, // F\n... // G\nb // H\n\n// I\n]", func(t *test, tk Tokens) { // 19
+			t.Output = ArrayBindingPattern{
+				BindingElementList: []BindingElement{
+					{
+						SingleNameBinding: &tk[6],
+						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Tokens:            tk[4:9],
+					},
+					{
+						Comments: [2]Comments{{tk[12], tk[14]}},
+						Tokens:   tk[12:15],
+					},
+				},
+				BindingRestElement: &BindingElement{
+					SingleNameBinding: &tk[24],
+					Comments:          [2]Comments{{tk[22]}, {tk[26]}},
+					Tokens:            tk[22:27],
+				},
+				Comments: [3]Comments{{tk[2]}, {tk[18]}, {tk[28]}},
+				Tokens:   tk[:31],
 			}
 		}},
 	}, func(t *test) (Type, error) {
