@@ -285,6 +285,7 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 type ArrayBindingPattern struct {
 	BindingElementList []BindingElement
 	BindingRestElement *BindingElement
+	Comments           [3]Comments
 	Tokens             Tokens
 }
 
@@ -293,19 +294,28 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 		return j.Error("ArrayBindingPattern", ErrMissingOpeningBracket)
 	}
 
+	ab.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	for {
 		g := j.NewGoal()
 
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
-			j.Score(g)
-
 			break
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
+			j.AcceptRunWhitespaceNoComment()
+
+			g := j.NewGoal()
+
+			ab.BindingElementList = append(ab.BindingElementList, BindingElement{
+				Comments: [2]Comments{g.AcceptRunWhitespaceComments()},
+				Tokens:   g.ToTokens(),
+			})
 
 			j.Score(g)
+			j.AcceptRunWhitespace()
+			j.Next()
 
 			continue
 		}
@@ -314,26 +324,36 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 
 		g = j.NewGoal()
 
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-			g.AcceptRunWhitespace()
+		g.AcceptRunWhitespace()
 
-			h := g.NewGoal()
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+			ab.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Next()
+			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
 			ab.BindingRestElement = new(BindingElement)
 
-			if err := ab.BindingRestElement.parse(&h, nil, yield, await); err != nil {
+			if err := ab.BindingRestElement.parse(&g, nil, yield, await); err != nil {
 				return g.Error("ArrayBindingPattern", err)
 			}
 
-			g.Score(h)
 			j.Score(g)
-			j.AcceptRunWhitespace()
 
-			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
-				return j.Error("ArrayBindingPattern", ErrMissingClosingBracket)
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+				return g.Error("ArrayBindingPattern", ErrMissingClosingBracket)
 			}
 
 			break
 		}
+
+		g = j.NewGoal()
 
 		be := len(ab.BindingElementList)
 		ab.BindingElementList = append(ab.BindingElementList, BindingElement{})
@@ -343,14 +363,24 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("ArrayBindingPattern", ErrMissingComma)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("ArrayBindingPattern", ErrMissingComma)
 		}
+
+		j.Score(g)
 	}
+
+	ab.Comments[2] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	ab.Tokens = j.ToTokens()
 

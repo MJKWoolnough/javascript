@@ -1461,7 +1461,9 @@ func TestArrayBindingPattern(t *testing.T) {
 		{"[\n,\n]", func(t *test, tk Tokens) { // 5
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
-					{},
+					{
+						Tokens: tk[2:2],
+					},
 				},
 				Tokens: tk[:5],
 			}
@@ -1469,7 +1471,9 @@ func TestArrayBindingPattern(t *testing.T) {
 		{"[\n,\n]", func(t *test, tk Tokens) { // 6
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
-					{},
+					{
+						Tokens: tk[2:2],
+					},
 				},
 				Tokens: tk[:5],
 			}
@@ -1477,8 +1481,12 @@ func TestArrayBindingPattern(t *testing.T) {
 		{"[\n,\n,\n]", func(t *test, tk Tokens) { // 7
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
-					{},
-					{},
+					{
+						Tokens: tk[2:2],
+					},
+					{
+						Tokens: tk[4:4],
+					},
 				},
 				Tokens: tk[:7],
 			}
@@ -1539,7 +1547,9 @@ func TestArrayBindingPattern(t *testing.T) {
 						SingleNameBinding: &tk[2],
 						Tokens:            tk[2:3],
 					},
-					{},
+					{
+						Tokens: tk[5:5],
+					},
 				},
 				Tokens: tk[:9],
 			}
@@ -1547,7 +1557,9 @@ func TestArrayBindingPattern(t *testing.T) {
 		{"[\n,\na\n]", func(t *test, tk Tokens) { // 14
 			t.Output = ArrayBindingPattern{
 				BindingElementList: []BindingElement{
-					{},
+					{
+						Tokens: tk[2:2],
+					},
 					{
 						SingleNameBinding: &tk[4],
 						Tokens:            tk[4:5],
@@ -1574,7 +1586,9 @@ func TestArrayBindingPattern(t *testing.T) {
 						SingleNameBinding: &tk[2],
 						Tokens:            tk[2:3],
 					},
-					{},
+					{
+						Tokens: tk[4:4],
+					},
 				},
 				BindingRestElement: &BindingElement{
 					SingleNameBinding: &tk[9],
@@ -3265,7 +3279,9 @@ func TestArrowFunction(t *testing.T) {
 						{
 							ArrayBindingPattern: &ArrayBindingPattern{
 								BindingElementList: []BindingElement{
-									{},
+									{
+										Tokens: tk[2:2],
+									},
 									{
 										SingleNameBinding: &tk[4],
 										Tokens:            tk[4:5],
