@@ -1728,6 +1728,54 @@ func TestObjectBindingPattern(t *testing.T) {
 				Tokens:              tk[:10],
 			}
 		}},
+		{"{ // A\n\n// B\na // C\n\n// D\n}", func(t *test, tk Tokens) { // 12
+			t.Output = ObjectBindingPattern{
+				BindingPropertyList: []BindingProperty{
+					{
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[6],
+							Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+							Tokens:            tk[4:9],
+						},
+						Tokens: tk[4:9],
+					},
+				},
+				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[10]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"{ // A\n\n// B\n...// C\na // D\n// E\n\n//F\n}", func(t *test, tk Tokens) { // 13
+			t.Output = ObjectBindingPattern{
+				BindingRestProperty: &tk[9],
+				Comments:            [5]Comments{{tk[2]}, {tk[4]}, {tk[7]}, {tk[11], tk[13]}, {tk[15]}},
+				Tokens:              tk[:18],
+			}
+		}},
+		{"{ // A\n\n// B\na // C\n, // D\n...// E\nb // F\n\n// G\n}", func(t *test, tk Tokens) { // 14
+			t.Output = ObjectBindingPattern{
+				BindingPropertyList: []BindingProperty{
+					{
+						PropertyName: PropertyName{
+							LiteralPropertyName: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						BindingElement: BindingElement{
+							SingleNameBinding: &tk[6],
+							Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+							Tokens:            tk[4:9],
+						},
+						Tokens: tk[4:9],
+					},
+				},
+				BindingRestProperty: &tk[17],
+				Comments:            [5]Comments{{tk[2]}, {tk[12]}, {tk[15]}, {tk[19]}, {tk[21]}},
+				Tokens:              tk[:24],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ob ObjectBindingPattern
 
