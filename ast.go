@@ -427,6 +427,7 @@ func (ab *ArrayBindingPattern) fromAP(ap *ArrayAssignmentPattern) error {
 type ObjectBindingPattern struct {
 	BindingPropertyList []BindingProperty
 	BindingRestProperty *Token
+	Comments            [5]Comments
 	Tokens              Tokens
 }
 
@@ -435,20 +436,25 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 		return j.Error("ObjectBindingPattern", ErrMissingOpeningBrace)
 	}
 
+	ob.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	g := j.NewGoal()
 
 	g.AcceptRunWhitespace()
 
-	if g.Accept(TokenRightBracePunctuator) {
-		j.Score(g)
-	} else {
+	if !g.Accept(TokenRightBracePunctuator) {
 		for {
 			g = j.NewGoal()
 
 			g.AcceptRunWhitespace()
 
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-				j.Score(g)
+				ob.Comments[1] = j.AcceptRunWhitespaceComments()
+
+				j.AcceptRunWhitespace()
+				j.Next()
+
+				ob.Comments[2] = j.AcceptRunWhitespaceComments()
 
 				j.AcceptRunWhitespace()
 
@@ -456,10 +462,14 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 					return j.Error("ObjectBindingPattern", ErrNoIdentifier)
 				}
 
-				j.AcceptRunWhitespace()
+				ob.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
 
-				if !j.Accept(TokenRightBracePunctuator) {
-					return j.Error("ObjectBindingPattern", ErrMissingClosingBrace)
+				g = j.NewGoal()
+
+				g.AcceptRunWhitespace()
+
+				if !g.Accept(TokenRightBracePunctuator) {
+					return g.Error("ObjectBindingPattern", ErrMissingClosingBrace)
 				}
 
 				break
@@ -477,15 +487,25 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 			}
 
 			j.Score(g)
-			j.AcceptRunWhitespace()
 
-			if j.Accept(TokenRightBracePunctuator) {
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if g.Accept(TokenRightBracePunctuator) {
 				break
-			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-				return j.Error("ObjectBindingPattern", ErrMissingComma)
+			} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				return g.Error("ObjectBindingPattern", ErrMissingComma)
 			}
+
+			j.Score(g)
 		}
 	}
+
+	ob.Comments[4] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	ob.Tokens = j.ToTokens()
 
