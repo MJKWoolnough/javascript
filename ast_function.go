@@ -113,6 +113,7 @@ type FormalParameters struct {
 	BindingIdentifier    *Token
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
+	Comments             [5]Comments
 	Tokens               Tokens
 }
 
@@ -121,75 +122,116 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 		return j.Error("FormalParameters", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	fp.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
-	if j.SkipThisParam() {
-		j.AcceptRunWhitespace()
+	j.AcceptRunWhitespaceNoComment()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			j.AcceptRunWhitespace()
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.SkipThisParam() {
+		j.Score(g)
+
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			g.AcceptRunWhitespaceNoComment()
+
+			j.Score(g)
 		}
 	}
 
-	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		for {
 			g := j.NewGoal()
 
+			g.AcceptRunWhitespace()
+
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
-				g.AcceptRunWhitespace()
+				fp.Comments[1] = j.AcceptRunWhitespaceComments()
 
-				h := g.NewGoal()
+				j.AcceptRunWhitespace()
+				j.Next()
 
-				if t := h.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
+				fp.Comments[2] = j.AcceptRunWhitespaceComments()
+
+				j.AcceptRunWhitespace()
+
+				g = j.NewGoal()
+
+				if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 					fp.ArrayBindingPattern = new(ArrayBindingPattern)
-					if err := fp.ArrayBindingPattern.parse(&h, yield, await); err != nil {
-						return g.Error("FormalParameters", err)
+					if err := fp.ArrayBindingPattern.parse(&g, yield, await); err != nil {
+						return j.Error("FormalParameters", err)
 					}
 				} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 					fp.ObjectBindingPattern = new(ObjectBindingPattern)
-					if err := fp.ObjectBindingPattern.parse(&h, yield, await); err != nil {
-						return g.Error("FormalParameters", err)
+					if err := fp.ObjectBindingPattern.parse(&g, yield, await); err != nil {
+						return j.Error("FormalParameters", err)
 					}
-				} else if fp.BindingIdentifier = h.parseIdentifier(yield, await); fp.BindingIdentifier == nil {
-					return g.Error("FormalParameters", ErrNoIdentifier)
+				} else if fp.BindingIdentifier = g.parseIdentifier(yield, await); fp.BindingIdentifier == nil {
+					return j.Error("FormalParameters", ErrNoIdentifier)
 				}
 
-				g.Score(h)
 				j.Score(g)
-				j.AcceptRunWhitespace()
 
-				if j.SkipColonType() {
-					j.AcceptRunWhitespace()
+				fp.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
+				g = j.NewGoal()
+
+				g.AcceptRunWhitespace()
+
+				if g.SkipColonType() {
+					j.Score(g)
+
+					g = j.NewGoal()
+
+					g.AcceptRunWhitespace()
 				}
 
-				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-					return j.Error("FormalParameters", ErrMissingClosingParenthesis)
+				if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+					return g.Error("FormalParameters", ErrMissingClosingParenthesis)
 				}
 
 				break
 			}
 
-			h := g.NewGoal()
+			g = j.NewGoal()
 			be := len(fp.FormalParameterList)
 
 			fp.FormalParameterList = append(fp.FormalParameterList, BindingElement{})
-			if err := fp.FormalParameterList[be].parse(&h, nil, yield, await); err != nil {
-				return g.Error("FormalParameters", err)
+			if err := fp.FormalParameterList[be].parse(&g, nil, yield, await); err != nil {
+				return j.Error("FormalParameters", err)
 			}
 
-			g.Score(h)
 			j.Score(g)
-			j.AcceptRunWhitespace()
 
-			if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				break
-			} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-				return j.Error("FormalParameters", ErrMissingComma)
+			} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				return g.Error("FormalParameters", ErrMissingComma)
 			}
 
-			j.AcceptRunWhitespace()
+			j.Score(g)
+
+			j.AcceptRunWhitespaceNoComment()
 		}
 	}
+
+	fp.Comments[4] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Next()
 
 	fp.Tokens = j.ToTokens()
 
