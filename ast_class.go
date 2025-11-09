@@ -1,6 +1,11 @@
 package javascript
 
-import "vimagination.zapto.org/parser"
+import (
+	"slices"
+	"strings"
+
+	"vimagination.zapto.org/parser"
+)
 
 // ClassDeclaration as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-ClassDeclaration
@@ -67,29 +72,43 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		g := j.NewGoal()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			j.Score(g)
+
 			continue
-		} else if j.Accept(TokenRightBracePunctuator) {
+		} else if g.Accept(TokenRightBracePunctuator) {
+			j.Score(g)
+
 			break
 		}
 
-		g := j.NewGoal()
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
 		if g.SkipParameterProperties() {
-			g.AcceptRunWhitespace()
+			g.AcceptRunWhitespaceNoComment()
 		}
 
 		if g.SkipAbstractField() {
 			j.Score(g)
+
 			continue
 		}
 
 		if g.SkipIndexSignature() {
 			j.Score(g)
+
 			continue
 		}
 
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 		md := len(cd.ClassBody)
 
 		cd.ClassBody = append(cd.ClassBody, ClassElement{})
@@ -121,6 +140,10 @@ type ClassElement struct {
 }
 
 func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
+	if j.SkipParameterProperties() {
+		j.AcceptRunWhitespaceNoComment()
+	}
+
 	if j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "static"}) {
 		g := j.NewGoal()
 
@@ -131,7 +154,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			ce.Static = true
 
 			j.Skip()
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 		}
 	}
 
@@ -212,13 +235,34 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			}
 
 			if g.GetLastToken().Token != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				var hasNewline bool
+
+			Loop:
+				for _, tk := range slices.Backward(ce.FieldDefinition.Tokens) {
+					switch tk.Type {
+					case TokenSingleLineComment, TokenLineTerminator:
+						hasNewline = true
+
+						break Loop
+					case TokenMultiLineComment:
+						if strings.Contains(tk.Data, "\n") {
+							hasNewline = true
+
+							break Loop
+						}
+					case TokenWhitespace:
+					default:
+						break Loop
+					}
+				}
+
 				h := g.NewGoal()
 
 				h.AcceptRunWhitespaceNoNewLine()
 
 				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 					g.Score(h)
-				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) {
+				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) || hasNewline {
 					h.AcceptRunWhitespace()
 
 					if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
@@ -245,10 +289,15 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 type ClassElementName struct {
 	PropertyName      *PropertyName
 	PrivateIdentifier *Token
+	Comments          [2]Comments
 	Tokens            Tokens
 }
 
 func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
+	cen.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if j.Accept(TokenPrivateIdentifier) {
 		cen.PrivateIdentifier = j.GetLastToken()
 	} else {
@@ -262,6 +311,7 @@ func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	}
 
+	cen.Comments[1] = j.AcceptRunWhitespaceCommentsInList()
 	cen.Tokens = j.ToTokens()
 
 	return nil
@@ -355,12 +405,12 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		switch g.Peek() {
 		case parser.Token{Type: TokenIdentifier, Data: "get"}:
 			g.Skip()
-			g.AcceptRunWhitespace()
+			g.AcceptRunWhitespaceNoComment()
 
 			md.Type = MethodGetter
 		case parser.Token{Type: TokenIdentifier, Data: "set"}:
 			g.Skip()
-			g.AcceptRunWhitespace()
+			g.AcceptRunWhitespaceNoComment()
 
 			md.Type = MethodSetter
 		case parser.Token{Type: TokenIdentifier, Data: "async"}:
@@ -378,7 +428,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		default:
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 				j.Score(g)
-				j.AcceptRunWhitespace()
+				j.AcceptRunWhitespaceNoComment()
 
 				g = j.NewGoal()
 

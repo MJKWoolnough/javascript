@@ -860,13 +860,19 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
+			j.Score(g)
+
 			break
 		}
 
-		g := j.NewGoal()
+		g = j.NewGoal()
 		pd := len(ol.PropertyDefinitionList)
 		ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, PropertyDefinition{})
 

@@ -2798,11 +2798,12 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[5],
 									Tokens:              tk[5:6],
 								},
-								Tokens: tk[5:6],
+								Comments: [2]Comments{nil, {tk[6]}},
+								Tokens:   tk[5:7],
 							},
-							Tokens: tk[5:6],
+							Tokens: tk[5:7],
 						},
-						Tokens: tk[5:6],
+						Tokens: tk[5:7],
 					},
 					{
 						FieldDefinition: &FieldDefinition{
@@ -2832,11 +2833,12 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[5],
 									Tokens:              tk[5:6],
 								},
-								Tokens: tk[5:6],
+								Comments: [2]Comments{nil, {tk[6]}},
+								Tokens:   tk[5:7],
 							},
-							Tokens: tk[5:6],
+							Tokens: tk[5:7],
 						},
-						Tokens: tk[5:6],
+						Tokens: tk[5:7],
 					},
 					{
 						FieldDefinition: &FieldDefinition{
