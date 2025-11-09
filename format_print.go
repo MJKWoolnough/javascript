@@ -679,7 +679,9 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 			ce.printSource(pp, v)
 		}
 
-		w.WriteString("\n")
+		if w.LastChar() != '\n' {
+			w.WriteString("\n")
+		}
 	}
 
 	w.WriteString("}")
@@ -1131,7 +1133,11 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 	fd.ClassElementName.printSource(w, v)
 
 	if fd.Initializer != nil {
-		w.WriteString(" = ")
+		if w.LastChar() != '\n' {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("= ")
 		fd.Initializer.printSource(w, v)
 	}
 
@@ -1139,10 +1145,18 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 }
 
 func (cen ClassElementName) printSource(w writer, v bool) {
+	if v {
+		cen.Comments[0].printSource(w, false, true)
+	}
+
 	if cen.PropertyName != nil {
 		cen.PropertyName.printSource(w, v)
 	} else if cen.PrivateIdentifier != nil {
 		w.WriteString(cen.PrivateIdentifier.Data)
+	}
+
+	if v {
+		cen.Comments[1].printSource(w, false, false)
 	}
 }
 
