@@ -1799,6 +1799,41 @@ func TestPrintingScript(t *testing.T) {
 			"let [a, , ...b] = c;",
 			"let [ // A\n\n\t// B\n\ta // C\n\t, // D\n\n\t// E\n\t, // F\n\t... // G\n\tb // H\n\n// I\n] = c;",
 		},
+		{ // 356
+			"function a( // A\n\n// B\n){}",
+			"function a() {}",
+			"function a( // A\n\n// B\n) {}",
+		},
+		{ // 357
+			"function a( // A\n\n// B\n... // C\nb // D\n\n// E\n){}",
+			"function a(...b) {}",
+			"function a( // A\n\n\t// B\n\t... // C\n\tb // D\n\n// E\n) {}",
+		},
+		{ // 358
+			"function a( // A\n\n// B\nb // C\n\n// D\n){}",
+			"function a(b) {}",
+			"function a( // A\n\n\t// B\n\tb // C\n\n// D\n) {}",
+		},
+		{ // 359
+			"function a( // A\n\n// B\nb // C\n, // D\nc // E\n\n// F\n){}",
+			"function a(b, c) {}",
+			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\tc // E\n\n// F\n) {}",
+		},
+		{ // 360
+			"function a( // A\n\n// B\nb // C\n, // D\n... // E\nc // F\n\n// G\n){}",
+			"function a(b, ...c) {}",
+			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\t... // E\n\tc // F\n\n// G\n) {}",
+		},
+		{ // 361
+			"function a( // A\n\n// B\n... // C\n[]// D\n\n// E\n){}",
+			"function a(...[]) {}",
+			"function a( // A\n\n\t// B\n\t... // C\n\t[] // D\n\n// E\n) {}",
+		},
+		{ // 362
+			"function a( // A\n\n// B\n... // C\n{}// D\n\n// E\n){}",
+			"function a(...{}) {}",
+			"function a( // A\n\n\t// B\n\t... // C\n\t{} // D\n\n// E\n) {}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
