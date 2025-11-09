@@ -621,7 +621,7 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 		w.WriteString(f.BindingIdentifier.Data)
 	}
 
-	f.FormalParameters.printSource(w.Indent(), v)
+	f.FormalParameters.printSource(w, v)
 	f.FunctionBody.printSource(w, v)
 }
 
@@ -998,28 +998,94 @@ func (c CaseClause) printSource(w writer, v bool) {
 func (f FormalParameters) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	if v {
+		f.Comments[0].printSource(w, false, true)
+	}
+
+	ip := w.Indent()
+
 	if len(f.FormalParameterList) > 0 {
-		f.FormalParameterList[0].printSource(w, v)
+		if v && len(f.FormalParameterList[0].Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		f.FormalParameterList[0].printSource(ip, v)
 
 		for _, be := range f.FormalParameterList[1:] {
-			w.WriteString(", ")
-			be.printSource(w, v)
+			ip.WriteString(", ")
+			be.printSource(ip, v)
 		}
 
 		if f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 	}
 
 	if f.BindingIdentifier != nil {
-		w.WriteString("...")
-		w.WriteString(f.BindingIdentifier.Data)
+		if v {
+			if len(f.FormalParameterList) == 0 {
+				ip.WriteString("\n")
+			}
+
+			f.Comments[1].printSource(ip, false, true)
+		}
+
+		ip.WriteString("...")
+
+		if v {
+			f.Comments[2].printSource(ip, false, true)
+		}
+
+		ip.WriteString(f.BindingIdentifier.Data)
+
+		if v {
+			f.Comments[3].printSource(ip, false, true)
+		}
 	} else if f.ArrayBindingPattern != nil {
-		w.WriteString("...")
-		f.ArrayBindingPattern.printSource(w, v)
+		if v {
+			if len(f.FormalParameterList) == 0 {
+				ip.WriteString("\n")
+			}
+
+			f.Comments[1].printSource(ip, false, true)
+		}
+
+		ip.WriteString("...")
+
+		if v {
+			f.Comments[2].printSource(ip, false, true)
+		}
+
+		f.ArrayBindingPattern.printSource(ip, v)
+
+		if v {
+			f.Comments[3].printSource(ip, false, true)
+		}
 	} else if f.ObjectBindingPattern != nil {
-		w.WriteString("...")
-		f.ObjectBindingPattern.printSource(w, v)
+		if v {
+			if len(f.FormalParameterList) == 0 {
+				ip.WriteString("\n")
+			}
+
+			f.Comments[1].printSource(ip, false, true)
+		}
+
+		ip.WriteString("...")
+
+		if v {
+			f.Comments[2].printSource(ip, false, true)
+		}
+
+		f.ObjectBindingPattern.printSource(ip, v)
+
+		if v {
+			f.Comments[3].printSource(ip, false, true)
+		}
+	}
+
+	if v && len(f.Comments[4]) > 0 {
+		w.WriteString("\n")
+		f.Comments[4].printSource(w, false, false)
 	}
 
 	w.WriteString(") ")
