@@ -2986,6 +2986,254 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"class a {\n// A\nb /* B */(){}\n}", func(t *test, tk Tokens) { // 100
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[8],
+									Tokens:              tk[8:9],
+								},
+								Comments: [2]Comments{{tk[6]}, {tk[10]}},
+								Tokens:   tk[6:11],
+							},
+							Params: FormalParameters{
+								Tokens: tk[11:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[6:15],
+						},
+						Tokens: tk[6:15],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}", func(t *test, tk Tokens) { // 101
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[8],
+									Tokens:              tk[8:9],
+								},
+								Comments: [2]Comments{{tk[6]}, {tk[10]}},
+								Tokens:   tk[6:11],
+							},
+							Params: FormalParameters{
+								Tokens: tk[11:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Tokens: tk[6:15],
+						},
+						Tokens: tk[6:15],
+					},
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[18],
+									Tokens:              tk[18:19],
+								},
+								Comments: [2]Comments{{tk[16]}, {tk[19]}},
+								Tokens:   tk[16:20],
+							},
+							Params: FormalParameters{
+								Tokens: tk[21:23],
+							},
+							FunctionBody: Block{
+								Tokens: tk[23:25],
+							},
+							Tokens: tk[16:25],
+						},
+						Tokens: tk[16:25],
+					},
+				},
+				Tokens: tk[:27],
+			}
+		}},
+		{"class a {static //A\nb /* B */() {} }", func(t *test, tk Tokens) { // 102
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Comments: [2]Comments{{tk[7]}, {tk[11]}},
+								Tokens:   tk[7:12],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:19],
+			}
+		}},
+		{"class a {static /* A */ [\"b\"]// B\n() {} }", func(t *test, tk Tokens) { // 103
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											Literal: &tk[10],
+											Tokens:  tk[10:11],
+										}),
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[9:12],
+								},
+								Comments: [2]Comments{{tk[7]}, {tk[12]}},
+								Tokens:   tk[7:13],
+							},
+							Params: FormalParameters{
+								Tokens: tk[14:16],
+							},
+							FunctionBody: Block{
+								Tokens: tk[17:19],
+							},
+							Tokens: tk[7:19],
+						},
+						Tokens: tk[5:19],
+					},
+				},
+				Tokens: tk[:21],
+			}
+		}},
+		{"class a {static // A\n#b// B\n() {} }", func(t *test, tk Tokens) { // 104
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PrivateIdentifier: &tk[9],
+								Comments:          [2]Comments{{tk[7]}, {tk[10]}},
+								Tokens:            tk[7:11],
+							},
+							Params: FormalParameters{
+								Tokens: tk[12:14],
+							},
+							FunctionBody: Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[7:17],
+						},
+						Tokens: tk[5:17],
+					},
+				},
+				Tokens: tk[:19],
+			}
+		}},
+		{"class a {static // A\nb// B\n}", func(t *test, tk Tokens) { // 105
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Comments: [2]Comments{{tk[7]}, {tk[10]}},
+								Tokens:   tk[7:11],
+							},
+							Tokens: tk[7:11],
+						},
+						Tokens: tk[5:11],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"class a {static // A\nb // B\n= 1}", func(t *test, tk Tokens) { // 106
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[9],
+									Tokens:              tk[9:10],
+								},
+								Comments: [2]Comments{{tk[7]}, {tk[11]}},
+								Tokens:   tk[7:12],
+							},
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[15],
+									Tokens:  tk[15:16],
+								}),
+								Tokens: tk[15:16],
+							},
+							Tokens: tk[7:16],
+						},
+						Tokens: tk[5:16],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"class a {static // A\n[b] // B\n}", func(t *test, tk Tokens) { // 107
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									ComputedPropertyName: &AssignmentExpression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[10],
+											Tokens:              tk[10:11],
+										}),
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[9:12],
+								},
+								Comments: [2]Comments{{tk[7]}, {tk[13]}},
+								Tokens:   tk[7:14],
+							},
+							Tokens: tk[7:14],
+						},
+						Tokens: tk[5:14],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 
