@@ -576,6 +576,82 @@ func TestFormalParameters(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"( // A\n\n// B\n)", func(t *test, tk Tokens) { // 15
+			t.Output = FormalParameters{
+				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[4]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"( // A\n\n// B\n... // C\na // D\n\n// E\n)", func(t *test, tk Tokens) { // 16
+			t.Output = FormalParameters{
+				BindingIdentifier: &tk[10],
+				Comments:          [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Tokens:            tk[:17],
+			}
+		}},
+		{"( // A\n\n// B\na // C\n\n// D\n)", func(t *test, tk Tokens) { // 17
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[6],
+						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Tokens:            tk[4:9],
+					},
+				},
+				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[10]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"( // A\n\n// B\na // C\n, // D\nb // E\n\n// F\n)", func(t *test, tk Tokens) { // 18
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[6],
+						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Tokens:            tk[4:9],
+					},
+					{
+						SingleNameBinding: &tk[14],
+						Comments:          [2]Comments{{tk[12]}, {tk[16]}},
+						Tokens:            tk[12:17],
+					},
+				},
+				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[18]}},
+				Tokens:   tk[:21],
+			}
+		}},
+		{"( // A\n\n// B\na // C\n, // D\n... // E\nb // F\n\n// G\n)", func(t *test, tk Tokens) { // 19
+			t.Output = FormalParameters{
+				FormalParameterList: []BindingElement{
+					{
+						SingleNameBinding: &tk[6],
+						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Tokens:            tk[4:9],
+					},
+				},
+				BindingIdentifier: &tk[18],
+				Comments:          [5]Comments{{tk[2]}, {tk[12]}, {tk[16]}, {tk[20]}, {tk[22]}},
+				Tokens:            tk[:25],
+			}
+		}},
+		{"( // A\n\n// B\n... // C\n[]// D\n\n// E\n)", func(t *test, tk Tokens) { // 20
+			t.Output = FormalParameters{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[10:12],
+				},
+				Comments: [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
+		{"( // A\n\n// B\n... // C\n{}// D\n\n// E\n)", func(t *test, tk Tokens) { // 21
+			t.Output = FormalParameters{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[10:12],
+				},
+				Comments: [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var fp FormalParameters
 
