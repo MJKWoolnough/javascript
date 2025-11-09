@@ -1834,6 +1834,46 @@ func TestPrintingScript(t *testing.T) {
 			"function a(...{}) {}",
 			"function a( // A\n\n\t// B\n\t... // C\n\t{} // D\n\n// E\n) {}",
 		},
+		{ // 363
+			"class a {\n// A\nb /* B */(){}\n}",
+			"class a {\n\tb() {}\n}",
+			"class a {\n\t// A\n\tb /* B */() {}\n}",
+		},
+		{ // 364
+			"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}",
+			"class a {\n\ta() {}\n\tb() {}\n}",
+			"class a {\n\t// A\n\ta /* B */() {}\n\t/* C */\n\tb // D\n\t() {}\n}",
+		},
+		{ // 365
+			"class a {static //A\nb /* B */() {} }",
+			"class a {\n\tstatic b() {}\n}",
+			"class a {\n\tstatic //A\n\tb /* B */() {}\n}",
+		},
+		{ // 366
+			"class a {static /* A */ [\"b\"]// B\n() {} }",
+			"class a {\n\tstatic [\"b\"]() {}\n}",
+			"class a {\n\tstatic /* A */\n\t[\"b\"] // B\n\t() {}\n}",
+		},
+		{ // 367
+			"class a {static // A\n#b// B\n() {} }",
+			"class a {\n\tstatic #b() {}\n}",
+			"class a {\n\tstatic // A\n\t#b // B\n\t() {}\n}",
+		},
+		{ // 368
+			"class a {static // A\nb// B\n}",
+			"class a {\n\tstatic b;\n}",
+			"class a {\n\tstatic // A\n\tb // B\n}",
+		},
+		{ // 369
+			"class a {static // A\nb // B\n= 1}",
+			"class a {\n\tstatic b = 1;\n}",
+			"class a {\n\tstatic // A\n\tb // B\n\t= 1;\n}",
+		},
+		{ // 370
+			"class a {static // A\n[b] // B\n}",
+			"class a {\n\tstatic [b];\n}",
+			"class a {\n\tstatic // A\n\t[b] // B\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
