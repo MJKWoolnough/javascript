@@ -1842,7 +1842,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 364
 			"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}",
 			"class a {\n\ta() {}\n\tb() {}\n}",
-			"class a {\n\t// A\n\ta /* B */() {}\n\t/* C */\n\tb // D\n\t() {}\n}",
+			"class a {\n\t// A\n\ta /* B */() {}\n\t/* C */ b // D\n\t() {}\n}",
 		},
 		{ // 365
 			"class a {static //A\nb /* B */() {} }",
@@ -1852,7 +1852,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 366
 			"class a {static /* A */ [\"b\"]// B\n() {} }",
 			"class a {\n\tstatic [\"b\"]() {}\n}",
-			"class a {\n\tstatic /* A */\n\t[\"b\"] // B\n\t() {}\n}",
+			"class a {\n\tstatic /* A */ [\"b\"] // B\n\t() {}\n}",
 		},
 		{ // 367
 			"class a {static // A\n#b// B\n() {} }",
@@ -1890,10 +1890,44 @@ func TestPrintingScript(t *testing.T) {
 			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
 		},
 		{ // 374
-			//"({\n// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n})",
-			"({\n// A\nget a(){}})",
+			"({\n// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n})",
 			"({get a() {}});",
-			"({\n// A\n\tget // B\n\ta // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n});",
+			"({\n\t\t// A\n\t\tget // B\n\t\ta // C\n\t\t( // D\n\n\t\t// E\n\t\t) // F\n\t\t{} // G\n\n\t});",
+		},
+		{ // 375
+			"({\n// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n})",
+			"({set a(b) {}});",
+			"({\n\t\t// A\n\t\tset // B\n\t\ta // C\n\t\t( // D\n\n\t\t\t// E\n\t\t\tb // F\n\n\t\t// G\n\t\t) // H\n\t\t{} // I\n\n\t});",
+		},
+		{ // 376
+			"({\n// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n})",
+			"({a(b) {}});",
+			"({\n\t\t// A\n\t\ta // B\n\t\t( // C\n\n\t\t\t// D\n\t\t\tb // E\n\n\t\t// F\n\t\t) // G\n\t\t{} // H\n\n\t});",
+		},
+		{ // 377
+			"({\n// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G\n})",
+			"({async a() {}});",
+			"({\n\t\t// A\n\t\tasync /* B */ a // C\n\t\t( // D\n\n\t\t// E\n\t\t) // F\n\t\t{} // G\n\n\t});",
+		},
+		{ // 378
+			"({\n// A\n* // B\na // C\n() {}})",
+			"({* a() {}});",
+			"({\n\t\t// A\n\t\t* // B\n\t\ta // C\n\t\t() {}\n\t});",
+		},
+		{ // 379
+			"({\n// A\nasync /* B*/ * // C\na(){}})",
+			"({async * a() {}});",
+			"({\n\t\t// A\n\t\tasync /* B*/ * // C\n\t\ta() {}\n\t});",
+		},
+		{ // 380
+			"({\n// A\nasync // B\n(){}})",
+			"({async() {}});",
+			"({\n\t\t// A\n\t\tasync // B\n\t\t() {}\n\t});",
+		},
+		{ // 381
+			"({\n// A\nget // B\n(){}})",
+			"({get() {}});",
+			"({\n\t\t// A\n\t\tget // B\n\t\t() {}\n\t});",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
