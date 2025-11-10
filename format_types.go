@@ -1938,8 +1938,21 @@ func (f *NewExpression) printType(w writer, v bool) {
 
 	pp.WriteString("NewExpression {")
 
-	if f.News != 0 || v {
-		pp.Printf("\nNews: %v", f.News)
+	if f.News == nil {
+		pp.WriteString("\nNews: nil")
+	} else if len(f.News) > 0 {
+		pp.WriteString("\nNews: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.News {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nNews: []")
 	}
 
 	pp.WriteString("\nMemberExpression: ")
