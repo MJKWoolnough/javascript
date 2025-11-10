@@ -1201,7 +1201,11 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 }
 
 func (n NewExpression) printSource(w writer, v bool) {
-	for i := 0; i < len(n.News); i++ {
+	for _, c := range n.News {
+		if v {
+			c.printSource(w, true, false)
+		}
+
 		w.WriteString("new ")
 	}
 
