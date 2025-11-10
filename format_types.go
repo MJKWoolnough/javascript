@@ -1793,6 +1793,17 @@ func (f *MethodDefinition) printType(w writer, v bool) {
 	pp.WriteString("\nFunctionBody: ")
 	f.FunctionBody.printType(pp, v)
 
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
@@ -2303,6 +2314,17 @@ func (f *PropertyDefinition) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nMethodDefinition: nil")
 	}
+
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
