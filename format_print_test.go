@@ -1874,6 +1874,21 @@ func TestPrintingScript(t *testing.T) {
 			"class a {\n\tstatic [b];\n}",
 			"class a {\n\tstatic // A\n\t[b] // B\n}",
 		},
+		{ // 371
+			"// A\n\n// B\nnew // C\na // D\n",
+			"new a;",
+			"// A\n\n// B\nnew // C\na // D\n",
+		},
+		{ // 373
+			"// A\n\n// B\nnew // C\na // D\n() // E\n",
+			"new a();",
+			"// A\n\n// B\nnew // C\na // D\n() // E\n",
+		},
+		{ // 374
+			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
+			"new new a();",
+			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
