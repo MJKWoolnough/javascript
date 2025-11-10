@@ -249,7 +249,7 @@ func fixWrapping(s *javascript.Statement) {
 	}
 
 	if ae := &s.ExpressionStatement.Expressions[0]; aeIsCE(ae) {
-		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
+		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 {
 			me := &lhs.NewExpression.MemberExpression
 
 			for me.MemberExpression != nil {

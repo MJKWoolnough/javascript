@@ -488,7 +488,7 @@ func (w *writer) WriteLeftHandSideExpression(lhs *javascript.LeftHandSideExpress
 }
 
 func (w *writer) WriteNewExpression(ne *javascript.NewExpression) {
-	for i := uint(0); i < ne.News; i++ {
+	for range ne.News {
 		w.WriteString("new")
 	}
 
@@ -1260,7 +1260,7 @@ func (w *writer) WriteAssignmentProperty(ap *javascript.AssignmentProperty) {
 	w.WritePropertyName(&ap.PropertyName)
 
 	if ap.DestructuringAssignmentTarget != nil {
-		if ap.PropertyName.LiteralPropertyName != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News == 0 && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == ap.PropertyName.LiteralPropertyName.Data {
+		if ap.PropertyName.LiteralPropertyName != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && len(ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) == 0 && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == ap.PropertyName.LiteralPropertyName.Data {
 			return
 		}
 

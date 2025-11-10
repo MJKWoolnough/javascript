@@ -2335,7 +2335,7 @@ func TestTransforms(t *testing.T) {
 			[]Option{UnwrapParens},
 			&javascript.LeftHandSideExpression{
 				NewExpression: &javascript.NewExpression{
-					News: 1,
+					News: []javascript.Comments{nil},
 					MemberExpression: javascript.MemberExpression{
 						PrimaryExpression: &javascript.PrimaryExpression{
 							ParenthesizedExpression: &javascript.ParenthesizedExpression{
@@ -2358,7 +2358,7 @@ func TestTransforms(t *testing.T) {
 			},
 			&javascript.LeftHandSideExpression{
 				NewExpression: &javascript.NewExpression{
-					News: 1,
+					News: []javascript.Comments{nil},
 					MemberExpression: javascript.MemberExpression{
 						PrimaryExpression: &javascript.PrimaryExpression{
 							ParenthesizedExpression: &javascript.ParenthesizedExpression{

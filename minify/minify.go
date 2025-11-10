@@ -601,7 +601,7 @@ func (m *Minifier) minifyConditionExpressionParens(ce *javascript.ConditionalExp
 }
 
 func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpression) {
-	if m.Has(UnwrapParens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 {
+	if m.Has(UnwrapParens) && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 {
 		if ce := meAsCE(&lhs.NewExpression.MemberExpression); ce != nil {
 			lhs.CallExpression = ce
 			lhs.NewExpression = nil
