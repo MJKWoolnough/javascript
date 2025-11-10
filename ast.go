@@ -910,6 +910,7 @@ type PropertyDefinition struct {
 	PropertyName           *PropertyName
 	AssignmentExpression   *AssignmentExpression
 	MethodDefinition       *MethodDefinition
+	Comments               [2]Comments
 	Tokens                 Tokens
 }
 
@@ -927,19 +928,27 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	} else {
 		g := j.NewGoal()
+		pd.Comments[0] = g.AcceptRunWhitespaceComments()
 
-		if i := g.parseIdentifier(yield, await); i != nil {
-			h := g.NewGoal()
+		g.AcceptRunWhitespace()
 
-			h.AcceptRunWhitespace()
+		h := g.NewGoal()
 
-			if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		if i := h.parseIdentifier(yield, await); i != nil {
+			g.Score(h)
+
+			pd.Comments[1] = g.AcceptRunWhitespaceCommentsInList()
+			k := g.NewGoal()
+
+			k.AcceptRunWhitespace()
+
+			if k.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 				pd.PropertyName = &PropertyName{
 					LiteralPropertyName: i,
-					Tokens:              g.ToTokens(),
+					Tokens:              h.ToTokens(),
 				}
 
-				g.Score(h)
+				g.Score(k)
 				g.AcceptRunWhitespaceNoComment()
 
 				h = g.NewGoal()
@@ -952,10 +961,10 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				g.Score(h)
 
 				pd.IsCoverInitializedName = true
-			} else if t := h.Peek(); t.Type == TokenRightBracePunctuator || t == (parser.Token{Type: TokenPunctuator, Data: ","}) {
+			} else if t := k.Peek(); t.Type == TokenRightBracePunctuator || t == (parser.Token{Type: TokenPunctuator, Data: ","}) {
 				pd.PropertyName = &PropertyName{
 					LiteralPropertyName: i,
-					Tokens:              g.ToTokens(),
+					Tokens:              h.ToTokens(),
 				}
 
 				pd.AssignmentExpression = &AssignmentExpression{
@@ -970,12 +979,18 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 					}),
 					Tokens: pd.PropertyName.Tokens,
 				}
+			} else {
+				pd.Comments = [2]Comments{}
 			}
+		} else {
+			pd.Comments = [2]Comments{}
 		}
 
 		if pd.PropertyName == nil {
 			g = j.NewGoal()
 			propertyName := true
+
+			g.AcceptRunWhitespace()
 
 			switch g.Peek() {
 			case parser.Token{Type: TokenPunctuator, Data: "*"}:
@@ -992,13 +1007,22 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 			g = j.NewGoal()
 
 			if propertyName {
-				pd.PropertyName = new(PropertyName)
+				pd.Comments[0] = g.AcceptRunWhitespaceComments()
 
-				if err := pd.PropertyName.parse(&g, yield, await); err != nil {
-					return j.Error("PropertyDefinition", err)
-				}
+				g.AcceptRunWhitespace()
 
 				h := g.NewGoal()
+				pd.PropertyName = new(PropertyName)
+
+				if err := pd.PropertyName.parse(&h, yield, await); err != nil {
+					return g.Error("PropertyDefinition", err)
+				}
+
+				pd.Comments[1] = g.AcceptRunWhitespaceComments()
+
+				g.Score(h)
+
+				h = g.NewGoal()
 
 				h.AcceptRunWhitespace()
 
@@ -1016,6 +1040,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 					g.Score(h)
 				} else {
 					propertyName = false
+					pd.Comments = [2]Comments{}
 				}
 			}
 
@@ -1025,6 +1050,8 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				if pd.PropertyName != nil && pd.PropertyName.ComputedPropertyName != nil {
 					pd.MethodDefinition.ClassElementName.PropertyName = pd.PropertyName
 					pd.MethodDefinition.ClassElementName.Tokens = pd.PropertyName.Tokens
+					pd.MethodDefinition.ClassElementName.Comments = pd.Comments
+					pd.Comments = [2]Comments{}
 				} else {
 					g = j.NewGoal()
 				}

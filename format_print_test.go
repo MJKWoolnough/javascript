@@ -1879,15 +1879,21 @@ func TestPrintingScript(t *testing.T) {
 			"new a;",
 			"// A\n\n// B\nnew // C\na // D\n",
 		},
-		{ // 373
+		{ // 372
 			"// A\n\n// B\nnew // C\na // D\n() // E\n",
 			"new a();",
 			"// A\n\n// B\nnew // C\na // D\n() // E\n",
 		},
-		{ // 374
+		{ // 373
 			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
 			"new new a();",
 			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
+		},
+		{ // 374
+			//"({\n// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n})",
+			"({\n// A\nget a(){}})",
+			"({get a() {}});",
+			"({\n// A\n\tget // B\n\ta // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n});",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {

@@ -394,6 +394,7 @@ type MethodDefinition struct {
 	ClassElementName ClassElementName
 	Params           FormalParameters
 	FunctionBody     Block
+	Comments         [4]Comments
 	Tokens           Tokens
 }
 
@@ -402,50 +403,62 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 	if len(md.ClassElementName.Tokens) == 0 {
 		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
 		switch g.Peek() {
 		case parser.Token{Type: TokenIdentifier, Data: "get"}:
 			g.Skip()
-			g.AcceptRunWhitespaceNoComment()
 
 			md.Type = MethodGetter
 		case parser.Token{Type: TokenIdentifier, Data: "set"}:
 			g.Skip()
-			g.AcceptRunWhitespaceNoComment()
 
 			md.Type = MethodSetter
 		case parser.Token{Type: TokenIdentifier, Data: "async"}:
 			g.Skip()
 
 			if t := g.AcceptRunWhitespaceNoNewLine(); t == TokenLineTerminator || t == TokenSingleLineComment || t == TokenMultiLineComment || g.SkipGeneric() {
-				g = j.NewGoal()
-
 				break
 			}
 
-			md.Type = MethodAsync
+			g.AcceptRunWhitespace()
 
-			fallthrough
-		default:
 			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
-				j.Score(g)
-				j.AcceptRunWhitespaceNoComment()
-
-				g = j.NewGoal()
-
-				if md.Type == MethodAsync {
-					md.Type = MethodAsyncGenerator
-				} else {
-					md.Type = MethodGenerator
-				}
-
-				prev = md.Type
+				md.Type = MethodAsyncGenerator
+				prev = MethodAsyncGenerator
+			} else {
+				md.Type = MethodAsync
 			}
+		case parser.Token{Type: TokenPunctuator, Data: "*"}:
+			g.Skip()
+
+			md.Type = MethodGenerator
+			prev = MethodGenerator
 		}
+
+		g.AcceptRunWhitespace()
 
 		if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
 			md.Type = prev
-		} else {
-			j.Score(g)
+		} else if md.Type != MethodNormal {
+			md.Comments[0] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+			j.AcceptRunWhitespaceNoComment()
+
+			if (md.Type == MethodAsync || md.Type == MethodAsyncGenerator) && j.SkipGeneric() {
+				j.AcceptRunWhitespaceNoComment()
+			}
+
+			if md.Type == MethodAsyncGenerator {
+				md.Comments[1] = j.AcceptRunWhitespaceComments()
+
+				j.AcceptRunWhitespace()
+				j.Skip()
+				j.AcceptRunWhitespaceNoComment()
+			}
 		}
 
 		g = j.NewGoal()
@@ -471,6 +484,12 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 			return g.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
 
+		md.Params.Comments[0] = g.AcceptRunWhitespaceNoNewlineComments()
+
+		g.AcceptRunWhitespaceNoComment()
+
+		md.Params.Comments[4] = g.AcceptRunWhitespaceComments()
+
 		g.AcceptRunWhitespace()
 
 		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
@@ -487,7 +506,9 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 			return g.Error("MethodDefinition", ErrMissingOpeningParenthesis)
 		}
 
-		g.AcceptRunWhitespace()
+		md.Params.Comments[0] = g.AcceptRunWhitespaceNoNewlineComments()
+
+		g.AcceptRunWhitespaceNoComment()
 
 		md.Params.FormalParameterList = make([]BindingElement, 1)
 		h := g.NewGoal()
@@ -497,6 +518,9 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		}
 
 		g.Score(h)
+
+		md.Params.Comments[4] = g.AcceptRunWhitespaceComments()
+
 		g.AcceptRunWhitespace()
 
 		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
@@ -516,6 +540,8 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 		j.Score(g)
 	}
 
+	md.Comments[2] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if j.SkipReturnType() {
@@ -529,6 +555,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 	j.Score(g)
 
+	md.Comments[3] = j.AcceptRunWhitespaceCommentsInList()
 	md.Tokens = j.ToTokens()
 
 	return nil

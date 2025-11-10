@@ -2640,7 +2640,8 @@ func TestPropertyDefinition(t *testing.T) {
 							LiteralPropertyName: &tk[2],
 							Tokens:              tk[2:3],
 						},
-						Tokens: tk[2:3],
+						Comments: [2]Comments{{tk[1]}},
+						Tokens:   tk[1:3],
 					},
 					Params: FormalParameters{
 						Tokens: tk[4:6],

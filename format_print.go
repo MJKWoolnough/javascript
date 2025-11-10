@@ -1097,14 +1097,40 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 	switch m.Type {
 	case MethodNormal:
 	case MethodGenerator:
+		if v {
+			m.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("* ")
 	case MethodAsync:
+		if v {
+			m.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("async ")
 	case MethodAsyncGenerator:
-		w.WriteString("async * ")
+		if v {
+			m.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("async ")
+
+		if v {
+			m.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("* ")
 	case MethodGetter:
+		if v {
+			m.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("get ")
 	case MethodSetter:
+		if v {
+			m.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("set ")
 	default:
 		return
@@ -1112,7 +1138,16 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 
 	m.ClassElementName.printSource(w, v)
 	m.Params.printSource(w, v)
+
+	if v {
+		m.Comments[2].printSource(w, true, false)
+	}
+
 	m.FunctionBody.printSource(w, v)
+
+	if v {
+		m.Comments[3].printSource(w, true, false)
+	}
 }
 
 func (ce ClassElement) printSource(w writer, v bool) {
