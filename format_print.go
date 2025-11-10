@@ -869,7 +869,7 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 	a.PropertyName.printSource(w, v)
 
 	if a.DestructuringAssignmentTarget != nil {
-		if !v && a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == a.PropertyName.LiteralPropertyName.Data {
+		if !v && a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && len(a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == a.PropertyName.LiteralPropertyName.Data {
 			return
 		}
 
@@ -1201,7 +1201,7 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 }
 
 func (n NewExpression) printSource(w writer, v bool) {
-	for i := uint(0); i < n.News; i++ {
+	for i := 0; i < len(n.News); i++ {
 		w.WriteString("new ")
 	}
 
@@ -1370,9 +1370,6 @@ func (m MemberExpression) printSource(w writer, v bool) {
 	if m.MemberExpression != nil {
 		if m.Arguments != nil {
 			w.WriteString("new ")
-			if v {
-				m.Comments[1].printSource(w, true, false)
-			}
 
 			m.MemberExpression.printSource(w, v)
 

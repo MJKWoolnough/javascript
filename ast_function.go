@@ -325,7 +325,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 	switch ae.AssignmentOperator {
 	case AssignmentNone:
 		if ae.ConditionalExpression != nil {
-			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
 				pe = lhs.NewExpression.MemberExpression.PrimaryExpression
 			}
 		}
@@ -350,7 +350,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 
 				be.Initializer = ae.AssignmentExpression
 			}
-		} else if ae.LeftHandSideExpression.NewExpression != nil && ae.LeftHandSideExpression.NewExpression.News == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
+		} else if ae.LeftHandSideExpression.NewExpression != nil && len(ae.LeftHandSideExpression.NewExpression.News) == 0 && ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil {
 			pe = ae.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression
 			be.Initializer = ae.AssignmentExpression
 		}
@@ -395,7 +395,7 @@ func (be *BindingElement) from(ae *AssignmentExpression) error {
 
 func (be *BindingElement) fromAP(lhs *LeftHandSideExpression, ap *AssignmentPattern) error {
 	if lhs != nil {
-		if lhs.NewExpression == nil || lhs.NewExpression.News != 0 || lhs.NewExpression.MemberExpression.PrimaryExpression == nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
+		if lhs.NewExpression == nil || len(lhs.NewExpression.News) != 0 || lhs.NewExpression.MemberExpression.PrimaryExpression == nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
 			z := jsParser(lhs.Tokens[:0])
 
 			return z.Error("BindingElement", ErrNoIdentifier)

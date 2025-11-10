@@ -217,7 +217,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
 				h := g.NewGoal()
 
-				if lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
+				if lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
 					h.AcceptRunWhitespaceNoNewLine()
 
 					if lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil && h.SkipReturnType() {
@@ -245,7 +245,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 						ae.ConditionalExpression = nil
 						ae.LeftHandSideExpression = lhs
 
-						if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+						if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
 							ae.AssignmentPattern = new(AssignmentPattern)
 							if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 								z := jsParser(lhs.Tokens[:0])
@@ -325,7 +325,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 			return j.Error("LeftHandSideExpression", err)
 		}
 
-		if lhs.NewExpression.News == 0 {
+		if len(lhs.NewExpression.News) == 0 {
 			h := g.NewGoal()
 
 			h.AcceptRunWhitespace()
@@ -364,7 +364,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 			}
 
 			lhs.CallExpression = nil
-		} else if lhs.NewExpression.News == 0 {
+		} else if len(lhs.NewExpression.News) == 0 {
 			g = j.NewGoal()
 
 			j.AcceptRunWhitespace()
@@ -397,7 +397,7 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 
 // IsSimple returns whether or not the LeftHandSideExpression is classed as 'simple'
 func (lhs *LeftHandSideExpression) IsSimple() bool {
-	return lhs.OptionalExpression == nil && (lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.IsSimple() || lhs.CallExpression != nil && lhs.CallExpression.IsSimple())
+	return lhs.OptionalExpression == nil && (lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.IsSimple() || lhs.CallExpression != nil && lhs.CallExpression.IsSimple())
 }
 
 func (lhs *LeftHandSideExpression) hasFirstComment() bool {
@@ -952,7 +952,7 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 // The News field is a count of the number of 'new' keywords that proceed the
 // MemberExpression
 type NewExpression struct {
-	News             uint
+	News             []Comments
 	MemberExpression MemberExpression
 	Tokens           Tokens
 }
@@ -964,18 +964,18 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 		h := j.NewGoal()
 
 		for {
+			h.AcceptRunWhitespace()
+
 			if ne.MemberExpression.MemberExpression == nil || !h.AcceptToken(parser.Token{Type: TokenKeyword, Data: "new"}) {
 				return j.Error("NewExpression", err)
 			}
 
+			ne.News = append(ne.News, ne.MemberExpression.Comments[0])
 			ne.MemberExpression = *ne.MemberExpression.MemberExpression
-			ne.News++
 
 			if ne.MemberExpression.Tokens != nil {
 				break
 			}
-
-			h.AcceptRunWhitespace()
 		}
 	}
 
@@ -987,11 +987,11 @@ func (ne *NewExpression) parse(j *jsParser, yield, await bool) error {
 }
 
 func (ne *NewExpression) hasFirstComment() bool {
-	if ne.News == 0 {
+	if len(ne.News) == 0 {
 		return ne.MemberExpression.hasFirstComment()
 	}
 
-	return false
+	return len(ne.News[0]) > 0
 }
 
 // MemberExpression as defined in ECMA-262
@@ -1078,12 +1078,18 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		g.Skip()
-
-		me.Comments[1] = g.AcceptRunWhitespaceComments()
-
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			g = j.NewGoal()
+
+			g.Skip()
+
+			me.Comments[1] = g.AcceptRunWhitespaceComments()
+
+			g.AcceptRunWhitespace()
+			g.Skip()
+
 			me.Comments[2] = g.AcceptRunWhitespaceComments()
 
 			g.AcceptRunWhitespace()
@@ -1102,6 +1108,11 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				return j.Error("MemberExpression", ErrInvalidMetaProperty)
 			}
 		} else if isNew {
+			g = j.NewGoal()
+
+			g.Skip()
+			g.AcceptRunWhitespaceNoComment()
+
 			h := g.NewGoal()
 
 			me.MemberExpression = new(MemberExpression)
@@ -1421,7 +1432,7 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 							ae.ConditionalExpression = nil
 							ae.LeftHandSideExpression = lhs
 
-							if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && lhs.NewExpression.News == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+							if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
 								ae.AssignmentPattern = new(AssignmentPattern)
 								if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 									z := jsParser(lhs.Tokens[:0])

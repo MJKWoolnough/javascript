@@ -37,7 +37,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 		{`new someIdentifier`, func(t *test, tk Tokens) { // 3
 			t.Output = LeftHandSideExpression{
 				NewExpression: &NewExpression{
-					News: 1,
+					News: []Comments{nil},
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
 							IdentifierReference: &tk[2],
@@ -53,7 +53,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 		{`new new someIdentifier`, func(t *test, tk Tokens) { // 4
 			t.Output = LeftHandSideExpression{
 				NewExpression: &NewExpression{
-					News: 2,
+					News: []Comments{nil, nil},
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
 							IdentifierReference: &tk[4],
@@ -273,7 +273,7 @@ func TestLeftHandSideExpressionOld(t *testing.T) {
 		{`new new className()`, func(t *test, tk Tokens) { // 17
 			t.Output = LeftHandSideExpression{
 				NewExpression: &NewExpression{
-					News: 1,
+					News: []Comments{nil},
 					MemberExpression: MemberExpression{
 						MemberExpression: &MemberExpression{
 							PrimaryExpression: &PrimaryExpression{
@@ -2939,7 +2939,7 @@ func TestNewExpression(t *testing.T) {
 		}},
 		{"new\na", func(t *test, tk Tokens) { // 5
 			t.Output = NewExpression{
-				News: 1,
+				News: []Comments{nil},
 				MemberExpression: MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
 						IdentifierReference: &tk[2],
@@ -2970,7 +2970,7 @@ func TestNewExpression(t *testing.T) {
 		}},
 		{"new\nnew\na\n()", func(t *test, tk Tokens) { // 7
 			t.Output = NewExpression{
-				News: 1,
+				News: []Comments{nil},
 				MemberExpression: MemberExpression{
 					MemberExpression: &MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
@@ -2989,7 +2989,7 @@ func TestNewExpression(t *testing.T) {
 		}},
 		{"new new\nnew\na\n()", func(t *test, tk Tokens) { // 8
 			t.Output = NewExpression{
-				News: 2,
+				News: []Comments{nil, nil},
 				MemberExpression: MemberExpression{
 					MemberExpression: &MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
@@ -3475,13 +3475,13 @@ func TestMemberExpression(t *testing.T) {
 						Literal: &tk[4],
 						Tokens:  tk[4:5],
 					},
-					Comments: [5]Comments{nil, nil, nil, nil, {tk[5]}},
-					Tokens:   tk[4:6],
+					Comments: [5]Comments{{tk[3]}, nil, nil, nil, {tk[5]}},
+					Tokens:   tk[3:6],
 				},
 				Arguments: &Arguments{
 					Tokens: tk[6:8],
 				},
-				Comments: [5]Comments{{tk[0]}, {tk[3]}, nil, nil, {tk[9]}},
+				Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[9]}},
 				Tokens:   tk[:10],
 			}
 		}},

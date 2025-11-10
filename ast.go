@@ -598,7 +598,7 @@ func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
 	}
 
 	if op.AssignmentRestElement != nil {
-		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || op.AssignmentRestElement.NewExpression.News != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
+		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || len(op.AssignmentRestElement.NewExpression.News) != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
 			z := jsParser(op.Tokens[:0])
 
 			return z.Error("ObjectBindingPattern", ErrBadRestElement)
@@ -685,7 +685,7 @@ func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
 
 	if ap.DestructuringAssignmentTarget != nil {
 		if ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil {
-			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
+			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || len(ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
 				y := jsParser(ap.Tokens[:0])
 				z := jsParser(ap.DestructuringAssignmentTarget.Tokens[:0])
 

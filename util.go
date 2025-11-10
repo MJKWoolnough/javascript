@@ -639,7 +639,7 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		return lhs.CallExpression
 	} else if lhs.OptionalExpression != nil {
 		return lhs.OptionalExpression
-	} else if lhs.NewExpression.News > 0 {
+	} else if len(lhs.NewExpression.News) > 0 {
 		return lhs.NewExpression
 	} else if lhs.NewExpression.MemberExpression.PrimaryExpression == nil {
 		return &lhs.NewExpression.MemberExpression

@@ -2112,7 +2112,7 @@ func TestUnwrapConditional(t *testing.T) {
 			Tokens:         tks,
 		},
 		&NewExpression{ // 9
-			News: 1,
+			News: []Comments{nil},
 			MemberExpression: MemberExpression{
 				PrimaryExpression: &PrimaryExpression{
 					IdentifierReference: identA,
