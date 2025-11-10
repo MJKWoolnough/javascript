@@ -3635,6 +3635,187 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{"// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n", func(t *test, tk Tokens) { // 28
+			t.Output = MethodDefinition{
+				Type: MethodGetter,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Tokens:   tk[4:9],
+				},
+				Params: FormalParameters{
+					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[14]}},
+					Tokens:   tk[10:17],
+				},
+				FunctionBody: Block{
+					Tokens: tk[20:22],
+				},
+				Comments: [4]Comments{{tk[0]}, nil, {tk[18]}, {tk[23]}},
+				Tokens:   tk[:24],
+			}
+		}},
+		{"// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n", func(t *test, tk Tokens) { // 29
+			t.Output = MethodDefinition{
+				Type: MethodSetter,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Tokens:   tk[4:9],
+				},
+				Params: FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							SingleNameBinding: &tk[16],
+							Comments:          [2]Comments{{tk[14]}, {tk[18]}},
+							Tokens:            tk[14:19],
+						},
+					},
+					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[20]}},
+					Tokens:   tk[10:23],
+				},
+				FunctionBody: Block{
+					Tokens: tk[26:28],
+				},
+				Comments: [4]Comments{{tk[0]}, nil, {tk[24]}, {tk[29]}},
+				Tokens:   tk[:30],
+			}
+		}},
+		{"// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n", func(t *test, tk Tokens) { // 30
+			t.Output = MethodDefinition{
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Tokens:   tk[:5],
+				},
+				Params: FormalParameters{
+					FormalParameterList: []BindingElement{
+						{
+							SingleNameBinding: &tk[12],
+							Comments:          [2]Comments{{tk[10]}, {tk[14]}},
+							Tokens:            tk[10:15],
+						},
+					},
+					Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[16]}},
+					Tokens:   tk[6:19],
+				},
+				FunctionBody: Block{
+					Tokens: tk[22:24],
+				},
+				Comments: [4]Comments{nil, nil, {tk[20]}, {tk[25]}},
+				Tokens:   tk[:26],
+			}
+		}},
+		{"// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G", func(t *test, tk Tokens) { // 31
+			t.Output = MethodDefinition{
+				Type: MethodAsync,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Tokens:   tk[4:9],
+				},
+				Params: FormalParameters{
+					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[14]}},
+					Tokens:   tk[10:17],
+				},
+				FunctionBody: Block{
+					Tokens: tk[20:22],
+				},
+				Comments: [4]Comments{{tk[0]}, nil, {tk[18]}, {tk[23]}},
+				Tokens:   tk[:24],
+			}
+		}},
+		{"// A\n* // B\na // C\n() {}", func(t *test, tk Tokens) { // 32
+			t.Output = MethodDefinition{
+				Type: MethodGenerator,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Tokens:   tk[4:9],
+				},
+				Params: FormalParameters{
+					Tokens: tk[10:12],
+				},
+				FunctionBody: Block{
+					Tokens: tk[13:15],
+				},
+				Comments: [4]Comments{{tk[0]}},
+				Tokens:   tk[:15],
+			}
+		}},
+		{"// A\nasync /* B*/ * // C\na(){}", func(t *test, tk Tokens) { // 33
+			t.Output = MethodDefinition{
+				Type: MethodAsyncGenerator,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[10],
+						Tokens:              tk[10:11],
+					},
+					Comments: [2]Comments{{tk[8]}},
+					Tokens:   tk[8:11],
+				},
+				Params: FormalParameters{
+					Tokens: tk[11:13],
+				},
+				FunctionBody: Block{
+					Tokens: tk[13:15],
+				},
+				Comments: [4]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:15],
+			}
+		}},
+		{"// A\nasync // B\n(){}", func(t *test, tk Tokens) { // 34
+			t.Output = MethodDefinition{
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Tokens:   tk[:5],
+				},
+				Params: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[8:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"// A\nget // B\n(){}", func(t *test, tk Tokens) { // 35
+			t.Output = MethodDefinition{
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[2],
+						Tokens:              tk[2:3],
+					},
+					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Tokens:   tk[:5],
+				},
+				Params: FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: Block{
+					Tokens: tk[8:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var md MethodDefinition
 
