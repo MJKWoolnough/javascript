@@ -3006,6 +3006,61 @@ func TestNewExpression(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
+		{"// A\nnew // B\na // C\n", func(t *test, tk Tokens) { // 9
+			t.Output = NewExpression{
+				News: []Comments{{tk[0]}},
+				MemberExpression: MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[6],
+						Tokens:              tk[6:7],
+					},
+					Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+					Tokens:   tk[4:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"// A\nnew // B\na // C\n() // D\n", func(t *test, tk Tokens) { // 10
+			t.Output = NewExpression{
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+						Tokens:   tk[4:9],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[10:12],
+					},
+					Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[13]}},
+					Tokens:   tk[:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"// A\nnew // B\nnew // C\na // D\n() // E\n", func(t *test, tk Tokens) { // 11
+			t.Output = NewExpression{
+				News: []Comments{{tk[0]}},
+				MemberExpression: MemberExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Tokens:   tk[8:13],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[14:16],
+					},
+					Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[17]}},
+					Tokens:   tk[4:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ne NewExpression
 
