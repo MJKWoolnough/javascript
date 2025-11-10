@@ -1181,7 +1181,7 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 
 func (cen ClassElementName) printSource(w writer, v bool) {
 	if v {
-		cen.Comments[0].printSource(w, false, true)
+		cen.Comments[0].printSource(w, true, false)
 	}
 
 	if cen.PropertyName != nil {
