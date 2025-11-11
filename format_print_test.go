@@ -1954,6 +1954,21 @@ func TestPrintingScript(t *testing.T) {
 			"({[a]: b});",
 			"({\n\t\t// A\n\t\t[ // B\n\n\t\t\ta\n\t\t// C\n\t\t] // D\n\t\t: // E\n\t\tb // F\n\n\t});",
 		},
+		{ // 387
+			"({ // A\n// B\n\n// C\n})",
+			"({});",
+			"({ // A\n\t   // B\n\n\t// C\n\t});",
+		},
+		{ // 388
+			"({ // A\n// B\n\n// C\na // D\n// E\n\n// F\n})",
+			"({a});",
+			"({ // A\n\t   // B\n\n\t\t// C\n\t\ta // D\n\t\t  // E\n\t\t: a\n\n\t// F\n\t});",
+		},
+		{ // 389
+			"({ // A\n\n// B\na // C\n, // D\nb // E\n\n// F\n})",
+			"({a, b});",
+			"({ // A\n\n\t\t// B\n\t\ta // C\n\t\t: a,\n\t\t// D\n\t\tb // E\n\t\t: b\n\n\t// F\n\t});",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
