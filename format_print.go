@@ -1346,12 +1346,9 @@ func (p PropertyName) printSource(w writer, v bool) {
 
 		w.WriteString("[")
 
-		if v {
+		if v && len(p.Comments[0]) > 0 {
 			p.Comments[0].printSource(w, false, true)
-
-			if p.ComputedPropertyName.hasFirstComment() {
-				ip.WriteString("\n")
-			}
+			ip.WriteString("\n")
 		}
 
 		p.ComputedPropertyName.printSource(ip, v)
@@ -1773,7 +1770,15 @@ func (b BitwiseXORExpression) printSource(w writer, v bool) {
 func (p PropertyDefinition) printSource(w writer, v bool) {
 	if p.AssignmentExpression != nil {
 		if p.PropertyName != nil {
+			if v {
+				p.Comments[0].printSource(w, true, false)
+			}
+
 			p.PropertyName.printSource(w, v)
+
+			if v {
+				p.Comments[1].printSource(w, true, false)
+			}
 
 			done := false
 
@@ -1787,7 +1792,11 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 
 			if !done {
 				if p.IsCoverInitializedName {
-					w.WriteString(" = ")
+					if !v || len(p.Comments[1]) == 0 {
+						w.WriteString(" ")
+					}
+
+					w.WriteString("= ")
 				} else {
 					w.WriteString(": ")
 				}
@@ -1795,6 +1804,10 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 				p.AssignmentExpression.printSource(w, v)
 			}
 		} else {
+			if v {
+				p.Comments[0].printSource(w, true, false)
+			}
+
 			w.WriteString("...")
 			p.AssignmentExpression.printSource(w, v)
 		}
