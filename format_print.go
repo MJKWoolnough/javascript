@@ -1715,6 +1715,10 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 func (o ObjectLiteral) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	if v {
+		o.Comments[0].printSource(w, false, true)
+	}
+
 	if len(o.PropertyDefinitionList) > 0 {
 		var lastLine uint64
 
@@ -1753,6 +1757,11 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 				w.WriteString("\n")
 			}
 		}
+	}
+
+	if v && len(o.Comments[1]) > 0 {
+		w.WriteString("\n")
+		o.Comments[1].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
