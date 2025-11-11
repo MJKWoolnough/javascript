@@ -315,7 +315,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 
 			j.Score(g)
 			j.AcceptRunWhitespace()
-			j.Next()
+			j.Skip()
 
 			continue
 		}
@@ -330,7 +330,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 			ab.Comments[1] = j.AcceptRunWhitespaceComments()
 
 			j.AcceptRunWhitespace()
-			j.Next()
+			j.Skip()
 			j.AcceptRunWhitespaceNoComment()
 
 			g = j.NewGoal()
@@ -380,7 +380,7 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	ab.Comments[2] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	ab.Tokens = j.ToTokens()
 
@@ -482,7 +482,7 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 				ob.Comments[1] = j.AcceptRunWhitespaceComments()
 
 				j.AcceptRunWhitespace()
-				j.Next()
+				j.Skip()
 
 				ob.Comments[2] = j.AcceptRunWhitespaceComments()
 
@@ -535,7 +535,7 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	ob.Comments[4] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	ob.Tokens = j.ToTokens()
 
@@ -752,7 +752,7 @@ func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
 		ae.Comments = g.AcceptRunWhitespaceComments()
 
 		g.AcceptRunWhitespace()
-		g.Next()
+		g.Skip()
 
 		g.AcceptRunWhitespaceNoComment()
 	}
@@ -840,7 +840,7 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 
 	j.AcceptRunWhitespace()
 
-	j.Next()
+	j.Skip()
 
 	al.Tokens = j.ToTokens()
 

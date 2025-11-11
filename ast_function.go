@@ -158,7 +158,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 				fp.Comments[1] = j.AcceptRunWhitespaceComments()
 
 				j.AcceptRunWhitespace()
-				j.Next()
+				j.Skip()
 
 				fp.Comments[2] = j.AcceptRunWhitespaceComments()
 
@@ -231,7 +231,7 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	fp.Comments[4] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	fp.Tokens = j.ToTokens()
 

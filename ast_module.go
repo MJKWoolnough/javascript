@@ -164,7 +164,7 @@ func (id *ImportDeclaration) parse(j *jsParser) error {
 
 		g = j.NewGoal()
 
-		g.Next()
+		g.Skip()
 
 		id.FromClause.Tokens = g.ToTokens()
 		id.ModuleSpecifier = &id.FromClause.Tokens[0]
@@ -282,7 +282,7 @@ func (w *WithClause) parse(j *jsParser) error {
 	w.Comments[3] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	w.Tokens = j.ToTokens()
 
@@ -512,7 +512,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 	ni.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	ni.Tokens = j.ToTokens()
 
@@ -549,7 +549,7 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 			is.Comments[1] = j.AcceptRunWhitespaceComments()
 
 			j.AcceptRunWhitespace()
-			j.Next()
+			j.Skip()
 
 			is.Comments[2] = j.AcceptRunWhitespaceComments()
 
@@ -819,7 +819,7 @@ func (ec *ExportClause) parse(j *jsParser) error {
 	ec.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	ec.Tokens = j.ToTokens()
 
@@ -855,7 +855,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 		es.Comments[1] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
-		j.Next()
+		j.Skip()
 
 		es.Comments[2] = j.AcceptRunWhitespaceComments()
 

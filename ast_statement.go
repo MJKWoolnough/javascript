@@ -42,7 +42,7 @@ func (b *Block) parse(j *jsParser, yield, await, ret bool) error {
 	b.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	b.Tokens = j.ToTokens()
 

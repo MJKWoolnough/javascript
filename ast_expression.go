@@ -1481,7 +1481,7 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 	pe.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	pe.Tokens = j.ToTokens()
 
@@ -1540,7 +1540,7 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 	a.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-	j.Next()
+	j.Skip()
 
 	a.Tokens = j.ToTokens()
 
@@ -1565,7 +1565,7 @@ func (a *Argument) parse(j *jsParser, yield, await bool) error {
 		a.Comments = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
-		j.Next()
+		j.Skip()
 	}
 
 	j.AcceptRunWhitespaceNoComment()
