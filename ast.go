@@ -915,8 +915,16 @@ type PropertyDefinition struct {
 }
 
 func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
-	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
+		pd.Comments[0] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
+		j.Skip()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 		pd.AssignmentExpression = new(AssignmentExpression)
@@ -927,7 +935,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 
 		j.Score(g)
 	} else {
-		g := j.NewGoal()
+		g = j.NewGoal()
 		pd.Comments[0] = g.AcceptRunWhitespaceComments()
 
 		g.AcceptRunWhitespace()
@@ -1018,9 +1026,9 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 					return g.Error("PropertyDefinition", err)
 				}
 
-				pd.Comments[1] = g.AcceptRunWhitespaceComments()
-
 				g.Score(h)
+
+				pd.Comments[1] = g.AcceptRunWhitespaceCommentsInList()
 
 				h = g.NewGoal()
 
