@@ -851,6 +851,7 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 // https://262.ecma-international.org/11.0/#prod-ObjectLiteral
 type ObjectLiteral struct {
 	PropertyDefinitionList []PropertyDefinition
+	Comments               [2]Comments
 	Tokens                 Tokens
 }
 
@@ -858,6 +859,8 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("ObjectLiteral", ErrMissingOpeningBrace)
 	}
+
+	ol.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	for {
 		j.AcceptRunWhitespaceNoComment()
@@ -867,8 +870,6 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 		g.AcceptRunWhitespace()
 
 		if g.Accept(TokenRightBracePunctuator) {
-			j.Score(g)
-
 			break
 		}
 
@@ -881,14 +882,24 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-		j.AcceptRunWhitespace()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
 			break
-		} else if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			return j.Error("ObjectLiteral", ErrMissingComma)
+		} else if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			return g.Error("ObjectLiteral", ErrMissingComma)
 		}
+
+		j.Score(g)
 	}
+
+	ol.Comments[1] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Skip()
 
 	ol.Tokens = j.ToTokens()
 
