@@ -1737,7 +1737,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 343
 			"var a = {[ // A\n\nb]:c}",
 			"var a = {[b]: c};",
-			"var a = {[ // A\n\tb]: c\n};",
+			"var a = {[ // A\n\n\t\tb]: c\n};",
 		},
 		{ // 344
 			"() => { // A\n\n// B\na // C\n\n// D\n}",
@@ -1928,6 +1928,31 @@ func TestPrintingScript(t *testing.T) {
 			"({\n// A\nget // B\n(){}})",
 			"({get() {}});",
 			"({\n\t\t// A\n\t\tget // B\n\t\t() {}\n\t});",
+		},
+		{ // 382
+			"({\n// A\n... // B\na // C\n})",
+			"({...a});",
+			"({\n\t\t// A\n\t\t... // B\n\t\ta // C\n\n\t});",
+		},
+		{ // 383
+			"({\n// A\na // B\n,})",
+			"({a});",
+			"({\n\t\t// A\n\t\ta // B\n\t\t: a\n\t});",
+		},
+		{ // 384
+			"({\n// A\na // B\n= // C\nb // D\n})",
+			"({a = b});",
+			"({\n\t\t// A\n\t\ta // B\n\t\t= // C\n\t\tb // D\n\n\t});",
+		},
+		{ // 385
+			"({\n// A\na // B\n: // C\nb // D\n})",
+			"({a: b});",
+			"({\n\t\t// A\n\t\ta // B\n\t\t: // C\n\t\tb // D\n\n\t});",
+		},
+		{ // 386
+			"({\n// A\n[ // B\na\n// C\n] // D\n: // E\nb // F\n})",
+			"({[a]: b});",
+			"({\n\t\t// A\n\t\t[ // B\n\n\t\t\ta\n\t\t// C\n\t\t] // D\n\t\t: // E\n\t\tb // F\n\n\t});",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
