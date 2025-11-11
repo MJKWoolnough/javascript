@@ -2347,6 +2347,82 @@ func TestObjectLiteral(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"{ // A\n// B\n\n// C\n}", func(t *test, tk Tokens) { // 8
+			t.Output = ObjectLiteral{
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[6]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"{ // A\n// B\n\n// C\na // D\n// E\n\n// F\n}", func(t *test, tk Tokens) { // 9
+			t.Output = ObjectLiteral{
+				PropertyDefinitionList: []PropertyDefinition{
+					{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[8],
+							Tokens:              tk[8:9],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[8],
+									Tokens:              tk[8:9],
+								},
+								Tokens: tk[8:9],
+							}),
+							Tokens: tk[8:9],
+						},
+						Comments: [2]Comments{{tk[6]}, {tk[10], tk[12]}},
+						Tokens:   tk[6:13],
+					},
+				},
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
+		{"{ // A\n\n// B\na // C\n, // D\nb // E\n\n// F\n}", func(t *test, tk Tokens) { // 10
+			t.Output = ObjectLiteral{
+				PropertyDefinitionList: []PropertyDefinition{
+					{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Tokens: tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Comments: [2]Comments{{tk[4]}, {tk[8]}},
+						Tokens:   tk[4:9],
+					},
+					{
+						PropertyName: &PropertyName{
+							LiteralPropertyName: &tk[14],
+							Tokens:              tk[14:15],
+						},
+						AssignmentExpression: &AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[14],
+									Tokens:              tk[14:15],
+								},
+								Tokens: tk[14:15],
+							}),
+							Tokens: tk[14:15],
+						},
+						Comments: [2]Comments{{tk[12]}, {tk[16]}},
+						Tokens:   tk[12:17],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[18]}},
+				Tokens:   tk[:21],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ol ObjectLiteral
 
