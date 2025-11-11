@@ -2669,6 +2669,117 @@ func TestPropertyDefinition(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"// A\n... // B\na // C", func(t *test, tk Tokens) { // 20
+			t.Output = PropertyDefinition{
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+						Tokens:   tk[4:9],
+					}),
+					Tokens: tk[4:9],
+				},
+				Comments: [2]Comments{{tk[0]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"// A\na // B\n,", func(t *test, tk Tokens) { // 21
+			t.Output = PropertyDefinition{
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[2],
+					Tokens:              tk[2:3],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Tokens: tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:5],
+			}
+		}},
+		{"// A\na // B\n= // C\nb // D\n", func(t *test, tk Tokens) { // 22
+			t.Output = PropertyDefinition{
+				IsCoverInitializedName: true,
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[2],
+					Tokens:              tk[2:3],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\na // B\n: // C\nb // D", func(t *test, tk Tokens) { // 23
+			t.Output = PropertyDefinition{
+				PropertyName: &PropertyName{
+					LiteralPropertyName: &tk[2],
+					Tokens:              tk[2:3],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\n[ // B\na\n// C\n] // D\n: // E\nb // F\n", func(t *test, tk Tokens) { // 24
+			t.Output = PropertyDefinition{
+				PropertyName: &PropertyName{
+					ComputedPropertyName: &AssignmentExpression{
+						ConditionalExpression: WrapConditional(&MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[6],
+								Tokens:              tk[6:7],
+							},
+							Tokens: tk[6:7],
+						}),
+						Tokens: tk[6:7],
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Tokens:   tk[2:11],
+				},
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[18],
+							Tokens:              tk[18:19],
+						},
+						Comments: [5]Comments{{tk[16]}, nil, nil, nil, {tk[20]}},
+						Tokens:   tk[16:21],
+					}),
+					Tokens: tk[16:21],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[12]}},
+				Tokens:   tk[:21],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pd PropertyDefinition
 
