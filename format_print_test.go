@@ -1969,6 +1969,41 @@ func TestPrintingScript(t *testing.T) {
 			"({a, b});",
 			"({ // A\n\n\t\t// B\n\t\ta // C\n\t\t: a,\n\t\t// D\n\t\tb // E\n\t\t: b\n\n\t// F\n\t});",
 		},
+		{ // 390
+			"function // A\na // B\n()// C\n{}",
+			"function a() {}",
+			"function // A\na // B\n() // C\n{}",
+		},
+		{ // 391
+			"async /* A */ function // B\na // C\n()// D\n{}",
+			"async function a() {}",
+			"async /* A */ function // B\na // C\n() // D\n{}",
+		},
+		{ // 392
+			"function // A\n* // B\na // C\n()// D\n{}",
+			"function* a() {}",
+			"function // A\n* // B\na // C\n() // D\n{}",
+		},
+		{ // 393
+			"(function // A\n()// B\n{})",
+			"(function () {});",
+			"(function // A\n\t() // B\n\t{});",
+		},
+		{ // 394
+			"(async /* A */ function // B\n()// C\n{})",
+			"(async function () {});",
+			"(async /* A */ function // B\n\t() // C\n\t{});",
+		},
+		{ // 395
+			"(function // A\n* // B\n()// C\n{})",
+			"(function* () {});",
+			"(function // A\n\t* // B\n\t() // C\n\t{});",
+		},
+		{ // 396
+			"(async /* A */ function // B\n* // C\n()// D\n{})",
+			"(async function* () {});",
+			"(async /* A */ function // B\n\t* // C\n\t() // D\n\t{});",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
