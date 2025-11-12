@@ -285,6 +285,8 @@ func (j *jsParser) AcceptRunWhitespaceCommentsInList() Comments {
 		case ",", ".", "+", "-", "++", "--", "*", "**", "/", "%", "|", "||", "&", "&&", "^", "=", "==", "!=", "===", "!==", "in", "instanceof", "<<", "<", ">", "<=", "??", "?.", "?", ":", "(", "[":
 			return j.AcceptRunWhitespaceComments()
 		}
+	} else if g.Accept(TokenTemplateMiddle, TokenTemplateTail) {
+		return j.AcceptRunWhitespaceComments()
 	}
 
 	return j.AcceptRunWhitespaceNoNewlineComments()
