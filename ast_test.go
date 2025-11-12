@@ -2992,6 +2992,75 @@ func TestTemplateLiteral(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
+		{"`${ // A\n\n// B\na // C\n\n// D\n}`", func(t *test, tk Tokens) { // 8
+			t.Output = TemplateLiteral{
+				TemplateHead: &tk[0],
+				Expressions: []Expression{
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[6],
+										Tokens:              tk[6:7],
+									},
+									Comments: [5]Comments{{tk[2], tk[4]}, nil, nil, nil, {tk[8], tk[10]}},
+									Tokens:   tk[2:11],
+								}),
+								Tokens: tk[2:11],
+							},
+						},
+						Tokens: tk[2:11],
+					},
+				},
+				TemplateTail: &tk[12],
+				Tokens:       tk[:13],
+			}
+		}},
+		{"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`", func(t *test, tk Tokens) { // 9
+			t.Output = TemplateLiteral{
+				TemplateHead: &tk[0],
+				Expressions: []Expression{
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[4],
+										Tokens:              tk[4:5],
+									},
+									Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[6], tk[8]}},
+									Tokens:   tk[2:9],
+								}),
+								Tokens: tk[2:9],
+							},
+						},
+						Tokens: tk[2:9],
+					},
+					{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[14],
+										Tokens:              tk[14:15],
+									},
+									Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[16]}},
+									Tokens:   tk[12:17],
+								}),
+								Tokens: tk[12:17],
+							},
+						},
+						Tokens: tk[12:17],
+					},
+				},
+				TemplateMiddleList: []*Token{
+					&tk[10],
+				},
+				TemplateTail: &tk[18],
+				Tokens:       tk[:19],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tl TemplateLiteral
 
