@@ -1118,7 +1118,7 @@ func (tl *TemplateLiteral) parse(j *jsParser, yield, await bool) error {
 		tl.TemplateHead = j.GetLastToken()
 
 		for {
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 
 			g := j.NewGoal()
 			e := len(tl.Expressions)
