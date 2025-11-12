@@ -607,12 +607,56 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 	switch f.Type {
 	case FunctionNormal:
 		w.WriteString("function ")
+
+		if v {
+			f.Comments[1].printSource(w, true, false)
+		}
 	case FunctionGenerator:
-		w.WriteString("function* ")
+		w.WriteString("function")
+
+		if v {
+			f.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("*")
+
+		if v && len(f.Comments[2]) > 0 {
+			f.Comments[2].printSource(w, true, false)
+		} else {
+			w.WriteString(" ")
+		}
 	case FunctionAsync:
-		w.WriteString("async function ")
+		w.WriteString("async ")
+
+		if v {
+			f.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("function ")
+
+		if v {
+			f.Comments[1].printSource(w, true, false)
+		}
 	case FunctionAsyncGenerator:
-		w.WriteString("async function* ")
+		w.WriteString("async ")
+
+		if v {
+			f.Comments[0].printSource(w, true, false)
+		}
+
+		w.WriteString("function")
+
+		if v {
+			f.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("*")
+
+		if v && len(f.Comments[2]) > 0 {
+			f.Comments[2].printSource(w, true, false)
+		} else {
+			w.WriteString(" ")
+		}
 	default:
 		return
 	}
@@ -621,7 +665,16 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 		w.WriteString(f.BindingIdentifier.Data)
 	}
 
+	if v {
+		f.Comments[3].printSource(w, true, false)
+	}
+
 	f.FormalParameters.printSource(w, v)
+
+	if v {
+		f.Comments[4].printSource(w, true, false)
+	}
+
 	f.FunctionBody.printSource(w, v)
 }
 
