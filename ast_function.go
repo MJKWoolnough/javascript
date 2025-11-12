@@ -27,6 +27,7 @@ type FunctionDeclaration struct {
 	BindingIdentifier *Token
 	FormalParameters  FormalParameters
 	FunctionBody      Block
+	Comments          [5]Comments
 	Tokens            Tokens
 }
 
@@ -34,12 +35,16 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 	if j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		fd.Type = FunctionAsync
 
+		fd.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
 		j.AcceptRunWhitespaceNoNewLine()
 	}
 
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
 		return j.Error("FunctionDeclaration", ErrInvalidFunction)
 	}
+
+	fd.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -49,6 +54,8 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		} else {
 			fd.Type = FunctionGenerator
 		}
+
+		fd.Comments[2] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
 	}
@@ -70,6 +77,8 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 			}
 		}
 
+		fd.Comments[3] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 	}
 
@@ -84,6 +93,9 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 	}
 
 	j.Score(g)
+
+	fd.Comments[4] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if j.SkipReturnType() {
