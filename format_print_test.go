@@ -2004,6 +2004,16 @@ func TestPrintingScript(t *testing.T) {
 			"(async function* () {});",
 			"(async /* A */ function // B\n\t* // C\n\t() // D\n\t{});",
 		},
+		{ // 397
+			"`${ // A\n\n// B\na // C\n\n// D\n}`",
+			"`${a}`;",
+			"`${ // A\n\n// B\na // C\n\n// D\n}`;",
+		},
+		{ // 398
+			"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`",
+			"`${a}${b}`;",
+			"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
