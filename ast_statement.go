@@ -285,7 +285,6 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.Skip()
 
 		s.Type = StatementThrow
-
 		h := g.NewGoal()
 
 		if h.AcceptRunWhitespaceNoNewLine() == TokenLineTerminator {
