@@ -2059,7 +2059,15 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 		if len(uo) > 0 {
 			w.WriteString(uo)
 		}
+
+		if v {
+			u.Comments.printSource(w, false, false)
+		}
 	} else if u.UnaryExpression != nil {
+		if v {
+			u.Comments.printSource(w, true, false)
+		}
+
 		switch u.UpdateOperator {
 		case UpdatePreIncrement:
 			w.WriteString("++")
