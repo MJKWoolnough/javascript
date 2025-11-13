@@ -162,6 +162,8 @@ func (TryStatement) javascriptType() {}
 
 func (UnaryExpression) javascriptType() {}
 
+func (UnaryOperatorComments) javascriptType() {}
+
 func (UpdateExpression) javascriptType() {}
 
 func (VariableStatement) javascriptType() {}

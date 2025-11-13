@@ -2836,6 +2836,20 @@ func (f *UnaryExpression) printType(w writer, v bool) {
 	w.WriteString("\n}")
 }
 
+func (f *UnaryOperatorComments) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("UnaryOperatorComments {")
+
+	pp.WriteString("\nUnaryOperator: ")
+	f.UnaryOperator.printType(pp, v)
+
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
 func (f *UpdateExpression) printType(w writer, v bool) {
 	pp := w.Indent()
 

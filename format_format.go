@@ -893,6 +893,18 @@ func (f UnaryExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f UnaryOperatorComments) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = UnaryOperatorComments
+		type UnaryOperatorComments X
+
+		fmt.Fprintf(s, "%#v", UnaryOperatorComments(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f UpdateExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = UpdateExpression
