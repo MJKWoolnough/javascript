@@ -2034,6 +2034,16 @@ func TestPrintingScript(t *testing.T) {
 			"--a;",
 			"// A\n\n// B\n-- // C\na // D\n",
 		},
+		{ // 402
+			"// A\n\n// B\ntypeof // C\na // D\n",
+			"typeof a;",
+			"// A\n\n// B\ntypeof // C\na // D\n",
+		},
+		{ // 403
+			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
+			"void +a;",
+			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
