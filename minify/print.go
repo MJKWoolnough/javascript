@@ -1478,7 +1478,7 @@ func (w *writer) WriteExponentiationExpression(ee *javascript.ExponentiationExpr
 
 func (w *writer) WriteUnaryExpression(ue *javascript.UnaryExpression) {
 	for _, uo := range ue.UnaryOperators {
-		switch uo {
+		switch uo.UnaryOperator {
 		case javascript.UnaryDelete:
 			w.WriteString("delete")
 		case javascript.UnaryVoid:
