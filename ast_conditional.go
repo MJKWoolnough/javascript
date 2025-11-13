@@ -830,10 +830,15 @@ const (
 	UnaryAwait
 )
 
+type UnaryOperatorComments struct {
+	UnaryOperator
+	Comments
+}
+
 // UnaryExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-UnaryExpression
 type UnaryExpression struct {
-	UnaryOperators   []UnaryOperator
+	UnaryOperators   []UnaryOperatorComments
 	UpdateExpression UpdateExpression
 	Tokens           Tokens
 }
@@ -841,31 +846,43 @@ type UnaryExpression struct {
 func (ue *UnaryExpression) parse(j *jsParser, yield, await bool) error {
 Loop:
 	for {
-		switch j.Peek() {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		var op UnaryOperator
+
+		switch g.Peek() {
 		case parser.Token{Type: TokenKeyword, Data: "delete"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryDelete)
+			op = UnaryDelete
 		case parser.Token{Type: TokenKeyword, Data: "void"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryVoid)
+			op = UnaryVoid
 		case parser.Token{Type: TokenKeyword, Data: "typeof"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryTypeOf)
+			op = UnaryTypeOf
 		case parser.Token{Type: TokenPunctuator, Data: "+"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryAdd)
+			op = UnaryAdd
 		case parser.Token{Type: TokenPunctuator, Data: "-"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryMinus)
+			op = UnaryMinus
 		case parser.Token{Type: TokenPunctuator, Data: "~"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryBitwiseNot)
+			op = UnaryBitwiseNot
 		case parser.Token{Type: TokenPunctuator, Data: "!"}:
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryLogicalNot)
+			op = UnaryLogicalNot
 		case parser.Token{Type: TokenKeyword, Data: "await"}:
 			if !await {
 				break Loop
 			}
 
-			ue.UnaryOperators = append(ue.UnaryOperators, UnaryAwait)
+			op = UnaryAwait
 		default:
 			break Loop
 		}
 
+		ue.UnaryOperators = append(ue.UnaryOperators, UnaryOperatorComments{
+			UnaryOperator: op,
+			Comments:      j.AcceptRunWhitespaceComments(),
+		})
+
+		j.AcceptRunWhitespace()
 		j.Skip()
 		j.AcceptRunWhitespaceNoComment()
 	}

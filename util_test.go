@@ -2189,7 +2189,7 @@ func TestUnwrapConditional(t *testing.T) {
 			Tokens: tks[:1],
 		},
 		&UnaryExpression{ // 13
-			UnaryOperators: []UnaryOperator{UnaryVoid},
+			UnaryOperators: []UnaryOperatorComments{{UnaryOperator: UnaryVoid}},
 			UpdateExpression: UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
 					NewExpression: &NewExpression{

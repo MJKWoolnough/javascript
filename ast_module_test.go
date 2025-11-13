@@ -645,8 +645,10 @@ func TestModule(t *testing.T) {
 									Expressions: []AssignmentExpression{
 										{
 											ConditionalExpression: WrapConditional(UnaryExpression{
-												UnaryOperators: []UnaryOperator{
-													UnaryAwait,
+												UnaryOperators: []UnaryOperatorComments{
+													{
+														UnaryOperator: UnaryAwait,
+													},
 												},
 												UpdateExpression: UpdateExpression{
 													LeftHandSideExpression: &LeftHandSideExpression{

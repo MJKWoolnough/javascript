@@ -478,7 +478,7 @@ for(
 			litB := makeConditionLiteral(tk, 9)
 			litE := makeConditionLiteral(tk, 21)
 			typeOfA := wrapConditional(UnaryExpression{
-				UnaryOperators:   []UnaryOperator{UnaryTypeOf},
+				UnaryOperators:   []UnaryOperatorComments{{UnaryOperator: UnaryTypeOf}},
 				UpdateExpression: litA.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
 				Tokens:           tk[3:6],
 			})
@@ -503,7 +503,7 @@ for(
 				Tokens: tk[15:18],
 			})
 			typeOfCD := wrapConditional(UnaryExpression{
-				UnaryOperators:   []UnaryOperator{UnaryTypeOf},
+				UnaryOperators:   []UnaryOperatorComments{{UnaryOperator: UnaryTypeOf}},
 				UpdateExpression: CD.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
 				Tokens:           tk[13:18],
 			})
