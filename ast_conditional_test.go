@@ -1461,6 +1461,102 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:4],
 			})
 		}},
+		{"// A\na /* B */ ++ // C\n", func(t *test, tk Tokens) { // 84
+			t.Output = wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[2],
+								Tokens:              tk[2:3],
+							},
+							Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+							Tokens:   tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+					Tokens: tk[:5],
+				},
+				UpdateOperator: UpdatePostIncrement,
+				Comments:       Comments{tk[8]},
+				Tokens:         tk[:9],
+			})
+		}},
+		{"// A\na /* B */ -- // C\n", func(t *test, tk Tokens) { // 85
+			t.Output = wrapConditional(UpdateExpression{
+				LeftHandSideExpression: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[2],
+								Tokens:              tk[2:3],
+							},
+							Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+							Tokens:   tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+					Tokens: tk[:5],
+				},
+				UpdateOperator: UpdatePostDecrement,
+				Comments:       Comments{tk[8]},
+				Tokens:         tk[:9],
+			})
+		}},
+		{"// A\n++ // B\na // C\n", func(t *test, tk Tokens) { // 86
+			t.Output = wrapConditional(UpdateExpression{
+				UnaryExpression: &UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[6],
+										Tokens:              tk[6:7],
+									},
+									Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+									Tokens:   tk[4:9],
+								},
+								Tokens: tk[4:9],
+							},
+							Tokens: tk[4:9],
+						},
+						Tokens: tk[4:9],
+					},
+					Tokens: tk[4:9],
+				},
+				UpdateOperator: UpdatePreIncrement,
+				Comments:       Comments{tk[0]},
+				Tokens:         tk[:9],
+			})
+		}},
+		{"// A\n-- // B\na // C\n", func(t *test, tk Tokens) { // 87
+			t.Output = wrapConditional(UpdateExpression{
+				UnaryExpression: &UnaryExpression{
+					UpdateExpression: UpdateExpression{
+						LeftHandSideExpression: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[6],
+										Tokens:              tk[6:7],
+									},
+									Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+									Tokens:   tk[4:9],
+								},
+								Tokens: tk[4:9],
+							},
+							Tokens: tk[4:9],
+						},
+						Tokens: tk[4:9],
+					},
+					Tokens: tk[4:9],
+				},
+				UpdateOperator: UpdatePreDecrement,
+				Comments:       Comments{tk[0]},
+				Tokens:         tk[:9],
+			})
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 
