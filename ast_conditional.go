@@ -909,18 +909,27 @@ type UpdateExpression struct {
 	LeftHandSideExpression *LeftHandSideExpression
 	UpdateOperator         UpdateOperator
 	UnaryExpression        *UnaryExpression
+	Comments               Comments
 	Tokens                 Tokens
 }
 
 func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
-	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "++"}) || j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "--"}) {
-		if j.GetLastToken().Data == "++" {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "++"}) || g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "--"}) {
+		ue.Comments = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
+		if j.Next().Data == "++" {
 			ue.UpdateOperator = UpdatePreIncrement
 		} else {
 			ue.UpdateOperator = UpdatePreDecrement
 		}
 
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 
@@ -931,7 +940,7 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 
 		j.Score(g)
 	} else {
-		g := j.NewGoal()
+		g = j.NewGoal()
 
 		ue.LeftHandSideExpression = new(LeftHandSideExpression)
 		if err := ue.LeftHandSideExpression.parse(&g, yield, await); err != nil {
@@ -961,6 +970,8 @@ func (ue *UpdateExpression) parse(j *jsParser, yield, await bool) error {
 
 			ue.UpdateOperator = UpdatePostDecrement
 		}
+
+		ue.Comments = j.AcceptRunWhitespaceCommentsInList()
 	}
 
 	ue.Tokens = j.ToTokens()
