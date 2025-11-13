@@ -2014,6 +2014,26 @@ func TestPrintingScript(t *testing.T) {
 			"`${a}${b}`;",
 			"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`;",
 		},
+		{ // 399
+			"// A\n\n// B\na /* C */ ++ // D\n",
+			"a++;",
+			"// A\n\n// B\na /* C */++ // D\n",
+		},
+		{ // 400
+			"// A\n\n// B\na /* C */ -- // D\n",
+			"a--;",
+			"// A\n\n// B\na /* C */-- // D\n",
+		},
+		{ // 401
+			"// A\n\n// B\n++ // C\na // D\n",
+			"++a;",
+			"// A\n\n// B\n++ // C\na // D\n",
+		},
+		{ // 401
+			"// A\n\n// B\n-- // C\na // D\n",
+			"--a;",
+			"// A\n\n// B\n-- // C\na // D\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
