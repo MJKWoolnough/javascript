@@ -1557,6 +1557,46 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:9],
 			})
 		}},
+		{"// A\n// B\ntypeof // C\na // D\n", func(t *test, tk Tokens) { // 88
+			t.Output = wrapConditional(UnaryExpression{
+				UnaryOperators: []UnaryOperatorComments{{
+					UnaryOperator: UnaryTypeOf,
+					Comments:      Comments{tk[0], tk[2]},
+				}},
+				UpdateExpression: WrapConditional(&MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[8],
+						Tokens:              tk[8:9],
+					},
+					Comments: [5]Comments{{tk[6]}, nil, nil, nil, {tk[10]}},
+					Tokens:   tk[6:11],
+				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+				Tokens: tk[:11],
+			})
+		}},
+		{"// A\nvoid // B\n+ // C\na // D\n", func(t *test, tk Tokens) { // 89
+			t.Output = wrapConditional(UnaryExpression{
+				UnaryOperators: []UnaryOperatorComments{
+					{
+						UnaryOperator: UnaryVoid,
+						Comments:      Comments{tk[0]},
+					},
+					{
+						UnaryOperator: UnaryAdd,
+						Comments:      Comments{tk[4]},
+					},
+				},
+				UpdateExpression: WrapConditional(&MemberExpression{
+					PrimaryExpression: &PrimaryExpression{
+						IdentifierReference: &tk[10],
+						Tokens:              tk[10:11],
+					},
+					Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+					Tokens:   tk[8:13],
+				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
+				Tokens: tk[:13],
+			})
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 
