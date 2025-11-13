@@ -2015,26 +2015,34 @@ func (e ExponentiationExpression) printSource(w writer, v bool) {
 	e.UnaryExpression.printSource(w, v)
 }
 
+func (u UnaryOperatorComments) printSource(w writer, v bool) {
+	if v {
+		u.Comments.printSource(w, true, false)
+	}
+
+	switch u.UnaryOperator {
+	case UnaryDelete:
+		w.WriteString("delete ")
+	case UnaryVoid:
+		w.WriteString("void ")
+	case UnaryTypeOf:
+		w.WriteString("typeof ")
+	case UnaryAdd:
+		w.WriteString("+")
+	case UnaryMinus:
+		w.WriteString("-")
+	case UnaryBitwiseNot:
+		w.WriteString("~")
+	case UnaryLogicalNot:
+		w.WriteString("!")
+	case UnaryAwait:
+		w.WriteString("await ")
+	}
+}
+
 func (u UnaryExpression) printSource(w writer, v bool) {
 	for _, uo := range u.UnaryOperators {
-		switch uo {
-		case UnaryDelete:
-			w.WriteString("delete ")
-		case UnaryVoid:
-			w.WriteString("void ")
-		case UnaryTypeOf:
-			w.WriteString("typeof ")
-		case UnaryAdd:
-			w.WriteString("+")
-		case UnaryMinus:
-			w.WriteString("-")
-		case UnaryBitwiseNot:
-			w.WriteString("~")
-		case UnaryLogicalNot:
-			w.WriteString("!")
-		case UnaryAwait:
-			w.WriteString("await ")
-		}
+		uo.printSource(w, v)
 	}
 
 	u.UpdateExpression.printSource(w, v)
