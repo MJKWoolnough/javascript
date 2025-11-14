@@ -2811,6 +2811,26 @@ func TestLeftHandSideExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"// A\na // B\n()// C\n", func(t *test, tk Tokens) { // 15
+			t.Output = LeftHandSideExpression{
+				CallExpression: &CallExpression{
+					MemberExpression: &MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[2],
+							Tokens:              tk[2:3],
+						},
+						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+						Tokens:   tk[:5],
+					},
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{nil, nil, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var lhs LeftHandSideExpression
 
@@ -4451,6 +4471,128 @@ func TestCallExpression(t *testing.T) {
 					Tokens: tk[16:17],
 				},
 				Tokens: tk[:19],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n", func(t *test, tk Tokens) { // 18
+			t.Output = CallExpression{
+				SuperCall: true,
+				Arguments: &Arguments{
+					Tokens: tk[6:8],
+				},
+				Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"// A\nimport // B\n( // C\n\n// D\na // E\n\n// F\n) // G\n", func(t *test, tk Tokens) { // 19
+			t.Output = CallExpression{
+				ImportCall: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[12],
+							Tokens:              tk[12:13],
+						},
+						Comments: [5]Comments{{tk[10]}, nil, nil, nil, {tk[14]}},
+						Tokens:   tk[10:15],
+					}),
+					Tokens: tk[10:15],
+				},
+				Comments: [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[16]}, {tk[20]}},
+				Tokens:   tk[:21],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n`` // D", func(t *test, tk Tokens) { // 20
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[10],
+					Tokens:                 tk[10:11],
+				},
+				Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n()// D\n", func(t *test, tk Tokens) { // 21
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[10:12],
+				},
+				Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n[ // D\n\n// E\na // F\n\n// G\n]// H", func(t *test, tk Tokens) { // 22
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[16],
+									Tokens:              tk[16:17],
+								},
+								Comments: [5]Comments{{tk[14]}, nil, nil, nil, {tk[18]}},
+								Tokens:   tk[14:19],
+							}),
+							Tokens: tk[14:19],
+						},
+					},
+					Tokens: tk[14:19],
+				},
+				Comments: [5]Comments{nil, nil, {tk[12]}, {tk[20]}, {tk[23]}},
+				Tokens:   tk[:24],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n. // D\na // E", func(t *test, tk Tokens) { // 23
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				IdentifierName: &tk[14],
+				Comments:       [5]Comments{nil, nil, {tk[12]}, nil, {tk[16]}},
+				Tokens:         tk[:17],
+			}
+		}},
+		{"// A\nsuper // B\n()// C\n. // D\n#a // E", func(t *test, tk Tokens) { // 24
+			t.Output = CallExpression{
+				CallExpression: &CallExpression{
+					SuperCall: true,
+					Arguments: &Arguments{
+						Tokens: tk[6:8],
+					},
+					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Tokens:   tk[:9],
+				},
+				PrivateIdentifier: &tk[14],
+				Comments:          [5]Comments{nil, nil, {tk[12]}, nil, {tk[16]}},
+				Tokens:            tk[:17],
 			}
 		}},
 	}, func(t *test) (Type, error) {
