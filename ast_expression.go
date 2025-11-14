@@ -1612,6 +1612,7 @@ type CallExpression struct {
 	IdentifierName    *Token
 	TemplateLiteral   *TemplateLiteral
 	PrivateIdentifier *Token
+	Comments          [5]Comments
 	Tokens            Tokens
 }
 
@@ -1619,14 +1620,22 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 	skip := false
 
 	if me == nil {
+		ce.Comments[0] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
 		if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "super"}) {
 			ce.SuperCall = true
 		} else if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) {
+			ce.Comments[1] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 				return j.Error("CallExpression", ErrMissingOpeningParenthesis)
 			}
+
+			ce.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
 
 			j.AcceptRunWhitespaceNoComment()
 
@@ -1638,11 +1647,16 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			}
 
 			j.Score(g)
+
+			ce.Comments[3] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				return j.Error("CallExpression", ErrMissingClosingParenthesis)
 			}
+
+			ce.Comments[4] = j.AcceptRunWhitespaceCommentsInList()
 
 			skip = true
 		} else {
@@ -1653,6 +1667,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 	}
 
 	if !skip {
+		ce.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		g := j.NewGoal()
@@ -1667,6 +1683,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		if err := ce.Arguments.parse(&h, yield, await); err != nil {
 			return j.Error("CallExpression", err)
 		}
+
+		ce.Comments[4] = h.AcceptRunWhitespaceCommentsInList()
 
 		i := h.NewGoal()
 
@@ -1689,10 +1707,11 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		h := g.NewGoal()
 
 		var (
-			tl   *TemplateLiteral
-			a    *Arguments
-			i, p *Token
-			e    *Expression
+			tl      *TemplateLiteral
+			a       *Arguments
+			i, p    *Token
+			e       *Expression
+			b, c, d Comments
 		)
 
 		switch tk := h.Peek(); tk.Type {
@@ -1701,6 +1720,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			if err := tl.parse(&h, yield, await); err != nil {
 				return g.Error("CallExpression", err)
 			}
+
+			d = h.AcceptRunWhitespaceCommentsInList()
 		case TokenPunctuator:
 			switch tk.Data {
 			case "<":
@@ -1724,6 +1745,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				}
 			case ".":
 				h.Skip()
+
+				b = h.AcceptRunWhitespaceComments()
 				h.AcceptRunWhitespace()
 
 				if !h.Accept(TokenIdentifier, TokenKeyword, TokenPrivateIdentifier) {
@@ -1736,7 +1759,10 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				}
 			case "[":
 				h.Skip()
-				h.AcceptRunWhitespace()
+
+				b = h.AcceptRunWhitespaceNoNewlineComments()
+
+				h.AcceptRunWhitespaceNoComment()
 
 				i := h.NewGoal()
 
@@ -1746,6 +1772,9 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				}
 
 				h.Score(i)
+
+				c = h.AcceptRunWhitespaceComments()
+
 				h.AcceptRunWhitespace()
 
 				if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
@@ -1754,6 +1783,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			default:
 				return nil
 			}
+
+			d = h.AcceptRunWhitespaceCommentsInList()
 
 			i := h.NewGoal()
 
@@ -1777,6 +1808,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			IdentifierName:    i,
 			TemplateLiteral:   tl,
 			PrivateIdentifier: p,
+			Comments:          [5]Comments{nil, nil, b, c, d},
 		}
 
 		j.Score(g)
