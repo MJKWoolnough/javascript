@@ -2044,6 +2044,46 @@ func TestPrintingScript(t *testing.T) {
 			"void +a;",
 			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
 		},
+		{ // 404
+			"// A\n\n// B\nsuper // C\n()// D\n",
+			"super();",
+			"// A\n\n// B\nsuper // C\n() // D\n",
+		},
+		{ // 405
+			"// A\n\n// B\nimport // C\n( // D\n\n// E\na // F\n\n// G\n) // H\n",
+			"import(a);",
+			"// A\n\n// B\nimport // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n",
+		},
+		{ // 406
+			"// A\n\n// B\nsuper // C\n()// D\n`` // E",
+			"super()``;",
+			"// A\n\n// B\nsuper // C\n() // D\n`` // E\n",
+		},
+		{ // 407
+			"// A\n\n// B\nsuper // C\n()// D\n()// E\n",
+			"super()();",
+			"// A\n\n// B\nsuper // C\n() // D\n() // E\n",
+		},
+		{ // 408
+			"// A\n\n// B\nsuper // C\n()// D\n[ // E\n\n// F\na // G\n\n// H\n]// I",
+			"super()[a];",
+			"// A\n\n// B\nsuper // C\n() // D\n[ // E\n\n\t// F\n\ta // G\n\n// H\n] // I\n",
+		},
+		{ // 409
+			"// A\n\n// B\nsuper // C\n()// D\n. // E\na // F",
+			"super().a;",
+			"// A\n\n// B\nsuper // C\n() // D\n. // E\na // F\n",
+		},
+		{ // 410
+			"// A\n\n// B\nsuper // C\n()// D\n. // E\n#a // F",
+			"super().#a;",
+			"// A\n\n// B\nsuper // C\n() // D\n. // E\n#a // F\n",
+		},
+		{ // 411
+			"// A\n\n// B\na // C\n()// D\n",
+			"a();",
+			"// A\n\n// B\na // C\n() // D\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
