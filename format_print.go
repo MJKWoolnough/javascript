@@ -1301,12 +1301,44 @@ func (n NewExpression) printSource(w writer, v bool) {
 }
 
 func (c CallExpression) printSource(w writer, v bool) {
+	if v {
+		c.Comments[0].printSource(w, true, false)
+	}
+
 	if c.SuperCall && c.Arguments != nil {
 		w.WriteString("super")
+
+		if v {
+			c.Comments[1].printSource(w, true, false)
+		}
+
 		c.Arguments.printSource(w, v)
 	} else if c.ImportCall != nil {
-		w.WriteString("import(")
-		c.ImportCall.printSource(w, v)
+		w.WriteString("import")
+
+		if v {
+			c.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("(")
+
+		ip := w.Indent()
+
+		if v {
+			c.Comments[2].printSource(w, true, false)
+
+			if c.ImportCall.hasFirstComment() {
+				ip.WriteString("\n")
+			}
+		}
+
+		c.ImportCall.printSource(ip, v)
+
+		if v && len(c.Comments[3]) > 0 {
+			w.WriteString("\n")
+			c.Comments[3].printSource(w, true, false)
+		}
+
 		w.WriteString(")")
 	} else if c.MemberExpression != nil && c.Arguments != nil {
 		c.MemberExpression.printSource(w, v)
@@ -1318,16 +1350,38 @@ func (c CallExpression) printSource(w writer, v bool) {
 		} else if c.Expression != nil {
 			c.CallExpression.printSource(w, v)
 			w.WriteString("[")
-			c.Expression.printSource(w, v)
+
+			ip := w.Indent()
+
+			if v {
+				c.Comments[2].printSource(w, true, false)
+
+				if c.Expression.hasFirstComment() {
+					ip.WriteString("\n")
+				}
+			}
+
+			c.Expression.printSource(ip, v)
+
+			if v && len(c.Comments[3]) > 0 {
+				w.WriteString("\n")
+				c.Comments[3].printSource(w, true, false)
+			}
+
 			w.WriteString("]")
 		} else if c.IdentifierName != nil {
 			c.CallExpression.printSource(w, v)
 
-			if v && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+			if v && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
+
+			if v {
+				c.Comments[2].printSource(w, true, false)
+			}
+
 			w.WriteString(c.IdentifierName.Data)
 		} else if c.TemplateLiteral != nil {
 			c.CallExpression.printSource(w, v)
@@ -1335,13 +1389,22 @@ func (c CallExpression) printSource(w writer, v bool) {
 		} else if c.PrivateIdentifier != nil {
 			c.CallExpression.printSource(w, v)
 
-			if v && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+			if v && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
+
+			if v {
+				c.Comments[2].printSource(w, true, false)
+			}
+
 			w.WriteString(c.PrivateIdentifier.Data)
 		}
+	}
+
+	if v {
+		c.Comments[4].printSource(w, true, false)
 	}
 }
 

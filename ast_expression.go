@@ -946,6 +946,14 @@ func (e *Expression) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+func (e *Expression) hasFirstComment() bool {
+	if len(e.Expressions) == 0 {
+		return false
+	}
+
+	return e.Expressions[0].hasFirstComment()
+}
+
 // NewExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-NewExpression
 //
