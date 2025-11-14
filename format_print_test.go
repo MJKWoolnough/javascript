@@ -2084,6 +2084,26 @@ func TestPrintingScript(t *testing.T) {
 			"a();",
 			"// A\n\n// B\na // C\n() // D\n",
 		},
+		{ // 412
+			"// A\n\n// B\nclass a{} // C\n",
+			"class a {}",
+			"// A\n\n// B\nclass a {} // C\n",
+		},
+		{ // 413
+			"// A\n\n// B\nfunction a(){} // C\n",
+			"function a() {}",
+			"// A\n\n// B\nfunction a() {} // C\n",
+		},
+		{ // 414
+			"// A\n\n// B\nconst a = 1; // B\n",
+			"const a = 1;",
+			"// A\n\n// B\nconst a = 1; // B\n",
+		},
+		{ // 415
+			"// A\n\n// B\nlet a = 1; // B\n",
+			"let a = 1;",
+			"// A\n\n// B\nlet a = 1; // B\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
