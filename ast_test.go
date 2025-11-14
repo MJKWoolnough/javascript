@@ -1087,6 +1087,78 @@ func TestDeclaration(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"// A\nclass a{} // B\n", func(t *test, tk Tokens) { // 10
+			t.Output = Declaration{
+				ClassDeclaration: &ClassDeclaration{
+					BindingIdentifier: &tk[4],
+					Tokens:            tk[2:7],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[8]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"// A\nfunction a(){} // B\n", func(t *test, tk Tokens) { // 11
+			t.Output = Declaration{
+				FunctionDeclaration: &FunctionDeclaration{
+					BindingIdentifier: &tk[4],
+					FormalParameters: FormalParameters{
+						Tokens: tk[5:7],
+					},
+					FunctionBody: Block{
+						Tokens: tk[7:9],
+					},
+					Tokens: tk[2:9],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[10]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{"// A\nconst a = 1; // B\n", func(t *test, tk Tokens) { // 12
+			t.Output = Declaration{
+				LexicalDeclaration: &LexicalDeclaration{
+					LetOrConst: Const,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[4],
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[8],
+									Tokens:  tk[8:9],
+								}),
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[4:9],
+						},
+					},
+					Tokens: tk[2:10],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
+		{"// A\nlet a = 1; // B\n", func(t *test, tk Tokens) { // 13
+			t.Output = Declaration{
+				LexicalDeclaration: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[4],
+							Initializer: &AssignmentExpression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Literal: &tk[8],
+									Tokens:  tk[8:9],
+								}),
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[4:9],
+						},
+					},
+					Tokens: tk[2:10],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var d Declaration
 
