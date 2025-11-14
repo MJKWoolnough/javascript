@@ -106,12 +106,20 @@ func (s Statement) printSource(w writer, v bool) {
 }
 
 func (d Declaration) printSource(w writer, v bool) {
+	if v {
+		d.Comments[0].printSource(w, false, true)
+	}
+
 	if d.ClassDeclaration != nil {
 		d.ClassDeclaration.printSource(w, v)
 	} else if d.FunctionDeclaration != nil {
 		d.FunctionDeclaration.printSource(w, v)
 	} else if d.LexicalDeclaration != nil {
 		d.LexicalDeclaration.printSource(w, v)
+	}
+
+	if v {
+		d.Comments[1].printSource(w, false, true)
 	}
 }
 
