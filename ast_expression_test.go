@@ -4836,6 +4836,142 @@ func TestOptionalChain(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"?. // A\n() // B\n", func(t *test, tk Tokens) { // 21
+			t.Output = OptionalChain{
+				Arguments: &Arguments{
+					Tokens: tk[4:6],
+				},
+				Comments: [4]Comments{{tk[2]}, nil, nil, {tk[7]}},
+				Tokens:   tk[:8],
+			}
+		}},
+		{"?. // A\n[ // B\n\n// C\na // D\n\n// E\n] // F\n", func(t *test, tk Tokens) { // 22
+			t.Output = OptionalChain{
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+								Tokens:   tk[8:13],
+							}),
+							Tokens: tk[8:13],
+						},
+					},
+					Tokens: tk[8:13],
+				},
+				Comments: [4]Comments{{tk[2]}, {tk[6]}, {tk[14]}, {tk[18]}},
+				Tokens:   tk[:19],
+			}
+		}},
+		{"?. // A\na // B\n", func(t *test, tk Tokens) { // 23
+			t.Output = OptionalChain{
+				IdentifierName: &tk[4],
+				Comments:       [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+				Tokens:         tk[:7],
+			}
+		}},
+		{"?. // A\n`` // B\n", func(t *test, tk Tokens) { // 24
+			t.Output = OptionalChain{
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[4],
+					Tokens:                 tk[4:5],
+				},
+				Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"?. // A\n()// B\n`` // C\n", func(t *test, tk Tokens) { // 25
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					Arguments: &Arguments{
+						Tokens: tk[4:6],
+					},
+					Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Tokens:   tk[:7],
+				},
+				TemplateLiteral: &TemplateLiteral{
+					NoSubstitutionTemplate: &tk[8],
+					Tokens:                 tk[8:9],
+				},
+				Comments: [4]Comments{nil, nil, nil, {tk[10]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{"?. // A\n`` // B\n[ // C\n\n// D\na // E\n\n// F\n] // G\n", func(t *test, tk Tokens) { // 26
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					TemplateLiteral: &TemplateLiteral{
+						NoSubstitutionTemplate: &tk[4],
+						Tokens:                 tk[4:5],
+					},
+					Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Tokens:   tk[:7],
+				},
+				Expression: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[14],
+									Tokens:              tk[14:15],
+								},
+								Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[16]}},
+								Tokens:   tk[12:17],
+							}),
+							Tokens: tk[12:17],
+						},
+					},
+					Tokens: tk[12:17],
+				},
+				Comments: [4]Comments{nil, {tk[10]}, {tk[18]}, {tk[22]}},
+				Tokens:   tk[:23],
+			}
+		}},
+		{"?. //A\n[ // B\n\n// C\na // D\n\n// E\n] // F\n. // G\nb// H\n", func(t *test, tk Tokens) { // 27
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					Expression: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[10],
+										Tokens:              tk[10:11],
+									},
+									Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+									Tokens:   tk[8:13],
+								}),
+								Tokens: tk[8:13],
+							},
+						},
+						Tokens: tk[8:13],
+					},
+					Comments: [4]Comments{{tk[2]}, {tk[6]}, {tk[14]}, {tk[18]}},
+					Tokens:   tk[:19],
+				},
+				IdentifierName: &tk[24],
+				Comments:       [4]Comments{nil, {tk[22]}, nil, {tk[25]}},
+				Tokens:         tk[:26],
+			}
+		}},
+		{"?. // A\na // B\n() // C", func(t *test, tk Tokens) { // 28
+			t.Output = OptionalChain{
+				OptionalChain: &OptionalChain{
+					IdentifierName: &tk[4],
+					Comments:       [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Tokens:         tk[:7],
+				},
+				Arguments: &Arguments{
+					Tokens: tk[8:10],
+				},
+				Comments: [4]Comments{nil, nil, nil, {tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var oc OptionalChain
 
