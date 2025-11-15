@@ -136,6 +136,7 @@ type ClassElement struct {
 	MethodDefinition *MethodDefinition
 	FieldDefinition  *FieldDefinition
 	ClassStaticBlock *Block
+	Comments         [3]Comments
 	Tokens           Tokens
 }
 
@@ -144,15 +145,18 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		j.AcceptRunWhitespaceNoComment()
 	}
 
-	if j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "static"}) {
-		g := j.NewGoal()
+	g := j.NewGoal()
 
-		g.Skip()
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "static"}) {
 		g.AcceptRunWhitespace()
 
 		if tk := g.Peek(); (tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(" && tk.Data != ":")) && tk.Type != TokenRightBracePunctuator {
 			ce.Static = true
+			ce.Comments[0] = j.AcceptRunWhitespaceComments()
 
+			j.AcceptRunWhitespace()
 			j.Skip()
 			j.AcceptRunWhitespaceNoComment()
 		}
@@ -160,8 +164,16 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 	j.SkipReadOnly()
 
-	if ce.Static && j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		g := j.NewGoal()
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if ce.Static && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		ce.Comments[1] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
+		g = j.NewGoal()
 
 		ce.ClassStaticBlock = new(Block)
 		if err := ce.ClassStaticBlock.parse(&g, false, true, false); err != nil {
@@ -169,6 +181,8 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
+
+		ce.Comments[2] = j.AcceptRunWhitespaceCommentsInList()
 	} else {
 		g := j.NewGoal()
 		h := g.NewGoal()
