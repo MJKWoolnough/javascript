@@ -2104,6 +2104,46 @@ func TestPrintingScript(t *testing.T) {
 			"let a = 1;",
 			"// A\n\n// B\nlet a = 1; // B\n",
 		},
+		{ // 416
+			"a?. // A\n() // B\n",
+			"a?.();",
+			"a?. // A\n() // B\n",
+		},
+		{ // 417
+			"a?. // A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n",
+			"a?.[b];",
+			"a?. // A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n",
+		},
+		{ // 418
+			"a?. // A\n[\n// C\nb\n// E\n] // F\n",
+			"a?.[b];",
+			"a?. // A\n[\n\t// C\n\tb\n// E\n] // F\n",
+		},
+		{ // 419
+			"a?. // A\nb // B\n",
+			"a?.b;",
+			"a?. // A\nb // B\n",
+		},
+		{ // 420
+			"a?. // A\n`` // B\n",
+			"a?.``;",
+			"a?. // A\n`` // B\n",
+		},
+		{ // 421
+			"a?. // A\n()// B\n`` // C\n",
+			"a?.()``;",
+			"a?. // A\n() // B\n`` // C\n",
+		},
+		{ // 422
+			"a?. // A\n`` // B\n[ // C\n\n// D\nb // E\n\n// F\n] // G\n",
+			"a?.``[b];",
+			"a?. // A\n`` // B\n[ // C\n\n\t// D\n\tb // E\n\n// F\n] // G\n",
+		},
+		{ // 423
+			"a?. //A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n. // G\nc// H\n",
+			"a?.[b].c;",
+			"a?. //A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n. // G\nc // H\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
