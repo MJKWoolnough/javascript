@@ -743,6 +743,7 @@ type OptionalChain struct {
 	IdentifierName    *Token
 	TemplateLiteral   *TemplateLiteral
 	PrivateIdentifier *Token
+	Comments          [4]Comments
 	Tokens            Tokens
 }
 
@@ -750,6 +751,8 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?."}) {
 		return j.Error("OptionalChain", ErrMissingOptional)
 	}
+
+	oc.Comments[0] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -770,7 +773,9 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		g.Score(h)
 		j.Score(g)
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
-		j.AcceptRunWhitespace()
+		oc.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 
@@ -779,6 +784,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			return j.Error("OptionalChain", err)
 		}
 
+		oc.Comments[2] = g.AcceptRunWhitespaceComments()
 		g.AcceptRunWhitespace()
 
 		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
@@ -803,6 +809,8 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 		return j.Error("OptionalChain", ErrInvalidOptionalChain)
 	}
 
+	oc.Comments[3] = j.AcceptRunWhitespaceCommentsInList()
+
 	g = j.NewGoal()
 
 	g.AcceptRunWhitespaceNoNewLine()
@@ -823,6 +831,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			identifierName    *Token
 			templateLiteral   *TemplateLiteral
 			privateIdentifier *Token
+			c, d, e           Comments
 		)
 
 		h := g.NewGoal()
@@ -842,7 +851,9 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			h.Score(i)
 			g.Score(h)
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
-			g.AcceptRunWhitespace()
+			c = g.AcceptRunWhitespaceNoNewlineComments()
+
+			g.AcceptRunWhitespaceNoComment()
 
 			h := g.NewGoal()
 
@@ -851,6 +862,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 				return g.Error("OptionalChain", err)
 			}
 
+			d = h.AcceptRunWhitespaceComments()
 			h.AcceptRunWhitespace()
 
 			if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
@@ -859,6 +871,8 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 			g.Score(h)
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			c = g.AcceptRunWhitespaceComments()
+
 			g.AcceptRunWhitespace()
 
 			if g.Accept(TokenPrivateIdentifier) {
@@ -883,6 +897,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			break
 		}
 
+		e = g.AcceptRunWhitespaceCommentsInList()
 		h = g.NewGoal()
 
 		h.AcceptRunWhitespaceNoNewLine()
@@ -900,6 +915,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			TemplateLiteral:   templateLiteral,
 			PrivateIdentifier: privateIdentifier,
 			OptionalChain:     noc,
+			Comments:          [4]Comments{nil, c, d, e},
 		}
 
 		j.Score(g)
