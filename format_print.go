@@ -1213,6 +1213,10 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 
 func (ce ClassElement) printSource(w writer, v bool) {
 	if ce.Static {
+		if v {
+			ce.Comments[0].printSource(w, false, true)
+		}
+
 		w.WriteString("static ")
 	}
 
@@ -1221,7 +1225,15 @@ func (ce ClassElement) printSource(w writer, v bool) {
 	} else if ce.FieldDefinition != nil {
 		ce.FieldDefinition.printSource(w, v)
 	} else if ce.ClassStaticBlock != nil {
+		if v {
+			ce.Comments[1].printSource(w, true, false)
+		}
+
 		ce.ClassStaticBlock.printSource(w, v)
+
+		if v {
+			ce.Comments[2].printSource(w, false, false)
+		}
 	}
 }
 
