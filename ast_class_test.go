@@ -3234,6 +3234,22 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
+		{"class a {\n// A\nstatic // B\n{} // C\n}", func(t *test, tk Tokens) { // 108
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						Static: true,
+						ClassStaticBlock: &Block{
+							Tokens: tk[12:14],
+						},
+						Comments: [3]Comments{{tk[6]}, {tk[10]}, {tk[15]}},
+						Tokens:   tk[6:16],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 
