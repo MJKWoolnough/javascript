@@ -2649,15 +2649,40 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		w.WriteString("?.")
 	}
 
+	if v {
+		oe.Comments[0].printSource(w, true, false)
+	}
+
 	if oe.Arguments != nil {
 		oe.Arguments.printSource(w, v)
 	} else if oe.Expression != nil {
 		w.WriteString("[")
-		oe.Expression.printSource(w, v)
+
+		ip := w.Indent()
+
+		if v {
+			oe.Comments[1].printSource(w, true, false)
+
+			if oe.Expression.hasFirstComment() {
+				ip.WriteString("\n")
+			}
+		}
+
+		oe.Expression.printSource(ip, v)
+
+		if v && len(oe.Comments[2]) > 0 {
+			w.WriteString("\n")
+			oe.Comments[2].printSource(w, false, false)
+		}
+
 		w.WriteString("]")
 	} else if oe.IdentifierName != nil {
 		if oe.OptionalChain != nil {
 			w.WriteString(".")
+
+			if v {
+				oe.Comments[1].printSource(w, true, false)
+			}
 		}
 
 		w.WriteString(oe.IdentifierName.Data)
@@ -2666,9 +2691,17 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 	} else if oe.PrivateIdentifier != nil {
 		if oe.OptionalChain != nil {
 			w.WriteString(".")
+
+			if v {
+				oe.Comments[1].printSource(w, true, false)
+			}
 		}
 
 		w.WriteString(oe.PrivateIdentifier.Data)
+	}
+
+	if v {
+		oe.Comments[3].printSource(w, false, false)
 	}
 }
 
