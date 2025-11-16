@@ -15,6 +15,7 @@ type ClassDeclaration struct {
 	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
 	ClassBody         []ClassElement
+	Comments          [4]Comments
 	Tokens            Tokens
 }
 
@@ -27,6 +28,8 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		return j.Error("ClassDeclaration", ErrInvalidClassDeclaration)
 	}
 
+	cd.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if cd.BindingIdentifier = j.parseIdentifier(yield, await); cd.BindingIdentifier == nil {
@@ -34,6 +37,8 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 			return j.Error("ClassDeclaration", ErrNoIdentifier)
 		}
 	} else {
+		cd.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 	}
 
@@ -46,7 +51,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	}
 
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 
@@ -71,53 +76,86 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		return j.Error("ClassDeclaration", ErrMissingOpeningBrace)
 	}
 
+	cd.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
+
+	var c Comments
+
+	g := j.NewGoal()
+
 	for {
-		g := j.NewGoal()
+		h := g.NewGoal()
 
-		g.AcceptRunWhitespace()
+		h.AcceptRunWhitespace()
 
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
-			j.Score(g)
+		if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			c = append(c, g.AcceptRunWhitespaceComments()...)
+
+			g.AcceptRunWhitespace()
+			g.Skip()
+			g.AcceptRunWhitespaceNoComment()
+
+			if len(c) == 0 {
+				j.Score(g)
+
+				g = j.NewGoal()
+			}
 
 			continue
-		} else if g.Accept(TokenRightBracePunctuator) {
-			j.Score(g)
-
+		} else if h.Accept(TokenRightBracePunctuator) {
 			break
 		}
 
-		g = j.NewGoal()
+		h = g.NewGoal()
 
-		g.AcceptRunWhitespace()
+		h.AcceptRunWhitespace()
 
-		if g.SkipParameterProperties() {
-			g.AcceptRunWhitespaceNoComment()
+		if h.SkipParameterProperties() {
+			h.AcceptRunWhitespaceNoComment()
 		}
 
-		if g.SkipAbstractField() {
-			j.Score(g)
+		if h.SkipAbstractField() {
+			g.Score(h)
 
 			continue
 		}
 
-		if g.SkipIndexSignature() {
-			j.Score(g)
+		if h.SkipIndexSignature() {
+			g.Score(h)
 
 			continue
 		}
 
-		j.AcceptRunWhitespaceNoComment()
+		g.AcceptRunWhitespaceNoComment()
 
-		g = j.NewGoal()
+		if len(c) == 0 {
+			j.Score(g)
+
+			g = j.NewGoal()
+		}
+
 		md := len(cd.ClassBody)
 
-		cd.ClassBody = append(cd.ClassBody, ClassElement{})
+		cd.ClassBody = append(cd.ClassBody, ClassElement{Comments: [3]Comments{c}})
 		if err := cd.ClassBody[md].parse(&g, yield, await); err != nil {
 			return j.Error("ClassDeclaration", err)
 		}
 
+		c = nil
+
 		j.Score(g)
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 	}
+
+	j.Score(g)
+
+	cd.Comments[3] = append(c, j.AcceptRunWhitespaceComments()...)
+
+	j.AcceptRunWhitespace()
+	j.Skip()
 
 	cd.Tokens = j.ToTokens()
 
@@ -154,7 +192,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 		if tk := g.Peek(); (tk.Type != TokenPunctuator || (tk.Data != "=" && tk.Data != ";" && tk.Data != "(" && tk.Data != ":")) && tk.Type != TokenRightBracePunctuator {
 			ce.Static = true
-			ce.Comments[0] = j.AcceptRunWhitespaceComments()
+			ce.Comments[0] = append(ce.Comments[0], j.AcceptRunWhitespaceComments()...)
 
 			j.AcceptRunWhitespace()
 			j.Skip()
