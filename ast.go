@@ -114,15 +114,10 @@ type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
 	LexicalDeclaration  *LexicalDeclaration
-	Comments            [2]Comments
 	Tokens              Tokens
 }
 
 func (d *Declaration) parse(j *jsParser, yield, await bool) error {
-	d.Comments[0] = j.AcceptRunWhitespaceComments()
-
-	j.AcceptRunWhitespace()
-
 	g := j.NewGoal()
 	h := g.NewGoal()
 
@@ -154,7 +149,6 @@ func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 
 	j.Score(g)
 
-	d.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 	d.Tokens = j.ToTokens()
 
 	return nil
