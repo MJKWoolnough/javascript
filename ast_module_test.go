@@ -708,7 +708,7 @@ func TestModule(t *testing.T) {
 						Tokens: tk[2:3],
 					},
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
 				Tokens:   tk[:5],
 			}
 		}},
@@ -1018,7 +1018,7 @@ func TestImportDeclaration(t *testing.T) {
 					ModuleSpecifier: &tk[4],
 					Tokens:          tk[4:5],
 				},
-				Comments: [4]Comments{{tk[0]}, nil, nil, {tk[7]}},
+				Comments: [4]Comments{{&tk[0]}, nil, nil, {&tk[7]}},
 				Tokens:   tk[:8],
 			}
 		}},
@@ -1028,7 +1028,7 @@ func TestImportDeclaration(t *testing.T) {
 					ModuleSpecifier: &tk[5],
 					Tokens:          tk[5:6],
 				},
-				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[7]}, {tk[10]}},
+				Comments: [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[7]}, {&tk[10]}},
 				Tokens:   tk[:11],
 			}
 		}},
@@ -1036,12 +1036,12 @@ func TestImportDeclaration(t *testing.T) {
 			t.Output = ImportDeclaration{
 				ImportClause: &ImportClause{
 					ImportedDefaultBinding: &tk[6],
-					Comments:               [6]Comments{{tk[4]}, nil, nil, nil, nil, {tk[8]}},
+					Comments:               [6]Comments{{&tk[4]}, nil, nil, nil, nil, {&tk[8]}},
 					Tokens:                 tk[4:9],
 				},
 				FromClause: FromClause{
 					ModuleSpecifier: &tk[14],
-					Comments:        Comments{tk[12]},
+					Comments:        Comments{&tk[12]},
 					Tokens:          tk[10:15],
 				},
 				WithClause: &WithClause{
@@ -1052,10 +1052,10 @@ func TestImportDeclaration(t *testing.T) {
 							Tokens:       tk[23:26],
 						},
 					},
-					Comments: [4]Comments{{tk[16]}, {tk[20]}},
+					Comments: [4]Comments{{&tk[16]}, {&tk[20]}},
 					Tokens:   tk[16:27],
 				},
-				Comments: [4]Comments{{tk[0]}, nil, {tk[28]}, {tk[31]}},
+				Comments: [4]Comments{{&tk[0]}, nil, {&tk[28]}, {&tk[31]}},
 				Tokens:   tk[:32],
 			}
 		}},
@@ -1065,7 +1065,7 @@ func TestImportDeclaration(t *testing.T) {
 					ModuleSpecifier: &tk[6],
 					Tokens:          tk[6:7],
 				},
-				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[11]}},
+				Comments: [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[11]}},
 				Tokens:   tk[:12],
 			}
 		}},
@@ -1205,7 +1205,7 @@ func TestImportClause(t *testing.T) {
 		{"// A\na // B\n", func(t *test, tk Tokens) { // 16
 			t.Output = ImportClause{
 				ImportedDefaultBinding: &tk[2],
-				Comments:               [6]Comments{{tk[0]}, nil, nil, nil, nil, {tk[4]}},
+				Comments:               [6]Comments{{&tk[0]}, nil, nil, nil, nil, {&tk[4]}},
 				Tokens:                 tk[:5],
 			}
 		}},
@@ -1214,7 +1214,7 @@ func TestImportClause(t *testing.T) {
 				NamedImports: &NamedImports{
 					Tokens: tk[2:4],
 				},
-				Comments: [6]Comments{{tk[0]}, nil, nil, nil, nil, {tk[5]}},
+				Comments: [6]Comments{{&tk[0]}, nil, nil, nil, nil, {&tk[5]}},
 				Tokens:   tk[:6],
 			}
 		}},
@@ -1224,14 +1224,14 @@ func TestImportClause(t *testing.T) {
 				NamedImports: &NamedImports{
 					Tokens: tk[8:10],
 				},
-				Comments: [6]Comments{{tk[0]}, {tk[4]}, {tk[6]}, nil, nil, {tk[11]}},
+				Comments: [6]Comments{{&tk[0]}, {&tk[4]}, {&tk[6]}, nil, nil, {&tk[11]}},
 				Tokens:   tk[:12],
 			}
 		}},
 		{"/* A */ * // B\nas // C\nb // D\n", func(t *test, tk Tokens) { // 19
 			t.Output = ImportClause{
 				NameSpaceImport: &tk[10],
-				Comments:        [6]Comments{{tk[0]}, nil, nil, {tk[4]}, {tk[8]}, {tk[12]}},
+				Comments:        [6]Comments{{&tk[0]}, nil, nil, {&tk[4]}, {&tk[8]}, {&tk[12]}},
 				Tokens:          tk[:13],
 			}
 		}},
@@ -1239,7 +1239,7 @@ func TestImportClause(t *testing.T) {
 			t.Output = ImportClause{
 				ImportedDefaultBinding: &tk[2],
 				NameSpaceImport:        &tk[19],
-				Comments:               [6]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[16]}, {tk[21]}},
+				Comments:               [6]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[16]}, {&tk[21]}},
 				Tokens:                 tk[:22],
 			}
 		}},
@@ -1277,7 +1277,7 @@ func TestFromClause(t *testing.T) {
 		{"from /* A */ \"\"", func(t *test, tk Tokens) { // 4
 			t.Output = FromClause{
 				ModuleSpecifier: &tk[4],
-				Comments:        Comments{tk[2]},
+				Comments:        Comments{&tk[2]},
 				Tokens:          tk[:5],
 			}
 		}},
@@ -1400,7 +1400,7 @@ func TestNamedImports(t *testing.T) {
 						Tokens:          tk[4:5],
 					},
 				},
-				Comments: [2]Comments{{tk[2]}, {tk[7]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[7]}},
 				Tokens:   tk[:10],
 			}
 		}},
@@ -1410,17 +1410,17 @@ func TestNamedImports(t *testing.T) {
 					{
 						IdentifierName:  &tk[6],
 						ImportedBinding: &tk[6],
-						Comments:        [4]Comments{{tk[4]}, nil, nil, {tk[8], tk[10]}},
+						Comments:        [4]Comments{{&tk[4]}, nil, nil, {&tk[8], &tk[10]}},
 						Tokens:          tk[4:11],
 					},
 					{
 						IdentifierName:  &tk[16],
 						ImportedBinding: &tk[16],
-						Comments:        [4]Comments{{tk[14]}, nil, nil, {tk[18]}},
+						Comments:        [4]Comments{{&tk[14]}, nil, nil, {&tk[18]}},
 						Tokens:          tk[14:19],
 					},
 				},
-				Comments: [2]Comments{{tk[2]}, {tk[20]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[20]}},
 				Tokens:   tk[:22],
 			}
 		}},
@@ -1488,7 +1488,7 @@ func TestImportSpecifier(t *testing.T) {
 			t.Output = ImportSpecifier{
 				IdentifierName:  &tk[2],
 				ImportedBinding: &tk[2],
-				Comments:        [4]Comments{{tk[0]}, nil, nil, {tk[4]}},
+				Comments:        [4]Comments{{&tk[0]}, nil, nil, {&tk[4]}},
 				Tokens:          tk[:5],
 			}
 		}},
@@ -1496,7 +1496,7 @@ func TestImportSpecifier(t *testing.T) {
 			t.Output = ImportSpecifier{
 				IdentifierName:  &tk[2],
 				ImportedBinding: &tk[10],
-				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12], tk[14]}},
+				Comments:        [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12], &tk[14]}},
 				Tokens:          tk[:15],
 			}
 		}},
@@ -1504,7 +1504,7 @@ func TestImportSpecifier(t *testing.T) {
 			t.Output = ImportSpecifier{
 				IdentifierName:  &tk[2],
 				ImportedBinding: &tk[10],
-				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12]}},
+				Comments:        [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12]}},
 				Tokens:          tk[:13],
 			}
 		}},
@@ -1611,7 +1611,7 @@ func TestWithClause(t *testing.T) {
 						Tokens:       tk[4:7],
 					},
 				},
-				Comments: [4]Comments{{tk[0]}, nil, {tk[2]}, {tk[8]}},
+				Comments: [4]Comments{{&tk[0]}, nil, {&tk[2]}, {&tk[8]}},
 				Tokens:   tk[:11],
 			}
 		}},
@@ -1621,7 +1621,7 @@ func TestWithClause(t *testing.T) {
 					{
 						AttributeKey: &tk[5],
 						Value:        &tk[7],
-						Comments:     [4]Comments{{tk[3]}, nil, nil, {tk[9]}},
+						Comments:     [4]Comments{{&tk[3]}, nil, nil, {&tk[9]}},
 						Tokens:       tk[3:10],
 					},
 					{
@@ -1630,7 +1630,7 @@ func TestWithClause(t *testing.T) {
 						Tokens:       tk[13:17],
 					},
 				},
-				Comments: [4]Comments{nil, nil, {tk[1]}, {tk[18]}},
+				Comments: [4]Comments{nil, nil, {&tk[1]}, {&tk[18]}},
 				Tokens:   tk[:21],
 			}
 		}},
@@ -1643,7 +1643,7 @@ func TestWithClause(t *testing.T) {
 						Tokens:       tk[9:12],
 					},
 				},
-				Comments: [4]Comments{{tk[0]}, {tk[4]}, {tk[7]}, {tk[13]}},
+				Comments: [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[7]}, {&tk[13]}},
 				Tokens:   tk[:16],
 			}
 		}},
@@ -1718,7 +1718,7 @@ func TestWithEntry(t *testing.T) {
 			t.Output = WithEntry{
 				AttributeKey: &tk[2],
 				Value:        &tk[7],
-				Comments:     [4]Comments{{tk[0]}, {tk[4]}, {tk[6]}, {tk[9]}},
+				Comments:     [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[6]}, {&tk[9]}},
 				Tokens:       tk[:10],
 			}
 		}},
@@ -1726,7 +1726,7 @@ func TestWithEntry(t *testing.T) {
 			t.Output = WithEntry{
 				AttributeKey: &tk[2],
 				Value:        &tk[7],
-				Comments:     [4]Comments{{tk[0]}, {tk[4]}, {tk[6]}, {tk[9], tk[11]}},
+				Comments:     [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[6]}, {&tk[9], &tk[11]}},
 				Tokens:       tk[:12],
 			}
 		}},
@@ -1993,7 +1993,7 @@ func TestExportDeclaration(t *testing.T) {
 					},
 					Tokens: tk[10:15],
 				},
-				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
+				Comments: [7]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}},
 				Tokens:   tk[:15],
 			}
 		}},
@@ -2005,12 +2005,12 @@ func TestExportDeclaration(t *testing.T) {
 							Literal: &tk[10],
 							Tokens:  tk[10:11],
 						},
-						Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+						Comments: [5]Comments{nil, nil, nil, nil, {&tk[12]}},
 						Tokens:   tk[10:13],
 					}),
 					Tokens: tk[10:13],
 				},
-				Comments: [7]Comments{{tk[0]}, {tk[4]}, {tk[8]}},
+				Comments: [7]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -2018,10 +2018,10 @@ func TestExportDeclaration(t *testing.T) {
 			t.Output = ExportDeclaration{
 				FromClause: &FromClause{
 					ModuleSpecifier: &tk[12],
-					Comments:        Comments{tk[10]},
+					Comments:        Comments{&tk[10]},
 					Tokens:          tk[8:13],
 				},
-				Comments: [7]Comments{nil, {tk[2]}, {tk[6]}, nil, nil, {tk[14]}},
+				Comments: [7]Comments{nil, {&tk[2]}, {&tk[6]}, nil, nil, {&tk[14]}},
 				Tokens:   tk[:16],
 			}
 		}},
@@ -2030,10 +2030,10 @@ func TestExportDeclaration(t *testing.T) {
 				ExportFromClause: &tk[7],
 				FromClause: &FromClause{
 					ModuleSpecifier: &tk[11],
-					Comments:        Comments{tk[10]},
+					Comments:        Comments{&tk[10]},
 					Tokens:          tk[9:12],
 				},
-				Comments: [7]Comments{{tk[0]}, {tk[2]}, {tk[4]}, {tk[6]}, {tk[8]}, {tk[12]}},
+				Comments: [7]Comments{{&tk[0]}, {&tk[2]}, {&tk[4]}, {&tk[6]}, {&tk[8]}, {&tk[12]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -2042,7 +2042,7 @@ func TestExportDeclaration(t *testing.T) {
 				ExportClause: &ExportClause{
 					Tokens: tk[2:4],
 				},
-				Comments: [7]Comments{nil, {tk[1]}, nil, nil, nil, {tk[4]}, {tk[7]}},
+				Comments: [7]Comments{nil, {&tk[1]}, nil, nil, nil, {&tk[4]}, {&tk[7]}},
 				Tokens:   tk[:8],
 			}
 		}},
@@ -2053,10 +2053,10 @@ func TestExportDeclaration(t *testing.T) {
 				},
 				FromClause: &FromClause{
 					ModuleSpecifier: &tk[7],
-					Comments:        Comments{tk[6]},
+					Comments:        Comments{&tk[6]},
 					Tokens:          tk[5:8],
 				},
-				Comments: [7]Comments{nil, {tk[1]}, nil, nil, {tk[4]}, {tk[8]}},
+				Comments: [7]Comments{nil, {&tk[1]}, nil, nil, {&tk[4]}, {&tk[8]}},
 				Tokens:   tk[:9],
 			}
 		}},
@@ -2148,11 +2148,11 @@ func TestExportClause(t *testing.T) {
 					{
 						IdentifierName:  &tk[8],
 						EIdentifierName: &tk[8],
-						Comments:        [4]Comments{{tk[6]}, nil, nil, {tk[10], tk[12]}},
+						Comments:        [4]Comments{{&tk[6]}, nil, nil, {&tk[10], &tk[12]}},
 						Tokens:          tk[6:13],
 					},
 				},
-				Comments: [2]Comments{{tk[2], tk[4]}, {tk[14]}},
+				Comments: [2]Comments{{&tk[2], &tk[4]}, {&tk[14]}},
 				Tokens:   tk[:17],
 			}
 		}},
@@ -2220,7 +2220,7 @@ func TestExportSpecifier(t *testing.T) {
 			t.Output = ExportSpecifier{
 				IdentifierName:  &tk[2],
 				EIdentifierName: &tk[2],
-				Comments:        [4]Comments{{tk[0]}, nil, nil, {tk[4]}},
+				Comments:        [4]Comments{{&tk[0]}, nil, nil, {&tk[4]}},
 				Tokens:          tk[:5],
 			}
 		}},
@@ -2228,7 +2228,7 @@ func TestExportSpecifier(t *testing.T) {
 			t.Output = ExportSpecifier{
 				IdentifierName:  &tk[2],
 				EIdentifierName: &tk[10],
-				Comments:        [4]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[12], tk[14]}},
+				Comments:        [4]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12], &tk[14]}},
 				Tokens:          tk[:15],
 			}
 		}},

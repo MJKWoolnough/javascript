@@ -2819,13 +2819,13 @@ func TestLeftHandSideExpression(t *testing.T) {
 							IdentifierReference: &tk[2],
 							Tokens:              tk[2:3],
 						},
-						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+						Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 						Tokens:   tk[:5],
 					},
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{nil, nil, nil, nil, {tk[8]}},
+					Comments: [5]Comments{nil, nil, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				Tokens: tk[:9],
@@ -3028,13 +3028,13 @@ func TestNewExpression(t *testing.T) {
 		}},
 		{"// A\nnew // B\na // C\n", func(t *test, tk Tokens) { // 9
 			t.Output = NewExpression{
-				News: []Comments{{tk[0]}},
+				News: []Comments{{&tk[0]}},
 				MemberExpression: MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
 						IdentifierReference: &tk[6],
 						Tokens:              tk[6:7],
 					},
-					Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
 					Tokens:   tk[4:9],
 				},
 				Tokens: tk[:9],
@@ -3048,13 +3048,13 @@ func TestNewExpression(t *testing.T) {
 							IdentifierReference: &tk[6],
 							Tokens:              tk[6:7],
 						},
-						Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+						Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
 						Tokens:   tk[4:9],
 					},
 					Arguments: &Arguments{
 						Tokens: tk[10:12],
 					},
-					Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[13]}},
+					Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[13]}},
 					Tokens:   tk[:14],
 				},
 				Tokens: tk[:14],
@@ -3062,20 +3062,20 @@ func TestNewExpression(t *testing.T) {
 		}},
 		{"// A\nnew // B\nnew // C\na // D\n() // E\n", func(t *test, tk Tokens) { // 11
 			t.Output = NewExpression{
-				News: []Comments{{tk[0]}},
+				News: []Comments{{&tk[0]}},
 				MemberExpression: MemberExpression{
 					MemberExpression: &MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
 							IdentifierReference: &tk[10],
 							Tokens:              tk[10:11],
 						},
-						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 						Tokens:   tk[8:13],
 					},
 					Arguments: &Arguments{
 						Tokens: tk[14:16],
 					},
-					Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[17]}},
+					Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[17]}},
 					Tokens:   tk[4:18],
 				},
 				Tokens: tk[:18],
@@ -3494,7 +3494,7 @@ func TestMemberExpression(t *testing.T) {
 					},
 					Tokens: tk[10:11],
 				},
-				Comments: [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[13]}, {tk[16]}},
+				Comments: [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[13]}, {&tk[16]}},
 				Tokens:   tk[:17],
 			}
 		}},
@@ -3509,7 +3509,7 @@ func TestMemberExpression(t *testing.T) {
 									Literal: &tk[7],
 									Tokens:  tk[7:8],
 								},
-								Comments: [5]Comments{{tk[5]}, nil, nil, nil, {tk[9]}},
+								Comments: [5]Comments{{&tk[5]}, nil, nil, nil, {&tk[9]}},
 								Tokens:   tk[5:10],
 							}),
 							Tokens: tk[5:10],
@@ -3517,7 +3517,7 @@ func TestMemberExpression(t *testing.T) {
 					},
 					Tokens: tk[5:10],
 				},
-				Comments: [5]Comments{nil, nil, {tk[3]}, {tk[11]}},
+				Comments: [5]Comments{nil, nil, {&tk[3]}, {&tk[11]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -3525,21 +3525,21 @@ func TestMemberExpression(t *testing.T) {
 			t.Output = MemberExpression{
 				SuperProperty:  true,
 				IdentifierName: &tk[10],
-				Comments:       [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, nil, {tk[12]}},
+				Comments:       [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, nil, {&tk[12]}},
 				Tokens:         tk[:13],
 			}
 		}},
 		{"// A\nnew /* B */./* C */target /* D */", func(t *test, tk Tokens) { // 35
 			t.Output = MemberExpression{
 				NewTarget: true,
-				Comments:  [5]Comments{{tk[0]}, {tk[4]}, {tk[6]}, nil, {tk[9]}},
+				Comments:  [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[6]}, nil, {&tk[9]}},
 				Tokens:    tk[:10],
 			}
 		}},
 		{"/* A */import/* B */./* C */meta/* D */", func(t *test, tk Tokens) { // 36
 			t.Output = MemberExpression{
 				ImportMeta: true,
-				Comments:   [5]Comments{{tk[0]}, {tk[2]}, {tk[4]}, nil, {tk[6]}},
+				Comments:   [5]Comments{{&tk[0]}, {&tk[2]}, {&tk[4]}, nil, {&tk[6]}},
 				Tokens:     tk[:7],
 			}
 		}},
@@ -3550,13 +3550,13 @@ func TestMemberExpression(t *testing.T) {
 						Literal: &tk[4],
 						Tokens:  tk[4:5],
 					},
-					Comments: [5]Comments{{tk[3]}, nil, nil, nil, {tk[5]}},
+					Comments: [5]Comments{{&tk[3]}, nil, nil, nil, {&tk[5]}},
 					Tokens:   tk[3:6],
 				},
 				Arguments: &Arguments{
 					Tokens: tk[6:8],
 				},
-				Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[9]}},
+				Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[9]}},
 				Tokens:   tk[:10],
 			}
 		}},
@@ -3566,7 +3566,7 @@ func TestMemberExpression(t *testing.T) {
 					IdentifierReference: &tk[2],
 					Tokens:              tk[2:3],
 				},
-				Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+				Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 				Tokens:   tk[:5],
 			}
 		}},
@@ -3577,14 +3577,14 @@ func TestMemberExpression(t *testing.T) {
 						IdentifierReference: &tk[2],
 						Tokens:              tk[2:3],
 					},
-					Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+					Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 					Tokens:   tk[0:5],
 				},
 				TemplateLiteral: &TemplateLiteral{
 					NoSubstitutionTemplate: &tk[5],
 					Tokens:                 tk[5:6],
 				},
-				Comments: [5]Comments{nil, nil, nil, nil, {tk[6]}},
+				Comments: [5]Comments{nil, nil, nil, nil, {&tk[6]}},
 				Tokens:   tk[:7],
 			}
 		}},
@@ -3595,11 +3595,11 @@ func TestMemberExpression(t *testing.T) {
 						IdentifierReference: &tk[0],
 						Tokens:              tk[:1],
 					},
-					Comments: [5]Comments{nil, nil, nil, nil, {tk[1]}},
+					Comments: [5]Comments{nil, nil, nil, nil, {&tk[1]}},
 					Tokens:   tk[:2],
 				},
 				PrivateIdentifier: &tk[4],
-				Comments:          [5]Comments{nil, {tk[3]}, nil, nil, {tk[5]}},
+				Comments:          [5]Comments{nil, {&tk[3]}, nil, nil, {&tk[5]}},
 				Tokens:            tk[:6],
 			}
 		}},
@@ -3611,15 +3611,15 @@ func TestMemberExpression(t *testing.T) {
 							IdentifierReference: &tk[1],
 							Tokens:              tk[1:2],
 						},
-						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[2]}},
+						Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[2]}},
 						Tokens:   tk[:3],
 					},
 					PrivateIdentifier: &tk[5],
-					Comments:          [5]Comments{nil, {tk[4]}, nil, nil, {tk[6]}},
+					Comments:          [5]Comments{nil, {&tk[4]}, nil, nil, {&tk[6]}},
 					Tokens:            tk[:7],
 				},
 				IdentifierName: &tk[9],
-				Comments:       [5]Comments{nil, {tk[8]}, nil, nil, {tk[11]}},
+				Comments:       [5]Comments{nil, {&tk[8]}, nil, nil, {&tk[11]}},
 				Tokens:         tk[:12],
 			}
 		}},
@@ -3631,11 +3631,11 @@ func TestMemberExpression(t *testing.T) {
 							IdentifierReference: &tk[2],
 							Tokens:              tk[2:3],
 						},
-						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+						Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 						Tokens:   tk[:5],
 					},
 					PrivateIdentifier: &tk[10],
-					Comments:          [5]Comments{nil, {tk[8]}, nil, nil, {tk[12]}},
+					Comments:          [5]Comments{nil, {&tk[8]}, nil, nil, {&tk[12]}},
 					Tokens:            tk[:13],
 				},
 				Expression: &Expression{
@@ -3653,7 +3653,7 @@ func TestMemberExpression(t *testing.T) {
 					},
 					Tokens: tk[18:19],
 				},
-				Comments: [5]Comments{nil, {tk[16]}, {tk[20]}, nil, {tk[24]}},
+				Comments: [5]Comments{nil, {&tk[16]}, {&tk[20]}, nil, {&tk[24]}},
 				Tokens:   tk[:25],
 			}
 		}},
@@ -3665,11 +3665,11 @@ func TestMemberExpression(t *testing.T) {
 							IdentifierReference: &tk[2],
 							Tokens:              tk[2:3],
 						},
-						Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+						Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 						Tokens:   tk[:5],
 					},
 					PrivateIdentifier: &tk[10],
-					Comments:          [5]Comments{nil, {tk[8]}, nil, nil, {tk[12]}},
+					Comments:          [5]Comments{nil, {&tk[8]}, nil, nil, {&tk[12]}},
 					Tokens:            tk[:13],
 				},
 				Expression: &Expression{
@@ -3680,7 +3680,7 @@ func TestMemberExpression(t *testing.T) {
 									Literal: &tk[20],
 									Tokens:  tk[20:21],
 								},
-								Comments: [5]Comments{{tk[18]}, nil, nil, nil, {tk[22]}},
+								Comments: [5]Comments{{&tk[18]}, nil, nil, nil, {&tk[22]}},
 								Tokens:   tk[18:23],
 							}),
 							Tokens: tk[18:23],
@@ -3688,7 +3688,7 @@ func TestMemberExpression(t *testing.T) {
 					},
 					Tokens: tk[18:23],
 				},
-				Comments: [5]Comments{nil, {tk[16]}, {tk[24]}, nil, {tk[28]}},
+				Comments: [5]Comments{nil, {&tk[16]}, {&tk[24]}, nil, {&tk[28]}},
 				Tokens:   tk[:29],
 			}
 		}},
@@ -4009,13 +4009,13 @@ func TestParenthesizedExpression(t *testing.T) {
 								Literal: &tk[8],
 								Tokens:  tk[8:9],
 							},
-							Comments: [5]Comments{{tk[6]}, nil, nil, nil, {tk[10], tk[12]}},
+							Comments: [5]Comments{{&tk[6]}, nil, nil, nil, {&tk[10], &tk[12]}},
 							Tokens:   tk[6:13],
 						}),
 						Tokens: tk[6:13],
 					},
 				},
-				Comments: [2]Comments{{tk[2], tk[4]}, {tk[14]}},
+				Comments: [2]Comments{{&tk[2], &tk[4]}, {&tk[14]}},
 				Tokens:   tk[:17],
 			}
 		}},
@@ -4184,7 +4184,7 @@ func TestArguments(t *testing.T) {
 		}},
 		{"( // A\n\n// B\n)", func(t *test, tk Tokens) { // 12
 			t.Output = Arguments{
-				Comments: [2]Comments{{tk[2]}, {tk[4]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[4]}},
 				Tokens:   tk[:7],
 			}
 		}},
@@ -4198,7 +4198,7 @@ func TestArguments(t *testing.T) {
 									IdentifierReference: &tk[6],
 									Tokens:              tk[6:7],
 								},
-								Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8], tk[10]}},
+								Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8], &tk[10]}},
 								Tokens:   tk[4:11],
 							}),
 							Tokens: tk[4:11],
@@ -4212,7 +4212,7 @@ func TestArguments(t *testing.T) {
 									IdentifierReference: &tk[16],
 									Tokens:              tk[16:17],
 								},
-								Comments: [5]Comments{{tk[14]}, nil, nil, nil, {tk[18]}},
+								Comments: [5]Comments{{&tk[14]}, nil, nil, nil, {&tk[18]}},
 								Tokens:   tk[14:19],
 							}),
 							Tokens: tk[14:19],
@@ -4220,7 +4220,7 @@ func TestArguments(t *testing.T) {
 						Tokens: tk[14:19],
 					},
 				},
-				Comments: [2]Comments{{tk[2]}, {tk[20]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[20]}},
 				Tokens:   tk[:23],
 			}
 		}},
@@ -4235,16 +4235,16 @@ func TestArguments(t *testing.T) {
 									IdentifierReference: &tk[9],
 									Tokens:              tk[9:10],
 								},
-								Comments: [5]Comments{{tk[7]}, nil, nil, nil, {tk[11]}},
+								Comments: [5]Comments{{&tk[7]}, nil, nil, nil, {&tk[11]}},
 								Tokens:   tk[7:12],
 							}),
 							Tokens: tk[7:12],
 						},
-						Comments: Comments{tk[4]},
+						Comments: Comments{&tk[4]},
 						Tokens:   tk[4:12],
 					},
 				},
-				Comments: [2]Comments{{tk[2]}, {tk[13]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[13]}},
 				Tokens:   tk[:16],
 			}
 		}},
@@ -4479,7 +4479,7 @@ func TestCallExpression(t *testing.T) {
 				Arguments: &Arguments{
 					Tokens: tk[6:8],
 				},
-				Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+				Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 				Tokens:   tk[:9],
 			}
 		}},
@@ -4491,12 +4491,12 @@ func TestCallExpression(t *testing.T) {
 							IdentifierReference: &tk[12],
 							Tokens:              tk[12:13],
 						},
-						Comments: [5]Comments{{tk[10]}, nil, nil, nil, {tk[14]}},
+						Comments: [5]Comments{{&tk[10]}, nil, nil, nil, {&tk[14]}},
 						Tokens:   tk[10:15],
 					}),
 					Tokens: tk[10:15],
 				},
-				Comments: [5]Comments{{tk[0]}, {tk[4]}, {tk[8]}, {tk[16]}, {tk[20]}},
+				Comments: [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[16]}, {&tk[20]}},
 				Tokens:   tk[:21],
 			}
 		}},
@@ -4507,14 +4507,14 @@ func TestCallExpression(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				TemplateLiteral: &TemplateLiteral{
 					NoSubstitutionTemplate: &tk[10],
 					Tokens:                 tk[10:11],
 				},
-				Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+				Comments: [5]Comments{nil, nil, nil, nil, {&tk[12]}},
 				Tokens:   tk[:13],
 			}
 		}},
@@ -4525,13 +4525,13 @@ func TestCallExpression(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				Arguments: &Arguments{
 					Tokens: tk[10:12],
 				},
-				Comments: [5]Comments{nil, nil, nil, nil, {tk[12]}},
+				Comments: [5]Comments{nil, nil, nil, nil, {&tk[12]}},
 				Tokens:   tk[:13],
 			}
 		}},
@@ -4542,7 +4542,7 @@ func TestCallExpression(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				Expression: &Expression{
@@ -4553,7 +4553,7 @@ func TestCallExpression(t *testing.T) {
 									IdentifierReference: &tk[16],
 									Tokens:              tk[16:17],
 								},
-								Comments: [5]Comments{{tk[14]}, nil, nil, nil, {tk[18]}},
+								Comments: [5]Comments{{&tk[14]}, nil, nil, nil, {&tk[18]}},
 								Tokens:   tk[14:19],
 							}),
 							Tokens: tk[14:19],
@@ -4561,7 +4561,7 @@ func TestCallExpression(t *testing.T) {
 					},
 					Tokens: tk[14:19],
 				},
-				Comments: [5]Comments{nil, nil, {tk[12]}, {tk[20]}, {tk[23]}},
+				Comments: [5]Comments{nil, nil, {&tk[12]}, {&tk[20]}, {&tk[23]}},
 				Tokens:   tk[:24],
 			}
 		}},
@@ -4572,11 +4572,11 @@ func TestCallExpression(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				IdentifierName: &tk[14],
-				Comments:       [5]Comments{nil, nil, {tk[12]}, nil, {tk[16]}},
+				Comments:       [5]Comments{nil, nil, {&tk[12]}, nil, {&tk[16]}},
 				Tokens:         tk[:17],
 			}
 		}},
@@ -4587,11 +4587,11 @@ func TestCallExpression(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[6:8],
 					},
-					Comments: [5]Comments{{tk[0]}, {tk[4]}, nil, nil, {tk[8]}},
+					Comments: [5]Comments{{&tk[0]}, {&tk[4]}, nil, nil, {&tk[8]}},
 					Tokens:   tk[:9],
 				},
 				PrivateIdentifier: &tk[14],
-				Comments:          [5]Comments{nil, nil, {tk[12]}, nil, {tk[16]}},
+				Comments:          [5]Comments{nil, nil, {&tk[12]}, nil, {&tk[16]}},
 				Tokens:            tk[:17],
 			}
 		}},
@@ -4841,7 +4841,7 @@ func TestOptionalChain(t *testing.T) {
 				Arguments: &Arguments{
 					Tokens: tk[4:6],
 				},
-				Comments: [4]Comments{{tk[2]}, nil, nil, {tk[7]}},
+				Comments: [4]Comments{{&tk[2]}, nil, nil, {&tk[7]}},
 				Tokens:   tk[:8],
 			}
 		}},
@@ -4855,7 +4855,7 @@ func TestOptionalChain(t *testing.T) {
 									IdentifierReference: &tk[10],
 									Tokens:              tk[10:11],
 								},
-								Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+								Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 								Tokens:   tk[8:13],
 							}),
 							Tokens: tk[8:13],
@@ -4863,14 +4863,14 @@ func TestOptionalChain(t *testing.T) {
 					},
 					Tokens: tk[8:13],
 				},
-				Comments: [4]Comments{{tk[2]}, {tk[6]}, {tk[14]}, {tk[18]}},
+				Comments: [4]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}},
 				Tokens:   tk[:19],
 			}
 		}},
 		{"?. // A\na // B\n", func(t *test, tk Tokens) { // 23
 			t.Output = OptionalChain{
 				IdentifierName: &tk[4],
-				Comments:       [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+				Comments:       [4]Comments{{&tk[2]}, nil, nil, {&tk[6]}},
 				Tokens:         tk[:7],
 			}
 		}},
@@ -4880,7 +4880,7 @@ func TestOptionalChain(t *testing.T) {
 					NoSubstitutionTemplate: &tk[4],
 					Tokens:                 tk[4:5],
 				},
-				Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+				Comments: [4]Comments{{&tk[2]}, nil, nil, {&tk[6]}},
 				Tokens:   tk[:7],
 			}
 		}},
@@ -4890,14 +4890,14 @@ func TestOptionalChain(t *testing.T) {
 					Arguments: &Arguments{
 						Tokens: tk[4:6],
 					},
-					Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Comments: [4]Comments{{&tk[2]}, nil, nil, {&tk[6]}},
 					Tokens:   tk[:7],
 				},
 				TemplateLiteral: &TemplateLiteral{
 					NoSubstitutionTemplate: &tk[8],
 					Tokens:                 tk[8:9],
 				},
-				Comments: [4]Comments{nil, nil, nil, {tk[10]}},
+				Comments: [4]Comments{nil, nil, nil, {&tk[10]}},
 				Tokens:   tk[:11],
 			}
 		}},
@@ -4908,7 +4908,7 @@ func TestOptionalChain(t *testing.T) {
 						NoSubstitutionTemplate: &tk[4],
 						Tokens:                 tk[4:5],
 					},
-					Comments: [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Comments: [4]Comments{{&tk[2]}, nil, nil, {&tk[6]}},
 					Tokens:   tk[:7],
 				},
 				Expression: &Expression{
@@ -4919,7 +4919,7 @@ func TestOptionalChain(t *testing.T) {
 									IdentifierReference: &tk[14],
 									Tokens:              tk[14:15],
 								},
-								Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[16]}},
+								Comments: [5]Comments{{&tk[12]}, nil, nil, nil, {&tk[16]}},
 								Tokens:   tk[12:17],
 							}),
 							Tokens: tk[12:17],
@@ -4927,7 +4927,7 @@ func TestOptionalChain(t *testing.T) {
 					},
 					Tokens: tk[12:17],
 				},
-				Comments: [4]Comments{nil, {tk[10]}, {tk[18]}, {tk[22]}},
+				Comments: [4]Comments{nil, {&tk[10]}, {&tk[18]}, {&tk[22]}},
 				Tokens:   tk[:23],
 			}
 		}},
@@ -4942,7 +4942,7 @@ func TestOptionalChain(t *testing.T) {
 										IdentifierReference: &tk[10],
 										Tokens:              tk[10:11],
 									},
-									Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+									Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 									Tokens:   tk[8:13],
 								}),
 								Tokens: tk[8:13],
@@ -4950,11 +4950,11 @@ func TestOptionalChain(t *testing.T) {
 						},
 						Tokens: tk[8:13],
 					},
-					Comments: [4]Comments{{tk[2]}, {tk[6]}, {tk[14]}, {tk[18]}},
+					Comments: [4]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}},
 					Tokens:   tk[:19],
 				},
 				IdentifierName: &tk[24],
-				Comments:       [4]Comments{nil, {tk[22]}, nil, {tk[25]}},
+				Comments:       [4]Comments{nil, {&tk[22]}, nil, {&tk[25]}},
 				Tokens:         tk[:26],
 			}
 		}},
@@ -4962,13 +4962,13 @@ func TestOptionalChain(t *testing.T) {
 			t.Output = OptionalChain{
 				OptionalChain: &OptionalChain{
 					IdentifierName: &tk[4],
-					Comments:       [4]Comments{{tk[2]}, nil, nil, {tk[6]}},
+					Comments:       [4]Comments{{&tk[2]}, nil, nil, {&tk[6]}},
 					Tokens:         tk[:7],
 				},
 				Arguments: &Arguments{
 					Tokens: tk[8:10],
 				},
-				Comments: [4]Comments{nil, nil, nil, {tk[11]}},
+				Comments: [4]Comments{nil, nil, nil, {&tk[11]}},
 				Tokens:   tk[:12],
 			}
 		}},

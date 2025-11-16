@@ -238,10 +238,38 @@ func (t Tokens) printType(w writer, v bool) {
 }
 
 func (c Comments) printType(w writer, v bool) {
-	Tokens(c).printType(w, v)
+	if c == nil {
+		w.WriteString("nil")
+
+		return
+	} else if len(c) == 0 {
+		w.WriteString("[]")
+
+		return
+	}
+
+	w.WriteString("[")
+
+	ipp := w.Indent()
+
+	for n, t := range c {
+		ipp.Printf("\n%d: ", n)
+
+		if t == nil {
+			w.WriteString("nil")
+		} else {
+			t.printType(w, v)
+		}
+	}
+
+	w.WriteString("\n]")
 }
 
 func (c Comments) printSource(w writer, postSpace, postNewline bool) {
+	for len(c) > 0 && c[0] == nil {
+		c = c[1:]
+	}
+
 	if len(c) > 0 {
 		switch w.LastChar() {
 		case 0, ' ', '\n', '\t':
@@ -252,13 +280,17 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
 		pos := w.Pos()
 
-		lastWasMulti := printComment(w, c[0], 0)
+		lastWasMulti := printComment(w, *c[0], 0)
 
 		if !lastWasMulti {
 			line++
 		}
 
 		for _, c := range c[1:] {
+			if c == nil {
+				continue
+			}
+
 			if line < c.Line {
 				if !lastWasMulti {
 					w.WriteString("\n")
@@ -274,7 +306,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 				w.WriteString("\n")
 			}
 
-			if lastWasMulti = printComment(w, c, pos); lastWasMulti {
+			if lastWasMulti = printComment(w, *c, pos); lastWasMulti {
 				line += uint64(strings.Count(c.Data, "\n"))
 			} else {
 				line++

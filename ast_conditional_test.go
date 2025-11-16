@@ -1470,7 +1470,7 @@ func TestConditional(t *testing.T) {
 								IdentifierReference: &tk[2],
 								Tokens:              tk[2:3],
 							},
-							Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+							Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 							Tokens:   tk[:5],
 						},
 						Tokens: tk[:5],
@@ -1478,7 +1478,7 @@ func TestConditional(t *testing.T) {
 					Tokens: tk[:5],
 				},
 				UpdateOperator: UpdatePostIncrement,
-				Comments:       Comments{tk[8]},
+				Comments:       Comments{&tk[8]},
 				Tokens:         tk[:9],
 			})
 		}},
@@ -1491,7 +1491,7 @@ func TestConditional(t *testing.T) {
 								IdentifierReference: &tk[2],
 								Tokens:              tk[2:3],
 							},
-							Comments: [5]Comments{{tk[0]}, nil, nil, nil, {tk[4]}},
+							Comments: [5]Comments{{&tk[0]}, nil, nil, nil, {&tk[4]}},
 							Tokens:   tk[:5],
 						},
 						Tokens: tk[:5],
@@ -1499,7 +1499,7 @@ func TestConditional(t *testing.T) {
 					Tokens: tk[:5],
 				},
 				UpdateOperator: UpdatePostDecrement,
-				Comments:       Comments{tk[8]},
+				Comments:       Comments{&tk[8]},
 				Tokens:         tk[:9],
 			})
 		}},
@@ -1514,7 +1514,7 @@ func TestConditional(t *testing.T) {
 										IdentifierReference: &tk[6],
 										Tokens:              tk[6:7],
 									},
-									Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+									Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
 									Tokens:   tk[4:9],
 								},
 								Tokens: tk[4:9],
@@ -1526,7 +1526,7 @@ func TestConditional(t *testing.T) {
 					Tokens: tk[4:9],
 				},
 				UpdateOperator: UpdatePreIncrement,
-				Comments:       Comments{tk[0]},
+				Comments:       Comments{&tk[0]},
 				Tokens:         tk[:9],
 			})
 		}},
@@ -1541,7 +1541,7 @@ func TestConditional(t *testing.T) {
 										IdentifierReference: &tk[6],
 										Tokens:              tk[6:7],
 									},
-									Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+									Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
 									Tokens:   tk[4:9],
 								},
 								Tokens: tk[4:9],
@@ -1553,7 +1553,7 @@ func TestConditional(t *testing.T) {
 					Tokens: tk[4:9],
 				},
 				UpdateOperator: UpdatePreDecrement,
-				Comments:       Comments{tk[0]},
+				Comments:       Comments{&tk[0]},
 				Tokens:         tk[:9],
 			})
 		}},
@@ -1561,14 +1561,14 @@ func TestConditional(t *testing.T) {
 			t.Output = wrapConditional(UnaryExpression{
 				UnaryOperators: []UnaryOperatorComments{{
 					UnaryOperator: UnaryTypeOf,
-					Comments:      Comments{tk[0], tk[2]},
+					Comments:      Comments{&tk[0], &tk[2]},
 				}},
 				UpdateExpression: WrapConditional(&MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
 						IdentifierReference: &tk[8],
 						Tokens:              tk[8:9],
 					},
-					Comments: [5]Comments{{tk[6]}, nil, nil, nil, {tk[10]}},
+					Comments: [5]Comments{{&tk[6]}, nil, nil, nil, {&tk[10]}},
 					Tokens:   tk[6:11],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
 				Tokens: tk[:11],
@@ -1579,11 +1579,11 @@ func TestConditional(t *testing.T) {
 				UnaryOperators: []UnaryOperatorComments{
 					{
 						UnaryOperator: UnaryVoid,
-						Comments:      Comments{tk[0]},
+						Comments:      Comments{&tk[0]},
 					},
 					{
 						UnaryOperator: UnaryAdd,
-						Comments:      Comments{tk[4]},
+						Comments:      Comments{&tk[4]},
 					},
 				},
 				UpdateExpression: WrapConditional(&MemberExpression{
@@ -1591,7 +1591,7 @@ func TestConditional(t *testing.T) {
 						IdentifierReference: &tk[10],
 						Tokens:              tk[10:11],
 					},
-					Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+					Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 					Tokens:   tk[8:13],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression,
 				Tokens: tk[:13],

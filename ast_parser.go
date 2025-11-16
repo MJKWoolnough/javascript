@@ -17,7 +17,7 @@ type Token struct {
 type Tokens []Token
 
 // Comments is a collection of Comment Tokens.
-type Comments []Token
+type Comments []*Token
 
 type jsParser Tokens
 
@@ -102,16 +102,16 @@ func (j *jsParser) Score(k jsParser) {
 	*j = (*j)[:len(*j)+len(k)]
 }
 
-func (j *jsParser) next() Token {
+func (j *jsParser) next() *Token {
 	l := len(*j)
 	if l == cap(*j) {
-		return (*j)[l-1]
+		return &(*j)[l-1]
 	}
 
 	*j = (*j)[:l+1]
 	tk := (*j)[l]
 
-	return tk
+	return &tk
 }
 
 func (j *jsParser) backup() {
@@ -161,7 +161,7 @@ func (j *jsParser) Skip() {
 	j.next()
 }
 
-func (j *jsParser) Next() Token {
+func (j *jsParser) Next() *Token {
 	return j.next()
 }
 
@@ -321,6 +321,6 @@ func (j *jsParser) Error(parsingFunc string, err error) error {
 	return Error{
 		Err:     err,
 		Parsing: parsingFunc,
-		Token:   tk,
+		Token:   *tk,
 	}
 }

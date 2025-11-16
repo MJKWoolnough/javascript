@@ -437,7 +437,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[12:14],
 				},
-				Comments: [5]Comments{nil, {tk[2]}, nil, {tk[6]}, {tk[10]}},
+				Comments: [5]Comments{nil, {&tk[2]}, nil, {&tk[6]}, {&tk[10]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -451,7 +451,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[16:18],
 				},
-				Comments: [5]Comments{{tk[2]}, {tk[6]}, nil, {tk[10]}, {tk[14]}},
+				Comments: [5]Comments{{&tk[2]}, {&tk[6]}, nil, {&tk[10]}, {&tk[14]}},
 				Tokens:   tk[:18],
 			}
 		}},
@@ -465,7 +465,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[16:18],
 				},
-				Comments: [5]Comments{nil, {tk[2]}, {tk[6]}, {tk[10]}, {tk[14]}},
+				Comments: [5]Comments{nil, {&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[14]}},
 				Tokens:   tk[:18],
 			}
 		}},
@@ -478,7 +478,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[8:10],
 				},
-				Comments: [5]Comments{nil, {tk[2]}, nil, nil, {tk[6]}},
+				Comments: [5]Comments{nil, {&tk[2]}, nil, nil, {&tk[6]}},
 				Tokens:   tk[:10],
 			}
 		}},
@@ -492,7 +492,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[12:14],
 				},
-				Comments: [5]Comments{{tk[2]}, {tk[6]}, nil, nil, {tk[10]}},
+				Comments: [5]Comments{{&tk[2]}, {&tk[6]}, nil, nil, {&tk[10]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -506,7 +506,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[12:14],
 				},
-				Comments: [5]Comments{nil, {tk[2]}, {tk[6]}, nil, {tk[10]}},
+				Comments: [5]Comments{nil, {&tk[2]}, {&tk[6]}, nil, {&tk[10]}},
 				Tokens:   tk[:14],
 			}
 		}},
@@ -520,7 +520,7 @@ func TestFunctionDeclaration(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[16:18],
 				},
-				Comments: [5]Comments{{tk[2]}, {tk[6]}, {tk[10]}, nil, {tk[14]}},
+				Comments: [5]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, nil, {&tk[14]}},
 				Tokens:   tk[:18],
 			}
 		}},
@@ -675,14 +675,14 @@ func TestFormalParameters(t *testing.T) {
 		}},
 		{"( // A\n\n// B\n)", func(t *test, tk Tokens) { // 15
 			t.Output = FormalParameters{
-				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[4]}},
+				Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[4]}},
 				Tokens:   tk[:7],
 			}
 		}},
 		{"( // A\n\n// B\n... // C\na // D\n\n// E\n)", func(t *test, tk Tokens) { // 16
 			t.Output = FormalParameters{
 				BindingIdentifier: &tk[10],
-				Comments:          [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Comments:          [5]Comments{{&tk[2]}, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[14]}},
 				Tokens:            tk[:17],
 			}
 		}},
@@ -691,11 +691,11 @@ func TestFormalParameters(t *testing.T) {
 				FormalParameterList: []BindingElement{
 					{
 						SingleNameBinding: &tk[6],
-						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Comments:          [2]Comments{{&tk[4]}, {&tk[8]}},
 						Tokens:            tk[4:9],
 					},
 				},
-				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[10]}},
+				Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[10]}},
 				Tokens:   tk[:13],
 			}
 		}},
@@ -704,16 +704,16 @@ func TestFormalParameters(t *testing.T) {
 				FormalParameterList: []BindingElement{
 					{
 						SingleNameBinding: &tk[6],
-						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Comments:          [2]Comments{{&tk[4]}, {&tk[8]}},
 						Tokens:            tk[4:9],
 					},
 					{
 						SingleNameBinding: &tk[14],
-						Comments:          [2]Comments{{tk[12]}, {tk[16]}},
+						Comments:          [2]Comments{{&tk[12]}, {&tk[16]}},
 						Tokens:            tk[12:17],
 					},
 				},
-				Comments: [5]Comments{{tk[2]}, nil, nil, nil, {tk[18]}},
+				Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[18]}},
 				Tokens:   tk[:21],
 			}
 		}},
@@ -722,12 +722,12 @@ func TestFormalParameters(t *testing.T) {
 				FormalParameterList: []BindingElement{
 					{
 						SingleNameBinding: &tk[6],
-						Comments:          [2]Comments{{tk[4]}, {tk[8]}},
+						Comments:          [2]Comments{{&tk[4]}, {&tk[8]}},
 						Tokens:            tk[4:9],
 					},
 				},
 				BindingIdentifier: &tk[18],
-				Comments:          [5]Comments{{tk[2]}, {tk[12]}, {tk[16]}, {tk[20]}, {tk[22]}},
+				Comments:          [5]Comments{{&tk[2]}, {&tk[12]}, {&tk[16]}, {&tk[20]}, {&tk[22]}},
 				Tokens:            tk[:25],
 			}
 		}},
@@ -736,7 +736,7 @@ func TestFormalParameters(t *testing.T) {
 				ArrayBindingPattern: &ArrayBindingPattern{
 					Tokens: tk[10:12],
 				},
-				Comments: [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Comments: [5]Comments{{&tk[2]}, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[14]}},
 				Tokens:   tk[:17],
 			}
 		}},
@@ -745,7 +745,7 @@ func TestFormalParameters(t *testing.T) {
 				ObjectBindingPattern: &ObjectBindingPattern{
 					Tokens: tk[10:12],
 				},
-				Comments: [5]Comments{{tk[2]}, {tk[4]}, {tk[8]}, {tk[12]}, {tk[14]}},
+				Comments: [5]Comments{{&tk[2]}, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[14]}},
 				Tokens:   tk[:17],
 			}
 		}},
@@ -877,7 +877,7 @@ func TestBindingElement(t *testing.T) {
 		{"// A\na // B\n", func(t *test, tk Tokens) { // 12
 			t.Output = BindingElement{
 				SingleNameBinding: &tk[2],
-				Comments:          [2]Comments{{tk[0]}, {tk[4]}},
+				Comments:          [2]Comments{{&tk[0]}, {&tk[4]}},
 				Tokens:            tk[:5],
 			}
 		}},
@@ -890,12 +890,12 @@ func TestBindingElement(t *testing.T) {
 							IdentifierReference: &tk[10],
 							Tokens:              tk[10:11],
 						},
-						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 						Tokens:   tk[8:13],
 					}),
 					Tokens: tk[8:13],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
 				Tokens:   tk[:13],
 			}
 		}},
@@ -904,7 +904,7 @@ func TestBindingElement(t *testing.T) {
 				ArrayBindingPattern: &ArrayBindingPattern{
 					Tokens: tk[2:4],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[5]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[5]}},
 				Tokens:   tk[:6],
 			}
 		}},
@@ -919,12 +919,12 @@ func TestBindingElement(t *testing.T) {
 							IdentifierReference: &tk[10],
 							Tokens:              tk[10:11],
 						},
-						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 						Tokens:   tk[8:13],
 					}),
 					Tokens: tk[8:13],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[5]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[5]}},
 				Tokens:   tk[:13],
 			}
 		}},
@@ -933,7 +933,7 @@ func TestBindingElement(t *testing.T) {
 				ObjectBindingPattern: &ObjectBindingPattern{
 					Tokens: tk[2:4],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[5]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[5]}},
 				Tokens:   tk[:6],
 			}
 		}},
@@ -948,12 +948,12 @@ func TestBindingElement(t *testing.T) {
 							IdentifierReference: &tk[10],
 							Tokens:              tk[10:11],
 						},
-						Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[12]}},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
 						Tokens:   tk[8:13],
 					}),
 					Tokens: tk[8:13],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[5]}},
+				Comments: [2]Comments{{&tk[0]}, {&tk[5]}},
 				Tokens:   tk[:13],
 			}
 		}},

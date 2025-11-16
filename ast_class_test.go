@@ -2798,7 +2798,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[5],
 									Tokens:              tk[5:6],
 								},
-								Comments: [2]Comments{nil, {tk[6]}},
+								Comments: [2]Comments{nil, {&tk[6]}},
 								Tokens:   tk[5:7],
 							},
 							Tokens: tk[5:7],
@@ -2833,7 +2833,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[5],
 									Tokens:              tk[5:6],
 								},
-								Comments: [2]Comments{nil, {tk[6]}},
+								Comments: [2]Comments{nil, {&tk[6]}},
 								Tokens:   tk[5:7],
 							},
 							Tokens: tk[5:7],
@@ -2997,7 +2997,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[8],
 									Tokens:              tk[8:9],
 								},
-								Comments: [2]Comments{{tk[6]}, {tk[10]}},
+								Comments: [2]Comments{{&tk[6]}, {&tk[10]}},
 								Tokens:   tk[6:11],
 							},
 							Params: FormalParameters{
@@ -3025,7 +3025,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[8],
 									Tokens:              tk[8:9],
 								},
-								Comments: [2]Comments{{tk[6]}, {tk[10]}},
+								Comments: [2]Comments{{&tk[6]}, {&tk[10]}},
 								Tokens:   tk[6:11],
 							},
 							Params: FormalParameters{
@@ -3045,7 +3045,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[18],
 									Tokens:              tk[18:19],
 								},
-								Comments: [2]Comments{{tk[16]}, {tk[19]}},
+								Comments: [2]Comments{{&tk[16]}, {&tk[19]}},
 								Tokens:   tk[16:20],
 							},
 							Params: FormalParameters{
@@ -3074,7 +3074,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[9],
 									Tokens:              tk[9:10],
 								},
-								Comments: [2]Comments{{tk[7]}, {tk[11]}},
+								Comments: [2]Comments{{&tk[7]}, {&tk[11]}},
 								Tokens:   tk[7:12],
 							},
 							Params: FormalParameters{
@@ -3109,7 +3109,7 @@ func TestClassDeclaration(t *testing.T) {
 									},
 									Tokens: tk[9:12],
 								},
-								Comments: [2]Comments{{tk[7]}, {tk[12]}},
+								Comments: [2]Comments{{&tk[7]}, {&tk[12]}},
 								Tokens:   tk[7:13],
 							},
 							Params: FormalParameters{
@@ -3135,7 +3135,7 @@ func TestClassDeclaration(t *testing.T) {
 						MethodDefinition: &MethodDefinition{
 							ClassElementName: ClassElementName{
 								PrivateIdentifier: &tk[9],
-								Comments:          [2]Comments{{tk[7]}, {tk[10]}},
+								Comments:          [2]Comments{{&tk[7]}, {&tk[10]}},
 								Tokens:            tk[7:11],
 							},
 							Params: FormalParameters{
@@ -3164,7 +3164,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[9],
 									Tokens:              tk[9:10],
 								},
-								Comments: [2]Comments{{tk[7]}, {tk[10]}},
+								Comments: [2]Comments{{&tk[7]}, {&tk[10]}},
 								Tokens:   tk[7:11],
 							},
 							Tokens: tk[7:11],
@@ -3187,7 +3187,7 @@ func TestClassDeclaration(t *testing.T) {
 									LiteralPropertyName: &tk[9],
 									Tokens:              tk[9:10],
 								},
-								Comments: [2]Comments{{tk[7]}, {tk[11]}},
+								Comments: [2]Comments{{&tk[7]}, {&tk[11]}},
 								Tokens:   tk[7:12],
 							},
 							Initializer: &AssignmentExpression{
@@ -3223,7 +3223,7 @@ func TestClassDeclaration(t *testing.T) {
 									},
 									Tokens: tk[9:12],
 								},
-								Comments: [2]Comments{{tk[7]}, {tk[13]}},
+								Comments: [2]Comments{{&tk[7]}, {&tk[13]}},
 								Tokens:   tk[7:14],
 							},
 							Tokens: tk[7:14],
@@ -3243,7 +3243,7 @@ func TestClassDeclaration(t *testing.T) {
 						ClassStaticBlock: &Block{
 							Tokens: tk[12:14],
 						},
-						Comments: [3]Comments{{tk[6]}, {tk[10]}, {tk[15]}},
+						Comments: [3]Comments{{&tk[6]}, {&tk[10]}, {&tk[15]}},
 						Tokens:   tk[6:16],
 					},
 				},
@@ -3659,17 +3659,17 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[6],
 						Tokens:              tk[6:7],
 					},
-					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Comments: [2]Comments{{&tk[4]}, {&tk[8]}},
 					Tokens:   tk[4:9],
 				},
 				Params: FormalParameters{
-					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[14]}},
+					Comments: [5]Comments{{&tk[12]}, nil, nil, nil, {&tk[14]}},
 					Tokens:   tk[10:17],
 				},
 				FunctionBody: Block{
 					Tokens: tk[20:22],
 				},
-				Comments: [4]Comments{{tk[0]}, nil, {tk[18]}, {tk[23]}},
+				Comments: [4]Comments{{&tk[0]}, nil, {&tk[18]}, {&tk[23]}},
 				Tokens:   tk[:24],
 			}
 		}},
@@ -3681,24 +3681,24 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[6],
 						Tokens:              tk[6:7],
 					},
-					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Comments: [2]Comments{{&tk[4]}, {&tk[8]}},
 					Tokens:   tk[4:9],
 				},
 				Params: FormalParameters{
 					FormalParameterList: []BindingElement{
 						{
 							SingleNameBinding: &tk[16],
-							Comments:          [2]Comments{{tk[14]}, {tk[18]}},
+							Comments:          [2]Comments{{&tk[14]}, {&tk[18]}},
 							Tokens:            tk[14:19],
 						},
 					},
-					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[20]}},
+					Comments: [5]Comments{{&tk[12]}, nil, nil, nil, {&tk[20]}},
 					Tokens:   tk[10:23],
 				},
 				FunctionBody: Block{
 					Tokens: tk[26:28],
 				},
-				Comments: [4]Comments{{tk[0]}, nil, {tk[24]}, {tk[29]}},
+				Comments: [4]Comments{{&tk[0]}, nil, {&tk[24]}, {&tk[29]}},
 				Tokens:   tk[:30],
 			}
 		}},
@@ -3709,24 +3709,24 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[2],
 						Tokens:              tk[2:3],
 					},
-					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
 					Tokens:   tk[:5],
 				},
 				Params: FormalParameters{
 					FormalParameterList: []BindingElement{
 						{
 							SingleNameBinding: &tk[12],
-							Comments:          [2]Comments{{tk[10]}, {tk[14]}},
+							Comments:          [2]Comments{{&tk[10]}, {&tk[14]}},
 							Tokens:            tk[10:15],
 						},
 					},
-					Comments: [5]Comments{{tk[8]}, nil, nil, nil, {tk[16]}},
+					Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[16]}},
 					Tokens:   tk[6:19],
 				},
 				FunctionBody: Block{
 					Tokens: tk[22:24],
 				},
-				Comments: [4]Comments{nil, nil, {tk[20]}, {tk[25]}},
+				Comments: [4]Comments{nil, nil, {&tk[20]}, {&tk[25]}},
 				Tokens:   tk[:26],
 			}
 		}},
@@ -3738,17 +3738,17 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[6],
 						Tokens:              tk[6:7],
 					},
-					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Comments: [2]Comments{{&tk[4]}, {&tk[8]}},
 					Tokens:   tk[4:9],
 				},
 				Params: FormalParameters{
-					Comments: [5]Comments{{tk[12]}, nil, nil, nil, {tk[14]}},
+					Comments: [5]Comments{{&tk[12]}, nil, nil, nil, {&tk[14]}},
 					Tokens:   tk[10:17],
 				},
 				FunctionBody: Block{
 					Tokens: tk[20:22],
 				},
-				Comments: [4]Comments{{tk[0]}, nil, {tk[18]}, {tk[23]}},
+				Comments: [4]Comments{{&tk[0]}, nil, {&tk[18]}, {&tk[23]}},
 				Tokens:   tk[:24],
 			}
 		}},
@@ -3760,7 +3760,7 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[6],
 						Tokens:              tk[6:7],
 					},
-					Comments: [2]Comments{{tk[4]}, {tk[8]}},
+					Comments: [2]Comments{{&tk[4]}, {&tk[8]}},
 					Tokens:   tk[4:9],
 				},
 				Params: FormalParameters{
@@ -3769,7 +3769,7 @@ func TestMethodDefinition(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[13:15],
 				},
-				Comments: [4]Comments{{tk[0]}},
+				Comments: [4]Comments{{&tk[0]}},
 				Tokens:   tk[:15],
 			}
 		}},
@@ -3781,7 +3781,7 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[10],
 						Tokens:              tk[10:11],
 					},
-					Comments: [2]Comments{{tk[8]}},
+					Comments: [2]Comments{{&tk[8]}},
 					Tokens:   tk[8:11],
 				},
 				Params: FormalParameters{
@@ -3790,7 +3790,7 @@ func TestMethodDefinition(t *testing.T) {
 				FunctionBody: Block{
 					Tokens: tk[13:15],
 				},
-				Comments: [4]Comments{{tk[0]}, {tk[4]}},
+				Comments: [4]Comments{{&tk[0]}, {&tk[4]}},
 				Tokens:   tk[:15],
 			}
 		}},
@@ -3801,7 +3801,7 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[2],
 						Tokens:              tk[2:3],
 					},
-					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
 					Tokens:   tk[:5],
 				},
 				Params: FormalParameters{
@@ -3820,7 +3820,7 @@ func TestMethodDefinition(t *testing.T) {
 						LiteralPropertyName: &tk[2],
 						Tokens:              tk[2:3],
 					},
-					Comments: [2]Comments{{tk[0]}, {tk[4]}},
+					Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
 					Tokens:   tk[:5],
 				},
 				Params: FormalParameters{
@@ -3913,12 +3913,12 @@ func TestPropertyName(t *testing.T) {
 							IdentifierReference: &tk[6],
 							Tokens:              tk[6:7],
 						},
-						Comments: [5]Comments{{tk[4]}, nil, nil, nil, {tk[8]}},
+						Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
 						Tokens:   tk[4:9],
 					}),
 					Tokens: tk[4:9],
 				},
-				Comments: [2]Comments{{tk[2]}, {tk[10]}},
+				Comments: [2]Comments{{&tk[2]}, {&tk[10]}},
 				Tokens:   tk[:13],
 			}
 		}},

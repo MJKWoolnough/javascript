@@ -99,11 +99,11 @@ func TestNewJSParser(t *testing.T) {
 			tkn := j.next()
 			tkl := j.GetLastToken()
 
-			if tkn != tk {
+			if *tkn != tk {
 				t.Errorf("test %d.%d.1: expecting %v, got %v", n+1, m+1, tk, tkn)
 			} else if tkp != tkn.Token {
 				t.Errorf("test %d.%d.2: expecting to Peek %v, got %v", n+1, m+1, tkn.Token, tkp)
-			} else if *tkl != tkn {
+			} else if *tkl != *tkn {
 				t.Errorf("test %d.%d.3: expectign to GetLast %v, got %v", n+1, m+1, tkn, *tkl)
 			}
 		}
