@@ -3250,6 +3250,114 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
+		{"class\na\nextends\nb\n{\n}", func(t *test, tk Tokens) { // 109
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassHeritage: &LeftHandSideExpression{
+					NewExpression: &NewExpression{
+						MemberExpression: MemberExpression{
+							PrimaryExpression: &PrimaryExpression{
+								IdentifierReference: &tk[6],
+								Tokens:              tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"class // A\na // B\n{ // C\n\n// D\n}", func(t *test, tk Tokens) { // 110
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[4],
+				Comments:          [4]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[12]}},
+				Tokens:            tk[:15],
+			}
+		}},
+		{"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}", func(t *test, tk Tokens) { // 111
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[20],
+									Tokens:              tk[20:21],
+								},
+								Comments: [2]Comments{{&tk[18]}},
+								Tokens:   tk[18:21],
+							},
+							Params: FormalParameters{
+								Tokens: tk[21:23],
+							},
+							FunctionBody: Block{
+								Tokens: tk[23:25],
+							},
+							Comments: [4]Comments{nil, nil, nil, {&tk[26]}},
+							Tokens:   tk[18:27],
+						},
+						Comments: [3]Comments{{&tk[10], &tk[14]}},
+						Tokens:   tk[10:27],
+					},
+				},
+				Comments: [4]Comments{nil, nil, {&tk[6]}, {&tk[30], &tk[35]}},
+				Tokens:   tk[:38],
+			}
+		}},
+		{"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}", func(t *test, tk Tokens) { // 112
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [2]Comments{{&tk[8]}},
+								Tokens:   tk[8:11],
+							},
+							Params: FormalParameters{
+								Tokens: tk[11:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Comments: [4]Comments{nil, nil, nil, {&tk[16], &tk[18]}},
+							Tokens:   tk[8:19],
+						},
+						Tokens: tk[8:19],
+					},
+					{
+						MethodDefinition: &MethodDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[22],
+									Tokens:              tk[22:23],
+								},
+								Comments: [2]Comments{{&tk[20]}},
+								Tokens:   tk[20:23],
+							},
+							Params: FormalParameters{
+								Tokens: tk[23:25],
+							},
+							FunctionBody: Block{
+								Tokens: tk[25:27],
+							},
+							Comments: [4]Comments{nil, nil, nil, {&tk[28]}},
+							Tokens:   tk[20:29],
+						},
+						Tokens: tk[20:29],
+					},
+				},
+				Comments: [4]Comments{nil, nil, {&tk[6]}, {&tk[30]}},
+				Tokens:   tk[:33],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 
