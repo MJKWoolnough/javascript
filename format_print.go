@@ -711,9 +711,17 @@ func (t TryStatement) printSource(w writer, v bool) {
 func (c ClassDeclaration) printSource(w writer, v bool) {
 	w.WriteString("class ")
 
+	if v {
+		c.Comments[0].printSource(w, true, false)
+	}
+
 	if c.BindingIdentifier != nil {
 		w.WriteString(c.BindingIdentifier.Data)
 		w.WriteString(" ")
+
+		if v {
+			c.Comments[1].printSource(w, true, false)
+		}
 	}
 
 	if c.ClassHeritage != nil {
@@ -724,17 +732,26 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 
 	w.WriteString("{")
 
-	if len(c.ClassBody) > 0 {
-		pp := w.Indent()
+	ip := w.Indent()
 
+	if v {
+		c.Comments[2].printSource(w, false, true)
+	}
+
+	if len(c.ClassBody) > 0 {
 		for _, ce := range c.ClassBody {
-			pp.WriteString("\n")
-			ce.printSource(pp, v)
+			ip.WriteString("\n")
+			ce.printSource(ip, v)
 		}
 
 		if w.LastChar() != '\n' {
 			w.WriteString("\n")
 		}
+	}
+
+	if v && len(c.Comments[3]) > 0 {
+		w.WriteString("\n")
+		c.Comments[3].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
@@ -1204,11 +1221,11 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 }
 
 func (ce ClassElement) printSource(w writer, v bool) {
-	if ce.Static {
-		if v {
-			ce.Comments[0].printSource(w, false, true)
-		}
+	if v {
+		ce.Comments[0].printSource(w, false, true)
+	}
 
+	if ce.Static {
 		w.WriteString("static ")
 	}
 
