@@ -2663,7 +2663,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens:   tk[:7],
 			}
 		}},
-		{"// A\nclass a{} // B\n", func(t *test, tk Tokens) { // 10
+		{"// A\nclass a{} // B\n", func(t *test, tk Tokens) { // 18
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					ClassDeclaration: &ClassDeclaration{
@@ -2676,7 +2676,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens:   tk[:9],
 			}
 		}},
-		{"// A\nfunction a(){} // B\n", func(t *test, tk Tokens) { // 11
+		{"// A\nfunction a(){} // B\n", func(t *test, tk Tokens) { // 19
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					FunctionDeclaration: &FunctionDeclaration{
@@ -2695,7 +2695,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens:   tk[:11],
 			}
 		}},
-		{"// A\nconst a = 1; // B\n", func(t *test, tk Tokens) { // 12
+		{"// A\nconst a = 1; // B\n", func(t *test, tk Tokens) { // 20
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					LexicalDeclaration: &LexicalDeclaration{
@@ -2721,7 +2721,7 @@ func TestStatementListItem(t *testing.T) {
 				Tokens:   tk[:12],
 			}
 		}},
-		{"// A\nlet a = 1; // B\n", func(t *test, tk Tokens) { // 13
+		{"// A\nlet a = 1; // B\n", func(t *test, tk Tokens) { // 21
 			t.Output = StatementListItem{
 				Declaration: &Declaration{
 					LexicalDeclaration: &LexicalDeclaration{
@@ -3448,6 +3448,131 @@ func TestStatement(t *testing.T) {
 					Tokens: tk[:1],
 				},
 				Tokens: tk[:1],
+			}
+		}},
+		{"continue /* A */ a // B\n", func(t *test, tk Tokens) { // 64
+			t.Output = Statement{
+				Type:            StatementContinue,
+				LabelIdentifier: &tk[4],
+				Comments:        [2]Comments{{&tk[2]}, {&tk[6]}},
+				Tokens:          tk[:7],
+			}
+		}},
+		{"continue /* A */ a // B\n;", func(t *test, tk Tokens) { // 65
+			t.Output = Statement{
+				Type:            StatementContinue,
+				LabelIdentifier: &tk[4],
+				Comments:        [2]Comments{{&tk[2]}, {&tk[6]}},
+				Tokens:          tk[:9],
+			}
+		}},
+		{"continue /* A */;", func(t *test, tk Tokens) { // 66
+			t.Output = Statement{
+				Type:     StatementContinue,
+				Comments: [2]Comments{{&tk[2]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"break /* A */ a // B\n", func(t *test, tk Tokens) { // 67
+			t.Output = Statement{
+				Type:            StatementBreak,
+				LabelIdentifier: &tk[4],
+				Comments:        [2]Comments{{&tk[2]}, {&tk[6]}},
+				Tokens:          tk[:7],
+			}
+		}},
+		{"break /* A */ a // B\n;", func(t *test, tk Tokens) { // 68
+			t.Output = Statement{
+				Type:            StatementBreak,
+				LabelIdentifier: &tk[4],
+				Comments:        [2]Comments{{&tk[2]}, {&tk[6]}},
+				Tokens:          tk[:9],
+			}
+		}},
+		{"break /* A */;", func(t *test, tk Tokens) { // 69
+			t.Output = Statement{
+				Type:     StatementBreak,
+				Comments: [2]Comments{{&tk[2]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"return /* A */ a // B\n", func(t *test, tk Tokens) { // 70
+			t.Ret = true
+			t.Output = Statement{
+				Type: StatementReturn,
+				ExpressionStatement: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[4],
+									Tokens:              tk[4:5],
+								},
+								Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[6]}},
+								Tokens:   tk[2:7],
+							}),
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[2:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"return /* A */ a // B\n;", func(t *test, tk Tokens) { // 71
+			t.Ret = true
+			t.Output = Statement{
+				Type: StatementReturn,
+				ExpressionStatement: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[4],
+									Tokens:              tk[4:5],
+								},
+								Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[6]}},
+								Tokens:   tk[2:7],
+							}),
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[2:7],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"return /* A */;", func(t *test, tk Tokens) { // 72
+			t.Ret = true
+			t.Output = Statement{
+				Type:     StatementReturn,
+				Comments: [2]Comments{{&tk[2]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"debugger // A\n", func(t *test, tk Tokens) { // 73
+			t.Output = Statement{
+				Type:     StatementDebugger,
+				Comments: [2]Comments{{&tk[2]}},
+				Tokens:   tk[:3],
+			}
+		}},
+		{"debugger /* A */;", func(t *test, tk Tokens) { // 74
+			t.Output = Statement{
+				Type:     StatementDebugger,
+				Comments: [2]Comments{{&tk[2]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"a /* A */: // B\ndebugger;", func(t *test, tk Tokens) { // 75
+			t.Output = Statement{
+				LabelIdentifier: &tk[0],
+				LabelledItemStatement: &Statement{
+					Type:   StatementDebugger,
+					Tokens: tk[7:9],
+				},
+				Comments: [2]Comments{{&tk[2]}, {&tk[5]}},
+				Tokens:   tk[:9],
 			}
 		}},
 	}, func(t *test) (Type, error) {
