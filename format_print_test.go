@@ -2184,6 +2184,66 @@ func TestPrintingScript(t *testing.T) {
 			"let {} = a;",
 			"let // A\n{} // B\n= // C\na // D\n",
 		},
+		{ // 432
+			"continue /* A */ a // B\n",
+			"continue a;",
+			"continue /* A */ a // B\n",
+		},
+		{ // 433
+			"continue /* A */ a // B\n;",
+			"continue a;",
+			"continue /* A */ a // B\n",
+		},
+		{ // 434
+			"continue /* A */;",
+			"continue;",
+			"continue /* A */;",
+		},
+		{ // 435
+			"break /* A */ a // B\n",
+			"break a;",
+			"break /* A */ a // B\n",
+		},
+		{ // 436
+			"break /* A */ a // B\n;",
+			"break a;",
+			"break /* A */ a // B\n",
+		},
+		{ // 437
+			"break /* A */;",
+			"break;",
+			"break /* A */;",
+		},
+		{ // 438
+			"function a(){\nreturn /* A */ b // B\n}",
+			"function a() {\n\treturn b;\n}",
+			"function a() {\n\treturn /* A */ b // B\n}",
+		},
+		{ // 439
+			"function a(){\nreturn /* A */ b // B\n;}",
+			"function a() {\n\treturn b;\n}",
+			"function a() {\n\treturn /* A */ b // B\n}",
+		},
+		{ // 440
+			"function a(){\nreturn /* A */;\n}",
+			"function a() {\n\treturn;\n}",
+			"function a() {\n\treturn /* A */;\n}",
+		},
+		{ // 441
+			"debugger // A\n",
+			"debugger;",
+			"debugger // A\n",
+		},
+		{ // 442
+			"debugger /* A */;",
+			"debugger;",
+			"debugger /* A */;",
+		},
+		{ // 443
+			"a /* A */: // B\ndebugger;",
+			"a: debugger;",
+			"a /* A */ : // B\ndebugger;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
