@@ -61,7 +61,17 @@ func (s Statement) printSource(w writer, v bool) {
 			s.WithStatement.printSource(w, v)
 		} else if s.LabelIdentifier != nil {
 			w.WriteString(s.LabelIdentifier.Data)
+
+			if v {
+				s.Comments[0].printSource(w, true, false)
+			}
+
 			w.WriteString(": ")
+
+			if v {
+				s.Comments[1].printSource(w, true, false)
+			}
+
 			if s.LabelledItemFunction != nil {
 				s.LabelledItemFunction.printSource(w, v)
 			} else if s.LabelledItemStatement != nil {
@@ -70,25 +80,39 @@ func (s Statement) printSource(w writer, v bool) {
 		} else if s.TryStatement != nil {
 			s.TryStatement.printSource(w, v)
 		}
-	case StatementContinue:
-		if s.LabelIdentifier == nil {
-			w.WriteString("continue;")
+	case StatementContinue, StatementBreak:
+		if s.Type == StatementContinue {
+			w.WriteString("continue")
 		} else {
-			w.WriteString("continue ")
-			w.WriteString(s.LabelIdentifier.Data)
-			w.PrintSemiColon()
+			w.WriteString("break")
 		}
-	case StatementBreak:
-		if s.LabelIdentifier == nil {
-			w.WriteString("break;")
-		} else {
-			w.WriteString("break ")
-			w.WriteString(s.LabelIdentifier.Data)
-			w.PrintSemiColon()
+
+		if v {
+			s.Comments[0].printSource(w, false, false)
 		}
+
+		if s.LabelIdentifier != nil {
+			if w.LastChar() != '\n' {
+				w.WriteString(" ")
+			}
+
+			w.WriteString(s.LabelIdentifier.Data)
+		}
+
+		if v {
+			s.Comments[1].printSource(w, false, false)
+		}
+
+		w.PrintSemiColon()
 	case StatementReturn:
 		if s.ExpressionStatement == nil {
-			w.WriteString("return;")
+			w.WriteString("return")
+
+			if v {
+				s.Comments[0].printSource(w, false, false)
+			}
+
+			w.PrintSemiColon()
 		} else {
 			w.WriteString("return ")
 			s.ExpressionStatement.printSource(w, v)
@@ -101,7 +125,13 @@ func (s Statement) printSource(w writer, v bool) {
 			w.PrintSemiColon()
 		}
 	case StatementDebugger:
-		w.WriteString("debugger;")
+		w.WriteString("debugger")
+
+		if v {
+			s.Comments[0].printSource(w, false, false)
+		}
+
+		w.PrintSemiColon()
 	}
 }
 
@@ -157,7 +187,7 @@ func (b Block) printSource(w writer, v bool) {
 	if v && len(b.Comments[1]) > 0 {
 		w.WriteString("\n")
 		b.Comments[1].printSource(w, false, true)
-	} else if len(b.StatementList) > 0 {
+	} else if len(b.StatementList) > 0 && w.LastChar() != '\n' && w.LastChar() != ' ' {
 		if v && len(b.Tokens) > 0 {
 			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
 				w.WriteString("\n")
