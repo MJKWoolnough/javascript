@@ -784,6 +784,10 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 }
 
 func (l LexicalBinding) printSource(w writer, v bool) {
+	if v {
+		l.Comments[0].printSource(w, true, false)
+	}
+
 	if l.BindingIdentifier != nil {
 		w.WriteString(l.BindingIdentifier.Data)
 	} else if l.ArrayBindingPattern != nil {
@@ -794,8 +798,16 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 		return
 	}
 
+	if v {
+		l.Comments[1].printSource(w, false, false)
+	}
+
 	if l.Initializer != nil {
-		w.WriteString(" = ")
+		if w.LastChar() != '\n' {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("= ")
 		l.Initializer.printSource(w, v)
 	}
 }
