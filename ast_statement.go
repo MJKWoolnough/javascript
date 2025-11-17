@@ -1272,7 +1272,7 @@ func (vs *VariableStatement) parse(j *jsParser, yield, await bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 		vd := len(vs.VariableDeclarationList)
