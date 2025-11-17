@@ -181,7 +181,7 @@ func (ld *LexicalDeclaration) parse(j *jsParser, in, yield, await bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 		lb := len(ld.BindingList)
@@ -223,10 +223,15 @@ type LexicalBinding struct {
 	ArrayBindingPattern  *ArrayBindingPattern
 	ObjectBindingPattern *ObjectBindingPattern
 	Initializer          *AssignmentExpression
+	Comments             [2]Comments
 	Tokens               Tokens
 }
 
 func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
+	lb.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	g := j.NewGoal()
 
 	if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
@@ -246,6 +251,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	}
 
 	j.Score(g)
+
+	lb.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	g = j.NewGoal()
 
