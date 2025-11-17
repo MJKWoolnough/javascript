@@ -176,6 +176,7 @@ type Statement struct {
 	LabelledItemFunction    *FunctionDeclaration
 	LabelledItemStatement   *Statement
 	TryStatement            *TryStatement
+	Comments                [2]Comments
 	Tokens                  Tokens
 }
 
@@ -220,36 +221,33 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		if err := s.SwitchStatement.parse(&g, yield, await, ret); err != nil {
 			return j.Error("Statement", err)
 		}
-	case parser.Token{Type: TokenKeyword, Data: "continue"}:
-		g.Skip()
-
-		s.Type = StatementContinue
-
-		if !g.parseSemicolon() {
-			g.AcceptRunWhitespaceNoNewLine()
-
-			if s.LabelIdentifier = g.parseIdentifier(yield, await); s.LabelIdentifier == nil {
-				return g.Error("Statement", ErrNoIdentifier)
-			}
-
-			if !g.parseSemicolon() {
-				return g.Error("Statement", ErrMissingSemiColon)
-			}
+	case parser.Token{Type: TokenKeyword, Data: "continue"}, parser.Token{Type: TokenKeyword, Data: "break"}:
+		if g.Peek().Data == "continue" {
+			s.Type = StatementContinue
+		} else {
+			s.Type = StatementBreak
 		}
-	case parser.Token{Type: TokenKeyword, Data: "break"}:
+
 		g.Skip()
 
-		s.Type = StatementBreak
+		s.Comments[0] = g.AcceptRunWhitespaceComments()
 
-		if !g.parseSemicolon() {
+		h := g.NewGoal()
+
+		if !h.parseSemicolon() {
 			g.AcceptRunWhitespaceNoNewLine()
+
 			if s.LabelIdentifier = g.parseIdentifier(yield, await); s.LabelIdentifier == nil {
 				return g.Error("Statement", ErrNoIdentifier)
 			}
 
+			s.Comments[1] = g.AcceptRunWhitespaceComments()
+
 			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
+		} else {
+			g.Score(h)
 		}
 	case parser.Token{Type: TokenKeyword, Data: "return"}:
 		if !ret {
@@ -260,8 +258,10 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 
 		s.Type = StatementReturn
 
-		if !g.parseSemicolon() {
-			g.AcceptRunWhitespaceNoNewLine()
+		h := g.NewGoal()
+
+		if !h.parseSemicolon() {
+			g.AcceptRunWhitespaceNoComment()
 
 			h := g.NewGoal()
 			s.ExpressionStatement = new(Expression)
@@ -275,6 +275,9 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 			if !g.parseSemicolon() {
 				return g.Error("Statement", ErrMissingSemiColon)
 			}
+		} else {
+			s.Comments[0] = g.AcceptRunWhitespaceComments()
+			g.parseSemicolon()
 		}
 	case parser.Token{Type: TokenKeyword, Data: "with"}:
 		s.WithStatement = new(WithStatement)
@@ -315,14 +318,25 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 
 		s.Type = StatementDebugger
 
+		s.Comments[0] = g.AcceptRunWhitespaceComments()
+
 		if !g.parseSemicolon() {
 			return g.Error("Statement", ErrMissingSemiColon)
 		}
 	default:
 		if i := g.parseIdentifier(yield, await); i != nil {
-			g.AcceptRunWhitespace()
+			h := g.NewGoal()
 
-			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+			h.AcceptRunWhitespace()
+
+			if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+				s.Comments[0] = g.AcceptRunWhitespaceComments()
+
+				g.AcceptRunWhitespace()
+				g.Skip()
+
+				s.Comments[1] = g.AcceptRunWhitespaceComments()
+
 				g.AcceptRunWhitespace()
 
 				s.LabelIdentifier = i
