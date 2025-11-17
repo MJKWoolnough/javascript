@@ -1417,6 +1417,71 @@ func TestLexicalBinding(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"// A\na // B\n", func(t *test, tk Tokens) { // 12
+			t.Output = LexicalBinding{
+				BindingIdentifier: &tk[2],
+				Comments:          [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:            tk[:5],
+			}
+		}},
+		{"// A\na // B\n= // C\nb // D\n", func(t *test, tk Tokens) { // 13
+			t.Output = LexicalBinding{
+				BindingIdentifier: &tk[2],
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\n[]// B\n= // C\na // D", func(t *test, tk Tokens) { // 14
+			t.Output = LexicalBinding{
+				ArrayBindingPattern: &ArrayBindingPattern{
+					Tokens: tk[2:4],
+				},
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{"// A\n{}// B\n= // C\na // D", func(t *test, tk Tokens) { // 14
+			t.Output = LexicalBinding{
+				ObjectBindingPattern: &ObjectBindingPattern{
+					Tokens: tk[2:4],
+				},
+				Initializer: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var lb LexicalBinding
 
