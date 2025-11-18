@@ -2029,227 +2029,227 @@ func TestPrintingScript(t *testing.T) {
 			"++a;",
 			"// A\n\n// B\n++ // C\na // D\n",
 		},
-		{ // 401
+		{ // 402
 			"// A\n\n// B\n-- // C\na // D\n",
 			"--a;",
 			"// A\n\n// B\n-- // C\na // D\n",
 		},
-		{ // 402
+		{ // 403
 			"// A\n\n// B\ntypeof // C\na // D\n",
 			"typeof a;",
 			"// A\n\n// B\ntypeof // C\na // D\n",
 		},
-		{ // 403
+		{ // 404
 			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
 			"void +a;",
 			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
 		},
-		{ // 404
+		{ // 405
 			"// A\n\n// B\nsuper // C\n()// D\n",
 			"super();",
 			"// A\n\n// B\nsuper // C\n() // D\n",
 		},
-		{ // 405
+		{ // 406
 			"// A\n\n// B\nimport // C\n( // D\n\n// E\na // F\n\n// G\n) // H\n",
 			"import(a);",
 			"// A\n\n// B\nimport // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n",
 		},
-		{ // 406
+		{ // 407
 			"// A\n\n// B\nsuper // C\n()// D\n`` // E",
 			"super()``;",
 			"// A\n\n// B\nsuper // C\n() // D\n`` // E\n",
 		},
-		{ // 407
+		{ // 408
 			"// A\n\n// B\nsuper // C\n()// D\n()// E\n",
 			"super()();",
 			"// A\n\n// B\nsuper // C\n() // D\n() // E\n",
 		},
-		{ // 408
+		{ // 409
 			"// A\n\n// B\nsuper // C\n()// D\n[ // E\n\n// F\na // G\n\n// H\n]// I",
 			"super()[a];",
 			"// A\n\n// B\nsuper // C\n() // D\n[ // E\n\n\t// F\n\ta // G\n\n// H\n] // I\n",
 		},
-		{ // 409
+		{ // 410
 			"// A\n\n// B\nsuper // C\n()// D\n. // E\na // F",
 			"super().a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\na // F\n",
 		},
-		{ // 410
+		{ // 411
 			"// A\n\n// B\nsuper // C\n()// D\n. // E\n#a // F",
 			"super().#a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\n#a // F\n",
 		},
-		{ // 411
+		{ // 412
 			"// A\n\n// B\na // C\n()// D\n",
 			"a();",
 			"// A\n\n// B\na // C\n() // D\n",
 		},
-		{ // 412
+		{ // 413
 			"// A\n\n// B\nclass a{} // C\n",
 			"class a {}",
 			"// A\n\n// B\nclass a {} // C\n",
 		},
-		{ // 413
+		{ // 414
 			"// A\n\n// B\nfunction a(){} // C\n",
 			"function a() {}",
 			"// A\n\n// B\nfunction a() {} // C\n",
 		},
-		{ // 414
+		{ // 415
 			"// A\n\n// B\nconst a = 1; // B\n",
 			"const a = 1;",
 			"// A\n\n// B\nconst a = 1; // B\n",
 		},
-		{ // 415
+		{ // 416
 			"// A\n\n// B\nlet a = 1; // B\n",
 			"let a = 1;",
 			"// A\n\n// B\nlet a = 1; // B\n",
 		},
-		{ // 416
+		{ // 417
 			"a?. // A\n() // B\n",
 			"a?.();",
 			"a?. // A\n() // B\n",
 		},
-		{ // 417
+		{ // 418
 			"a?. // A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n",
 			"a?.[b];",
 			"a?. // A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n",
 		},
-		{ // 418
+		{ // 419
 			"a?. // A\n[\n// C\nb\n// E\n] // F\n",
 			"a?.[b];",
 			"a?. // A\n[\n\t// C\n\tb\n// E\n] // F\n",
 		},
-		{ // 419
+		{ // 420
 			"a?. // A\nb // B\n",
 			"a?.b;",
 			"a?. // A\nb // B\n",
 		},
-		{ // 420
+		{ // 421
 			"a?. // A\n`` // B\n",
 			"a?.``;",
 			"a?. // A\n`` // B\n",
 		},
-		{ // 421
+		{ // 422
 			"a?. // A\n()// B\n`` // C\n",
 			"a?.()``;",
 			"a?. // A\n() // B\n`` // C\n",
 		},
-		{ // 422
+		{ // 423
 			"a?. // A\n`` // B\n[ // C\n\n// D\nb // E\n\n// F\n] // G\n",
 			"a?.``[b];",
 			"a?. // A\n`` // B\n[ // C\n\n\t// D\n\tb // E\n\n// F\n] // G\n",
 		},
-		{ // 423
+		{ // 424
 			"a?. //A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n. // G\nc// H\n",
 			"a?.[b].c;",
 			"a?. //A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n. // G\nc // H\n",
 		},
-		{ // 424
+		{ // 425
 			"class a {\n// A\nstatic // B\n{} // C\n}",
 			"class a {\n\tstatic {}\n}",
 			"class a {\n\t// A\n\tstatic // B\n\t{} // C\n}",
 		},
-		{ // 425
+		{ // 426
 			"class // A\na // B\n{ // C\n\n// D\n}",
 			"class a {}",
 			"class // A\na // B\n{ // C\n\n// D\n}",
 		},
-		{ // 426
+		{ // 427
 			"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}",
 			"class a {\n\ta() {}\n}",
 			"class a { // A\n\n\t// B\n\t// C\n\t// D\n\ta() {} // E\n\n// F\n\n// G\n}",
 		},
-		{ // 427
+		{ // 428
 			"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}",
 			"class a {\n\ta() {}\n\tb() {}\n}",
 			"class a { // A\n\n\t// B\n\ta() {} // C\n\t       // D\n\n\t// E\n\tb() {} // F\n\n// G\n}",
 		},
-		{ // 428
+		{ // 429
 			"let // A\na // B\n",
 			"let a;",
 			"let // A\na // B\n",
 		},
-		{ // 429
+		{ // 430
 			"let // A\na // B\n= // C\nb // D\n",
 			"let a = b;",
 			"let // A\na // B\n= // C\nb // D\n",
 		},
-		{ // 430
+		{ // 431
 			"let // A\n[]// B\n = // C\na // D",
 			"let [] = a;",
 			"let // A\n[] // B\n= // C\na // D\n",
 		},
-		{ // 431
+		{ // 432
 			"let // A\n{}// B\n = // C\na // D",
 			"let {} = a;",
 			"let // A\n{} // B\n= // C\na // D\n",
 		},
-		{ // 432
-			"continue /* A */ a // B\n",
-			"continue a;",
-			"continue /* A */ a // B\n",
-		},
 		{ // 433
-			"continue /* A */ a // B\n;",
+			"continue /* A */ a // B\n",
 			"continue a;",
 			"continue /* A */ a // B\n",
 		},
 		{ // 434
+			"continue /* A */ a // B\n;",
+			"continue a;",
+			"continue /* A */ a // B\n",
+		},
+		{ // 435
 			"continue /* A */;",
 			"continue;",
 			"continue /* A */;",
 		},
-		{ // 435
-			"break /* A */ a // B\n",
-			"break a;",
-			"break /* A */ a // B\n",
-		},
 		{ // 436
-			"break /* A */ a // B\n;",
+			"break /* A */ a // B\n",
 			"break a;",
 			"break /* A */ a // B\n",
 		},
 		{ // 437
+			"break /* A */ a // B\n;",
+			"break a;",
+			"break /* A */ a // B\n",
+		},
+		{ // 438
 			"break /* A */;",
 			"break;",
 			"break /* A */;",
 		},
-		{ // 438
+		{ // 439
 			"function a(){\nreturn /* A */ b // B\n}",
 			"function a() {\n\treturn b;\n}",
 			"function a() {\n\treturn /* A */ b // B\n}",
 		},
-		{ // 439
+		{ // 440
 			"function a(){\nreturn /* A */ b // B\n;}",
 			"function a() {\n\treturn b;\n}",
 			"function a() {\n\treturn /* A */ b // B\n}",
 		},
-		{ // 440
+		{ // 441
 			"function a(){\nreturn /* A */;\n}",
 			"function a() {\n\treturn;\n}",
 			"function a() {\n\treturn /* A */;\n}",
 		},
-		{ // 441
-			"debugger // A\n",
-			"debugger;",
-			"debugger // A\n",
-		},
 		{ // 442
-			"debugger /* A */;",
+			"debugger // A\n",
 			"debugger;",
-			"debugger /* A */;",
+			"debugger // A\n",
 		},
 		{ // 443
+			"debugger /* A */;",
+			"debugger;",
+			"debugger /* A */;",
+		},
+		{ // 444
 			"a /* A */: // B\ndebugger;",
 			"a: debugger;",
 			"a /* A */ : // B\ndebugger;",
 		},
-		{ // 444
+		{ // 445
 			"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G",
 			"if (a) b;",
 			"if // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
-		{ // 445
+		{ // 446
 			"// A\n\n// B\nif // C\n(// D\n\n// E\na // F\n\n// G\n) // H\n{// I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O",
 			"if (a) {} else {}",
 			"// A\n\n// B\nif // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{ // I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O\n",
