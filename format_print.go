@@ -92,7 +92,7 @@ func (s Statement) printSource(w writer, v bool) {
 		}
 
 		if s.LabelIdentifier != nil {
-			if w.LastChar() != '\n' {
+			if !w.LastIsWhitespace() {
 				w.WriteString(" ")
 			}
 
@@ -187,7 +187,7 @@ func (b Block) printSource(w writer, v bool) {
 	if v && len(b.Comments[1]) > 0 {
 		w.WriteString("\n")
 		b.Comments[1].printSource(w, false, true)
-	} else if len(b.StatementList) > 0 && w.LastChar() != '\n' && w.LastChar() != ' ' {
+	} else if len(b.StatementList) > 0 && !w.LastIsWhitespace() {
 		if v && len(b.Tokens) > 0 {
 			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
 				w.WriteString("\n")
@@ -860,7 +860,7 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 	}
 
 	if l.Initializer != nil {
-		if w.LastChar() != '\n' {
+		if !w.LastIsWhitespace() {
 			w.WriteString(" ")
 		}
 
@@ -1319,7 +1319,7 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 	fd.ClassElementName.printSource(w, v)
 
 	if fd.Initializer != nil {
-		if w.LastChar() != '\n' {
+		if !w.LastIsWhitespace() {
 			w.WriteString(" ")
 		}
 

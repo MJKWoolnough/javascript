@@ -20,6 +20,7 @@ type writer interface {
 	Underlying() writer
 	PrintSemiColon()
 	LastChar() byte
+	LastIsWhitespace() bool
 	Pos() int
 	Indent() writer
 	Printf(string, ...any)
@@ -133,6 +134,10 @@ func (u *underlyingWriter) PrintSemiColon() {
 
 func (u *underlyingWriter) LastChar() byte {
 	return u.lastChar
+}
+
+func (u *underlyingWriter) LastIsWhitespace() bool {
+	return u.lastChar == ' ' || u.lastChar == '\n' || u.lastChar == '\t'
 }
 
 func (u *underlyingWriter) Pos() int {
