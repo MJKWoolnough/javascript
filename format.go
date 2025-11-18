@@ -426,6 +426,8 @@ func (st StatementType) String() string {
 		return "StatementReturn"
 	case StatementThrow:
 		return "StatementThrow"
+	case StatementDebugger:
+		return "StatementDebugger"
 	default:
 		return unknown
 	}
