@@ -2244,6 +2244,16 @@ func TestPrintingScript(t *testing.T) {
 			"a: debugger;",
 			"a /* A */ : // B\ndebugger;",
 		},
+		{ // 444
+			"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G",
+			"if (a) b;",
+			"if // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
+		},
+		{ // 445
+			"// A\n\n// B\nif // C\n(// D\n\n// E\na // F\n\n// G\n) // H\n{// I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O",
+			"if (a) {} else {}",
+			"// A\n\n// B\nif // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{ // I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
