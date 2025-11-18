@@ -1462,7 +1462,7 @@ func TestLexicalBinding(t *testing.T) {
 				Tokens:   tk[:13],
 			}
 		}},
-		{"// A\n{}// B\n= // C\na // D", func(t *test, tk Tokens) { // 14
+		{"// A\n{}// B\n= // C\na // D", func(t *test, tk Tokens) { // 15
 			t.Output = LexicalBinding{
 				ObjectBindingPattern: &ObjectBindingPattern{
 					Tokens: tk[2:4],
