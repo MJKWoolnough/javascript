@@ -399,6 +399,7 @@ type IfStatement struct {
 	Expression    Expression
 	Statement     Statement
 	ElseStatement *Statement
+	Comments      [6]Comments
 	Tokens        Tokens
 }
 
@@ -407,13 +408,17 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 		return j.Error("IfStatement", ErrInvalidIfStatement)
 	}
 
+	is.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("IfStatement", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	is.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -422,12 +427,16 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	j.Score(g)
+
+	is.Comments[2] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("IfStatement", ErrMissingClosingParenthesis)
 	}
 
+	is.Comments[3] = j.AcceptRunWhitespaceComments()
 	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
@@ -447,20 +456,26 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 	g.AcceptRunWhitespace()
 
 	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
-		g.AcceptRunWhitespace()
+		is.Comments[4] = j.AcceptRunWhitespaceComments()
 
-		h := g.NewGoal()
+		j.AcceptRunWhitespace()
+		j.Skip()
+
+		is.Comments[5] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
+		g := j.NewGoal()
 
 		is.ElseStatement = new(Statement)
-		if err := is.ElseStatement.parse(&h, yield, await, ret); err != nil {
-			return g.Error("IfStatement", err)
+		if err := is.ElseStatement.parse(&g, yield, await, ret); err != nil {
+			return j.Error("IfStatement", err)
 		}
 
 		if is.ElseStatement.LabelledItemFunction != nil {
-			return g.Error("IfStatement", ErrLabelledFunction)
+			return j.Error("IfStatement", ErrLabelledFunction)
 		}
 
-		g.Score(h)
 		j.Score(g)
 	}
 
