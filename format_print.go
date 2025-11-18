@@ -266,33 +266,60 @@ func (e Expression) printSource(w writer, v bool) {
 }
 
 func (i IfStatement) printSource(w writer, v bool) {
-	w.WriteString("if (")
+	w.WriteString("if")
+
+	if v && len(i.Comments[0]) > 0 {
+		i.Comments[0].printSource(w, true, false)
+	} else {
+		w.WriteString(" ")
+	}
+
+	w.WriteString("(")
 
 	if v {
-		pp := w.Indent()
+		i.Comments[1].printSource(w, false, true)
+
+		ip := w.Indent()
 
 		var nl bool
 
-		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
+		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && (i.Expression.Tokens[0].Line > i.Tokens[0].Line || i.Expression.hasFirstComment()) {
 			nl = true
 
-			pp.WriteString("\n")
+			ip.WriteString("\n")
 		}
 
-		i.Expression.printSource(pp, true)
+		i.Expression.printSource(ip, true)
 
-		if nl {
+		if nl || len(i.Comments[2]) > 0 {
 			w.WriteString("\n")
+			i.Comments[2].printSource(w, false, false)
 		}
 	} else {
 		i.Expression.printSource(w, false)
 	}
 
 	w.WriteString(") ")
+
+	if v {
+		i.Comments[3].printSource(w, true, false)
+	}
+
 	i.Statement.printSource(w, v)
 
 	if i.ElseStatement != nil {
-		w.WriteString(" else ")
+		if v && len(i.Comments[4]) > 0 {
+			i.Comments[4].printSource(w, true, false)
+		} else {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("else ")
+
+		if v {
+			i.Comments[5].printSource(w, true, false)
+		}
+
 		i.ElseStatement.printSource(w, v)
 	}
 }
