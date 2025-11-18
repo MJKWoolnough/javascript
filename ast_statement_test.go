@@ -3731,6 +3731,77 @@ func TestIfStatement(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
+		{"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G", func(t *test, tk Tokens) { // 11
+			t.Output = IfStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+								Tokens:   tk[8:13],
+							}),
+							Tokens: tk[8:13],
+						},
+					},
+					Tokens: tk[8:13],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[20],
+										Tokens:              tk[20:21],
+									},
+									Comments: [5]Comments{nil, nil, nil, nil, {&tk[22]}},
+									Tokens:   tk[20:23],
+								}),
+								Tokens: tk[20:23],
+							},
+						},
+						Tokens: tk[20:23],
+					},
+					Tokens: tk[20:23],
+				},
+				Comments: [6]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}},
+				Tokens:   tk[:23],
+			}
+		}},
+		{"if (a){} // A\nelse // B\n{}", func(t *test, tk Tokens) { // 12
+			t.Output = IfStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								IdentifierReference: &tk[3],
+								Tokens:              tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+					},
+					Tokens: tk[3:4],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[5:7],
+					},
+					Tokens: tk[5:7],
+				},
+				ElseStatement: &Statement{
+					BlockStatement: &Block{
+						Tokens: tk[14:16],
+					},
+					Tokens: tk[14:16],
+				},
+				Comments: [6]Comments{nil, nil, nil, nil, {&tk[8]}, {&tk[12]}},
+				Tokens:   tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var is IfStatement
 		err := is.parse(&t.Tokens, t.Yield, t.Await, t.Ret)
