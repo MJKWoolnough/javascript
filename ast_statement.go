@@ -1130,6 +1130,7 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 type WithStatement struct {
 	Expression Expression
 	Statement  Statement
+	Comments   [4]Comments
 	Tokens     Tokens
 }
 
@@ -1138,13 +1139,17 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 		return j.Error("WithStatement", ErrInvalidWithStatement)
 	}
 
+	ws.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("WithStatement", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	ws.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -1153,12 +1158,15 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	j.Score(g)
+
+	ws.Comments[2] = j.AcceptRunWhitespaceComments()
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("WithStatement", ErrMissingClosingParenthesis)
 	}
 
+	ws.Comments[3] = j.AcceptRunWhitespaceComments()
 	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
