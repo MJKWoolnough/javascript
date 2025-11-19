@@ -6738,6 +6738,47 @@ func TestWithStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
+		{"with // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G\n", func(t *test, tk Tokens) { // 6
+			t.Output = WithStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+								Tokens:   tk[8:13],
+							}),
+							Tokens: tk[8:13],
+						},
+					},
+					Tokens: tk[8:13],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[20],
+										Tokens:              tk[20:21],
+									},
+									Comments: [5]Comments{nil, nil, nil, nil, {&tk[22]}},
+									Tokens:   tk[20:23],
+								}),
+								Tokens: tk[20:23],
+							},
+						},
+						Tokens: tk[20:23],
+					},
+					Tokens: tk[20:23],
+				},
+				Comments: [4]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}},
+				Tokens:   tk[:23],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ws WithStatement
 
