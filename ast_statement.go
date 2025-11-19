@@ -556,6 +556,7 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 type IterationStatementWhile struct {
 	Expression Expression
 	Statement  Statement
+	Comments   [4]Comments
 	Tokens     Tokens
 }
 
@@ -564,13 +565,17 @@ func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) er
 		return j.Error("IterationStatementWhile", ErrInvalidIterationStatementWhile)
 	}
 
+	is.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("IterationStatementWhile", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	is.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -579,12 +584,16 @@ func (is *IterationStatementWhile) parse(j *jsParser, yield, await, ret bool) er
 	}
 
 	j.Score(g)
+
+	is.Comments[2] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("IterationStatementWhile", ErrMissingClosingParenthesis)
 	}
 
+	is.Comments[3] = j.AcceptRunWhitespaceComments()
 	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
