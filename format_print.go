@@ -353,29 +353,49 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 }
 
 func (i IterationStatementWhile) printSource(w writer, v bool) {
-	w.WriteString("while (")
+	w.WriteString("while ")
 
 	if v {
-		pp := w.Indent()
+		i.Comments[0].printSource(w, true, false)
+	}
+
+	w.WriteString("(")
+
+	if v {
+		i.Comments[1].printSource(w, false, true)
+	}
+
+	if v {
+		ip := w.Indent()
 
 		var nl bool
 
-		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line {
-			pp.WriteString("\n")
+		if (len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line) || i.Expression.hasFirstComment() {
+			ip.WriteString("\n")
 
 			nl = true
 		}
 
-		i.Expression.printSource(pp, true)
+		i.Expression.printSource(ip, true)
 
-		if nl {
+		if nl && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
 	} else {
 		i.Expression.printSource(w, false)
 	}
 
+	if v && len(i.Comments[2]) > 0 {
+		w.WriteString("\n")
+		i.Comments[2].printSource(w, false, true)
+	}
+
 	w.WriteString(") ")
+
+	if v {
+		i.Comments[3].printSource(w, true, false)
+	}
+
 	i.Statement.printSource(w, v)
 }
 
