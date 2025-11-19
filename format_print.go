@@ -634,29 +634,49 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 }
 
 func (ws WithStatement) printSource(w writer, v bool) {
-	w.WriteString("with (")
+	w.WriteString("with ")
 
 	if v {
-		pp := w.Indent()
+		ws.Comments[0].printSource(w, true, false)
+	}
+
+	w.WriteString("(")
+
+	if v {
+		ws.Comments[1].printSource(w, false, true)
+	}
+
+	if v {
+		ip := w.Indent()
 
 		var nl bool
 
-		if len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line {
+		if (len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line) || ws.Expression.hasFirstComment() {
 			nl = true
 
-			pp.WriteString("\n")
+			ip.WriteString("\n")
 		}
 
-		ws.Expression.printSource(pp, true)
+		ws.Expression.printSource(ip, true)
 
-		if nl {
+		if nl && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
 	} else {
 		ws.Expression.printSource(w, false)
 	}
 
+	if v && len(ws.Comments[2]) > 0 {
+		w.WriteString("\n")
+		ws.Comments[2].printSource(w, false, true)
+	}
+
 	w.WriteString(") ")
+
+	if v {
+		ws.Comments[3].printSource(w, true, false)
+	}
+
 	ws.Statement.printSource(w, v)
 }
 
@@ -1579,7 +1599,12 @@ func (p PropertyName) printSource(w writer, v bool) {
 func (l LogicalORExpression) printSource(w writer, v bool) {
 	if l.LogicalORExpression != nil {
 		l.LogicalORExpression.printSource(w, v)
-		w.WriteString(" || ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("|| ")
 	}
 
 	l.LogicalANDExpression.printSource(w, v)
