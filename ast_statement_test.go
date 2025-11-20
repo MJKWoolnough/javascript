@@ -6696,6 +6696,62 @@ func TestCaseClause(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"// A\ncase /* B */ a /* C */: // D\n\n// E\ncase", func(t *test, tk Tokens) { // 9
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
+								Tokens:   tk[4:9],
+							}),
+							Tokens: tk[4:9],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[11]}},
+				Tokens:   tk[:12],
+			}
+		}},
+		{"// A\ncase /* B */ a /* C */: // D\n\n// E\n{} // F\ncase", func(t *test, tk Tokens) { // 9
+			t.Output = CaseClause{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
+								Tokens:   tk[4:9],
+							}),
+							Tokens: tk[4:9],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				StatementList: []StatementListItem{
+					{
+						Statement: &Statement{
+							BlockStatement: &Block{
+								Tokens: tk[15:17],
+							},
+							Tokens: tk[15:17],
+						},
+						Comments: [2]Comments{{&tk[13]}, {&tk[18]}},
+						Tokens:   tk[13:19],
+					},
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[11]}},
+				Tokens:   tk[:19],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cc CaseClause
 
