@@ -1020,15 +1020,22 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	for {
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
-		if j.Accept(TokenRightBracePunctuator) {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Accept(TokenRightBracePunctuator) {
+			j.Score(g)
+
 			break
 		} else if j.Peek() == (parser.Token{Type: TokenKeyword, Data: "default"}) {
 			if ss.DefaultClause != nil {
 				return j.Error("SwitchStatement", ErrDuplicateDefaultClause)
 			}
 
+			j.AcceptRunWhitespace()
 			j.Skip()
 			j.AcceptRunWhitespace()
 
@@ -1056,7 +1063,7 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 				j.Score(g)
 			}
 		} else {
-			g := j.NewGoal()
+			g = j.NewGoal()
 
 			var cc *CaseClause
 
@@ -1086,15 +1093,20 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 type CaseClause struct {
 	Expression    Expression
 	StatementList []StatementListItem
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
 func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
+	cc.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "case"}) {
 		return j.Error("CaseClause", ErrMissingCaseClause)
 	}
 
-	j.AcceptRunWhitespace()
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -1109,6 +1121,8 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 		return j.Error("CaseClause", ErrMissingColon)
 	}
 
+	cc.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
 	for {
 		g := j.NewGoal()
 		g.AcceptRunWhitespace()
@@ -1117,15 +1131,16 @@ func (cc *CaseClause) parse(j *jsParser, yield, await, ret bool) error {
 			break
 		}
 
-		h := g.NewGoal()
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 		sl := len(cc.StatementList)
 
 		cc.StatementList = append(cc.StatementList, StatementListItem{})
-		if err := cc.StatementList[sl].parse(&h, yield, await, ret); err != nil {
+		if err := cc.StatementList[sl].parse(&g, yield, await, ret); err != nil {
 			return g.Error("CaseClause", err)
 		}
 
-		g.Score(h)
 		j.Score(g)
 	}
 
