@@ -6543,6 +6543,109 @@ func TestSwitchStatement(t *testing.T) {
 				Token:   tk[39],
 			}
 		}},
+		{"switch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{ // G\n\n// H\n}", func(t *test, tk Tokens) { // 19
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+								Tokens:   tk[8:13],
+							}),
+							Tokens: tk[8:13],
+						},
+					},
+					Tokens: tk[8:13],
+				},
+				Comments: [9]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}, {&tk[22]}, nil, nil, nil, {&tk[24]}},
+				Tokens:   tk[:27],
+			}
+		}},
+		{"switch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{ // G\n\n// H\ncase /* I */ b /* J */ : // K\n\n// J\ncase c:// L\n\n// M\ndefault /* N */ : // O\nd;// P\n\n// Q\n}", func(t *test, tk Tokens) { // 20
+			t.Output = SwitchStatement{
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+								Tokens:   tk[8:13],
+							}),
+							Tokens: tk[8:13],
+						},
+					},
+					Tokens: tk[8:13],
+				},
+				CaseClauses: []CaseClause{
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: WrapConditional(&MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: &tk[30],
+											Tokens:              tk[30:31],
+										},
+										Comments: [5]Comments{{&tk[28]}, nil, nil, nil, {&tk[32]}},
+										Tokens:   tk[28:33],
+									}),
+									Tokens: tk[28:33],
+								},
+							},
+							Tokens: tk[28:33],
+						},
+						Comments: [2]Comments{{&tk[24]}, {&tk[36]}},
+						Tokens:   tk[24:37],
+					},
+					{
+						Expression: Expression{
+							Expressions: []AssignmentExpression{
+								{
+									ConditionalExpression: WrapConditional(&PrimaryExpression{
+										IdentifierReference: &tk[42],
+										Tokens:              tk[42:43],
+									}),
+									Tokens: tk[42:43],
+								},
+							},
+							Tokens: tk[42:43],
+						},
+						Comments: [2]Comments{{&tk[38]}, {&tk[44]}},
+						Tokens:   tk[38:45],
+					},
+				},
+				DefaultClause: []StatementListItem{
+					{
+						Statement: &Statement{
+							ExpressionStatement: &Expression{
+								Expressions: []AssignmentExpression{
+									{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											IdentifierReference: &tk[56],
+											Tokens:              tk[56:57],
+										}),
+										Tokens: tk[56:57],
+									},
+								},
+								Tokens: tk[56:57],
+							},
+							Tokens: tk[56:58],
+						},
+						Comments: [2]Comments{nil, {&tk[58]}},
+						Tokens:   tk[56:59],
+					},
+				},
+				Comments: [9]Comments{{&tk[2]}, {&tk[6]}, {&tk[14]}, {&tk[18]}, {&tk[22]}, {&tk[46]}, {&tk[50]}, {&tk[54]}, {&tk[60]}},
+				Tokens:   tk[:63],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ss SwitchStatement
 
@@ -6718,7 +6821,7 @@ func TestCaseClause(t *testing.T) {
 				Tokens:   tk[:12],
 			}
 		}},
-		{"// A\ncase /* B */ a /* C */: // D\n\n// E\n{} // F\ncase", func(t *test, tk Tokens) { // 9
+		{"// A\ncase /* B */ a /* C */: // D\n\n// E\n{} // F\ncase", func(t *test, tk Tokens) { // 10
 			t.Output = CaseClause{
 				Expression: Expression{
 					Expressions: []AssignmentExpression{
