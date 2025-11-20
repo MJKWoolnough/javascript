@@ -1164,9 +1164,17 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 }
 
 func (c CaseClause) printSource(w writer, v bool) {
+	if v {
+		c.Comments[0].printSource(w, false, true)
+	}
+
 	w.WriteString("case ")
 	c.Expression.printSource(w, v)
 	w.WriteString(":")
+
+	if v {
+		c.Comments[1].printSource(w, false, true)
+	}
 
 	pp := w.Indent()
 
