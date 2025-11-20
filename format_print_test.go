@@ -2269,6 +2269,11 @@ func TestPrintingScript(t *testing.T) {
 			"while (a) b;",
 			"while // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
+		{ // 450
+			"switch (a) {\n// A\ncase /* B */ b /* C */: // D\n\n// E\ncase c:\n// F\ncase /* G */ d /* H */: // I\n\n// J\n{} // F\ndefault:}",
+			"switch (a) {\ncase b:\ncase c:\ncase d:\n\t{}\ndefault:\n}",
+			"switch (a) {\n// A\ncase /* B */ b /* C */: // D\n\n// E\ncase c:\n// F\ncase /* G */ d /* H */: // I\n\n\t// J\n\t{} // F\n\ndefault:\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
