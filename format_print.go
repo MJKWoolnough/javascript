@@ -599,9 +599,17 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 }
 
 func (s SwitchStatement) printSource(w writer, v bool) {
-	w.WriteString("switch (")
+	w.WriteString("switch ")
 
 	if v {
+		s.Comments[0].printSource(w, true, false)
+	}
+
+	w.WriteString("(")
+
+	if v {
+		s.Comments[1].printSource(w, true, false)
+
 		pp := w.Indent()
 
 		var nl bool
@@ -614,26 +622,49 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 
 		s.Expression.printSource(pp, true)
 
-		if nl {
+		if nl || len(s.Comments[2]) > 0 {
 			w.WriteString("\n")
 		}
+
+		s.Comments[2].printSource(w, true, false)
 	} else {
 		s.Expression.printSource(w, false)
 	}
 
-	w.WriteString(") {")
+	w.WriteString(") ")
 
-	if len(s.CaseClauses) > 0 || s.DefaultClause != nil || len(s.PostDefaultCaseClauses) > 0 {
-		w.WriteString("\n")
+	if v {
+		s.Comments[3].printSource(w, true, false)
+	}
+
+	w.WriteString("{")
+
+	if v {
+		s.Comments[4].printSource(w, false, true)
 	}
 
 	for _, c := range s.CaseClauses {
-		c.printSource(w, v)
 		w.WriteString("\n")
+		c.printSource(w, v)
 	}
 
 	if s.DefaultClause != nil {
-		w.WriteString("default:")
+		w.WriteString("\n")
+		if v {
+			s.Comments[5].printSource(w, false, true)
+		}
+
+		w.WriteString("default")
+
+		if v {
+			s.Comments[6].printSource(w, false, false)
+		}
+
+		w.WriteString(":")
+
+		if v {
+			s.Comments[7].printSource(w, false, true)
+		}
 
 		pp := w.Indent()
 
@@ -641,12 +672,19 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 			pp.WriteString("\n")
 			stmt.printSource(pp, v)
 		}
-
-		w.WriteString("\n")
 	}
 
 	for _, c := range s.PostDefaultCaseClauses {
+		w.WriteString("\n")
 		c.printSource(w, v)
+	}
+
+	if v && len(s.Comments[8]) > 0 {
+		w.WriteString("\n")
+		s.Comments[8].printSource(w, false, true)
+	}
+
+	if c := w.LastChar(); c != '\n' && c != '{' {
 		w.WriteString("\n")
 	}
 
