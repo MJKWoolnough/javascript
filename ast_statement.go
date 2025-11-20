@@ -984,6 +984,7 @@ type SwitchStatement struct {
 	CaseClauses            []CaseClause
 	DefaultClause          []StatementListItem
 	PostDefaultCaseClauses []CaseClause
+	Comments               [9]Comments
 	Tokens                 Tokens
 }
 
@@ -992,13 +993,17 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 		return j.Error("SwitchStatement", ErrInvalidSwitchStatement)
 	}
 
+	ss.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("SwitchStatement", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	ss.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
 
 	g := j.NewGoal()
 
@@ -1007,17 +1012,24 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	j.Score(g)
+
+	ss.Comments[2] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("SwitchStatement", ErrMissingClosingParenthesis)
 	}
 
+	ss.Comments[3] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		return j.Error("SwitchStatement", ErrMissingOpeningBrace)
 	}
+
+	ss.Comments[4] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	for {
 		j.AcceptRunWhitespaceNoComment()
@@ -1027,30 +1039,37 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 		g.AcceptRunWhitespace()
 
 		if g.Accept(TokenRightBracePunctuator) {
-			j.Score(g)
-
 			break
-		} else if j.Peek() == (parser.Token{Type: TokenKeyword, Data: "default"}) {
+		} else if g.Peek() == (parser.Token{Type: TokenKeyword, Data: "default"}) {
 			if ss.DefaultClause != nil {
 				return j.Error("SwitchStatement", ErrDuplicateDefaultClause)
 			}
 
+			ss.Comments[5] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 			j.Skip()
+
+			ss.Comments[6] = j.AcceptRunWhitespaceComments()
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
 				return j.Error("SwitchStatement", ErrMissingColon)
 			}
 
+			ss.Comments[7] = j.AcceptRunWhitespaceNoNewlineComments()
 			ss.DefaultClause = []StatementListItem{}
 
 			for {
-				j.AcceptRunWhitespace()
+				g = j.NewGoal()
 
-				if pt := j.Peek(); pt == (parser.Token{Type: TokenKeyword, Data: "case"}) || pt.Type == TokenRightBracePunctuator {
+				g.AcceptRunWhitespace()
+
+				if pt := g.Peek(); pt == (parser.Token{Type: TokenKeyword, Data: "case"}) || pt.Type == TokenRightBracePunctuator {
 					break
 				}
+
+				j.AcceptRunWhitespaceNoComment()
 
 				g = j.NewGoal()
 				sl := len(ss.DefaultClause)
@@ -1082,6 +1101,11 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 			j.Score(g)
 		}
 	}
+
+	ss.Comments[8] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+	j.Skip()
 
 	ss.Tokens = j.ToTokens()
 
