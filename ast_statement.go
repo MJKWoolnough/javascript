@@ -1251,6 +1251,7 @@ type TryStatement struct {
 	CatchParameterArrayBindingPattern  *ArrayBindingPattern
 	CatchBlock                         *Block
 	FinallyBlock                       *Block
+	Comments                           [10]Comments
 	Tokens                             Tokens
 }
 
@@ -1258,6 +1259,8 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "try"}) {
 		return j.Error("TryStatement", ErrInvalidTryStatement)
 	}
+
+	ts.Comments[0] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -1268,12 +1271,25 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	j.Score(g)
-	j.AcceptRunWhitespace()
 
-	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "catch"}) {
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "catch"}) {
+		ts.Comments[1] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+		j.Skip()
+
+		ts.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
+			ts.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
+			ts.Comments[4] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			g = j.NewGoal()
@@ -1296,14 +1312,20 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 			}
 
 			j.Score(g)
+
+			ts.Comments[5] = j.AcceptRunWhitespaceNoNewlineComments()
+			ts.Comments[6] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 				return j.Error("TryStatement", ErrMissingClosingParenthesis)
 			}
-
-			j.AcceptRunWhitespace()
 		}
+
+		ts.Comments[7] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
 
 		g = j.NewGoal()
 
@@ -1320,16 +1342,22 @@ func (ts *TryStatement) parse(j *jsParser, yield, await, ret bool) error {
 	g.AcceptRunWhitespace()
 
 	if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "finally"}) {
-		g.AcceptRunWhitespace()
+		ts.Comments[8] = j.AcceptRunWhitespaceComments()
 
-		h := g.NewGoal()
+		j.AcceptRunWhitespace()
+		j.Skip()
+
+		ts.Comments[9] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
+		g = j.NewGoal()
 
 		ts.FinallyBlock = new(Block)
-		if err := ts.FinallyBlock.parse(&h, yield, await, ret); err != nil {
-			return g.Error("TryStatement", err)
+		if err := ts.FinallyBlock.parse(&g, yield, await, ret); err != nil {
+			return j.Error("TryStatement", err)
 		}
 
-		g.Score(h)
 		j.Score(g)
 	}
 
