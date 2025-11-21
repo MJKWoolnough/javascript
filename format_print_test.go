@@ -2284,6 +2284,26 @@ func TestPrintingScript(t *testing.T) {
 			"switch (a) {\ncase b:\ncase c:\ndefault:\n\td;\n}",
 			"switch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{ // G\n\n// H\ncase /* I */ b /* J */: // K\n\n// J\ncase c: // L\n\n// M\ndefault /* N */: // O\n\n\td; // P\n\n// Q\n}",
 		},
+		{ // 453
+			"try // A\n{} // B\ncatch // C\n{}",
+			"try {} catch {}",
+			"try // A\n{} // B\ncatch // C\n{}",
+		},
+		{ // 454
+			"try {}catch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{} // G",
+			"try {} catch (a) {}",
+			"try {} catch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{} // G\n",
+		},
+		{ // 455
+			"try{} // A\nfinally // B\n{} // C",
+			"try {} finally {}",
+			"try {} // A\nfinally // B\n{} // C\n",
+		},
+		{ // 456
+			"try // A\n{}// B\ncatch /* C */ ( // D\n\n// E\na // F\n\n// G\n) // H\n{}// I\nfinally /* J */ {} // K",
+			"try {} catch (a) {} finally {}",
+			"try // A\n{} // B\ncatch /* C */ ( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{} // I\nfinally /* J */ {} // K\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
