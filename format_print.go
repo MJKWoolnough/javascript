@@ -815,30 +815,82 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 
 func (t TryStatement) printSource(w writer, v bool) {
 	w.WriteString("try ")
+
+	if v {
+		t.Comments[0].printSource(w, true, false)
+	}
+
 	t.TryBlock.printSource(w, v)
 
 	if t.CatchBlock != nil {
-		if t.CatchParameterBindingIdentifier != nil {
-			w.WriteString(" catch (")
-			w.WriteString(t.CatchParameterBindingIdentifier.Data)
+		w.WriteString(" ")
+
+		if v {
+			t.Comments[1].printSource(w, true, false)
+		}
+
+		w.WriteString("catch ")
+
+		if v {
+			t.Comments[2].printSource(w, true, false)
+		}
+
+		if t.CatchParameterBindingIdentifier != nil || t.CatchParameterArrayBindingPattern != nil || t.CatchParameterObjectBindingPattern != nil {
+			w.WriteString("(")
+
+			ip := w.Indent()
+
+			if v {
+				t.Comments[3].printSource(w, false, true)
+
+				if len(t.Comments[4]) > 0 {
+					ip.WriteString("\n")
+					t.Comments[4].printSource(ip, true, false)
+				}
+			}
+
+			if t.CatchParameterBindingIdentifier != nil {
+				ip.WriteString(t.CatchParameterBindingIdentifier.Data)
+			} else if t.CatchParameterArrayBindingPattern != nil {
+				t.CatchParameterArrayBindingPattern.printSource(ip, v)
+			} else if t.CatchParameterObjectBindingPattern != nil {
+				t.CatchParameterObjectBindingPattern.printSource(ip, v)
+			}
+
+			if v {
+				t.Comments[5].printSource(ip, false, true)
+
+				if len(t.Comments[6]) > 0 {
+					w.WriteString("\n")
+					t.Comments[6].printSource(w, false, true)
+				}
+			}
+
 			w.WriteString(") ")
-		} else if t.CatchParameterArrayBindingPattern != nil {
-			w.WriteString(" catch (")
-			t.CatchParameterArrayBindingPattern.printSource(w, v)
-			w.WriteString(") ")
-		} else if t.CatchParameterObjectBindingPattern != nil {
-			w.WriteString(" catch (")
-			t.CatchParameterObjectBindingPattern.printSource(w, v)
-			w.WriteString(") ")
-		} else {
-			w.WriteString(" catch ")
+
+			if v {
+				t.Comments[7].printSource(w, true, false)
+			}
 		}
 
 		t.CatchBlock.printSource(w, v)
 	}
 
 	if t.FinallyBlock != nil {
-		w.WriteString(" finally ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		if v {
+			t.Comments[8].printSource(w, true, false)
+		}
+
+		w.WriteString("finally ")
+
+		if v {
+			t.Comments[9].printSource(w, true, false)
+		}
+
 		t.FinallyBlock.printSource(w, v)
 	}
 }
