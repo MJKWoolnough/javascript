@@ -6075,6 +6075,282 @@ func TestIterationStatementFor(t *testing.T) {
 				Token:   tk[10],
 			}
 		}},
+		{"for // A\n( // B\n\n// C\n; // D\n; // E\n\n// F\n) // G\na", func(t *test, tk Tokens) { // 113
+			t.Await = true
+			t.Output = IterationStatementFor{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									IdentifierReference: &tk[24],
+									Tokens:              tk[24:25],
+								}),
+								Tokens: tk[24:25],
+							},
+						},
+						Tokens: tk[24:25],
+					},
+					Tokens: tk[24:25],
+				},
+				Comments: [8]Comments{{&tk[2]}, nil, {&tk[6]}, {&tk[8]}, {&tk[12]}, {&tk[16]}, {&tk[18]}, {&tk[22]}},
+				Tokens:   tk[:25],
+			}
+		}},
+		{"for ( // A\n\n// B\nvar // C\na // D\n, // E\nb // F\n; // G\nc // H\n; // I\n\n// J\n) // K\n{}", func(t *test, tk Tokens) { // 114
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						BindingIdentifier: &tk[12],
+						Comments:          [2]Comments{{&tk[10]}, {&tk[14]}},
+						Tokens:            tk[10:15],
+					},
+					{
+						BindingIdentifier: &tk[20],
+						Comments:          [2]Comments{{&tk[18]}, {&tk[22]}},
+						Tokens:            tk[18:23],
+					},
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[28],
+									Tokens:              tk[28:29],
+								},
+								Comments: [5]Comments{{&tk[26]}, nil, nil, nil, {&tk[30]}},
+								Tokens:   tk[26:31],
+							}),
+							Tokens: tk[26:31],
+						},
+					},
+					Tokens: tk[26:31],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[42:44],
+					},
+					Tokens: tk[42:44],
+				},
+				Comments: [8]Comments{nil, nil, {&tk[4]}, {&tk[6]}, nil, {&tk[34]}, {&tk[36]}, {&tk[40]}},
+				Tokens:   tk[:44],
+			}
+		}},
+		{"for ( // A\n\n// B\n; // C\na // D\n; // E\nb // F\n\n// G\n) // H\nc", func(t *test, tk Tokens) { // 115
+			t.Output = IterationStatementFor{
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[12],
+									Tokens:              tk[12:13],
+								},
+								Comments: [5]Comments{{&tk[10]}, nil, nil, nil, {&tk[14]}},
+								Tokens:   tk[10:15],
+							}),
+							Tokens: tk[10:15],
+						},
+					},
+					Tokens: tk[10:15],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[20],
+									Tokens:              tk[20:21],
+								},
+								Comments: [5]Comments{{&tk[18]}, nil, nil, nil, {&tk[22]}},
+								Tokens:   tk[18:23],
+							}),
+							Tokens: tk[18:23],
+						},
+					},
+					Tokens: tk[18:23],
+				},
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									IdentifierReference: &tk[30],
+									Tokens:              tk[30:31],
+								}),
+								Tokens: tk[30:31],
+							},
+						},
+						Tokens: tk[30:31],
+					},
+					Tokens: tk[30:31],
+				},
+				Comments: [8]Comments{nil, nil, {&tk[4]}, {&tk[6]}, nil, nil, {&tk[24]}, {&tk[28]}},
+				Tokens:   tk[:31],
+			}
+		}},
+		{"for ( // A\n\n// B\nlet // C\na // D\n; b; c) {}", func(t *test, tk Tokens) { // 116
+			t.Output = IterationStatementFor{
+				Type: ForNormalLexicalDeclaration,
+				InitLexical: &LexicalDeclaration{
+					LetOrConst: Let,
+					BindingList: []LexicalBinding{
+						{
+							BindingIdentifier: &tk[12],
+							Comments:          [2]Comments{{&tk[10]}, {&tk[14]}},
+							Tokens:            tk[10:15],
+						},
+					},
+					Tokens: tk[8:17],
+				},
+				Conditional: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								IdentifierReference: &tk[18],
+								Tokens:              tk[18:19],
+							}),
+							Tokens: tk[18:19],
+						},
+					},
+					Tokens: tk[18:19],
+				},
+				Afterthought: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&PrimaryExpression{
+								IdentifierReference: &tk[21],
+								Tokens:              tk[21:22],
+							}),
+							Tokens: tk[21:22],
+						},
+					},
+					Tokens: tk[21:22],
+				},
+				Statement: Statement{
+					BlockStatement: &Block{
+						Tokens: tk[24:26],
+					},
+					Tokens: tk[24:26],
+				},
+				Comments: [8]Comments{nil, nil, {&tk[4]}, {&tk[6]}},
+				Tokens:   tk[:26],
+			}
+		}},
+		{"for ( // A\n\n// B\nvar // C\n{}// D\n= // E\na // F\n;;);", func(t *test, tk Tokens) { // 117
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						ObjectBindingPattern: &ObjectBindingPattern{
+							Tokens: tk[12:14],
+						},
+						Initializer: &AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[20],
+									Tokens:              tk[20:21],
+								},
+								Comments: [5]Comments{{&tk[18]}, nil, nil, nil, {&tk[22]}},
+								Tokens:   tk[18:23],
+							}),
+							Tokens: tk[18:23],
+						},
+						Comments: [2]Comments{{&tk[10]}, {&tk[14]}},
+						Tokens:   tk[10:23],
+					},
+				},
+				Statement: Statement{
+					Tokens: tk[27:28],
+				},
+				Comments: [8]Comments{nil, nil, {&tk[4]}, {&tk[6]}},
+				Tokens:   tk[:28],
+			}
+		}},
+		{"for ( // A\n\n// B\nvar // C\n[]// D\n= a // E\n; // F\n; // G\n) // H\n;", func(t *test, tk Tokens) { // 118
+			t.Output = IterationStatementFor{
+				Type: ForNormalVar,
+				InitVar: []VariableDeclaration{
+					{
+						ArrayBindingPattern: &ArrayBindingPattern{
+							Tokens: tk[12:14],
+						},
+						Initializer: &AssignmentExpression{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[18],
+									Tokens:              tk[18:19],
+								},
+								Comments: [5]Comments{nil, nil, nil, nil, {&tk[20]}},
+								Tokens:   tk[18:21],
+							}),
+							Tokens: tk[18:21],
+						},
+						Comments: [2]Comments{{&tk[10]}, {&tk[14]}},
+						Tokens:   tk[10:21],
+					},
+				},
+				Statement: Statement{
+					Tokens: tk[34:35],
+				},
+				Comments: [8]Comments{nil, nil, {&tk[4]}, {&tk[6]}, {&tk[24]}, {&tk[28]}, nil, {&tk[32]}},
+				Tokens:   tk[:35],
+			}
+		}},
+		{"for (\n// A\nvar // B\na // C\nin // D\nb // E\n\n// F\n);", func(t *test, tk Tokens) { // 119
+			t.Output = IterationStatementFor{
+				Type:                 ForInVar,
+				ForBindingIdentifier: &tk[10],
+				In: &Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[18],
+									Tokens:              tk[18:19],
+								},
+								Comments: [5]Comments{{&tk[16]}, nil, nil, nil, {&tk[20]}},
+								Tokens:   tk[16:21],
+							}),
+							Tokens: tk[16:21],
+						},
+					},
+					Tokens: tk[16:21],
+				},
+				Statement: Statement{
+					Tokens: tk[25:26],
+				},
+				Comments: [8]Comments{nil, nil, nil, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[22]}},
+				Tokens:   tk[:26],
+			}
+		}},
+		{"for // A\nawait // B\n( // C\n\n// D\nconst // E\n[]// F\nof // G\nb // H\n\n// I\n) // J\n;", func(t *test, tk Tokens) { // 120
+			t.Await = true
+			t.Output = IterationStatementFor{
+				Type: ForAwaitOfConst,
+				ForBindingPatternArray: &ArrayBindingPattern{
+					Tokens: tk[18:20],
+				},
+				Of: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[26],
+							Tokens:              tk[26:27],
+						},
+						Comments: [5]Comments{{&tk[24]}, nil, nil, nil, {&tk[28]}},
+						Tokens:   tk[24:29],
+					}),
+					Tokens: tk[24:29],
+				},
+				Statement: Statement{
+					Tokens: tk[36:37],
+				},
+				Comments: [8]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[12]}, {&tk[16]}, {&tk[20]}, {&tk[30]}, {&tk[34]}},
+				Tokens:   tk[:37],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var is IterationStatementFor
 
