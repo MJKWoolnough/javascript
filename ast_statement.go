@@ -666,7 +666,9 @@ type IterationStatementFor struct {
 	Of                      *AssignmentExpression
 
 	Statement Statement
-	Tokens    Tokens
+
+	Comments [8]Comments
+	Tokens   Tokens
 }
 
 func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) error {
@@ -674,12 +676,15 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		return j.Error("IterationStatementFor", ErrInvalidIterationStatementFor)
 	}
 
+	is.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	var forAwait bool
 
 	if await {
 		forAwait = j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"})
+		is.Comments[1] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
 	}
@@ -687,6 +692,9 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
 		return j.Error("IterationStatementFor", ErrMissingOpeningParenthesis)
 	}
+
+	is.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
+	is.Comments[3] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -768,12 +776,12 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 	switch is.Type {
 	case ForNormal:
 		j.Skip()
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 	case ForNormalVar:
 		j.Skip()
 
 		for {
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 
 			g := j.NewGoal()
 			vd := len(is.InitVar)
@@ -795,7 +803,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			return j.Error("IterationStatementFor", ErrMissingSemiColon)
 		}
 
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 	case ForNormalLexicalDeclaration:
 		g := j.NewGoal()
 
@@ -814,7 +822,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			}
 		}
 
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 	case ForNormalExpression:
 		g := j.NewGoal()
 
@@ -824,6 +832,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 
 		j.Score(g)
+
 		j.AcceptRunWhitespace()
 
 		if len(is.InitExpression.Expressions) == 1 && is.InitExpression.Expressions[0].ConditionalExpression != nil && is.InitExpression.Expressions[0].ConditionalExpression.LogicalORExpression != nil {
@@ -846,10 +855,13 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 				return j.Error("IterationStatementFor", ErrMissingSemiColon)
 			}
 
-			j.AcceptRunWhitespace()
+			j.AcceptRunWhitespaceNoComment()
 		}
 	case ForInVar, ForInLet, ForInConst, ForOfVar, ForOfLet, ForOfConst:
 		j.Skip()
+
+		is.Comments[4] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		switch j.Peek() {
@@ -877,6 +889,8 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			}
 		}
 
+		is.Comments[5] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 	case ForOfLeftHandSide:
 		g := j.NewGoal()
@@ -889,10 +903,20 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
+
 	switch is.Type {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
-		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
-			g := j.NewGoal()
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			is.Comments[4] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+		} else {
+			g = j.NewGoal()
 
 			is.Conditional = new(Expression)
 			if err := is.Conditional.parse(&g, true, yield, await); err != nil {
@@ -900,6 +924,9 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			}
 
 			j.Score(g)
+
+			is.Comments[4] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
@@ -907,9 +934,15 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 			}
 		}
 
-		j.AcceptRunWhitespace()
+		g = j.NewGoal()
 
-		if j.Peek() != (parser.Token{Type: TokenPunctuator, Data: ")"}) {
+		g.AcceptRunWhitespace()
+
+		if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: ")"}) {
+			is.Comments[5] = j.AcceptRunWhitespaceNoNewlineComments()
+		} else {
+			j.AcceptRunWhitespaceNoComment()
+
 			g := j.NewGoal()
 
 			is.Afterthought = new(Expression)
@@ -921,7 +954,7 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
 		j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"})
-		j.AcceptRunWhitespace()
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 
@@ -952,11 +985,15 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		is.Type += 4
 	}
 
+	is.Comments[6] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("IterationStatementFor", ErrMissingClosingParenthesis)
 	}
+
+	is.Comments[7] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
