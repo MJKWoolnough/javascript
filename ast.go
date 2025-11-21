@@ -287,6 +287,10 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
+func (lb *LexicalBinding) hasFirstComment() bool {
+	return len(lb.Comments[0]) > 0
+}
+
 // ArrayBindingPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ArrayBindingPattern
 type ArrayBindingPattern struct {

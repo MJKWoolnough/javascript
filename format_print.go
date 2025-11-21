@@ -79,6 +79,8 @@ func (s Statement) printSource(w writer, v bool) {
 			}
 		} else if s.TryStatement != nil {
 			s.TryStatement.printSource(w, v)
+		} else {
+			w.WriteString(";")
 		}
 	case StatementContinue, StatementBreak:
 		if s.Type == StatementContinue {
@@ -440,14 +442,35 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		}
 	}
 
-	switch i.Type {
-	case ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
-		w.WriteString("for await (")
-	default:
-		w.WriteString("for (")
+	w.WriteString("for ")
+
+	if v {
+		i.Comments[0].printSource(w, true, false)
 	}
 
-	pp := w.Indent()
+	switch i.Type {
+	case ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
+		w.WriteString("await ")
+
+		if v {
+			i.Comments[1].printSource(w, true, false)
+		}
+	}
+
+	w.WriteString("(")
+
+	ip := w.Indent()
+
+	if v {
+		i.Comments[2].printSource(w, false, true)
+
+		if len(i.Comments[3]) > 0 {
+			ip.WriteString("\n")
+			i.Comments[3].printSource(ip, false, true)
+		}
+	}
+
+	hasStartComments := len(i.Comments[2]) > 0 || len(i.Comments[3]) > 0
 
 	var lastLine uint64
 
@@ -459,142 +482,185 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	switch i.Type {
 	case ForNormal:
-		w.WriteString(";")
+		ip.WriteString(";")
 	case ForNormalVar:
 		if v && len(i.InitVar[0].Tokens) > 0 {
-			if i.InitVar[0].Tokens[0].Line > lastLine {
-				pp.WriteString("\n")
+			if !hasStartComments && i.InitVar[0].Tokens[0].Line > lastLine {
+				ip.WriteString("\n")
 			}
 
 			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
 		}
 
-		pp.WriteString("var ")
-		LexicalBinding(i.InitVar[0]).printSource(pp, v)
+		ip.WriteString("var ")
+		LexicalBinding(i.InitVar[0]).printSource(ip, v)
 
 		for _, vd := range i.InitVar[1:] {
 			if v && len(vd.Tokens) > 0 {
-				if vd.Tokens[0].Line > lastLine {
-					pp.WriteString(",\n")
+				if vd.Tokens[0].Line > lastLine && !vd.hasFirstComment() {
+					ip.WriteString(",\n")
 				} else {
-					pp.WriteString(", ")
+					ip.WriteString(", ")
 				}
 			} else {
-				pp.WriteString(", ")
+				ip.WriteString(", ")
 			}
 
-			LexicalBinding(vd).printSource(pp, v)
+			vd.printSource(ip, v)
 		}
 
-		w.WriteString(";")
+		ip.WriteString(";")
 	case ForNormalLexicalDeclaration:
 		if v && len(i.InitLexical.Tokens) > 0 {
-			if i.InitLexical.Tokens[0].Line > lastLine {
+			if !hasStartComments && i.InitLexical.Tokens[0].Line > lastLine {
 				endline = true
 
-				pp.WriteString("\n")
+				ip.WriteString("\n")
 			}
 
 			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
 		}
 
-		i.InitLexical.printSource(pp, v)
+		i.InitLexical.printSource(ip, v)
+
+		if ip.LastChar() == '\n' {
+			ip.WriteString(";")
+		}
 	case ForNormalExpression:
 		if v && len(i.InitExpression.Tokens) > 0 {
-			if i.InitExpression.Tokens[0].Line > lastLine {
+			if !hasStartComments && i.InitExpression.Tokens[0].Line > lastLine {
 				endline = true
 
-				pp.WriteString("\n")
+				ip.WriteString("\n")
 			}
 
 			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
 		}
 
-		i.InitExpression.printSource(pp, v)
-		w.WriteString(";")
+		i.InitExpression.printSource(ip, v)
+		ip.WriteString(";")
 	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
 		if v {
 			if len(i.LeftHandSideExpression.Tokens) > 0 {
-				if i.LeftHandSideExpression.Tokens[0].Line > lastLine {
+				if !hasStartComments && i.LeftHandSideExpression.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.WriteString("\n")
+					ip.WriteString("\n")
 				}
 
 				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
 			}
 		}
 
-		i.LeftHandSideExpression.printSource(pp, v)
+		i.LeftHandSideExpression.printSource(ip, v)
 	default:
 		switch i.Type {
 		case ForInVar, ForOfVar, ForAwaitOfVar:
-			w.WriteString("var ")
+			ip.WriteString("var ")
 		case ForInLet, ForOfLet, ForAwaitOfLet:
-			w.WriteString("let ")
+			ip.WriteString("let ")
 		case ForInConst, ForOfConst, ForAwaitOfConst:
-			w.WriteString("const ")
+			ip.WriteString("const ")
+		}
+
+		if v {
+			i.Comments[4].printSource(ip, true, false)
 		}
 
 		if i.ForBindingIdentifier != nil {
-			w.WriteString(i.ForBindingIdentifier.Data)
+			ip.WriteString(i.ForBindingIdentifier.Data)
 		} else if i.ForBindingPatternObject != nil {
-			i.ForBindingPatternObject.printSource(w, v)
+			i.ForBindingPatternObject.printSource(ip, v)
 		} else {
-			i.ForBindingPatternArray.printSource(w, v)
+			i.ForBindingPatternArray.printSource(ip, v)
 		}
 	}
 
 	switch i.Type {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
+		if v {
+			i.Comments[4].printSource(ip, true, false)
+		}
+
 		if i.Conditional != nil {
 			if v && len(i.Conditional.Tokens) > 0 {
-				if i.Conditional.Tokens[0].Line > lastLine {
+				if !i.Conditional.hasFirstComment() && i.Conditional.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.WriteString("\n")
+					ip.WriteString("\n")
 				} else {
-					w.WriteString(" ")
+					ip.WriteString(" ")
 				}
 
 				lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
 			} else {
-				w.WriteString(" ")
+				ip.WriteString(" ")
 			}
 
-			i.Conditional.printSource(pp, v)
+			i.Conditional.printSource(ip, v)
 		}
 
-		w.WriteString(";")
+		ip.WriteString(";")
+
+		if v {
+			i.Comments[5].printSource(ip, true, false)
+		}
 
 		if i.Afterthought != nil {
 			if v && len(i.Afterthought.Tokens) > 0 {
-				if i.Afterthought.Tokens[0].Line > lastLine {
+				if !i.Afterthought.hasFirstComment() && i.Afterthought.Tokens[0].Line > lastLine {
 					endline = true
 
-					pp.WriteString("\n")
+					ip.WriteString("\n")
 				} else {
-					w.WriteString(" ")
+					ip.WriteString(" ")
 				}
 			} else {
-				w.WriteString(" ")
+				ip.WriteString(" ")
 			}
 
-			i.Afterthought.printSource(pp, v)
+			i.Afterthought.printSource(ip, v)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
-		w.WriteString(" in ")
-		i.In.printSource(pp, v)
+		if v && len(i.Comments[5]) > 0 {
+			i.Comments[5].printSource(ip, true, false)
+		} else {
+			ip.WriteString(" ")
+		}
+
+		ip.WriteString("in ")
+		i.In.printSource(ip, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
-		w.WriteString(" of ")
-		i.Of.printSource(pp, v)
+		if v && len(i.Comments[5]) > 0 {
+			i.Comments[5].printSource(ip, true, false)
+		} else {
+			ip.WriteString(" ")
+		}
+
+		ip.WriteString("of ")
+		i.Of.printSource(ip, v)
 	}
 
-	if endline {
+	endComment := w.LastIsWhitespace()
+
+	if !endComment && endline {
 		w.WriteString("\n")
 	}
 
+	if v && len(i.Comments[6]) > 0 {
+		if endComment {
+			w.WriteString("\n")
+		}
+
+		i.Comments[6].printSource(w, true, false)
+	}
+
 	w.WriteString(") ")
+
+	if v {
+		i.Comments[7].printSource(w, true, false)
+	}
+
 	i.Statement.printSource(w, v)
 }
 
