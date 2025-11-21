@@ -7195,6 +7195,59 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
+		{"try // A\n{} // B\ncatch // C\n{}", func(t *test, tk Tokens) { // 18
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[4:6],
+				},
+				CatchBlock: &Block{
+					Tokens: tk[13:15],
+				},
+				Comments: [10]Comments{{&tk[2]}, {&tk[7]}, {&tk[11]}},
+				Tokens:   tk[:15],
+			}
+		}},
+		{"try {}catch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{} // G", func(t *test, tk Tokens) { // 19
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[2:4],
+				},
+				CatchParameterBindingIdentifier: &tk[14],
+				CatchBlock: &Block{
+					Tokens: tk[24:26],
+				},
+				Comments: [10]Comments{nil, nil, {&tk[6]}, {&tk[10]}, {&tk[12]}, {&tk[16]}, {&tk[18]}, {&tk[22]}},
+				Tokens:   tk[:26],
+			}
+		}},
+		{"try{} // A\nfinally // B\n{} // C", func(t *test, tk Tokens) { // 20
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[1:3],
+				},
+				FinallyBlock: &Block{
+					Tokens: tk[10:12],
+				},
+				Comments: [10]Comments{nil, nil, nil, nil, nil, nil, nil, nil, {&tk[4]}, {&tk[8]}},
+				Tokens:   tk[:12],
+			}
+		}},
+		{"try // A\n{}// B\ncatch /* C */ ( // D\n\n// E\na // F\n\n// G\n) // H\n{}// I\nfinally /* J */ {} // K", func(t *test, tk Tokens) { // 21
+			t.Output = TryStatement{
+				TryBlock: Block{
+					Tokens: tk[4:6],
+				},
+				CatchParameterBindingIdentifier: &tk[18],
+				CatchBlock: &Block{
+					Tokens: tk[28:30],
+				},
+				FinallyBlock: &Block{
+					Tokens: tk[36:38],
+				},
+				Comments: [10]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[14]}, {&tk[16]}, {&tk[20]}, {&tk[22]}, {&tk[26]}, {&tk[30]}, {&tk[34]}},
+				Tokens:   tk[:38],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ts TryStatement
 
