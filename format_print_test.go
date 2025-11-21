@@ -2304,6 +2304,41 @@ func TestPrintingScript(t *testing.T) {
 			"try {} catch (a) {} finally {}",
 			"try // A\n{} // B\ncatch /* C */ ( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{} // I\nfinally /* J */ {} // K\n",
 		},
+		{ // 457
+			"for // A\n( // B\n\n// C\n; // D\n; // E\n\n// F\n) // G\na",
+			"for (;;) a;",
+			"for // A\n( // B\n\n\t// C\n\t; // D\n\t; // E\n\n// F\n) // G\na;",
+		},
+		{ // 458
+			"for ( // A\n\n// B\nvar // C\na // D\n, // E\nb // F\n; // G\nc // H\n; // I\n\n// J\n) // K\n{}",
+			"for (var a, b; c;) {}",
+			"for ( // A\n\n\t// B\n\tvar // C\n\ta // D\n\t, // E\n\tb // F\n\t; // G\n\tc // H\n\t; // I\n\n// J\n) // K\n{}",
+		},
+		{ // 459
+			"for ( // A\n\n// B\n; // C\na // D\n; // E\nb // F\n\n// G\n) // H\nc",
+			"for (; a; b) c;",
+			"for ( // A\n\n\t// B\n\t; // C\n\ta // D\n\t; // E\n\tb // F\n\n// G\n) // H\nc;",
+		},
+		{ // 460
+			"for ( // A\n\n// B\nlet // C\na // D\n; b; c) {}",
+			"for (let a; b; c) {}",
+			"for ( // A\n\n\t// B\n\tlet // C\n\ta // D\n\t; b; c) {}",
+		},
+		{ // 461
+			"for ( // A\n\n// B\nvar // C\n{}// D\n= // E\na // F\n;;);",
+			"for (var {} = a;;) ;",
+			"for ( // A\n\n\t// B\n\tvar // C\n\t{} // D\n\t= // E\n\ta // F\n\t;;) ;",
+		},
+		{ // 462
+			"for ( // A\n\n// B\nvar // C\n[]// D\n= a // E\n; // F\n; // G\n) // H\n;",
+			"for (var [] = a;;) ;",
+			"for ( // A\n\n\t// B\n\tvar // C\n\t[] // D\n\t= a // E\n\t; // F\n\t; // G\n) // H\n;",
+		},
+		{ // 463
+			"for (\n// A\nvar // B\na // C\nin // D\nb // E\n\n// F\n);",
+			"for (var a in b) ;",
+			"for (\n\t// A\n\tvar // B\n\ta // C\n\tin // D\n\tb // E\n\n// F\n) ;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
@@ -2628,6 +2663,11 @@ func TestPrintingModule(t *testing.T) {
 			"// A\n\n// B\nexport/* C */default/* D */1/* E */; // F\n\n// G",
 			"export default 1;",
 			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */; // F\n\n// G\n",
+		},
+		{ // 59
+			"for // A\nawait // B\n( // C\n\n// D\nconst // E\n[]// F\nof // G\nb // H\n\n// I\n) // J\n;",
+			"for await (const [] of b) ;",
+			"for // A\nawait // B\n( // C\n\n\t// D\n\tconst // E\n\t[] // F\n\tof // G\n\tb // H\n\n// I\n) // J\n;",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
