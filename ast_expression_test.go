@@ -2547,6 +2547,113 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[0:11],
 			}
 		}},
+		{"[ // A\n\n// B\na.b // C\n, // D\na.c // E\n\n// F\n] = b", func(t *test, tk Tokens) { // 64
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ArrayAssignmentPattern: &ArrayAssignmentPattern{
+						AssignmentElements: []AssignmentElement{
+							{
+								DestructuringAssignmentTarget: DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[6],
+														Tokens:              tk[6:7],
+													},
+													Comments: [5]Comments{{&tk[4]}},
+													Tokens:   tk[4:7],
+												},
+												IdentifierName: &tk[8],
+												Comments:       [5]Comments{nil, nil, nil, nil, {&tk[10]}},
+												Tokens:         tk[4:11],
+											},
+											Tokens: tk[4:11],
+										},
+										Tokens: tk[4:11],
+									},
+									Tokens: tk[4:11],
+								},
+								Tokens: tk[4:11],
+							},
+							{
+								DestructuringAssignmentTarget: DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												MemberExpression: &MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[16],
+														Tokens:              tk[16:17],
+													},
+													Comments: [5]Comments{{&tk[14]}},
+													Tokens:   tk[14:17],
+												},
+												IdentifierName: &tk[18],
+												Comments:       [5]Comments{nil, nil, nil, nil, {&tk[20]}},
+												Tokens:         tk[14:21],
+											},
+											Tokens: tk[14:21],
+										},
+										Tokens: tk[14:21],
+									},
+									Tokens: tk[14:21],
+								},
+								Tokens: tk[14:21],
+							},
+						},
+						Comments: [3]Comments{{&tk[2]}, nil, {&tk[22]}},
+						Tokens:   tk[:25],
+					},
+					Tokens: tk[:25],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[28],
+						Tokens:              tk[28:29],
+					}),
+					Tokens: tk[28:29],
+				},
+				Tokens: tk[:29],
+			}
+		}},
+		{"[ // A\n\n// B\n... // C\na // D\n\n// E\n] = b", func(t *test, tk Tokens) { // 65
+			t.Output = AssignmentExpression{
+				AssignmentPattern: &AssignmentPattern{
+					ArrayAssignmentPattern: &ArrayAssignmentPattern{
+						AssignmentElements: []AssignmentElement{},
+						AssignmentRestElement: &LeftHandSideExpression{
+							NewExpression: &NewExpression{
+								MemberExpression: MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[10],
+										Tokens:              tk[10:11],
+									},
+									Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+									Tokens:   tk[8:13],
+								},
+								Tokens: tk[8:13],
+							},
+							Tokens: tk[8:13],
+						},
+						Comments: [3]Comments{{&tk[2]}, {&tk[4]}, {&tk[14]}},
+						Tokens:   tk[:17],
+					},
+					Tokens: tk[:17],
+				},
+				AssignmentOperator: AssignmentAssign,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[20],
+						Tokens:              tk[20:21],
+					}),
+					Tokens: tk[20:21],
+				},
+				Tokens: tk[:21],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 
