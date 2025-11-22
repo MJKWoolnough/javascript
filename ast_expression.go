@@ -218,7 +218,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		}
 
 		if ae.ConditionalExpression.LogicalORExpression != nil {
-			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
+			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && (lhs.IsSimple() || lhs.isCoverAssignmentPattern()) {
 				h := g.NewGoal()
 
 				h.AcceptRunWhitespace()
@@ -230,7 +230,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 					ae.ConditionalExpression = nil
 					ae.LeftHandSideExpression = lhs
 
-					if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+					if ae.AssignmentOperator == AssignmentAssign && lhs.isCoverAssignmentPattern() {
 						ae.AssignmentPattern = new(AssignmentPattern)
 						if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
 							z := jsParser(lhs.Tokens[:0])
@@ -382,6 +382,10 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 // IsSimple returns whether or not the LeftHandSideExpression is classed as 'simple'
 func (lhs *LeftHandSideExpression) IsSimple() bool {
 	return lhs.OptionalExpression == nil && (lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.IsSimple() || lhs.CallExpression != nil && lhs.CallExpression.IsSimple())
+}
+
+func (lhs *LeftHandSideExpression) isCoverAssignmentPattern() bool {
+	return lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil)
 }
 
 func (lhs *LeftHandSideExpression) hasFirstComment() bool {
