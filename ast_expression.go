@@ -429,6 +429,10 @@ func (a *AssignmentPattern) from(p *PrimaryExpression) error {
 	return nil
 }
 
+func (a *AssignmentPattern) hasFirstComment() bool {
+	return a.ObjectAssignmentPattern != nil && a.ObjectAssignmentPattern.hasFirstComment() || a.ArrayAssignmentPattern != nil && a.ArrayAssignmentPattern.hasFirstComment()
+}
+
 // ObjectAssignmentPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ObjectAssignmentPattern
 type ObjectAssignmentPattern struct {
@@ -485,6 +489,10 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 	return nil
 }
 
+func (o *ObjectAssignmentPattern) hasFirstComment() bool {
+	return len(o.AssignmentPropertyList) > 0 && o.AssignmentPropertyList[0].hasFirstComment() || o.AssignmentRestElement != nil && o.AssignmentRestElement.hasFirstComment()
+}
+
 // AssignmentProperty as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentProperty
 type AssignmentProperty struct {
@@ -525,6 +533,10 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	a.Tokens = pd.Tokens
 
 	return nil
+}
+
+func (a *AssignmentProperty) hasFirstComment() bool {
+	return len(a.PropertyName.Comments[0]) > 0
 }
 
 // DestructuringAssignmentTarget as defined in ECMA-262
@@ -576,6 +588,10 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
 	return nil
 }
 
+func (d *DestructuringAssignmentTarget) hasFirstComment() bool {
+	return d.LeftHandSideExpression != nil && d.LeftHandSideExpression.hasFirstComment() || d.AssignmentPattern != nil && d.AssignmentPattern.hasFirstComment()
+}
+
 // AssignmentElement as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentElement
 type AssignmentElement struct {
@@ -603,6 +619,10 @@ func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 	a.Tokens = ae.Tokens
 
 	return nil
+}
+
+func (a *AssignmentElement) hasFirstComment() bool {
+	return a.DestructuringAssignmentTarget.hasFirstComment()
 }
 
 // ArrayAssignmentPattern as defined in ECMA-262
@@ -668,6 +688,10 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 	a.Tokens = al.Tokens
 
 	return nil
+}
+
+func (a *ArrayAssignmentPattern) hasFirstComment() bool {
+	return len(a.AssignmentElements) > 0 && a.AssignmentElements[0].hasFirstComment() || a.AssignmentRestElement != nil && a.AssignmentRestElement.hasFirstComment()
 }
 
 // OptionalExpression as defined in TC39
