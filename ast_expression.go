@@ -191,6 +191,21 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 
 				done = true
 			}
+		} else if g.Accept(TokenIdentifier) {
+			g.AcceptRunWhitespaceNoNewLine()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
+				g = j.NewGoal()
+
+				ae.ArrowFunction = new(ArrowFunction)
+				if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
+					return j.Error("AssignmentExpression", err)
+				}
+
+				j.Score(g)
+
+				done = true
+			}
 		}
 	}
 
@@ -206,54 +221,34 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
 				h := g.NewGoal()
 
-				if lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil) {
-					h.AcceptRunWhitespaceNoNewLine()
+				h.AcceptRunWhitespace()
 
-					if lhs.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression != nil && h.SkipReturnType() {
-						h.AcceptRunWhitespaceNoNewLine()
-					}
+				if err := ae.AssignmentOperator.parse(&h); err == nil {
+					g.Score(h)
+					g.AcceptRunWhitespaceNoComment()
 
-					if h.Peek() == (parser.Token{Type: TokenPunctuator, Data: "=>"}) {
-						g = j.NewGoal()
-						ae.ConditionalExpression = nil
-						ae.ArrowFunction = new(ArrowFunction)
+					ae.ConditionalExpression = nil
+					ae.LeftHandSideExpression = lhs
 
-						if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
-							return j.Error("AssignmentExpression", err)
-						}
-					}
-				}
+					if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+						ae.AssignmentPattern = new(AssignmentPattern)
+						if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+							z := jsParser(lhs.Tokens[:0])
 
-				if ae.ConditionalExpression != nil {
-					h.AcceptRunWhitespace()
-
-					if err := ae.AssignmentOperator.parse(&h); err == nil {
-						g.Score(h)
-						g.AcceptRunWhitespaceNoComment()
-
-						ae.ConditionalExpression = nil
-						ae.LeftHandSideExpression = lhs
-
-						if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
-							ae.AssignmentPattern = new(AssignmentPattern)
-							if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
-								z := jsParser(lhs.Tokens[:0])
-
-								return z.Error("AssignmentExpression", err)
-							}
-
-							ae.LeftHandSideExpression = nil
+							return z.Error("AssignmentExpression", err)
 						}
 
-						h = g.NewGoal()
-
-						ae.AssignmentExpression = new(AssignmentExpression)
-						if err := ae.AssignmentExpression.parse(&h, in, yield, await); err != nil {
-							return g.Error("AssignmentExpression", err)
-						}
-
-						g.Score(h)
+						ae.LeftHandSideExpression = nil
 					}
+
+					h = g.NewGoal()
+
+					ae.AssignmentExpression = new(AssignmentExpression)
+					if err := ae.AssignmentExpression.parse(&h, in, yield, await); err != nil {
+						return g.Error("AssignmentExpression", err)
+					}
+
+					g.Score(h)
 				}
 			}
 		}
