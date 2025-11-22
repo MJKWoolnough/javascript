@@ -610,6 +610,7 @@ func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 type ArrayAssignmentPattern struct {
 	AssignmentElements    []AssignmentElement
 	AssignmentRestElement *LeftHandSideExpression
+	Comments              [3]Comments
 	Tokens                Tokens
 }
 
@@ -645,6 +646,7 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 				return z.Error("ArrayAssignmentPattern", ErrBadRestElement)
 			}
 
+			a.Comments[1] = ae.Comments
 			a.AssignmentRestElement = dat.LeftHandSideExpression
 		} else if len(ae.Tokens) > 0 {
 			var e AssignmentElement
@@ -661,6 +663,8 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 		}
 	}
 
+	a.Comments[0] = al.Comments[0]
+	a.Comments[2] = al.Comments[1]
 	a.Tokens = al.Tokens
 
 	return nil
