@@ -714,37 +714,9 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		g.Skip()
 		g.AcceptRunWhitespace()
 
-		var (
-			opener = "{"
-			closer = "}"
-		)
-
 		switch g.Peek() {
-		case parser.Token{Type: TokenPunctuator, Data: "["}:
-			opener = "["
-			closer = "]"
-
-			fallthrough
-		case parser.Token{Type: TokenPunctuator, Data: "{"}:
-			var level uint
-
-		Loop:
-			for {
-				g.ExceptRun(TokenPunctuator, TokenRightBracePunctuator)
-
-				switch g.Peek().Data {
-				case opener:
-					level++
-				case closer:
-					if level--; level == 0 {
-						g.Skip()
-
-						break Loop
-					}
-				}
-
-				g.Skip()
-			}
+		case parser.Token{Type: TokenPunctuator, Data: "["}, parser.Token{Type: TokenPunctuator, Data: "{"}:
+			g.SkipDepth()
 		default:
 			g.Skip()
 		}
