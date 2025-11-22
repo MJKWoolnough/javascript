@@ -165,6 +165,43 @@ func (j *jsParser) Next() *Token {
 	return j.next()
 }
 
+var depths = [...][2]parser.Token{
+	{{Type: TokenPunctuator, Data: "["}, {Type: TokenPunctuator, Data: "]"}},
+	{{Type: TokenPunctuator, Data: "("}, {Type: TokenPunctuator, Data: ")"}},
+	{{Type: TokenPunctuator, Data: "{"}, {Type: TokenRightBracePunctuator, Data: "}"}},
+}
+
+func (j *jsParser) SkipDepth() bool {
+	var (
+		on    = -1
+		depth = 1
+	)
+
+	for n, d := range depths {
+		if j.AcceptToken(d[0]) {
+			on = n
+
+			break
+		}
+	}
+
+	if on == -1 {
+		return false
+	}
+
+	for depth > 0 {
+		if j.AcceptToken(depths[on][0]) {
+			depth++
+		} else if j.AcceptToken(depths[on][1]) {
+			depth--
+		} else {
+			j.Skip()
+		}
+	}
+
+	return true
+}
+
 func (j *jsParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
 	for {
 		tt := j.next().Type
