@@ -171,19 +171,8 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			j.Score(g)
 
 			done = true
-		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
-			count := 1
-
-			for count > 0 {
-				if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("}) {
-					count++
-				} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
-					count--
-				} else {
-					g.Skip()
-				}
-			}
-
+		} else if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
+			g.SkipDepth()
 			g.AcceptRunWhitespaceNoNewLine()
 
 			if g.SkipReturnType() {
