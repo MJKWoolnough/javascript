@@ -1193,20 +1193,27 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("{")
 
-	for n, ap := range o.AssignmentPropertyList {
-		if n > 0 {
-			w.WriteString(", ")
+	ip := w.Indent()
+
+	if len(o.AssignmentPropertyList) > 0 {
+		if v && o.AssignmentPropertyList[0].hasFirstComment() {
+			ip.WriteString("\n")
 		}
 
-		ap.printSource(w, v)
+		o.AssignmentPropertyList[0].printSource(ip, v)
+
+		for _, ap := range o.AssignmentPropertyList[1:] {
+			ip.WriteString(", ")
+			ap.printSource(ip, v)
+		}
 	}
 
 	if o.AssignmentRestElement != nil {
 		if len(o.AssignmentPropertyList) > 0 {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		}
 
-		w.WriteString("...")
+		ip.WriteString("...")
 		o.AssignmentRestElement.printSource(w, v)
 	}
 
@@ -1223,7 +1230,15 @@ func (a AssignmentElement) printSource(w writer, v bool) {
 }
 
 func (a AssignmentProperty) printSource(w writer, v bool) {
+	if v {
+		a.Comments[0].printSource(w, true, false)
+	}
+
 	a.PropertyName.printSource(w, v)
+
+	if v {
+		a.Comments[1].printSource(w, true, false)
+	}
 
 	if a.DestructuringAssignmentTarget != nil {
 		if !v && a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && len(a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data == a.PropertyName.LiteralPropertyName.Data {
