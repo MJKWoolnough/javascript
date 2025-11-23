@@ -1193,6 +1193,10 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	if v {
+		o.Comments[0].printSource(w, false, true)
+	}
+
 	ip := w.Indent()
 
 	if len(o.AssignmentPropertyList) > 0 {
@@ -1211,10 +1215,21 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	if o.AssignmentRestElement != nil {
 		if len(o.AssignmentPropertyList) > 0 {
 			ip.WriteString(", ")
+		} else if v && len(o.Comments[1]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		if v {
+			o.Comments[1].printSource(ip, true, false)
 		}
 
 		ip.WriteString("...")
-		o.AssignmentRestElement.printSource(w, v)
+		o.AssignmentRestElement.printSource(ip, v)
+	}
+
+	if v && len(o.Comments[2]) > 0 {
+		w.WriteString("\n")
+		o.Comments[2].printSource(w, false, true)
 	}
 
 	w.WriteString("}")
@@ -1250,7 +1265,11 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 	}
 
 	if a.Initializer != nil {
-		w.WriteString(" = ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("= ")
 		a.Initializer.printSource(w, v)
 	}
 }
@@ -1834,11 +1853,15 @@ func (l LogicalORExpression) printSource(w writer, v bool) {
 func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	w.WriteString("(")
 
-	ip := w.Indent()
+	ip := w
 
 	if v && len(c.Comments[0]) > 0 {
+		ip = w.Indent()
+
 		c.Comments[0].printSource(w, true, true)
 		ip.WriteString("\n")
+	} else if v && len(c.Comments[1]) > 1 {
+		ip = w.Indent()
 	}
 
 	if len(c.Expressions) > 0 {

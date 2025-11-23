@@ -542,7 +542,7 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 }
 
 func (a *AssignmentProperty) hasFirstComment() bool {
-	return len(a.PropertyName.Comments[0]) > 0
+	return len(a.Comments[0]) > 0
 }
 
 // DestructuringAssignmentTarget as defined in ECMA-262
