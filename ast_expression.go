@@ -499,6 +499,7 @@ type AssignmentProperty struct {
 	PropertyName                  PropertyName
 	DestructuringAssignmentTarget *DestructuringAssignmentTarget
 	Initializer                   *AssignmentExpression
+	Comments                      [2]Comments
 	Tokens                        Tokens
 }
 
@@ -530,6 +531,7 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 		a.Initializer = pd.AssignmentExpression.AssignmentExpression
 	}
 
+	a.Comments = pd.Comments
 	a.Tokens = pd.Tokens
 
 	return nil
