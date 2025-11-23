@@ -438,6 +438,7 @@ func (a *AssignmentPattern) hasFirstComment() bool {
 type ObjectAssignmentPattern struct {
 	AssignmentPropertyList []AssignmentProperty
 	AssignmentRestElement  *LeftHandSideExpression
+	Comments               [3]Comments
 	Tokens                 Tokens
 }
 
@@ -471,6 +472,7 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 					return z.Error("ObjectAssignmentPattern", ErrBadRestElement)
 				}
 
+				o.Comments[1] = pd.Comments[0]
 				o.AssignmentRestElement = dat.LeftHandSideExpression
 
 				break
@@ -484,6 +486,8 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 		}
 	}
 
+	o.Comments[0] = ol.Comments[0]
+	o.Comments[2] = ol.Comments[1]
 	o.Tokens = ol.Tokens
 
 	return nil
