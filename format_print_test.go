@@ -2349,6 +2349,21 @@ func TestPrintingScript(t *testing.T) {
 			"[...a] = b;",
 			"[ // A\n\n\t// B\n\t... // C\n\ta // D\n\n// E\n] = b;",
 		},
+		{ // 466
+			"const {\n// A\na // B\n} = b",
+			"const {a} = b;",
+			"const {a: // A\n\ta // B\n} = b;",
+		},
+		{ // 467
+			"const {\n// A\na // B\n= // C\nb // D\n} = c",
+			"const {a = b} = c;",
+			"const {a: // A\n\ta // B\n\t= // C\n\tb // D\n} = c;",
+		},
+		{ // 468
+			"const {\n// A\na // B\n: // C\nb // D\n= // E\nc // F\n} = d",
+			"const {a: b = c} = d;",
+			"const {\n\t// A\n\ta // B\n\t: // C\n\tb // D\n\t= // E\n\tc // F\n} = d;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
