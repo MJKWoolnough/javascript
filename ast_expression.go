@@ -114,9 +114,14 @@ type AssignmentExpression struct {
 func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error {
 	done := false
 
-	if yield && j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "yield"}) {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if yield && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "yield"}) {
 		ae.Yield = true
 
+		j.Skip()
 		j.AcceptRunWhitespaceNoNewLine()
 
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
@@ -135,9 +140,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		j.Score(g)
 
 		done = true
-	} else if j.Peek() == (parser.Token{Type: TokenIdentifier, Data: "async"}) {
-		g := j.NewGoal()
-
+	} else if g.Peek() == (parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		g.Skip()
 		g.AcceptRunWhitespaceNoNewLine()
 
@@ -146,7 +149,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		}
 
 		if t := g.Peek().Type; t == TokenPunctuator || t == TokenIdentifier {
-			g := j.NewGoal()
+			g = j.NewGoal()
 
 			ae.ArrowFunction = new(ArrowFunction)
 			if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
@@ -158,7 +161,9 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 			done = true
 		}
 	} else {
-		g := j.NewGoal()
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
 
 		if g.SkipGeneric() {
 			g.AcceptRunWhitespaceNoNewLine()
@@ -210,7 +215,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 	}
 
 	if !done {
-		g := j.NewGoal()
+		g = j.NewGoal()
 
 		ae.ConditionalExpression = new(ConditionalExpression)
 		if err := ae.ConditionalExpression.parse(&g, in, yield, await); err != nil {

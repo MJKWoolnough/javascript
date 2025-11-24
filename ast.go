@@ -1173,11 +1173,18 @@ type ArrowFunction struct {
 	FormalParameters     *FormalParameters
 	AssignmentExpression *AssignmentExpression
 	FunctionBody         *Block
+	Comments             [5]Comments
 	Tokens               Tokens
 }
 
 func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
+	af.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
+
 	af.Async = j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"})
+
+	af.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	j.AcceptRunWhitespaceNoNewLine()
 
@@ -1194,6 +1201,9 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 		}
 
 		j.Score(g)
+
+		af.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
+
 		j.AcceptRunWhitespaceNoNewLine()
 		j.SkipReturnType()
 	} else {
@@ -1204,6 +1214,8 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 		}
 
 		j.Score(g)
+
+		af.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
 	}
 
 	j.AcceptRunWhitespaceNoNewLine()
@@ -1211,6 +1223,8 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "=>"}) {
 		return j.Error("ArrowFunction", ErrMissingArrow)
 	}
+
+	af.Comments[3] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -1223,6 +1237,8 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 		}
 
 		j.Score(g)
+
+		af.Comments[4] = j.AcceptRunWhitespaceCommentsInList()
 	} else {
 		g := j.NewGoal()
 		af.AssignmentExpression = new(AssignmentExpression)
