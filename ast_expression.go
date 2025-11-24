@@ -232,7 +232,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 
 					if ae.AssignmentOperator == AssignmentAssign && lhs.isCoverAssignmentPattern() {
 						ae.AssignmentPattern = new(AssignmentPattern)
-						if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+						if err := ae.AssignmentPattern.from(&lhs.NewExpression.MemberExpression); err != nil {
 							z := jsParser(lhs.Tokens[:0])
 
 							return z.Error("AssignmentExpression", err)
@@ -404,10 +404,13 @@ func (lhs *LeftHandSideExpression) hasFirstComment() bool {
 type AssignmentPattern struct {
 	ObjectAssignmentPattern *ObjectAssignmentPattern
 	ArrayAssignmentPattern  *ArrayAssignmentPattern
+	Comments                [2]Comments
 	Tokens                  Tokens
 }
 
-func (a *AssignmentPattern) from(p *PrimaryExpression) error {
+func (a *AssignmentPattern) from(me *MemberExpression) error {
+	p := me.PrimaryExpression
+
 	if p.ArrayLiteral != nil {
 		a.ArrayAssignmentPattern = new(ArrayAssignmentPattern)
 		if err := a.ArrayAssignmentPattern.from(p.ArrayLiteral); err != nil {
@@ -424,7 +427,9 @@ func (a *AssignmentPattern) from(p *PrimaryExpression) error {
 		}
 	}
 
-	a.Tokens = p.Tokens
+	a.Comments[0] = me.Comments[0]
+	a.Comments[1] = me.Comments[4]
+	a.Tokens = me.Tokens
 
 	return nil
 }
@@ -570,7 +575,7 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
 		switch UnwrapConditional(ae.ConditionalExpression).(type) {
 		case *ArrayLiteral, *ObjectLiteral:
 			d.AssignmentPattern = new(AssignmentPattern)
-			if err := d.AssignmentPattern.from(ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+			if err := d.AssignmentPattern.from(&ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression.NewExpression.MemberExpression); err != nil {
 				z := jsParser(ae.Tokens[:0])
 
 				return z.Error("DestructuringAssignmentTarget", err)
@@ -1471,16 +1476,16 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 				h.AcceptRunWhitespace()
 
 				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
-					if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) {
+					if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && (lhs.IsSimple() || lhs.isCoverAssignmentPattern()) {
 						if ae.AssignmentOperator.parse(&h) == nil {
 							h.AcceptRunWhitespace()
 
 							ae.ConditionalExpression = nil
 							ae.LeftHandSideExpression = lhs
 
-							if ae.AssignmentOperator == AssignmentAssign && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 && lhs.NewExpression.MemberExpression.PrimaryExpression != nil && (lhs.NewExpression.MemberExpression.PrimaryExpression.ArrayLiteral != nil || lhs.NewExpression.MemberExpression.PrimaryExpression.ObjectLiteral != nil) {
+							if ae.AssignmentOperator == AssignmentAssign && lhs.isCoverAssignmentPattern() {
 								ae.AssignmentPattern = new(AssignmentPattern)
-								if err := ae.AssignmentPattern.from(lhs.NewExpression.MemberExpression.PrimaryExpression); err != nil {
+								if err := ae.AssignmentPattern.from(&lhs.NewExpression.MemberExpression); err != nil {
 									z := jsParser(lhs.Tokens[:0])
 
 									return z.Error("ParenthesizedExpression", err)
