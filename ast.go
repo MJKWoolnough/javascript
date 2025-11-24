@@ -1254,3 +1254,19 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 
 	return nil
 }
+
+func (af *ArrowFunction) hasFirstComment() bool {
+	return len(af.Comments[0]) > 0
+}
+
+func (af *ArrowFunction) hasLastComment() bool {
+	if af.FunctionBody != nil {
+		return len(af.Comments[0]) > 0
+	}
+
+	if af.AssignmentExpression != nil {
+		return af.AssignmentExpression.hasLastComment()
+	}
+
+	return false
+}

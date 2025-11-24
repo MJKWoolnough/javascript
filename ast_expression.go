@@ -279,6 +279,10 @@ func (ae *AssignmentExpression) hasFirstComment() bool {
 		return ae.LeftHandSideExpression.hasFirstComment()
 	}
 
+	if ae.ArrowFunction != nil {
+		return ae.ArrowFunction.hasFirstComment()
+	}
+
 	return false
 }
 
@@ -289,6 +293,10 @@ func (ae *AssignmentExpression) hasLastComment() bool {
 
 	if ae.AssignmentExpression != nil {
 		return ae.AssignmentExpression.hasLastComment()
+	}
+
+	if ae.ArrowFunction != nil {
+		return ae.ArrowFunction.hasLastComment()
 	}
 
 	return false

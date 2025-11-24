@@ -1644,8 +1644,16 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 		return
 	}
 
+	if v {
+		a.Comments[0].printSource(w, false, true)
+	}
+
 	if a.Async {
 		w.WriteString("async ")
+	}
+
+	if v {
+		a.Comments[1].printSource(w, true, false)
 	}
 
 	if a.BindingIdentifier != nil {
@@ -1655,12 +1663,24 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 		a.FormalParameters.printSource(w, v)
 	}
 
+	if v {
+		a.Comments[2].printSource(w, true, false)
+	}
+
 	w.WriteString("=> ")
+
+	if v {
+		a.Comments[3].printSource(w, true, false)
+	}
 
 	if a.FunctionBody != nil {
 		a.FunctionBody.printSource(w, v)
 	} else {
 		a.AssignmentExpression.printSource(w, v)
+	}
+
+	if v {
+		a.Comments[4].printSource(w, false, true)
 	}
 }
 
@@ -1894,7 +1914,7 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	if v && len(c.Comments[1]) > 0 {
 		ip.WriteString("\n")
 		c.Comments[1].printSource(w, true, false)
-	} else if w != ip {
+	} else if w != ip && w.LastChar() != '\n' {
 		w.WriteString("\n")
 	}
 
