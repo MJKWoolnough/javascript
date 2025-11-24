@@ -91,6 +91,22 @@ func (ce *ConditionalExpression) hasFirstComment() bool {
 	return false
 }
 
+func (ce *ConditionalExpression) hasLastComment() bool {
+	if ce.False != nil {
+		return ce.False.hasLastComment()
+	}
+
+	if ce.LogicalORExpression != nil {
+		return ce.LogicalORExpression.hasLastComment()
+	}
+
+	if ce.CoalesceExpression != nil {
+		return ce.CoalesceExpression.hasLastComment()
+	}
+
+	return false
+}
+
 // CoalesceExpression as defined in TC39
 // https://tc39.es/ecma262/#prod-CoalesceExpression
 type CoalesceExpression struct {
@@ -138,6 +154,10 @@ func (ce *CoalesceExpression) hasFirstComment() bool {
 	return ce.BitwiseORExpression.hasFirstComment()
 }
 
+func (ce *CoalesceExpression) hasLastComment() bool {
+	return ce.BitwiseORExpression.hasLastComment()
+}
+
 // LogicalORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-LogicalORExpression
 type LogicalORExpression struct {
@@ -181,6 +201,10 @@ func (lo *LogicalORExpression) hasFirstComment() bool {
 	}
 
 	return lo.LogicalANDExpression.hasFirstComment()
+}
+
+func (lo *LogicalORExpression) hasLastComment() bool {
+	return lo.LogicalANDExpression.hasLastComment()
 }
 
 // LogicalANDExpression as defined in ECMA-262
@@ -228,6 +252,10 @@ func (la *LogicalANDExpression) hasFirstComment() bool {
 	return la.BitwiseORExpression.hasFirstComment()
 }
 
+func (la *LogicalANDExpression) hasLastComment() bool {
+	return la.BitwiseORExpression.hasLastComment()
+}
+
 // BitwiseORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseORExpression
 type BitwiseORExpression struct {
@@ -271,6 +299,10 @@ func (bo *BitwiseORExpression) hasFirstComment() bool {
 	}
 
 	return bo.BitwiseXORExpression.hasFirstComment()
+}
+
+func (bo *BitwiseORExpression) hasLastComment() bool {
+	return bo.BitwiseXORExpression.hasLastComment()
 }
 
 // BitwiseXORExpression as defined in ECMA-262
@@ -318,6 +350,10 @@ func (bx *BitwiseXORExpression) hasFirstComment() bool {
 	return bx.BitwiseANDExpression.hasFirstComment()
 }
 
+func (bx *BitwiseXORExpression) hasLastComment() bool {
+	return bx.BitwiseANDExpression.hasLastComment()
+}
+
 // BitwiseANDExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseANDExpression
 type BitwiseANDExpression struct {
@@ -361,6 +397,10 @@ func (ba *BitwiseANDExpression) hasFirstComment() bool {
 	}
 
 	return ba.EqualityExpression.hasFirstComment()
+}
+
+func (ba *BitwiseANDExpression) hasLastComment() bool {
+	return ba.EqualityExpression.hasLastComment()
 }
 
 // EqualityOperator determines the type of EqualityExpression
@@ -433,6 +473,10 @@ func (ee *EqualityExpression) hasFirstComment() bool {
 	}
 
 	return ee.RelationalExpression.hasFirstComment()
+}
+
+func (ee *EqualityExpression) hasLastComment() bool {
+	return ee.RelationalExpression.hasLastComment()
 }
 
 // RelationshipOperator determines the relationship type for RelationalExpression
@@ -553,6 +597,10 @@ func (re *RelationalExpression) hasFirstComment() bool {
 	return re.ShiftExpression.hasFirstComment()
 }
 
+func (re *RelationalExpression) hasLastComment() bool {
+	return re.ShiftExpression.hasLastComment()
+}
+
 // ShiftOperator determines the shift tyoe for ShiftExpression
 type ShiftOperator int
 
@@ -627,6 +675,10 @@ func (se *ShiftExpression) hasFirstComment() bool {
 	return se.AdditiveExpression.hasFirstComment()
 }
 
+func (se *ShiftExpression) hasLastComment() bool {
+	return se.AdditiveExpression.hasLastComment()
+}
+
 // AdditiveOperator determines the additive type for AdditiveExpression
 type AdditiveOperator int
 
@@ -692,6 +744,10 @@ func (ae *AdditiveExpression) hasFirstComment() bool {
 	}
 
 	return ae.MultiplicativeExpression.hasFirstComment()
+}
+
+func (ae *AdditiveExpression) hasLastComment() bool {
+	return ae.MultiplicativeExpression.hasLastComment()
 }
 
 // MultiplicativeOperator determines the multiplication type for MultiplicativeExpression
@@ -764,6 +820,10 @@ func (me *MultiplicativeExpression) hasFirstComment() bool {
 	return me.ExponentiationExpression.hasFirstComment()
 }
 
+func (me *MultiplicativeExpression) hasLastComment() bool {
+	return me.ExponentiationExpression.hasLastComment()
+}
+
 // ExponentiationExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExponentiationExpression
 type ExponentiationExpression struct {
@@ -812,6 +872,10 @@ func (ee *ExponentiationExpression) hasFirstComment() bool {
 	}
 
 	return ee.UnaryExpression.hasFirstComment()
+}
+
+func (ee *ExponentiationExpression) hasLastComment() bool {
+	return ee.UnaryExpression.hasLastComment()
 }
 
 // UnaryOperator determines a unary operator within UnaryExpression
@@ -902,6 +966,10 @@ Loop:
 
 func (ue *UnaryExpression) hasFirstComment() bool {
 	return ue.UpdateExpression.hasFirstComment()
+}
+
+func (ue *UnaryExpression) hasLastComment() bool {
+	return ue.UpdateExpression.hasLastComment()
 }
 
 // UpdateOperator determines the type of update operation for UpdateExpression
@@ -1001,5 +1069,17 @@ func (ue *UpdateExpression) hasFirstComment() bool {
 		return ue.LeftHandSideExpression.hasFirstComment()
 	}
 
+	if ue.UpdateOperator == UpdatePreIncrement || ue.UpdateOperator == UpdatePreDecrement {
+		return len(ue.Comments) > 0
+	}
+
 	return ue.UnaryExpression.hasFirstComment()
+}
+
+func (ue *UpdateExpression) hasLastComment() bool {
+	if ue.UpdateOperator == UpdatePostIncrement || ue.UpdateOperator == UpdatePostDecrement {
+		return len(ue.Comments) > 0
+	}
+
+	return ue.LeftHandSideExpression != nil && ue.LeftHandSideExpression.hasLastComment()
 }

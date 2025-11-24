@@ -1077,50 +1077,60 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 	} else if a.ArrowFunction != nil {
 		a.ArrowFunction.printSource(w, v)
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
-		ao := " = "
+		ao := "= "
 
 		switch a.AssignmentOperator {
 		case AssignmentAssign:
 		case AssignmentMultiply:
-			ao = " *= "
+			ao = "*= "
 		case AssignmentDivide:
-			ao = " /= "
+			ao = "/= "
 		case AssignmentRemainder:
-			ao = " %= "
+			ao = "%= "
 		case AssignmentAdd:
-			ao = " += "
+			ao = "+= "
 		case AssignmentSubtract:
-			ao = " -= "
+			ao = "-= "
 		case AssignmentLeftShift:
-			ao = " <<= "
+			ao = "<<= "
 		case AssignmentSignPropagatingRightShift:
-			ao = " >>= "
+			ao = ">>= "
 		case AssignmentZeroFillRightShift:
-			ao = " >>>= "
+			ao = ">>>= "
 		case AssignmentBitwiseAND:
-			ao = " &= "
+			ao = "&= "
 		case AssignmentBitwiseXOR:
-			ao = " ^= "
+			ao = "^= "
 		case AssignmentBitwiseOR:
-			ao = " |= "
+			ao = "|= "
 		case AssignmentExponentiation:
-			ao = " **= "
+			ao = "**= "
 		case AssignmentLogicalAnd:
-			ao = " &&= "
+			ao = "&&= "
 		case AssignmentLogicalOr:
-			ao = " ||= "
+			ao = "||= "
 		case AssignmentNullish:
-			ao = " ??= "
+			ao = "??= "
 		default:
 			return
 		}
 
 		a.LeftHandSideExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(ao)
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.AssignmentPattern != nil && a.AssignmentExpression != nil && a.AssignmentOperator == AssignmentAssign {
 		a.AssignmentPattern.printSource(w, v)
-		w.WriteString(" = ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("= ")
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.ConditionalExpression != nil {
 		a.ConditionalExpression.printSource(w, v)
@@ -1138,10 +1148,18 @@ func (l LeftHandSideExpression) printSource(w writer, v bool) {
 }
 
 func (a AssignmentPattern) printSource(w writer, v bool) {
+	if v {
+		a.Comments[0].printSource(w, true, false)
+	}
+
 	if a.ArrayAssignmentPattern != nil {
 		a.ArrayAssignmentPattern.printSource(w, v)
 	} else if a.ObjectAssignmentPattern != nil {
 		a.ObjectAssignmentPattern.printSource(w, v)
+	}
+
+	if v {
+		a.Comments[1].printSource(w, true, false)
 	}
 }
 
@@ -1855,12 +1873,12 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 
 	ip := w
 
-	if v && len(c.Comments[0]) > 0 {
+	if v && (len(c.Comments[0]) > 0 || len(c.Expressions) > 0 && c.Expressions[0].hasFirstComment()) {
 		ip = w.Indent()
 
-		c.Comments[0].printSource(w, true, true)
+		c.Comments[0].printSource(w, false, true)
 		ip.WriteString("\n")
-	} else if v && len(c.Comments[1]) > 1 {
+	} else if v && (len(c.Comments[1]) > 1 || len(c.Expressions) > 0 && c.Expressions[len(c.Expressions)-1].hasLastComment()) {
 		ip = w.Indent()
 	}
 
@@ -1876,6 +1894,8 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	if v && len(c.Comments[1]) > 0 {
 		ip.WriteString("\n")
 		c.Comments[1].printSource(w, true, false)
+	} else if w != ip {
+		w.WriteString("\n")
 	}
 
 	w.WriteString(")")

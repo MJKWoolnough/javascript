@@ -266,6 +266,26 @@ func (ae *AssignmentExpression) hasFirstComment() bool {
 		return ae.ConditionalExpression.hasFirstComment()
 	}
 
+	if ae.AssignmentPattern != nil {
+		return ae.AssignmentPattern.hasFirstComment()
+	}
+
+	if ae.LeftHandSideExpression != nil {
+		return ae.LeftHandSideExpression.hasFirstComment()
+	}
+
+	return false
+}
+
+func (ae *AssignmentExpression) hasLastComment() bool {
+	if ae.ConditionalExpression != nil {
+		return ae.ConditionalExpression.hasLastComment()
+	}
+
+	if ae.AssignmentExpression != nil {
+		return ae.AssignmentExpression.hasLastComment()
+	}
+
 	return false
 }
 
@@ -393,6 +413,30 @@ func (lhs *LeftHandSideExpression) hasFirstComment() bool {
 		return lhs.NewExpression.hasFirstComment()
 	}
 
+	if lhs.CallExpression != nil {
+		return lhs.CallExpression.hasFirstComment()
+	}
+
+	if lhs.OptionalExpression != nil {
+		return lhs.OptionalExpression.hasFirstComment()
+	}
+
+	return false
+}
+
+func (lhs *LeftHandSideExpression) hasLastComment() bool {
+	if lhs.NewExpression != nil {
+		return lhs.NewExpression.hasLastComment()
+	}
+
+	if lhs.CallExpression != nil {
+		return lhs.CallExpression.hasLastComment()
+	}
+
+	if lhs.OptionalExpression != nil {
+		return lhs.OptionalExpression.hasLastComment()
+	}
+
 	return false
 }
 
@@ -435,7 +479,7 @@ func (a *AssignmentPattern) from(me *MemberExpression) error {
 }
 
 func (a *AssignmentPattern) hasFirstComment() bool {
-	return a.ObjectAssignmentPattern != nil && a.ObjectAssignmentPattern.hasFirstComment() || a.ArrayAssignmentPattern != nil && a.ArrayAssignmentPattern.hasFirstComment()
+	return len(a.Comments[0]) > 0
 }
 
 // ObjectAssignmentPattern as defined in ECMA-262
@@ -758,6 +802,26 @@ func (oe *OptionalExpression) parse(j *jsParser, yield, await bool, me *MemberEx
 	return nil
 }
 
+func (oe *OptionalExpression) hasFirstComment() bool {
+	if oe.MemberExpression != nil {
+		return oe.MemberExpression.hasFirstComment()
+	}
+
+	if oe.CallExpression != nil {
+		return oe.CallExpression.hasFirstComment()
+	}
+
+	if oe.OptionalExpression != nil {
+		return oe.OptionalExpression.hasFirstComment()
+	}
+
+	return false
+}
+
+func (oe *OptionalExpression) hasLastComment() bool {
+	return oe.OptionalChain.hasLastComment()
+}
+
 // OptionalChain as defined in TC39
 // https://tc39.es/ecma262/#prod-OptionalExpression
 //
@@ -951,6 +1015,10 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (oc *OptionalChain) hasLastComment() bool {
+	return len(oc.Comments[3]) > 0
+}
+
 // Expression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-Expression
 //
@@ -1043,6 +1111,10 @@ func (ne *NewExpression) hasFirstComment() bool {
 	}
 
 	return len(ne.News[0]) > 0
+}
+
+func (ne *NewExpression) hasLastComment() bool {
+	return ne.MemberExpression.hasLastComment()
 }
 
 // MemberExpression as defined in ECMA-262
@@ -1327,6 +1399,10 @@ func (me *MemberExpression) hasFirstComment() bool {
 	}
 
 	return len(me.Comments[0]) > 0
+}
+
+func (me *MemberExpression) hasLastComment() bool {
+	return len(me.Comments[4]) > 0
 }
 
 // PrimaryExpression as defined in ECMA-262
@@ -1869,4 +1945,20 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 // IsSimple returns whether or not the CallExpression is classed as 'simple'
 func (ce *CallExpression) IsSimple() bool {
 	return ce.Expression != nil || ce.IdentifierName != nil || ce.PrivateIdentifier != nil
+}
+
+func (ce *CallExpression) hasFirstComment() bool {
+	if ce.MemberExpression != nil {
+		return ce.MemberExpression.hasFirstComment()
+	}
+
+	if ce.CallExpression != nil {
+		return ce.CallExpression.hasFirstComment()
+	}
+
+	return false
+}
+
+func (ce *CallExpression) hasLastComment() bool {
+	return len(ce.Comments[4]) > 0
 }
