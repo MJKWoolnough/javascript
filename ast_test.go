@@ -4479,6 +4479,60 @@ func TestArrowFunction(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"// A\na /* B */ => // C\n{} // D\n", func(t *test, tk Tokens) { // 56
+			t.Output = ArrowFunction{
+				BindingIdentifier: &tk[2],
+				FunctionBody: &Block{
+					Tokens: tk[10:12],
+				},
+				Comments: [5]Comments{{&tk[0]}, nil, {&tk[4]}, {&tk[8]}, {&tk[13]}},
+				Tokens:   tk[:14],
+			}
+		}},
+		{"// A\n() /* B */ => /* C */ {} // D", func(t *test, tk Tokens) { // 57
+			t.Output = ArrowFunction{
+				FormalParameters: &FormalParameters{
+					Tokens: tk[2:4],
+				},
+				FunctionBody: &Block{
+					Tokens: tk[11:13],
+				},
+				Comments: [5]Comments{{&tk[0]}, nil, {&tk[5]}, {&tk[9]}, {&tk[14]}},
+				Tokens:   tk[:15],
+			}
+		}},
+		{"// A\nasync /* B */ a /* C */ => // D\nb // E", func(t *test, tk Tokens) { // 58
+			t.Output = ArrowFunction{
+				Async:             true,
+				BindingIdentifier: &tk[6],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[14],
+							Tokens:              tk[14:15],
+						},
+						Comments: [5]Comments{nil, nil, nil, nil, {&tk[16]}},
+						Tokens:   tk[14:17],
+					}),
+					Tokens: tk[14:17],
+				},
+				Comments: [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12]}},
+				Tokens:   tk[:17],
+			}
+		}},
+		{"// A\nasync /* B */ ()/* C */ => // D\n{}// E\n", func(t *test, tk Tokens) { // 59
+			t.Output = ArrowFunction{
+				Async: true,
+				FormalParameters: &FormalParameters{
+					Tokens: tk[6:8],
+				},
+				FunctionBody: &Block{
+					Tokens: tk[14:16],
+				},
+				Comments: [5]Comments{{&tk[0]}, {&tk[4]}, {&tk[8]}, {&tk[12]}, {&tk[16]}},
+				Tokens:   tk[:17],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var af ArrowFunction
 
