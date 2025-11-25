@@ -1630,6 +1630,11 @@ func (j *jsParser) SkipDeclare() bool {
 
 				return true
 			}
+		case parser.Token{Type: TokenPunctuator, Data: "{"}:
+			g.SkipDepth()
+			j.Score(g)
+
+			return true
 		}
 	}
 
