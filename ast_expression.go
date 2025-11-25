@@ -108,6 +108,7 @@ type AssignmentExpression struct {
 	Delegate               bool
 	AssignmentOperator     AssignmentOperator
 	AssignmentExpression   *AssignmentExpression
+	Comments               [2]Comments
 	Tokens                 Tokens
 }
 
@@ -121,12 +122,24 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 	if yield && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "yield"}) {
 		ae.Yield = true
 
-		j.Skip()
-		j.AcceptRunWhitespaceNoNewLine()
+		ae.Comments[0] = j.AcceptRunWhitespaceComments()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
+		j.AcceptRunWhitespace()
+		j.Skip()
+
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespaceNoNewLine()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 			ae.Delegate = true
 
+			ae.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespaceNoNewLine()
+			j.Skip()
 			j.AcceptRunWhitespaceNoComment()
 		}
 
