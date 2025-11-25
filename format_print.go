@@ -1067,9 +1067,17 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 
 func (a AssignmentExpression) printSource(w writer, v bool) {
 	if a.Yield && a.AssignmentExpression != nil {
+		if v {
+			a.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString("yield ")
 
 		if a.Delegate {
+			if v {
+				a.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteString("* ")
 		}
 
