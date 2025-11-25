@@ -162,7 +162,7 @@ func (b Block) printSource(w writer, v bool) {
 		lastLine = b.Comments[0][len(b.Comments[0])-1].Line
 	}
 
-	pp := w.Indent()
+	ip := w.Indent()
 
 	for _, stmt := range b.StatementList {
 		if v {
@@ -170,20 +170,20 @@ func (b Block) printSource(w writer, v bool) {
 				ll := stmt.Tokens[0].Line
 
 				if ll > lastLine {
-					pp.WriteString("\n")
+					ip.WriteString("\n")
 				} else {
-					pp.WriteString(" ")
+					ip.WriteString(" ")
 				}
 
 				lastLine = ll
 			} else {
-				pp.WriteString("\n")
+				ip.WriteString("\n")
 			}
 		} else {
-			pp.WriteString("\n")
+			ip.WriteString("\n")
 		}
 
-		stmt.printSource(pp, v)
+		stmt.printSource(ip, v)
 	}
 
 	if v && len(b.Comments[1]) > 0 {
@@ -194,7 +194,7 @@ func (b Block) printSource(w writer, v bool) {
 			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
 				w.WriteString("\n")
 			} else {
-				pp.WriteString(" ")
+				ip.WriteString(" ")
 			}
 		} else {
 			w.WriteString("\n")
@@ -282,8 +282,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 		i.Comments[1].printSource(w, false, true)
 
 		ip := w.Indent()
-
-		var nl bool
+		nl := false
 
 		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && (i.Expression.Tokens[0].Line > i.Tokens[0].Line || i.Expression.hasFirstComment()) {
 			nl = true
@@ -332,17 +331,16 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 	w.WriteString(" while (")
 
 	if v {
-		pp := w.Indent()
-
-		var nl bool
+		ip := w.Indent()
+		nl := false
 
 		if len(i.Expression.Tokens) > 0 && len(i.Tokens) > 0 && i.Expression.Tokens[0].Line < i.Tokens[len(i.Tokens)-1].Line {
 			nl = true
 
-			pp.WriteString("\n")
+			ip.WriteString("\n")
 		}
 
-		i.Expression.printSource(pp, true)
+		i.Expression.printSource(ip, true)
 
 		if nl {
 			w.WriteString("\n")
@@ -369,8 +367,7 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 
 	if v {
 		ip := w.Indent()
-
-		var nl bool
+		nl := false
 
 		if (len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line) || i.Expression.hasFirstComment() {
 			ip.WriteString("\n")
@@ -478,7 +475,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		lastLine = i.Tokens[0].Line
 	}
 
-	var endline bool
+	endline := false
 
 	switch i.Type {
 	case ForNormal:
@@ -676,17 +673,16 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 	if v {
 		s.Comments[1].printSource(w, true, false)
 
-		pp := w.Indent()
-
-		var nl bool
+		ip := w.Indent()
+		nl := false
 
 		if len(s.Tokens) > 0 && len(s.Expression.Tokens) > 0 && s.Expression.Tokens[0].Line > s.Tokens[0].Line {
 			nl = true
 
-			pp.WriteString("\n")
+			ip.WriteString("\n")
 		}
 
-		s.Expression.printSource(pp, true)
+		s.Expression.printSource(ip, true)
 
 		if nl || len(s.Comments[2]) > 0 {
 			w.WriteString("\n")
@@ -732,11 +728,11 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 			s.Comments[7].printSource(w, false, true)
 		}
 
-		pp := w.Indent()
+		ip := w.Indent()
 
 		for _, stmt := range s.DefaultClause {
-			pp.WriteString("\n")
-			stmt.printSource(pp, v)
+			ip.WriteString("\n")
+			stmt.printSource(ip, v)
 		}
 	}
 
@@ -772,8 +768,7 @@ func (ws WithStatement) printSource(w writer, v bool) {
 
 	if v {
 		ip := w.Indent()
-
-		var nl bool
+		nl := false
 
 		if (len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line) || ws.Expression.hasFirstComment() {
 			nl = true
@@ -1414,11 +1409,11 @@ func (c CaseClause) printSource(w writer, v bool) {
 		c.Comments[1].printSource(w, false, true)
 	}
 
-	pp := w.Indent()
+	ip := w.Indent()
 
 	for _, stmt := range c.StatementList {
-		pp.WriteString("\n")
-		stmt.printSource(pp, v)
+		ip.WriteString("\n")
+		stmt.printSource(ip, v)
 	}
 }
 
