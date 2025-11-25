@@ -2963,6 +2963,45 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"// A\nyield /* B */ a // C", func(t *test, tk Tokens) { // 74
+			t.Yield = true
+			t.Output = AssignmentExpression{
+				Yield: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[6],
+							Tokens:              tk[6:7],
+						},
+						Comments: [5]Comments{{&tk[4]}, nil, nil, nil, {&tk[8]}},
+						Tokens:   tk[4:9],
+					}),
+					Tokens: tk[4:9],
+				},
+				Comments: [2]Comments{{&tk[0]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"// A\nyield /* B */ * /* C */ a // D", func(t *test, tk Tokens) { // 75
+			t.Yield = true
+			t.Output = AssignmentExpression{
+				Yield:    true,
+				Delegate: true,
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[10],
+							Tokens:              tk[10:11],
+						},
+						Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+						Tokens:   tk[8:13],
+					}),
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:   tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ae AssignmentExpression
 
