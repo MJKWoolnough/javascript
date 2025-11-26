@@ -354,7 +354,7 @@ func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 
 		if strings.HasPrefix(c.Data, "/*") {
 			if *cp {
-				w.WriteString(" */")
+				w.WriteString("*/ ")
 			}
 
 			*cp = false

@@ -5227,3 +5227,40 @@ func TestAsTypescript(t *testing.T) {
 		}
 	}
 }
+
+func TestPrintingTypescript(t *testing.T) {
+	var st state
+
+	st.Verbose = true
+
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{ // 1
+			"let a: number = 1",
+			"let a /*: number*/ = 1;",
+		},
+		{ // 2
+			"let a /* A */ : number /* B */ = 1",
+			"let a /* A */ /*: number*/ /* B */ = 1;",
+		},
+		{ // 3
+			"let a : /* A */ number = 1",
+			"let a /*: */ /* A */ /* number*/ = 1;",
+		},
+	} {
+		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
+		if err != nil {
+			t.Errorf("test %d.1: unexpected error: %s", n+1, err)
+
+			continue
+		}
+
+		st.Buffer.Reset()
+		s.Format(&st, 's')
+
+		if str := st.Buffer.String(); str != test.Output {
+			t.Errorf("test %d.2: expecting %q, got %q\n%s", n+1, test.Output, str, s)
+		}
+	}
+}
