@@ -230,6 +230,16 @@ func (j *jsParser) ToTokens() Tokens {
 	return Tokens((*j)[:len(*j):len(*j)])
 }
 
+func (j jsParser) ToComments() Comments {
+	c := make(Comments, len(j))
+
+	for n := range j {
+		c[n] = &(j)[n]
+	}
+
+	return c
+}
+
 func (j *jsParser) AcceptRunWhitespace() parser.TokenType {
 	return j.AcceptRun(TokenWhitespace, TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment)
 }
