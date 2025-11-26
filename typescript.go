@@ -1653,6 +1653,19 @@ func (j *jsParser) SkipDeclare() bool {
 					return true
 				}
 			}
+		case parser.Token{Type: TokenIdentifier, Data: "namespace"}:
+			g.Skip()
+			g.AcceptRunWhitespace()
+
+			if g.Accept(TokenIdentifier) {
+				g.AcceptRunWhitespace()
+
+				if g.SkipDepth() {
+					j.Score(g)
+
+					return true
+				}
+			}
 		}
 	}
 
