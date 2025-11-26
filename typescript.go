@@ -1047,17 +1047,26 @@ func (j *jsParser) ReadImportType() bool {
 		return false
 	}
 
-	g.AcceptRunWhitespace()
+	h := g.NewGoal()
 
-	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
-		if !g.ReadTypeReference() {
+	h.AcceptRunWhitespace()
+
+	if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+		if !h.ReadTypeReference() {
 			return false
 		}
 
-		g.AcceptRunWhitespace()
+		g.Score(h)
 	}
 
-	g.ReadTypeArguments()
+	h = g.NewGoal()
+
+	h.AcceptRunWhitespace()
+
+	if h.ReadTypeArguments() {
+		g.Score(h)
+	}
+
 	j.Score(g)
 
 	return true
