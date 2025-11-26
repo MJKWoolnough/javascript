@@ -270,6 +270,8 @@ func (c Comments) printType(w writer, v bool) {
 	w.WriteString("\n]")
 }
 
+type commentPrinter bool
+
 func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 	for len(c) > 0 && c[0] == nil {
 		c = c[1:]
@@ -285,7 +287,9 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
 		pos := w.Pos()
 
-		lastWasMulti := printComment(w, *c[0], 0)
+		var cp commentPrinter
+
+		lastWasMulti := cp.print(w, *c[0], 0)
 
 		if !lastWasMulti {
 			line++
@@ -296,29 +300,35 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 				continue
 			}
 
-			if line < c.Line {
-				if !lastWasMulti {
+			if !cp {
+				if line < c.Line {
+					if !lastWasMulti {
+						w.WriteString("\n")
+					}
+
+					w.WriteString("\n")
+
+					line++
+					pos = 0
+				} else if lastWasMulti {
+					w.WriteString(" ")
+				} else {
 					w.WriteString("\n")
 				}
-
-				w.WriteString("\n")
-
-				line++
-				pos = 0
-			} else if lastWasMulti {
-				w.WriteString(" ")
-			} else {
-				w.WriteString("\n")
 			}
 
-			if lastWasMulti = printComment(w, *c, pos); lastWasMulti {
+			if lastWasMulti = cp.print(w, *c, pos); lastWasMulti {
 				line += uint64(strings.Count(c.Data, "\n"))
 			} else {
 				line++
 			}
 		}
 
-		if postNewline || c[len(c)-1].Type == TokenSingleLineComment {
+		if cp {
+			w.WriteString("*/")
+		}
+
+		if postNewline || !lastWasMulti {
 			w.WriteString("\n")
 		} else if postSpace {
 			w.WriteString(" ")
@@ -330,30 +340,37 @@ func (c Comments) LastIsMulti() bool {
 	return len(c) > 0 && c[len(c)-1].Type == TokenMultiLineComment
 }
 
-func printComment(w writer, c Token, pos int) bool {
-	w.WriteString(strings.Repeat(" ", pos))
+func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
+	var multi bool
 
-	var checkClose bool
+	if !bool(*cp) && isSingleLine(c) {
+		w.WriteString(strings.Repeat(" ", pos))
 
-	if isSingleLine(c) {
 		if !strings.HasPrefix(c.Data, "//") {
 			w.WriteString("// ")
 		}
 	} else {
-		checkClose = true
+		multi = true
 
-		if !strings.HasPrefix(c.Data, "/*") {
-			w.WriteString("/* ")
+		if strings.HasPrefix(c.Data, "/*") {
+			if *cp {
+				w.WriteString(" */")
+			}
+
+			*cp = false
+		} else if !bool(*cp) {
+			w.WriteString("/*")
+			*cp = true
 		}
 	}
 
-	w.WriteString(strings.TrimSpace(c.Data))
-
-	if checkClose && !strings.HasSuffix(c.Data, "*/") {
-		w.WriteString(" */")
+	if *cp {
+		w.WriteString(strings.ReplaceAll(c.Data, "*/", "* /"))
+	} else {
+		w.WriteString(strings.TrimSpace(c.Data))
 	}
 
-	return checkClose
+	return multi
 }
 
 func isSingleLine(c Token) bool {
