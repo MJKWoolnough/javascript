@@ -1596,6 +1596,7 @@ func (j *jsParser) SkipDeclare() bool {
 
 	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "declare"}) {
 		g.AcceptRunWhitespaceNoNewLine()
+
 		switch g.Peek() {
 		case parser.Token{Type: TokenKeyword, Data: "var"}:
 			var vd VariableStatement
@@ -1630,11 +1631,15 @@ func (j *jsParser) SkipDeclare() bool {
 
 				return true
 			}
-		case parser.Token{Type: TokenPunctuator, Data: "{"}:
-			g.SkipDepth()
-			j.Score(g)
+		case parser.Token{Type: TokenIdentifier, Data: "global"}:
+			g.Skip()
+			g.AcceptRunWhitespace()
 
-			return true
+			if g.SkipDepth() {
+				j.Score(g)
+
+				return true
+			}
 		}
 	}
 

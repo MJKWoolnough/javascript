@@ -3575,21 +3575,21 @@ case "b":
 				Tokens: tk[:18],
 			}
 		}},
-		{`declare { interface A {} }`, func(t *test, tk Tokens) { // 99
+		{`declare global { interface A {} }`, func(t *test, tk Tokens) { // 99
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
 							Statement: &Statement{
-								Tokens: tk[:12],
+								Tokens: tk[:14],
 							},
-							Tokens: tk[:12],
+							Tokens: tk[:14],
 						},
-						Tokens: tk[:12],
+						Tokens: tk[:14],
 					},
 				},
-				Tokens: tk[:12],
+				Tokens: tk[:14],
 			}
 		}},
 		{`interface A {readonly B: C;}`, func(t *test, tk Tokens) { // 100
