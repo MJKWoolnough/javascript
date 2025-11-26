@@ -259,6 +259,9 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	g.AcceptRunWhitespace()
 
 	if g.SkipColonType() {
+		lb.Comments[1] = append(lb.Comments[1], g.ToComments()...)
+		lb.Comments[1] = append(lb.Comments[1], g.AcceptRunWhitespaceComments()...)
+
 		j.Score(g)
 
 		g = j.NewGoal()

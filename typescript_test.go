@@ -1595,7 +1595,8 @@ i <J> () {}
 												}),
 												Tokens: tk[9:14],
 											},
-											Tokens: tk[2:14],
+											Comments: [2]Comments{nil, jsParser(tk[3:6]).ToComments()},
+											Tokens:   tk[2:14],
 										},
 										{
 											ArrayBindingPattern: &ArrayBindingPattern{
@@ -2506,6 +2507,7 @@ public abstract d;
 									BindingList: []LexicalBinding{
 										{
 											BindingIdentifier: &tk[4],
+											Comments:          [2]Comments{nil, jsParser(tk[5:8]).ToComments()},
 											Tokens:            tk[4:8],
 										},
 									},
@@ -2533,6 +2535,7 @@ public abstract d;
 									BindingList: []LexicalBinding{
 										{
 											BindingIdentifier: &tk[2],
+											Comments:          [2]Comments{nil, jsParser(tk[3:19]).ToComments()},
 											Tokens:            tk[2:19],
 										},
 									},
@@ -4233,7 +4236,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												}),
 												Tokens: tk[14:15],
 											},
-											Tokens: tk[2:15],
+											Comments: [2]Comments{nil, jsParser(tk[3:11]).ToComments()},
+											Tokens:   tk[2:15],
 										},
 									},
 									Tokens: tk[:15],
