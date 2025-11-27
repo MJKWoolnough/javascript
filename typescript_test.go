@@ -5260,6 +5260,14 @@ func TestPrintingTypescript(t *testing.T) {
 			"let a : /* A */ number = 1",
 			"let a /*: /* A * / number*/ = 1;",
 		},
+		{ // 4
+			"abstract class A {}",
+			"/*abstract*/ class A {}",
+		},
+		{ // 4
+			"// A\n\n// B\nabstract /* C */ class A {}",
+			"// A\n\n// B\n/*abstract /* C * /*/ class A {}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
