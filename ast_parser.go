@@ -239,7 +239,7 @@ func (j *jsParser) ToTokens() Tokens {
 	return Tokens((*j)[:len(*j):len(*j)])
 }
 
-func (j jsParser) ToComments() Comments {
+func (j jsParser) ToTypescriptComments() Comments {
 	c := make(Comments, len(j))
 
 	for n := range j {
