@@ -226,6 +226,10 @@ func (j *jsParser) ToTokens() Tokens {
 }
 
 func (j jsParser) ToTypescriptComments() Comments {
+	if len(j) == 0 {
+		return nil
+	}
+
 	c := make(Comments, len(j))
 
 	for n := range j {
