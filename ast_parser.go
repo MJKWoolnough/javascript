@@ -211,20 +211,6 @@ func (j *jsParser) SkipDepth() bool {
 	return true
 }
 
-func (j *jsParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
-	for {
-		tt := j.next().Type
-
-		for _, pt := range ts {
-			if pt == tt || tt < 0 {
-				j.backup()
-
-				return tt
-			}
-		}
-	}
-}
-
 func (j *jsParser) AcceptToken(tk parser.Token) bool {
 	if j.next().Token == tk {
 		return true
