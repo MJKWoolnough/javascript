@@ -1,8 +1,6 @@
 package javascript // import "vimagination.zapto.org/javascript"
 
-import (
-	"vimagination.zapto.org/parser"
-)
+import "vimagination.zapto.org/parser"
 
 // Script represents the top-level of a parsed javascript text
 type Script struct {
