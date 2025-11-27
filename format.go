@@ -160,49 +160,53 @@ func (t Token) Format(s fmt.State, v rune) {
 func (t Token) printType(w io.Writer, v bool) {
 	var typ string
 
-	switch t.Type {
+	if t.Type&tokenTypescript != 0 {
+		typ = "Typescript"
+	}
+
+	switch t.Type &^ tokenTypescript {
 	case parser.TokenError:
-		typ = "Error"
+		typ += "Error"
 	case parser.TokenDone:
-		typ = "Done"
+		typ += "Done"
 	case TokenWhitespace:
-		typ = "Whitespace"
+		typ += "Whitespace"
 	case TokenLineTerminator:
-		typ = "LineTerminator"
+		typ += "LineTerminator"
 	case TokenSingleLineComment:
-		typ = "SingleLineComment"
+		typ += "SingleLineComment"
 	case TokenMultiLineComment:
-		typ = "MultiLineComment"
+		typ += "MultiLineComment"
 	case TokenIdentifier:
-		typ = "Identifier"
+		typ += "Identifier"
 	case TokenBooleanLiteral:
-		typ = "BooleanLiteral"
+		typ += "BooleanLiteral"
 	case TokenKeyword:
-		typ = "Keyword"
+		typ += "Keyword"
 	case TokenPunctuator:
-		typ = "Punctuator"
+		typ += "Punctuator"
 	case TokenNumericLiteral:
-		typ = "NumericLiteral"
+		typ += "NumericLiteral"
 	case TokenStringLiteral:
-		typ = "StringLiteral"
+		typ += "StringLiteral"
 	case TokenNoSubstitutionTemplate:
-		typ = "NoSubstitutionTemplate"
+		typ += "NoSubstitutionTemplate"
 	case TokenTemplateHead:
-		typ = "TemplateHead"
+		typ += "TemplateHead"
 	case TokenTemplateMiddle:
-		typ = "TemplateMiddle"
+		typ += "TemplateMiddle"
 	case TokenTemplateTail:
-		typ = "TemplateTail"
+		typ += "TemplateTail"
 	case TokenDivPunctuator:
-		typ = "DivPunctuator"
+		typ += "DivPunctuator"
 	case TokenRightBracePunctuator:
-		typ = "RightBracePunctuator"
+		typ += "RightBracePunctuator"
 	case TokenRegularExpressionLiteral:
-		typ = "RegulatExpressionLiteral"
+		typ += "RegulatExpressionLiteral"
 	case TokenNullLiteral:
-		typ = "NullLiteral"
+		typ += "NullLiteral"
 	case TokenFutureReservedWord:
-		typ = "FutureReservedWord"
+		typ += "FutureReservedWord"
 	default:
 		typ = fmt.Sprintf("%d", t.Type)
 	}
@@ -343,7 +347,14 @@ func (c Comments) LastIsMulti() bool {
 func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 	var multi bool
 
-	if !bool(*cp) && isSingleLine(c) {
+	if isSingleLine(c) {
+		if *cp {
+			w.WriteString("*/ ")
+
+			pos = max(0, pos-3)
+			*cp = false
+		}
+
 		w.WriteString(strings.Repeat(" ", pos))
 
 		if !strings.HasPrefix(c.Data, "//") {
@@ -352,7 +363,7 @@ func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 	} else {
 		multi = true
 
-		if strings.HasPrefix(c.Data, "/*") {
+		if c.Type == TokenMultiLineComment {
 			if *cp {
 				w.WriteString("*/ ")
 			}
