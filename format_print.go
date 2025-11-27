@@ -139,6 +139,10 @@ func (s Statement) printSource(w writer, v bool) {
 
 func (d Declaration) printSource(w writer, v bool) {
 	if d.ClassDeclaration != nil {
+		if v {
+			d.Comments.printSource(w, true, false)
+		}
+
 		d.ClassDeclaration.printSource(w, v)
 	} else if d.FunctionDeclaration != nil {
 		d.FunctionDeclaration.printSource(w, v)
