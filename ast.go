@@ -112,18 +112,23 @@ type Declaration struct {
 	ClassDeclaration    *ClassDeclaration
 	FunctionDeclaration *FunctionDeclaration
 	LexicalDeclaration  *LexicalDeclaration
+	Comments            Comments
 	Tokens              Tokens
 }
 
 func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	g := j.NewGoal()
 	h := g.NewGoal()
+	i := h.NewGoal()
 
-	if h.SkipAbstract() {
+	if i.SkipAbstract() {
+		i.AcceptRunWhitespaceNoNewlineComments()
+		h.Score(i)
 		h.AcceptRunWhitespaceNoNewLine()
 	}
 
 	if tk := h.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+		d.Comments = i.ToTypescriptComments()
 		d.ClassDeclaration = new(ClassDeclaration)
 
 		if err := d.ClassDeclaration.parse(&h, yield, await, false); err != nil {
