@@ -45,6 +45,8 @@ const (
 	TokenRegularExpressionLiteral
 	TokenNullLiteral
 	TokenFutureReservedWord
+
+	tokenTypescript = 0x20
 )
 
 type jsTokeniser struct {

@@ -38,14 +38,23 @@ func newJSParser(t Tokeniser) (jsParser, error) {
 	)
 
 	for tk := range t.Iter {
+		typ := tk.Type
+
+		if typ >= tokenTypescript {
+			typ = typ &^ tokenTypescript
+		}
+
 		tokens = append(tokens, Token{
-			Token:   tk,
+			Token: parser.Token{
+				Type: typ,
+				Data: tk.Data,
+			},
 			Pos:     pos,
 			Line:    line,
 			LinePos: linePos,
 		})
 
-		switch tk.Type {
+		switch typ {
 		case parser.TokenError:
 			err = Error{
 				Err:     t.GetError(),
@@ -235,6 +244,7 @@ func (j jsParser) ToComments() Comments {
 
 	for n := range j {
 		c[n] = &(j)[n]
+		c[n].Type |= tokenTypescript
 	}
 
 	return c

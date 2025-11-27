@@ -7,6 +7,16 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+func (j jsParser) toTypescript() Comments {
+	c := make(Comments, len(j))
+
+	for n := range j {
+		c[n] = &(j)[n]
+	}
+
+	return c
+}
+
 func TestTypescriptModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`import def from './a';import type typeDef from './b';import type {typ1, typ2} from './c';import {a} from './d';`, func(t *test, tk Tokens) { // 1
@@ -1595,7 +1605,7 @@ i <J> () {}
 												}),
 												Tokens: tk[9:14],
 											},
-											Comments: [2]Comments{nil, jsParser(tk[3:6]).ToComments()},
+											Comments: [2]Comments{nil, jsParser(tk[3:6]).toTypescript()},
 											Tokens:   tk[2:14],
 										},
 										{
@@ -2507,7 +2517,7 @@ public abstract d;
 									BindingList: []LexicalBinding{
 										{
 											BindingIdentifier: &tk[4],
-											Comments:          [2]Comments{nil, jsParser(tk[5:8]).ToComments()},
+											Comments:          [2]Comments{nil, jsParser(tk[5:8]).toTypescript()},
 											Tokens:            tk[4:8],
 										},
 									},
@@ -2535,7 +2545,7 @@ public abstract d;
 									BindingList: []LexicalBinding{
 										{
 											BindingIdentifier: &tk[2],
-											Comments:          [2]Comments{nil, jsParser(tk[3:19]).ToComments()},
+											Comments:          [2]Comments{nil, jsParser(tk[3:19]).toTypescript()},
 											Tokens:            tk[2:19],
 										},
 									},
@@ -4236,7 +4246,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												}),
 												Tokens: tk[14:15],
 											},
-											Comments: [2]Comments{nil, jsParser(tk[3:11]).ToComments()},
+											Comments: [2]Comments{nil, jsParser(tk[3:11]).toTypescript()},
 											Tokens:   tk[2:15],
 										},
 									},
@@ -5246,7 +5256,7 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 3
 			"let a : /* A */ number = 1",
-			"let a /*: */ /* A */ /* number*/ = 1;",
+			"let a /*: /* A * / number*/ = 1;",
 		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
