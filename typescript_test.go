@@ -5296,6 +5296,22 @@ func TestPrintingTypescript(t *testing.T) {
 			"(async /* A */ <B> /* C */ () /* D */: B/* E */ => {})",
 			"(async /* A */ /*<B>*/ /* C */ () /* D */ /*: B*/ /* E */ => {});",
 		},
+		{ // 9
+			"class A<B> {}",
+			"class A /*<B>*/ {}",
+		},
+		{ // 10
+			"class A /* A */ <B> /* B */ extends C<D> {}",
+			"class A /* A */ /*<B>*/ /* B */ extends C /*<D>*/ {}",
+		},
+		{ // 11
+			"class A implements B {}",
+			"class A /*implements B*/ {}",
+		},
+		{ // 12
+			"class A /* A */ <B> /* B */ extends C<D> /* C */ implements E /* D */ {}",
+			"class A /* A */ /*<B>*/ /* B */ extends C /*<D>*/ /* C */ /*implements E /* D * /*/ {}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
