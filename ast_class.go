@@ -15,7 +15,7 @@ type ClassDeclaration struct {
 	BindingIdentifier *Token
 	ClassHeritage     *LeftHandSideExpression
 	ClassBody         []ClassElement
-	Comments          [4]Comments
+	Comments          [5]Comments
 	Tokens            Tokens
 }
 
@@ -38,7 +38,11 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		j.AcceptRunWhitespace()
 	}
 
-	if j.SkipGeneric() {
+	if g := j.NewGoal(); g.SkipGeneric() {
+		cd.Comments[1] = append(cd.Comments[1], g.ToTypescriptComments()...)
+		cd.Comments[1] = append(cd.Comments[1], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 
@@ -55,12 +59,20 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		j.Score(g)
 		j.AcceptRunWhitespace()
 
-		if j.SkipTypeArguments() {
+		if g = j.NewGoal(); g.SkipTypeArguments() {
+			cd.Comments[2] = g.ToTypescriptComments()
+			cd.Comments[2] = append(cd.Comments[2], g.AcceptRunWhitespaceComments()...)
+
+			j.Score(g)
 			j.AcceptRunWhitespace()
 		}
 	}
 
-	if j.SkipHeritage() {
+	if g := j.NewGoal(); g.SkipHeritage() {
+		cd.Comments[2] = append(cd.Comments[2], g.ToTypescriptComments()...)
+		cd.Comments[2] = append(cd.Comments[2], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 
@@ -68,7 +80,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		return j.Error("ClassDeclaration", ErrMissingOpeningBrace)
 	}
 
-	cd.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
+	cd.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	j.AcceptRunWhitespaceNoComment()
 
@@ -144,7 +156,7 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 
 	j.Score(g)
 
-	cd.Comments[3] = append(c, j.AcceptRunWhitespaceComments()...)
+	cd.Comments[4] = append(c, j.AcceptRunWhitespaceComments()...)
 
 	j.AcceptRunWhitespace()
 	j.Skip()

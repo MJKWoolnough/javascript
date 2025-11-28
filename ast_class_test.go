@@ -3272,7 +3272,7 @@ func TestClassDeclaration(t *testing.T) {
 		{"class // A\na // B\n{ // C\n\n// D\n}", func(t *test, tk Tokens) { // 110
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[4],
-				Comments:          [4]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[12]}},
+				Comments:          [5]Comments{{&tk[2]}, {&tk[6]}, nil, {&tk[10]}, {&tk[12]}},
 				Tokens:            tk[:15],
 			}
 		}},
@@ -3303,7 +3303,7 @@ func TestClassDeclaration(t *testing.T) {
 						Tokens:   tk[10:27],
 					},
 				},
-				Comments: [4]Comments{nil, nil, {&tk[6]}, {&tk[30], &tk[35]}},
+				Comments: [5]Comments{nil, nil, nil, {&tk[6]}, {&tk[30], &tk[35]}},
 				Tokens:   tk[:38],
 			}
 		}},
@@ -3354,7 +3354,7 @@ func TestClassDeclaration(t *testing.T) {
 						Tokens: tk[20:29],
 					},
 				},
-				Comments: [4]Comments{nil, nil, {&tk[6]}, {&tk[30]}},
+				Comments: [5]Comments{nil, nil, nil, {&tk[6]}, {&tk[30]}},
 				Tokens:   tk[:33],
 			}
 		}},

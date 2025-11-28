@@ -987,7 +987,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 	ip := w.Indent()
 
 	if v {
-		c.Comments[2].printSource(w, false, true)
+		c.Comments[3].printSource(w, false, true)
 	}
 
 	if len(c.ClassBody) > 0 {
@@ -1001,9 +1001,9 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(c.Comments[3]) > 0 {
+	if v && len(c.Comments[4]) > 0 {
 		w.WriteString("\n")
-		c.Comments[3].printSource(w, false, false)
+		c.Comments[4].printSource(w, false, false)
 	}
 
 	w.WriteString("}")
