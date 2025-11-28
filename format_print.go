@@ -982,6 +982,10 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 		w.WriteString(" ")
 	}
 
+	if v {
+		c.Comments[2].printSource(w, true, false)
+	}
+
 	w.WriteString("{")
 
 	ip := w.Indent()
