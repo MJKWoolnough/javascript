@@ -179,7 +179,7 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 		g.AcceptRunWhitespace()
 
 		if g.SkipGeneric() {
-			g.AcceptRunWhitespaceNoNewLine()
+			g = j.NewGoal()
 
 			ae.ArrowFunction = new(ArrowFunction)
 			if err := ae.ArrowFunction.parse(&g, in, yield, await); err != nil {
