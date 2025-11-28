@@ -1007,7 +1007,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 
 	if v && len(c.Comments[4]) > 0 {
 		w.WriteString("\n")
-		c.Comments[4].printSource(w, false, false)
+		c.Comments[4].printSource(w, false, true)
 	}
 
 	w.WriteString("}")
