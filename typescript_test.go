@@ -2451,6 +2451,7 @@ public abstract d;
 							Declaration: &Declaration{
 								ClassDeclaration: &ClassDeclaration{
 									BindingIdentifier: &tk[4],
+									Comments:          [5]Comments{nil, nil, nil, nil, append(append(append(jsParser(tk[8:17]).toTypescript(), jsParser(tk[18:22]).toTypescript()...), jsParser(tk[23:30]).toTypescript()...), jsParser(tk[31:37]).toTypescript()...)},
 									Tokens:            tk[:39],
 								},
 								Comments: jsParser(tk[:1]).toTypescript(),
@@ -3866,7 +3867,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												},
 												Tokens: tk[19:26],
 											},
-											Tokens: tk[19:27],
+											Comments: [3]Comments{jsParser(tk[7:17]).toTypescript()},
+											Tokens:   tk[7:27],
 										},
 										{
 											FieldDefinition: &FieldDefinition{

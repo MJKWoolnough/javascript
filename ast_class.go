@@ -115,17 +115,18 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 
 		h.AcceptRunWhitespace()
 
-		if h.SkipParameterProperties() {
-			h.AcceptRunWhitespaceNoComment()
+		i := h.NewGoal()
+
+		if i.SkipParameterProperties() {
+			i.AcceptRunWhitespace()
 		}
 
-		if h.SkipAbstractField() {
-			g.Score(h)
+		if i.SkipAbstractField() || i.SkipIndexSignature() {
+			i.parseSemicolon()
 
-			continue
-		}
+			c = append(c, i.ToTypescriptComments()...)
 
-		if h.SkipIndexSignature() {
+			h.Score(i)
 			g.Score(h)
 
 			continue
