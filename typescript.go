@@ -1340,13 +1340,23 @@ func (j *jsParser) ReadHeritage() bool {
 				return false
 			}
 
-			g.AcceptRunWhitespace()
-			g.ReadTypeParameters()
-			g.AcceptRunWhitespace()
+			h := g.NewGoal()
 
-			if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			h.AcceptRunWhitespace()
+
+			if h.ReadTypeParameters() {
+				g.Score(h)
+			}
+
+			h = g.NewGoal()
+
+			h.AcceptRunWhitespace()
+
+			if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
 				break
 			}
+
+			g.Score(h)
 		}
 
 		j.Score(g)
