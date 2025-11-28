@@ -756,7 +756,7 @@ type B = number;
 				Token:   tk[0],
 			}
 		}},
-		{`class A<B, C> implements D, E<F> extends G<H> {}`, func(t *test, tk Tokens) { // 19
+		{`class A<B, C> extends G<H> implements D, E<F> {}`, func(t *test, tk Tokens) { // 19
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -769,14 +769,14 @@ type B = number;
 										NewExpression: &NewExpression{
 											MemberExpression: MemberExpression{
 												PrimaryExpression: &PrimaryExpression{
-													IdentifierReference: &tk[22],
-													Tokens:              tk[22:23],
+													IdentifierReference: &tk[12],
+													Tokens:              tk[12:13],
 												},
-												Tokens: tk[22:23],
+												Tokens: tk[12:13],
 											},
-											Tokens: tk[22:23],
+											Tokens: tk[12:13],
 										},
-										Tokens: tk[22:23],
+										Tokens: tk[12:13],
 									},
 									Tokens: tk[:29],
 								},

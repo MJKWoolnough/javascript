@@ -42,10 +42,6 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 		j.AcceptRunWhitespace()
 	}
 
-	if j.SkipHeritage() {
-		j.AcceptRunWhitespace()
-	}
-
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "extends"}) {
 		j.AcceptRunWhitespaceNoComment()
 
