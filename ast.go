@@ -861,7 +861,6 @@ func (al *ArrayLiteral) parse(j *jsParser, yield, await bool) error {
 	al.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
-
 	j.Skip()
 
 	al.Tokens = j.ToTokens()
@@ -1199,12 +1198,18 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 
 	j.AcceptRunWhitespaceNoNewLine()
 
-	if j.SkipGeneric() {
+	g := j.NewGoal()
+
+	if g.SkipGeneric() {
+		af.Comments[1] = append(af.Comments[1], g.ToTypescriptComments()...)
+		af.Comments[1] = append(af.Comments[1], g.AcceptRunWhitespaceNoNewlineComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespaceNoNewLine()
 	}
 
 	if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
-		g := j.NewGoal()
+		g = j.NewGoal()
 		af.FormalParameters = new(FormalParameters)
 
 		if err := af.FormalParameters.parse(&g, yield, await); err != nil {
@@ -1216,9 +1221,18 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 		af.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
 
 		j.AcceptRunWhitespaceNoNewLine()
-		j.SkipReturnType()
+
+		g = j.NewGoal()
+
+		if g.SkipReturnType() {
+			af.Comments[2] = append(af.Comments[2], g.ToTypescriptComments()...)
+			af.Comments[2] = append(af.Comments[2], g.AcceptRunWhitespaceNoNewlineComments()...)
+
+			j.Score(g)
+			j.AcceptRunWhitespaceNoNewLine()
+		}
 	} else {
-		g := j.NewGoal()
+		g = j.NewGoal()
 
 		if af.BindingIdentifier = g.parseIdentifier(yield, await); af.BindingIdentifier == nil {
 			return j.Error("ArrowFunction", ErrNoIdentifier)

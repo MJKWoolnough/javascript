@@ -1287,7 +1287,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[8:10],
 												},
-												Tokens: tk[:10],
+												Tokens:   tk[:10],
+												Comments: [5]Comments{nil, jsParser(tk[:3]).toTypescript()},
 											},
 											Tokens: tk[:10],
 										},
@@ -1321,7 +1322,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[8:10],
 												},
-												Tokens: tk[:10],
+												Tokens:   tk[:10],
+												Comments: [5]Comments{nil, nil, jsParser(tk[2:5]).toTypescript()},
 											},
 											Tokens: tk[:10],
 										},
@@ -1405,7 +1407,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[21:23],
 												},
-												Tokens: tk[:23],
+												Comments: [5]Comments{nil, jsParser(tk[:3]).toTypescript(), jsParser(tk[15:18]).toTypescript()},
+												Tokens:   tk[:23],
 											},
 											Tokens: tk[:23],
 										},
@@ -1440,7 +1443,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[10:12],
 												},
-												Tokens: tk[:12],
+												Comments: [5]Comments{nil, jsParser(tk[2:5]).toTypescript()},
+												Tokens:   tk[:12],
 											},
 											Tokens: tk[:12],
 										},
@@ -1475,7 +1479,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[10:12],
 												},
-												Tokens: tk[:12],
+												Tokens:   tk[:12],
+												Comments: [5]Comments{nil, nil, jsParser(tk[4:7]).toTypescript()},
 											},
 											Tokens: tk[:12],
 										},
@@ -1561,7 +1566,8 @@ i <J> () {}
 												FunctionBody: &Block{
 													Tokens: tk[23:25],
 												},
-												Tokens: tk[:25],
+												Comments: [5]Comments{nil, jsParser(tk[2:5]).toTypescript(), jsParser(tk[17:20]).toTypescript()},
+												Tokens:   tk[:25],
 											},
 											Tokens: tk[:25],
 										},
@@ -1849,7 +1855,8 @@ i <J> () {}
 													FunctionBody: &Block{
 														Tokens: tk[19:21],
 													},
-													Tokens: tk[6:21],
+													Comments: [5]Comments{nil, nil, jsParser(tk[9:16]).toTypescript()},
+													Tokens:   tk[6:21],
 												},
 												Tokens: tk[6:21],
 											},
@@ -2642,7 +2649,8 @@ public abstract d;
 														}),
 														Tokens: tk[30:31],
 													},
-													Tokens: tk[6:31],
+													Comments: [5]Comments{nil, nil, jsParser(tk[12:27]).toTypescript()},
+													Tokens:   tk[6:31],
 												},
 												Tokens: tk[6:31],
 											},
@@ -2938,6 +2946,10 @@ case "b":
 		}},
 		{`<B>(1)=>{}`, func(t *test, tk Tokens) { // 77
 			t.Typescript = true
+			first := tk[0]
+
+			first.Type |= tokenTypescript
+
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2957,19 +2969,19 @@ case "b":
 									Token:   tk[3],
 								},
 								Parsing: "AssignmentExpression",
-								Token:   tk[0],
+								Token:   first,
 							},
 							Parsing: "Expression",
-							Token:   tk[0],
+							Token:   first,
 						},
 						Parsing: "Statement",
-						Token:   tk[0],
+						Token:   first,
 					},
 					Parsing: "StatementListItem",
-					Token:   tk[0],
+					Token:   first,
 				},
 				Parsing: "ModuleItem",
-				Token:   tk[0],
+				Token:   first,
 			}
 		}},
 		{`(...a: number[]) => {}`, func(t *test, tk Tokens) { // 78
@@ -4114,7 +4126,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 																}),
 																Tokens: tk[13:14],
 															},
-															Tokens: tk[1:14],
+															Comments: [5]Comments{nil, nil, jsParser(tk[3:10]).toTypescript()},
+															Tokens:   tk[1:14],
 														},
 														Tokens: tk[1:14],
 													},
@@ -5264,7 +5277,7 @@ func TestPrintingTypescript(t *testing.T) {
 			"abstract class A {}",
 			"/*abstract*/ class A {}",
 		},
-		{ // 4
+		{ // 5
 			"// A\n\n// B\nabstract /* C */ class A {}",
 			"// A\n\n// B\n/*abstract /* C * /*/ class A {}",
 		},
