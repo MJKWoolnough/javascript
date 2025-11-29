@@ -1587,15 +1587,15 @@ func (ce ClassElement) printSource(w writer, v bool) {
 		w.WriteString("static ")
 	}
 
+	if v {
+		ce.Comments[1].printSource(w, true, false)
+	}
+
 	if ce.MethodDefinition != nil {
 		ce.MethodDefinition.printSource(w, v)
 	} else if ce.FieldDefinition != nil {
 		ce.FieldDefinition.printSource(w, v)
 	} else if ce.ClassStaticBlock != nil {
-		if v {
-			ce.Comments[1].printSource(w, true, false)
-		}
-
 		ce.ClassStaticBlock.printSource(w, v)
 
 		if v {
