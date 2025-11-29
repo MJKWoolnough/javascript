@@ -1257,6 +1257,9 @@ func (f *FieldDefinition) printType(w writer, v bool) {
 		pp.WriteString("\nInitializer: nil")
 	}
 
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
