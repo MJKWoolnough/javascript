@@ -411,6 +411,7 @@ func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
 type FieldDefinition struct {
 	ClassElementName ClassElementName
 	Initializer      *AssignmentExpression
+	Comments         Comments
 	Tokens           Tokens
 }
 
@@ -423,27 +424,40 @@ func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 
 	g.AcceptRunWhitespace()
 
-	if g.SkipForce() {
-		h := g.NewGoal()
+	h := g.NewGoal()
 
-		h.AcceptRunWhitespace()
+	if h.SkipForce() {
+		i := h.NewGoal()
 
-		if h.SkipColonType() {
-			g.Score(h)
+		i.AcceptRunWhitespace()
+
+		if i.SkipColonType() {
+			h.Score(i)
 		}
 
+		fd.Comments = h.ToTypescriptComments()
+
+		g.Score(h)
 		j.Score(g)
+
+		fd.Comments = append(fd.Comments, j.AcceptRunWhitespaceCommentsInList()...)
 
 		g = j.NewGoal()
 
 		g.AcceptRunWhitespace()
-	} else if g.SkipOptionalColonType() {
+	} else if h.SkipOptionalColonType() {
+		fd.Comments = h.ToTypescriptComments()
+
+		g.Score(h)
 		j.Score(g)
+
+		fd.Comments = append(fd.Comments, j.AcceptRunWhitespaceCommentsInList()...)
 
 		g = j.NewGoal()
 
 		g.AcceptRunWhitespace()
 	}
+
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
 		g.AcceptRunWhitespaceNoComment()
 
