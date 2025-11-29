@@ -184,11 +184,26 @@ type ClassElement struct {
 }
 
 func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
-	if j.SkipParameterProperties() {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.SkipParameterProperties() {
+		ce.Comments[0] = append(ce.Comments[0], j.AcceptRunWhitespaceComments()...)
+
+		j.AcceptRunWhitespace()
+
+		g = j.NewGoal()
+
+		g.SkipParameterProperties()
+
+		ce.Comments[0] = append(ce.Comments[0], g.ToTypescriptComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespaceNoComment()
 	}
 
-	g := j.NewGoal()
+	g = j.NewGoal()
 
 	g.AcceptRunWhitespace()
 
@@ -205,14 +220,32 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		}
 	}
 
-	j.SkipReadOnly()
+	g = j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.SkipReadOnly() {
+		ce.Comments[1] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+
+		g = j.NewGoal()
+
+		g.SkipReadOnly()
+
+		ce.Comments[1] = append(ce.Comments[1], g.ToTypescriptComments()...)
+
+		j.Score(g)
+
+		j.AcceptRunWhitespaceNoComment()
+	}
 
 	g = j.NewGoal()
 
 	g.AcceptRunWhitespace()
 
 	if ce.Static && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		ce.Comments[1] = j.AcceptRunWhitespaceComments()
+		ce.Comments[1] = append(ce.Comments[1], j.AcceptRunWhitespaceComments()...)
 
 		j.AcceptRunWhitespace()
 
@@ -227,7 +260,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 		ce.Comments[2] = j.AcceptRunWhitespaceCommentsInList()
 	} else {
-		g := j.NewGoal()
+		g = j.NewGoal()
 		h := g.NewGoal()
 
 		var (

@@ -181,7 +181,8 @@ public static F
 												},
 												Tokens: tk[18:19],
 											},
-											Tokens: tk[16:19],
+											Comments: [3]Comments{{&tk[16]}},
+											Tokens:   tk[16:19],
 										},
 										{
 											FieldDefinition: &FieldDefinition{
@@ -194,7 +195,8 @@ public static F
 												},
 												Tokens: tk[22:23],
 											},
-											Tokens: tk[20:24],
+											Comments: [3]Comments{{&tk[20]}},
+											Tokens:   tk[20:24],
 										},
 										{
 											FieldDefinition: &FieldDefinition{
@@ -207,7 +209,8 @@ public static F
 												},
 												Tokens: tk[27:28],
 											},
-											Tokens: tk[25:28],
+											Comments: [3]Comments{{&tk[25]}},
+											Tokens:   tk[25:28],
 										},
 										{
 											Static: true,
@@ -221,7 +224,8 @@ public static F
 												},
 												Tokens: tk[33:34],
 											},
-											Tokens: tk[29:35],
+											Comments: [3]Comments{{&tk[29]}},
+											Tokens:   tk[29:35],
 										},
 										{
 											Static: true,
@@ -235,7 +239,8 @@ public static F
 												},
 												Tokens: tk[40:41],
 											},
-											Tokens: tk[36:41],
+											Comments: [3]Comments{{&tk[36]}},
+											Tokens:   tk[36:41],
 										},
 										{
 											Static: true,
@@ -249,7 +254,8 @@ public static F
 												},
 												Tokens: tk[46:47],
 											},
-											Tokens: tk[42:47],
+											Comments: [3]Comments{{&tk[42]}},
+											Tokens:   tk[42:47],
 										},
 									},
 									Tokens: tk[:49],
@@ -353,7 +359,8 @@ static readonly E;
 												},
 												Tokens: tk[13:14],
 											},
-											Tokens: tk[11:14],
+											Comments: [3]Comments{nil, {&tk[11]}},
+											Tokens:   tk[11:14],
 										},
 										{
 											FieldDefinition: &FieldDefinition{
@@ -366,7 +373,8 @@ static readonly E;
 												},
 												Tokens: tk[19:20],
 											},
-											Tokens: tk[15:20],
+											Comments: [3]Comments{{&tk[15]}, {&tk[17]}},
+											Tokens:   tk[15:20],
 										},
 										{
 											FieldDefinition: &FieldDefinition{
@@ -379,7 +387,8 @@ static readonly E;
 												},
 												Tokens: tk[25:26],
 											},
-											Tokens: tk[21:27],
+											Comments: [3]Comments{{&tk[21]}, {&tk[23]}},
+											Tokens:   tk[21:27],
 										},
 										{
 											FieldDefinition: &FieldDefinition{
@@ -392,7 +401,8 @@ static readonly E;
 												},
 												Tokens: tk[32:33],
 											},
-											Tokens: tk[28:33],
+											Comments: [3]Comments{{&tk[28]}, {&tk[30]}},
+											Tokens:   tk[28:33],
 										},
 										{
 											Static: true,
@@ -406,7 +416,8 @@ static readonly E;
 												},
 												Tokens: tk[38:39],
 											},
-											Tokens: tk[34:40],
+											Comments: [3]Comments{nil, {&tk[36]}},
+											Tokens:   tk[34:40],
 										},
 									},
 									Tokens: tk[:42],
@@ -5318,7 +5329,7 @@ func TestPrintingTypescript(t *testing.T) {
 			"class A {abstract a(): string; abstract b; abstract c: number; public abstract d; }",
 			"class A {\n/*abstract a(): string;abstract b;abstract c: number;public abstract d;*/\n}",
 		},
-		{ // 13
+		{ // 14
 			"class A {[b: number]: string;[c] = d;}",
 			"class A {\n\t/*[b: number]: string;*/\n\t[c] = d;\n}",
 		},
