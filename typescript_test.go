@@ -5333,6 +5333,18 @@ func TestPrintingTypescript(t *testing.T) {
 			"class A {[b: number]: string;[c] = d;}",
 			"class A {\n\t/*[b: number]: string;*/\n\t[c] = d;\n}",
 		},
+		{ // 15
+			"class A {\n// A\npublic /* B */ b;}",
+			"class A {\n\t// A\n\t/*public*/\n\t/* B */ b;\n}",
+		},
+		{ // 16
+			"class A {\n// A\nprivate /* B */ readonly /* C */ b;}",
+			"class A {\n\t// A\n\t/*private*/\n\t/* B */ /*readonly*/ /* C */ b;\n}",
+		},
+		{ // 17
+			"class A {\n// A\n/* B */ static /* C */ readonly /* D */ {b};}",
+			"class A {\n\t// A\n\t/* B */\n\tstatic /* C */ /*readonly*/ /* D */ { b; }\n}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
