@@ -1607,6 +1607,10 @@ func (ce ClassElement) printSource(w writer, v bool) {
 func (fd FieldDefinition) printSource(w writer, v bool) {
 	fd.ClassElementName.printSource(w, v)
 
+	if v {
+		fd.Comments.printSource(w, false, false)
+	}
+
 	if fd.Initializer != nil {
 		if !w.LastIsWhitespace() {
 			w.WriteString(" ")
