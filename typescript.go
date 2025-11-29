@@ -1607,8 +1607,14 @@ func (j *jsParser) SkipTypeImport() bool {
 func (j *jsParser) SkipThisParam() bool {
 	g := j.NewGoal()
 	if g.IsTypescript() && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
-		g.AcceptRunWhitespace()
-		g.SkipColonType()
+		h := g.NewGoal()
+
+		h.AcceptRunWhitespace()
+
+		if h.SkipColonType() {
+			g.Score(h)
+		}
+
 		j.Score(g)
 
 		return true
