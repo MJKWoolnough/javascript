@@ -1418,9 +1418,12 @@ func (j *jsParser) SkipParameterProperties() bool {
 			g := j.NewGoal()
 
 			g.Skip()
-			g.AcceptRunWhitespaceNoNewLine()
 
-			if tk := g.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
+			h := g.NewGoal()
+
+			h.AcceptRunWhitespaceNoNewLine()
+
+			if tk := h.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
 				j.Score(g)
 
 				return true
@@ -1435,7 +1438,7 @@ func (j *jsParser) SkipTypeArguments() bool {
 	return j.IsTypescript() && j.ReadTypeArguments()
 }
 
-func (j *jsParser) SkipReadOnly() {
+func (j *jsParser) SkipReadOnly() bool {
 	if j.IsTypescript() {
 		if tk := j.Peek(); tk == (parser.Token{Type: TokenIdentifier, Data: "readonly"}) {
 			g := j.NewGoal()
@@ -1444,10 +1447,14 @@ func (j *jsParser) SkipReadOnly() {
 			g.AcceptRunWhitespaceNoNewLine()
 
 			if tk := g.Peek(); tk.Type != TokenLineTerminator && tk != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
-				j.Score(g)
+				j.Skip()
+
+				return true
 			}
 		}
 	}
+
+	return false
 }
 
 func (j *jsParser) SkipImportType() bool {
