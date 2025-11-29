@@ -910,6 +910,7 @@ func (j *jsParser) ReadIndexSignature() bool {
 	}
 
 	j.Score(g)
+
 	return true
 }
 
