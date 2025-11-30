@@ -1724,6 +1724,9 @@ func (f *LeftHandSideExpression) printType(w writer, v bool) {
 		pp.WriteString("\nOptionalExpression: nil")
 	}
 
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
