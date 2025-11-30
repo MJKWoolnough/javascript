@@ -1156,6 +1156,10 @@ func (l LeftHandSideExpression) printSource(w writer, v bool) {
 	} else if l.OptionalExpression != nil {
 		l.OptionalExpression.printSource(w, v)
 	}
+
+	if v {
+		l.Comments.printSource(w, false, false)
+	}
 }
 
 func (a AssignmentPattern) printSource(w writer, v bool) {
