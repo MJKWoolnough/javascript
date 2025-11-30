@@ -326,6 +326,7 @@ type LeftHandSideExpression struct {
 	NewExpression      *NewExpression
 	CallExpression     *CallExpression
 	OptionalExpression *OptionalExpression
+	Comments           Comments
 	Tokens             Tokens
 }
 
@@ -408,16 +409,31 @@ func (lhs *LeftHandSideExpression) parse(j *jsParser, yield, await bool) error {
 		}
 	}
 
-	for {
-		g = j.NewGoal()
+	g = j.NewGoal()
 
-		g.AcceptRunWhitespace()
+	g.AcceptRunWhitespace()
 
-		if g.SkipAsType() {
-			j.Score(g)
-		} else {
-			break
+	h := g.NewGoal()
+
+	if h.SkipAsType() {
+		for {
+			i := h.NewGoal()
+
+			i.AcceptRunWhitespace()
+
+			if i.SkipAsType() {
+				h.Score(i)
+			} else {
+				break
+			}
 		}
+
+		lhs.Comments = append(lhs.Comments, h.ToTypescriptComments()...)
+
+		g.Score(h)
+		j.Score(g)
+
+		lhs.Comments = append(lhs.Comments, j.AcceptRunWhitespaceCommentsInList()...)
 	}
 
 	lhs.Tokens = j.ToTokens()
