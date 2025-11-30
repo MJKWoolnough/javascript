@@ -5373,6 +5373,30 @@ func TestPrintingTypescript(t *testing.T) {
 			"class A {b!}",
 			"class A {\n\tb /*!*/;\n}",
 		},
+		{ // 22
+			"class A{b<C>(){}}",
+			"class A {\n\tb /*<C>*/() {}\n}",
+		},
+		{ // 23
+			"class A{b /* A */<C>/* B */(){}}",
+			"class A {\n\tb /* A */ /*<C>*/ /* B */() {}\n}",
+		},
+		{ // 24
+			"class A{*b<C>(){}}",
+			"class A {\n\t* b /*<C>*/() {}\n}",
+		},
+		{ // 25
+			"class A{* /* A */ b /* B */ <C>/* C */(){}}",
+			"class A {\n\t* /* A */ b /* B */ /*<C>*/ /* C */() {}\n}",
+		},
+		{ // 26
+			"class A {b(): c{}}",
+			"class A {\n\tb() /*: c*/ {}\n}",
+		},
+		{ // 27
+			"class A {b() /* A */: c /* B */{}}",
+			"class A {\n\tb() /* A */ /*: c*/ /* B */ {}\n}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
