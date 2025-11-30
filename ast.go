@@ -1098,7 +1098,7 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 
 				pd.PropertyName = nil
 
-				if err := pd.MethodDefinition.parse(&g, yield, await); err != nil {
+				if err := pd.MethodDefinition.parse(&g, false, false, yield, await); err != nil {
 					return j.Error("PropertyDefinition", err)
 				}
 			}

@@ -3943,7 +3943,7 @@ func TestMethodDefinition(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var md MethodDefinition
 
-		err := md.parse(&t.Tokens, t.Yield, t.Await)
+		err := md.parse(&t.Tokens, false, false, t.Yield, t.Await)
 
 		return md, err
 	})

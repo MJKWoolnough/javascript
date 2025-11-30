@@ -1709,7 +1709,7 @@ func (j *jsParser) SkipForce() bool {
 	return j.IsTypescript() && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "!"})
 }
 
-func (j *jsParser) SkipMethodOverload(static bool, cen ClassElementName, yield, await bool) bool {
+func (j *jsParser) SkipMethodOverload(static bool, cen *ClassElementName, yield, await bool) bool {
 	g := j.NewGoal()
 
 	if g.IsTypescript() {
@@ -1728,7 +1728,7 @@ func (j *jsParser) SkipMethodOverload(static bool, cen ClassElementName, yield, 
 
 			var den ClassElementName
 
-			if err := den.parse(&g, yield, await); err != nil {
+			if err := den.parse(&g, static, true, yield, await); err != nil {
 				return false
 			}
 

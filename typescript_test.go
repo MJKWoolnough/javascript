@@ -913,7 +913,7 @@ i <J> () {}
 														Tokens:              tk[41:42],
 													},
 													Comments: [2]Comments{nil, jsParser(tk[43:46]).toTypescript()},
-													Tokens:   tk[41:42],
+													Tokens:   tk[41:46],
 												},
 												Params: FormalParameters{
 													Tokens: tk[47:49],
@@ -2921,7 +2921,7 @@ case "b":
 														Tokens:              tk[7:8],
 													},
 													Comments: [2]Comments{nil, jsParser(tk[9:12]).toTypescript()},
-													Tokens:   tk[7:8],
+													Tokens:   tk[7:12],
 												},
 												Params: FormalParameters{
 													Tokens: tk[13:15],
@@ -2941,7 +2941,7 @@ case "b":
 														Tokens:              tk[17:18],
 													},
 													Comments: [2]Comments{nil, jsParser(tk[19:22]).toTypescript()},
-													Tokens:   tk[17:18],
+													Tokens:   tk[17:22],
 												},
 												Params: FormalParameters{
 													Tokens: tk[23:25],
@@ -3747,7 +3747,8 @@ case "b":
 														LiteralPropertyName: &tk[7],
 														Tokens:              tk[7:8],
 													},
-													Tokens: tk[7:8],
+													Comments: [2]Comments{nil, jsParser(tk[8:33]).toTypescript()},
+													Tokens:   tk[7:33],
 												},
 												Params: FormalParameters{
 													Tokens: tk[33:35],
@@ -3824,7 +3825,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 														LiteralPropertyName: &tk[9],
 														Tokens:              tk[9:10],
 													},
-													Tokens: tk[9:10],
+													Comments: [2]Comments{nil, jsParser(tk[10:39]).toTypescript()},
+													Tokens:   tk[9:39],
 												},
 												Params: FormalParameters{
 													Tokens: tk[39:41],

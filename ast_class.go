@@ -288,7 +288,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 			tk := h.Peek()
 			isMethod = tk == (parser.Token{Type: TokenPunctuator, Data: "["}) || tk == (parser.Token{Type: TokenPunctuator, Data: "("}) || tk.Type == TokenIdentifier || tk.Type == TokenPrivateIdentifier
 		} else {
-			if err := cen.parse(&g, yield, await); err != nil {
+			if err := cen.parse(&g, ce.Static, true, yield, await); err != nil {
 				return j.Error("ClassElement", err)
 			}
 
@@ -306,15 +306,7 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		if isMethod {
 			ce.MethodDefinition = &MethodDefinition{ClassElementName: cen}
 
-			for {
-				if h = g.NewGoal(); h.SkipMethodOverload(ce.Static, cen, yield, await) {
-					g.Score(h)
-				} else {
-					break
-				}
-			}
-
-			if err := ce.MethodDefinition.parse(&g, yield, await); err != nil {
+			if err := ce.MethodDefinition.parse(&g, ce.Static, true, yield, await); err != nil {
 				return j.Error("ClassElement", err)
 			}
 		} else {
@@ -382,7 +374,7 @@ type ClassElementName struct {
 	Tokens            Tokens
 }
 
-func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
+func (cen *ClassElementName) parse(j *jsParser, static, class, yield, await bool) error {
 	cen.Comments[0] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
@@ -401,6 +393,40 @@ func (cen *ClassElementName) parse(j *jsParser, yield, await bool) error {
 	}
 
 	cen.Comments[1] = j.AcceptRunWhitespaceCommentsInList()
+
+	if class {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		h := g.NewGoal()
+
+		if h.SkipGeneric() {
+			cen.Comments[1] = append(cen.Comments[1], h.ToTypescriptComments()...)
+			cen.Comments[1] = append(cen.Comments[1], h.AcceptRunWhitespaceComments()...)
+
+			g.Score(h)
+			j.Score(g)
+		}
+
+		g = j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		h = g.NewGoal()
+
+		if h.SkipMethodOverload(static, cen, yield, await) {
+			for h.SkipMethodOverload(static, cen, yield, await) {
+			}
+
+			cen.Comments[1] = append(cen.Comments[1], h.ToTypescriptComments()...)
+			cen.Comments[1] = append(cen.Comments[1], h.AcceptRunWhitespaceComments()...)
+
+			g.Score(h)
+			j.Score(g)
+		}
+	}
+
 	cen.Tokens = j.ToTokens()
 
 	return nil
@@ -417,7 +443,7 @@ type FieldDefinition struct {
 
 func (fd *FieldDefinition) parse(j *jsParser, yield, await bool) error {
 	if len(fd.ClassElementName.Tokens) == 0 {
-		fd.ClassElementName.parse(j, yield, await)
+		fd.ClassElementName.parse(j, false, false, yield, await)
 	}
 
 	g := j.NewGoal()
@@ -501,7 +527,7 @@ type MethodDefinition struct {
 	Tokens           Tokens
 }
 
-func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
+func (md *MethodDefinition) parse(j *jsParser, static, class, yield, await bool) error {
 	var prev MethodType
 
 	if len(md.ClassElementName.Tokens) == 0 {
@@ -562,7 +588,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 		g = j.NewGoal()
 
-		if err := md.ClassElementName.parse(&g, yield, await); err != nil {
+		if err := md.ClassElementName.parse(&g, static, class, yield, await); err != nil {
 			return j.Error("MethodDefinition", err)
 		}
 
@@ -570,16 +596,6 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 	}
 
 	j.AcceptRunWhitespace()
-
-	g := j.NewGoal()
-
-	if g.SkipGeneric() {
-		md.ClassElementName.Comments[1] = append(md.ClassElementName.Comments[1], g.ToTypescriptComments()...)
-		md.ClassElementName.Comments[1] = append(md.ClassElementName.Comments[1], g.AcceptRunWhitespaceComments()...)
-
-		j.Score(g)
-		j.AcceptRunWhitespace()
-	}
 
 	switch md.Type {
 	case MethodGetter:
@@ -649,7 +665,7 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 	j.AcceptRunWhitespace()
 
-	g = j.NewGoal()
+	g := j.NewGoal()
 
 	if g.SkipReturnType() {
 		md.Comments[2] = append(md.Comments[2], g.ToTypescriptComments()...)
