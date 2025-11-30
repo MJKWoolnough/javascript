@@ -551,12 +551,8 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 			j.Skip()
 			j.AcceptRunWhitespaceNoComment()
 
-			if (md.Type == MethodAsync || md.Type == MethodAsyncGenerator) && j.SkipGeneric() {
-				j.AcceptRunWhitespaceNoComment()
-			}
-
 			if md.Type == MethodAsyncGenerator {
-				md.Comments[1] = j.AcceptRunWhitespaceComments()
+				md.Comments[1] = append(md.Comments[1], j.AcceptRunWhitespaceComments()...)
 
 				j.AcceptRunWhitespace()
 				j.Skip()
@@ -575,7 +571,13 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 	j.AcceptRunWhitespace()
 
-	if j.SkipGeneric() {
+	g := j.NewGoal()
+
+	if g.SkipGeneric() {
+		md.ClassElementName.Comments[1] = append(md.ClassElementName.Comments[1], g.ToTypescriptComments()...)
+		md.ClassElementName.Comments[1] = append(md.ClassElementName.Comments[1], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 
@@ -647,11 +649,17 @@ func (md *MethodDefinition) parse(j *jsParser, yield, await bool) error {
 
 	j.AcceptRunWhitespace()
 
-	if j.SkipReturnType() {
+	g = j.NewGoal()
+
+	if g.SkipReturnType() {
+		md.Comments[2] = append(md.Comments[2], g.ToTypescriptComments()...)
+		md.Comments[2] = append(md.Comments[2], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 
-	g := j.NewGoal()
+	g = j.NewGoal()
 	if err := md.FunctionBody.parse(&g, md.Type == MethodGenerator, md.Type == MethodAsync, true); err != nil {
 		return j.Error("MethodDefinition", err)
 	}

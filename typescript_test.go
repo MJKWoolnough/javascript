@@ -852,7 +852,8 @@ i <J> () {}
 												FunctionBody: Block{
 													Tokens: tk[13:15],
 												},
-												Tokens: tk[6:15],
+												Comments: [4]Comments{nil, nil, jsParser(tk[9:12]).toTypescript()},
+												Tokens:   tk[6:15],
 											},
 											Tokens: tk[6:15],
 										},
@@ -872,7 +873,8 @@ i <J> () {}
 												FunctionBody: Block{
 													Tokens: tk[25:27],
 												},
-												Tokens: tk[16:27],
+												Comments: [4]Comments{nil, nil, jsParser(tk[21:24]).toTypescript()},
+												Tokens:   tk[16:27],
 											},
 											Tokens: tk[16:27],
 										},
@@ -898,7 +900,8 @@ i <J> () {}
 												FunctionBody: Block{
 													Tokens: tk[38:40],
 												},
-												Tokens: tk[28:40],
+												Comments: [4]Comments{nil, nil, jsParser(tk[34:37]).toTypescript()},
+												Tokens:   tk[28:40],
 											},
 											Tokens: tk[28:40],
 										},
@@ -909,7 +912,8 @@ i <J> () {}
 														LiteralPropertyName: &tk[41],
 														Tokens:              tk[41:42],
 													},
-													Tokens: tk[41:42],
+													Comments: [2]Comments{nil, jsParser(tk[43:46]).toTypescript()},
+													Tokens:   tk[41:42],
 												},
 												Params: FormalParameters{
 													Tokens: tk[47:49],
@@ -2916,7 +2920,8 @@ case "b":
 														LiteralPropertyName: &tk[7],
 														Tokens:              tk[7:8],
 													},
-													Tokens: tk[7:8],
+													Comments: [2]Comments{nil, jsParser(tk[9:12]).toTypescript()},
+													Tokens:   tk[7:8],
 												},
 												Params: FormalParameters{
 													Tokens: tk[13:15],
@@ -2935,7 +2940,8 @@ case "b":
 														LiteralPropertyName: &tk[17],
 														Tokens:              tk[17:18],
 													},
-													Tokens: tk[17:18],
+													Comments: [2]Comments{nil, jsParser(tk[19:22]).toTypescript()},
+													Tokens:   tk[17:18],
 												},
 												Params: FormalParameters{
 													Tokens: tk[23:25],
@@ -3749,7 +3755,8 @@ case "b":
 												FunctionBody: Block{
 													Tokens: tk[39:41],
 												},
-												Tokens: tk[7:41],
+												Comments: [4]Comments{nil, nil, jsParser(tk[35:38]).toTypescript()},
+												Tokens:   tk[7:41],
 											},
 											Tokens: tk[7:41],
 										},
@@ -3825,7 +3832,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												FunctionBody: Block{
 													Tokens: tk[45:47],
 												},
-												Tokens: tk[9:47],
+												Comments: [4]Comments{nil, nil, jsParser(tk[41:44]).toTypescript()},
+												Tokens:   tk[9:47],
 											},
 											Tokens: tk[7:47],
 										},
@@ -4192,7 +4200,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												FunctionBody: Block{
 													Tokens: tk[16:18],
 												},
-												Tokens: tk[5:18],
+												Comments: [4]Comments{nil, nil, jsParser(tk[8:15]).toTypescript()},
+												Tokens:   tk[5:18],
 											},
 											Tokens: tk[5:18],
 										},
