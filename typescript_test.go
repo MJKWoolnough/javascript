@@ -4402,7 +4402,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 													Arguments: &Arguments{
 														Tokens: tk[5:7],
 													},
-													Tokens: tk[1:7],
+													Comments: [4]Comments{jsParser(tk[2:5]).toTypescript()},
+													Tokens:   tk[1:7],
 												},
 												Tokens: tk[:7],
 											}),
@@ -4544,6 +4545,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 												OptionalChain: OptionalChain{
 													OptionalChain: &OptionalChain{
 														IdentifierName: &tk[2],
+														Comments:       [4]Comments{nil, nil, nil, {&tk[3]}},
 														Tokens:         tk[1:4],
 													},
 													IdentifierName: &tk[5],

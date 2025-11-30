@@ -891,11 +891,17 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 	g := j.NewGoal()
 
+	var c Comments
+
 	if g.SkipTypeArguments() {
+		c = g.ToTypescriptComments()
+		c = append(c, g.AcceptRunWhitespaceComments()...)
+
 		g.AcceptRunWhitespace()
 	}
 
 	if g.Peek() == (parser.Token{Type: TokenPunctuator, Data: "("}) {
+		oc.Comments[0] = append(oc.Comments[0], c...)
 		h := g.NewGoal()
 
 		oc.Arguments = new(Arguments)
@@ -948,7 +954,13 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 	g.AcceptRunWhitespaceNoNewLine()
 
-	if g.SkipForce() {
+	h := g.NewGoal()
+
+	if h.SkipForce() {
+		oc.Comments[3] = append(oc.Comments[3], h.ToTypescriptComments()...)
+		oc.Comments[3] = append(oc.Comments[3], h.AcceptRunWhitespaceCommentsInList()...)
+
+		g.Score(h)
 		j.Score(g)
 	}
 
