@@ -1757,6 +1757,11 @@ func (c CallExpression) printSource(w writer, v bool) {
 		w.WriteString(")")
 	} else if c.MemberExpression != nil && c.Arguments != nil {
 		c.MemberExpression.printSource(w, v)
+
+		if v {
+			c.Comments[1].printSource(w, true, false)
+		}
+
 		c.Arguments.printSource(w, v)
 	} else if c.CallExpression != nil {
 		if c.Arguments != nil {
@@ -1819,7 +1824,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 	}
 
 	if v {
-		c.Comments[4].printSource(w, true, false)
+		c.Comments[4].printSource(w, false, false)
 	}
 }
 
