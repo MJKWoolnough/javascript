@@ -1835,6 +1835,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		g := j.NewGoal()
 
 		if g.SkipTypeArguments() {
+			ce.Comments[1] = append(ce.Comments[1], g.ToTypescriptComments()...)
+
 			g.AcceptRunWhitespace()
 		}
 
@@ -1851,7 +1853,13 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 
 		i.AcceptRunWhitespaceNoNewLine()
 
-		if i.SkipForce() {
+		k := i.NewGoal()
+
+		if k.SkipForce() {
+			ce.Comments[4] = append(ce.Comments[4], k.ToTypescriptComments()...)
+			ce.Comments[4] = append(ce.Comments[4], k.AcceptRunWhitespaceCommentsInList()...)
+
+			i.Score(k)
 			h.Score(i)
 		}
 
@@ -1868,11 +1876,11 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 		h := g.NewGoal()
 
 		var (
-			tl      *TemplateLiteral
-			a       *Arguments
-			i, p    *Token
-			e       *Expression
-			b, c, d Comments
+			tl         *TemplateLiteral
+			a          *Arguments
+			i, p       *Token
+			e          *Expression
+			f, b, c, d Comments
 		)
 
 		switch tk := h.Peek(); tk.Type {
@@ -1889,6 +1897,8 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				i := h.NewGoal()
 
 				if i.SkipTypeArguments() {
+					f = append(i.ToTypescriptComments(), i.AcceptRunWhitespaceComments()...)
+
 					i.AcceptRunWhitespace()
 				}
 
@@ -1897,6 +1907,9 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 				}
 
 				h.Score(i)
+				g.Score(h)
+
+				h = g.NewGoal()
 
 				fallthrough
 			case "(":
@@ -1951,7 +1964,13 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 
 			i.AcceptRunWhitespaceNoNewLine()
 
-			if i.SkipForce() {
+			k := i.NewGoal()
+
+			if k.SkipForce() {
+				d = append(d, k.ToTypescriptComments()...)
+				d = append(d, k.AcceptRunWhitespaceCommentsInList()...)
+
+				i.Score(k)
 				h.Score(i)
 			}
 		default:
@@ -1969,7 +1988,7 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			IdentifierName:    i,
 			TemplateLiteral:   tl,
 			PrivateIdentifier: p,
-			Comments:          [5]Comments{nil, nil, b, c, d},
+			Comments:          [5]Comments{nil, f, b, c, d},
 		}
 
 		j.Score(g)
