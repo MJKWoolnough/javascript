@@ -1313,17 +1313,29 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 				return err
 			}
 
+			i := h.NewGoal()
+
+			i.AcceptRunWhitespace()
+
+			k := i.NewGoal()
+
+			if k.SkipTypeArguments() {
+				me.MemberExpression.Comments[4] = append(me.MemberExpression.Comments[4], k.ToTypescriptComments()...)
+				me.MemberExpression.Comments[4] = append(me.MemberExpression.Comments[4], k.AcceptRunWhitespaceCommentsInList()...)
+
+				i.Score(k)
+				h.Score(i)
+
+				me.MemberExpression.Tokens = h.ToTokens()
+			}
+
 			g.Score(h)
 
 			h = g.NewGoal()
 
 			h.AcceptRunWhitespace()
 
-			if h.SkipTypeArguments() {
-				h.AcceptRunWhitespace()
-			}
-
-			i := h.NewGoal()
+			i = h.NewGoal()
 
 			me.Arguments = new(Arguments)
 			if err := me.Arguments.parse(&i, yield, await); err != nil {
@@ -1352,7 +1364,12 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 
 		h.AcceptRunWhitespaceNoNewLine()
 
-		if h.SkipForce() {
+		i := h.NewGoal()
+
+		if i.SkipForce() {
+			me.Comments[4] = i.ToTypescriptComments()
+
+			h.Score(i)
 			g.Score(h)
 		}
 	}
@@ -1360,7 +1377,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 	j.Score(g)
 
 	for {
-		me.Comments[4] = j.AcceptRunWhitespaceCommentsInList()
+		me.Comments[4] = append(me.Comments[4], j.AcceptRunWhitespaceCommentsInList()...)
 		me.Tokens = j.ToTokens()
 		g := j.NewGoal()
 
@@ -1369,10 +1386,10 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 		h := g.NewGoal()
 
 		var (
-			tl   *TemplateLiteral
-			i, p *Token
-			e    *Expression
-			c, d Comments
+			tl      *TemplateLiteral
+			i, p    *Token
+			e       *Expression
+			c, d, f Comments
 		)
 
 		switch tk := h.Peek(); tk.Type {
@@ -1429,7 +1446,12 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 
 			i.AcceptRunWhitespaceNoNewLine()
 
-			if i.SkipForce() {
+			k := i.NewGoal()
+
+			if k.SkipForce() {
+				f = k.ToTypescriptComments()
+
+				i.Score(k)
 				h.Score(i)
 			}
 		default:
@@ -1446,7 +1468,7 @@ func (me *MemberExpression) parse(j *jsParser, yield, await bool) error {
 			IdentifierName:    i,
 			TemplateLiteral:   tl,
 			PrivateIdentifier: p,
-			Comments:          [5]Comments{nil, c, d},
+			Comments:          [5]Comments{nil, c, d, nil, f},
 		}
 
 		j.Score(g)
