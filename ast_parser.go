@@ -13,6 +13,10 @@ type Token struct {
 	Pos, Line, LinePos uint64
 }
 
+func (t Token) IsTypescript() bool {
+	return t.Type&tokenTypescript != 0
+}
+
 // Tokens is a collection of Token values.
 type Tokens []Token
 
