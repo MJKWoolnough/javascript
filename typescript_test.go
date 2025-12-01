@@ -5432,6 +5432,22 @@ func TestPrintingTypescript(t *testing.T) {
 			"a.b!()",
 			"a.b /*!*/();",
 		},
+		{ // 39
+			"a<b>()",
+			"a /*<b>*/ ();",
+		},
+		{ // 40
+			"a.b<c>()",
+			"a.b /*<c>*/ ();",
+		},
+		{ // 39
+			"a()!",
+			"a() /*!*/;",
+		},
+		{ // 39
+			"a.b()!",
+			"a.b() /*!*/;",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
