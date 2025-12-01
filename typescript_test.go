@@ -4046,7 +4046,8 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 														Arguments: &Arguments{
 															Tokens: tk[9:11],
 														},
-														Tokens: tk[7:12],
+														Comments: [4]Comments{nil, nil, nil, {&tk[11]}},
+														Tokens:   tk[7:12],
 													},
 													Tokens: tk[6:12],
 												}),
@@ -5422,7 +5423,7 @@ func TestPrintingTypescript(t *testing.T) {
 			"a?.<b>()",
 			"a?. /*<b>*/ ();",
 		},
-		{ // 31
+		{ // 32
 			"a?.b!",
 			"a?.b /*!*/;",
 		},

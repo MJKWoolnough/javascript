@@ -976,12 +976,14 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			identifierName    *Token
 			templateLiteral   *TemplateLiteral
 			privateIdentifier *Token
-			c, d, e           Comments
+			b, c, d, e        Comments
 		)
 
 		h := g.NewGoal()
 
 		if h.SkipTypeArguments() {
+			b = append(h.ToTypescriptComments(), h.AcceptRunWhitespaceComments()...)
+			b = nil
 			h.AcceptRunWhitespace()
 		}
 
@@ -996,11 +998,12 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			h.Score(i)
 			g.Score(h)
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "["}) {
+			b = nil
 			c = g.AcceptRunWhitespaceNoNewlineComments()
 
 			g.AcceptRunWhitespaceNoComment()
 
-			h := g.NewGoal()
+			h = g.NewGoal()
 
 			expression = new(Expression)
 			if err := expression.parse(&h, true, yield, await); err != nil {
@@ -1016,6 +1019,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 			g.Score(h)
 		} else if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			b = nil
 			c = g.AcceptRunWhitespaceComments()
 
 			g.AcceptRunWhitespace()
@@ -1030,6 +1034,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 				identifierName = g.GetLastToken()
 			}
 		} else if t := g.Peek().Type; t == TokenNoSubstitutionTemplate || t == TokenTemplateHead {
+			b = nil
 			h := g.NewGoal()
 
 			templateLiteral = new(TemplateLiteral)
@@ -1047,7 +1052,13 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 		h.AcceptRunWhitespaceNoNewLine()
 
-		if h.SkipForce() {
+		i := h.NewGoal()
+
+		if i.SkipForce() {
+			e = append(e, i.ToTypescriptComments()...)
+			e = append(e, i.AcceptRunWhitespaceCommentsInList()...)
+
+			h.Score(i)
 			g.Score(h)
 		}
 
@@ -1060,7 +1071,7 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 			TemplateLiteral:   templateLiteral,
 			PrivateIdentifier: privateIdentifier,
 			OptionalChain:     noc,
-			Comments:          [4]Comments{nil, c, d, e},
+			Comments:          [4]Comments{b, c, d, e},
 		}
 
 		j.Score(g)
