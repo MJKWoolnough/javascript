@@ -1512,12 +1512,6 @@ type PrimaryExpression struct {
 }
 
 func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
-	g := j.NewGoal()
-
-	if g.SkipAbstract() {
-		g.AcceptRunWhitespaceNoNewLine()
-	}
-
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "this"}) {
 		pe.This = j.GetLastToken()
 	} else if j.Accept(TokenNullLiteral, TokenBooleanLiteral, TokenNumericLiteral, TokenStringLiteral, TokenRegularExpressionLiteral) {
@@ -1549,12 +1543,8 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-	} else if t == (parser.Token{Type: TokenKeyword, Data: "class"}) || g.Peek() == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+	} else if t == (parser.Token{Type: TokenKeyword, Data: "class"}) {
 		g := j.NewGoal()
-
-		if g.SkipAbstract() {
-			g.AcceptRunWhitespaceNoNewLine()
-		}
 
 		pe.ClassExpression = new(ClassDeclaration)
 		if err := pe.ClassExpression.parse(&g, yield, await, true); err != nil {
