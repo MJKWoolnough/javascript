@@ -1621,49 +1621,6 @@ func (pe *ParenthesizedExpression) parse(j *jsParser, yield, await bool) error {
 				return j.Error("ParenthesizedExpression", err)
 			}
 
-			h := g.NewGoal()
-
-			h.AcceptRunWhitespace()
-
-			if ae := &pe.Expressions[e]; ae.AssignmentOperator == AssignmentNone && h.SkipOptionalColonType() {
-				h.AcceptRunWhitespace()
-
-				if ae.ConditionalExpression != nil && ae.ConditionalExpression.LogicalORExpression != nil {
-					if lhs := ae.ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression.UnaryExpression.UpdateExpression.LeftHandSideExpression; lhs != nil && len(ae.ConditionalExpression.Tokens) == len(lhs.Tokens) && (lhs.IsSimple() || lhs.isCoverAssignmentPattern()) {
-						if ae.AssignmentOperator.parse(&h) == nil {
-							h.AcceptRunWhitespace()
-
-							ae.ConditionalExpression = nil
-							ae.LeftHandSideExpression = lhs
-
-							if ae.AssignmentOperator == AssignmentAssign && lhs.isCoverAssignmentPattern() {
-								ae.AssignmentPattern = new(AssignmentPattern)
-								if err := ae.AssignmentPattern.from(&lhs.NewExpression.MemberExpression); err != nil {
-									z := jsParser(lhs.Tokens[:0])
-
-									return z.Error("ParenthesizedExpression", err)
-								}
-
-								ae.LeftHandSideExpression = nil
-							}
-
-							i := h.NewGoal()
-
-							ae.AssignmentExpression = new(AssignmentExpression)
-							if err := ae.AssignmentExpression.parse(&i, true, yield, await); err != nil {
-								return h.Error("ParenthesizedExpression", err)
-							}
-
-							h.Score(i)
-
-							ae.Tokens = h.ToTokens()
-
-							g.Score(h)
-						}
-					}
-				}
-			}
-
 			j.Score(g)
 
 			g = j.NewGoal()
