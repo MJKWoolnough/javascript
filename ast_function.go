@@ -67,26 +67,42 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 	} else {
 		fd.BindingIdentifier = bi
 
-		for {
-			g := j.NewGoal()
+		g := j.NewGoal()
 
-			if g.SkipFunctionOverload(bi, yield, await) {
-				j.Score(g)
-			} else {
-				break
+		if g.SkipFunctionOverload(bi, yield, await) {
+			h := g.NewGoal()
+
+			h.AcceptRunWhitespace()
+
+			for g.SkipFunctionOverload(bi, yield, await) {
+				g.Score(h)
+
+				h = g.NewGoal()
+
+				h.AcceptRunWhitespace()
 			}
+
+			fd.Comments[3] = g.ToTypescriptComments()
+
+			j.Score(g)
 		}
 
-		fd.Comments[3] = j.AcceptRunWhitespaceComments()
+		fd.Comments[3] = append(fd.Comments[3], j.AcceptRunWhitespaceComments()...)
 
-		j.AcceptRunWhitespace()
-	}
-
-	if j.SkipGeneric() {
 		j.AcceptRunWhitespace()
 	}
 
 	g := j.NewGoal()
+
+	if g.SkipGeneric() {
+		fd.Comments[3] = append(fd.Comments[3], g.ToTypescriptComments()...)
+		fd.Comments[3] = append(fd.Comments[3], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
+		j.AcceptRunWhitespace()
+	}
+
+	g = j.NewGoal()
 
 	if err := fd.FormalParameters.parse(&g, fd.Type == FunctionGenerator, fd.Type == FunctionAsync && await); err != nil {
 		return j.Error("FunctionDeclaration", err)
@@ -98,7 +114,13 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 
 	j.AcceptRunWhitespace()
 
-	if j.SkipReturnType() {
+	g = j.NewGoal()
+
+	if g.SkipReturnType() {
+		fd.Comments[4] = append(fd.Comments[4], g.ToTypescriptComments()...)
+		fd.Comments[4] = append(fd.Comments[4], g.AcceptRunWhitespaceComments()...)
+
+		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
 

@@ -1031,7 +1031,8 @@ i <J> () {}
 									FunctionBody: Block{
 										Tokens: tk[53:55],
 									},
-									Tokens: tk[:55],
+									Comments: [5]Comments{nil, nil, nil, jsParser(tk[3:6]).toTypescript(), jsParser(tk[49:52]).toTypescript()},
+									Tokens:   tk[:55],
 								},
 								Tokens: tk[:55],
 							},
@@ -3774,7 +3775,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 									FunctionBody: Block{
 										Tokens: tk[26:28],
 									},
-									Tokens: tk[:28],
+									Comments: [5]Comments{nil, nil, nil, jsParser(tk[3:23]).toTypescript()},
+									Tokens:   tk[:28],
 								},
 								Tokens: tk[:28],
 							},
@@ -4086,7 +4088,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 									FunctionBody: Block{
 										Tokens: tk[21:23],
 									},
-									Tokens: tk[:23],
+									Comments: [5]Comments{nil, nil, nil, jsParser(tk[3:14]).toTypescript()},
+									Tokens:   tk[:23],
 								},
 								Tokens: tk[:23],
 							},
