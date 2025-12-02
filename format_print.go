@@ -3135,7 +3135,12 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 func (ce CoalesceExpression) printSource(w writer, v bool) {
 	if ce.CoalesceExpressionHead != nil {
 		ce.CoalesceExpressionHead.printSource(w, v)
-		w.WriteString(" ?? ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("?? ")
 	}
 
 	ce.BitwiseORExpression.printSource(w, v)
