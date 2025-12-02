@@ -180,7 +180,6 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 
 		g.Score(h)
 		j.Score(g)
-
 		j.AcceptRunWhitespaceNoComment()
 	}
 
@@ -332,9 +331,15 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 	be.Comments[1] = j.AcceptRunWhitespaceCommentsInList()
 
 	g = j.NewGoal()
+
 	g.AcceptRunWhitespace()
 
-	if g.SkipOptionalColonType() {
+	h := g.NewGoal()
+
+	if h.SkipOptionalColonType() {
+		be.Comments[1] = append(be.Comments[1], h.ToTypescriptComments()...)
+
+		g.Score(h)
 		j.Score(g)
 
 		g = j.NewGoal()

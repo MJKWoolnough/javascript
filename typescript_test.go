@@ -987,6 +987,7 @@ i <J> () {}
 										FormalParameterList: []BindingElement{
 											{
 												SingleNameBinding: &tk[7],
+												Comments:          [2]Comments{nil, jsParser(tk[8:11]).toTypescript()},
 												Tokens:            tk[7:11],
 											},
 											{
@@ -1003,7 +1004,8 @@ i <J> () {}
 													},
 													Tokens: tk[13:19],
 												},
-												Tokens: tk[13:28],
+												Comments: [2]Comments{nil, jsParser(tk[19:28]).toTypescript()},
+												Tokens:   tk[13:28],
 											},
 											{
 												ObjectBindingPattern: &ObjectBindingPattern{
@@ -1022,7 +1024,8 @@ i <J> () {}
 													},
 													Tokens: tk[30:33],
 												},
-												Tokens: tk[30:41],
+												Comments: [2]Comments{nil, jsParser(tk[33:41]).toTypescript()},
+												Tokens:   tk[30:41],
 											},
 										},
 										BindingIdentifier: &tk[44],
@@ -1378,6 +1381,7 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[1],
+															Comments:          [2]Comments{nil, jsParser(tk[2:5]).toTypescript()},
 															Tokens:            tk[1:5],
 														},
 													},
@@ -1418,10 +1422,12 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[4],
+															Comments:          [2]Comments{nil, jsParser(tk[5:8]).toTypescript()},
 															Tokens:            tk[4:8],
 														},
 														{
 															SingleNameBinding: &tk[10],
+															Comments:          [2]Comments{nil, jsParser(tk[11:14]).toTypescript()},
 															Tokens:            tk[10:14],
 														},
 													},
@@ -1536,6 +1542,7 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[3],
+															Comments:          [2]Comments{nil, jsParser(tk[4:7]).toTypescript()},
 															Tokens:            tk[3:7],
 														},
 													},
@@ -1577,10 +1584,12 @@ i <J> () {}
 													FormalParameterList: []BindingElement{
 														{
 															SingleNameBinding: &tk[6],
+															Comments:          [2]Comments{nil, jsParser(tk[7:10]).toTypescript()},
 															Tokens:            tk[6:10],
 														},
 														{
 															SingleNameBinding: &tk[12],
+															Comments:          [2]Comments{nil, jsParser(tk[13:16]).toTypescript()},
 															Tokens:            tk[12:16],
 														},
 													},
@@ -2594,6 +2603,7 @@ public abstract d;
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
+																Comments:          [2]Comments{nil, {&tk[8]}},
 																Tokens:            tk[7:9],
 															},
 														},
@@ -2643,6 +2653,7 @@ public abstract d;
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
+																Comments:          [2]Comments{nil, jsParser(tk[8:11]).toTypescript()},
 																Tokens:            tk[7:11],
 															},
 														},
@@ -2700,7 +2711,8 @@ public abstract d;
 																	}),
 																	Tokens: tk[14:15],
 																},
-																Tokens: tk[7:15],
+																Comments: [2]Comments{nil, jsParser(tk[8:11]).toTypescript()},
+																Tokens:   tk[7:15],
 															},
 														},
 														Tokens: tk[6:16],
@@ -3191,7 +3203,8 @@ case "b":
 																}),
 																Tokens: tk[12:15],
 															},
-															Tokens: tk[1:15],
+															Comments: [2]Comments{nil, jsParser(tk[4:9]).toTypescript()},
+															Tokens:   tk[1:15],
 														},
 													},
 													Tokens: tk[:16],
@@ -3977,6 +3990,7 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 														FormalParameterList: []BindingElement{
 															{
 																SingleNameBinding: &tk[7],
+																Comments:          [2]Comments{nil, jsParser(tk[9:11]).toTypescript()},
 																Tokens:            tk[7:11],
 															},
 														},
@@ -4085,6 +4099,7 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 										FormalParameterList: []BindingElement{
 											{
 												SingleNameBinding: &tk[15],
+												Comments:          [2]Comments{nil, jsParser(tk[16:19]).toTypescript()},
 												Tokens:            tk[15:19],
 											},
 										},
