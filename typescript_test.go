@@ -5443,13 +5443,21 @@ func TestPrintingTypescript(t *testing.T) {
 			"a.b<c>()",
 			"a.b /*<c>*/ ();",
 		},
-		{ // 39
+		{ // 41
 			"a()!",
 			"a() /*!*/;",
 		},
-		{ // 39
+		{ // 42
 			"a.b()!",
 			"a.b() /*!*/;",
+		},
+		{ // 43
+			"function A<B>(): C {}",
+			"function A /*<B>*/ () /*: C*/ {}",
+		},
+		{ // 44
+			"function a(): b;\nfunction a(): c;\nfunction a() {}",
+			"function a /*(): b;\nfunction a(): c;\nfunction a*/ () {}",
 		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
