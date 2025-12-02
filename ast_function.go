@@ -164,18 +164,24 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 
 	g.AcceptRunWhitespace()
 
-	if g.SkipThisParam() {
+	h := g.NewGoal()
+
+	if h.SkipThisParam() {
+		i := h.NewGoal()
+
+		i.AcceptRunWhitespace()
+
+		if i.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+			h.Score(i)
+		}
+
+		fp.Comments[0] = append(fp.Comments[0], h.ToTypescriptComments()...)
+		fp.Comments[0] = append(fp.Comments[0], h.AcceptRunWhitespaceNoNewlineComments()...)
+
+		g.Score(h)
 		j.Score(g)
 
-		g = j.NewGoal()
-
-		g.AcceptRunWhitespace()
-
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
-			g.AcceptRunWhitespaceNoComment()
-
-			j.Score(g)
-		}
+		j.AcceptRunWhitespaceNoComment()
 	}
 
 	g = j.NewGoal()
@@ -221,7 +227,13 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 
 				g.AcceptRunWhitespace()
 
-				if g.SkipColonType() {
+				h := g.NewGoal()
+
+				if h.SkipColonType() {
+					fp.Comments[3] = append(fp.Comments[3], h.ToTypescriptComments()...)
+					fp.Comments[3] = append(fp.Comments[3], h.AcceptRunWhitespaceNoNewlineComments()...)
+
+					g.Score(h)
 					j.Score(g)
 
 					g = j.NewGoal()

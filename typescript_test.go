@@ -1026,6 +1026,7 @@ i <J> () {}
 											},
 										},
 										BindingIdentifier: &tk[44],
+										Comments:          [5]Comments{nil, nil, nil, jsParser(tk[45:48]).toTypescript()},
 										Tokens:            tk[6:49],
 									},
 									FunctionBody: Block{
@@ -1131,7 +1132,8 @@ i <J> () {}
 								FunctionDeclaration: &FunctionDeclaration{
 									BindingIdentifier: &tk[2],
 									FormalParameters: FormalParameters{
-										Tokens: tk[3:6],
+										Comments: [5]Comments{{&tk[4]}},
+										Tokens:   tk[3:6],
 									},
 									FunctionBody: Block{
 										Tokens: tk[6:8],
@@ -1185,7 +1187,8 @@ i <J> () {}
 								FunctionDeclaration: &FunctionDeclaration{
 									BindingIdentifier: &tk[2],
 									FormalParameters: FormalParameters{
-										Tokens: tk[3:9],
+										Comments: [5]Comments{jsParser(tk[4:8]).toTypescript()},
+										Tokens:   tk[3:9],
 									},
 									FunctionBody: Block{
 										Tokens: tk[9:11],
@@ -1245,7 +1248,8 @@ i <J> () {}
 												Tokens:            tk[7:8],
 											},
 										},
-										Tokens: tk[3:9],
+										Comments: [5]Comments{jsParser(tk[4:6]).toTypescript()},
+										Tokens:   tk[3:9],
 									},
 									FunctionBody: Block{
 										Tokens: tk[9:11],
@@ -3001,6 +3005,7 @@ case "b":
 											ArrowFunction: &ArrowFunction{
 												FormalParameters: &FormalParameters{
 													BindingIdentifier: &tk[2],
+													Comments:          [5]Comments{nil, nil, nil, jsParser(tk[3:8]).toTypescript()},
 													Tokens:            tk[:9],
 												},
 												FunctionBody: &Block{
