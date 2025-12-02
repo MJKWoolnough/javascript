@@ -1433,13 +1433,17 @@ func (f FormalParameters) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		f.Comments[0].printSource(w, false, true)
+		f.Comments[0].printSource(w, false, false)
 	}
 
 	ip := w.Indent()
 
 	if len(f.FormalParameterList) > 0 {
 		if v && len(f.FormalParameterList[0].Comments[0]) > 0 {
+			if !w.LastIsWhitespace() {
+				w.WriteString("\n")
+			}
+
 			ip.WriteString("\n")
 		}
 
