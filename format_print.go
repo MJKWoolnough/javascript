@@ -2229,7 +2229,12 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 func (b BitwiseORExpression) printSource(w writer, v bool) {
 	if b.BitwiseORExpression != nil {
 		b.BitwiseORExpression.printSource(w, v)
-		w.WriteString(" | ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("| ")
 	}
 
 	b.BitwiseXORExpression.printSource(w, v)
