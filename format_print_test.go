@@ -2424,6 +2424,16 @@ func TestPrintingScript(t *testing.T) {
 			"a ?? b;",
 			"a /* A */ ?? b;",
 		},
+		{ // 480
+			"a /* A */ ? /* B */ b /* C */ : /* D */ c",
+			"a ? b : c;",
+			"a /* A */ ? /* B */ b /* C */ : /* D */ c;",
+		},
+		{ // 482
+			"a // A\n? // B\nb // C\n: // D\nc",
+			"a ? b : c;",
+			"a // A\n? // B\nb // C\n: // D\nc;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
