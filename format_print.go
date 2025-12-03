@@ -2340,7 +2340,12 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 func (b BitwiseXORExpression) printSource(w writer, v bool) {
 	if b.BitwiseXORExpression != nil {
 		b.BitwiseXORExpression.printSource(w, v)
-		w.WriteString(" ^ ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("^ ")
 	}
 
 	b.BitwiseANDExpression.printSource(w, v)
