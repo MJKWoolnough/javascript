@@ -2193,7 +2193,12 @@ func (t TemplateLiteral) printSource(w writer, v bool) {
 func (l LogicalANDExpression) printSource(w writer, v bool) {
 	if l.LogicalANDExpression != nil {
 		l.LogicalANDExpression.printSource(w, v)
-		w.WriteString(" && ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("&& ")
 	}
 
 	l.BitwiseORExpression.printSource(w, v)
