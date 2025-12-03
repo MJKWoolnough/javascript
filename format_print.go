@@ -2403,7 +2403,12 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 func (b BitwiseANDExpression) printSource(w writer, v bool) {
 	if b.BitwiseANDExpression != nil {
 		b.BitwiseANDExpression.printSource(w, v)
-		w.WriteString(" & ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("& ")
 	}
 
 	b.EqualityExpression.printSource(w, v)
