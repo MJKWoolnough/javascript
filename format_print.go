@@ -1655,9 +1655,18 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 	}
 
 	if c.True != nil && c.False != nil {
-		w.WriteString(" ? ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("? ")
 		c.True.printSource(w, v)
-		w.WriteString(" : ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString(": ")
 		c.False.printSource(w, v)
 	}
 }
