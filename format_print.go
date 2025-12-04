@@ -2512,14 +2512,19 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 
 		switch a.AdditiveOperator {
 		case AdditiveAdd:
-			ao = " + "
+			ao = "+ "
 		case AdditiveMinus:
-			ao = " - "
+			ao = "- "
 		default:
 			return
 		}
 
 		a.AdditiveExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(ao)
 	}
 
