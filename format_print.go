@@ -2452,22 +2452,27 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 
 		switch r.RelationshipOperator {
 		case RelationshipLessThan:
-			ro = " < "
+			ro = "< "
 		case RelationshipGreaterThan:
-			ro = " > "
+			ro = "> "
 		case RelationshipLessThanEqual:
-			ro = " <= "
+			ro = "<= "
 		case RelationshipGreaterThanEqual:
-			ro = " >= "
+			ro = ">= "
 		case RelationshipInstanceOf:
-			ro = " instanceof "
+			ro = "instanceof "
 		case RelationshipIn:
-			ro = " in "
+			ro = "in "
 		default:
 			return
 		}
 
 		r.RelationalExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(ro)
 	}
 
