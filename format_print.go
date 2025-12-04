@@ -2420,18 +2420,23 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 
 		switch e.EqualityOperator {
 		case EqualityEqual:
-			eo = " == "
+			eo = "== "
 		case EqualityNotEqual:
-			eo = " != "
+			eo = "!= "
 		case EqualityStrictEqual:
-			eo = " === "
+			eo = "=== "
 		case EqualityStrictNotEqual:
-			eo = " !== "
+			eo = "!== "
 		default:
 			return
 		}
 
 		e.EqualityExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(eo)
 	}
 
