@@ -2485,16 +2485,21 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 
 		switch s.ShiftOperator {
 		case ShiftLeft:
-			so = " << "
+			so = "<< "
 		case ShiftRight:
-			so = " >> "
+			so = ">> "
 		case ShiftUnsignedRight:
-			so = " >>> "
+			so = ">>> "
 		default:
 			return
 		}
 
 		s.ShiftExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(so)
 	}
 
