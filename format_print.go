@@ -2537,16 +2537,21 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 
 		switch m.MultiplicativeOperator {
 		case MultiplicativeMultiply:
-			mo = " * "
+			mo = "* "
 		case MultiplicativeDivide:
-			mo = " / "
+			mo = "/ "
 		case MultiplicativeRemainder:
-			mo = " % "
+			mo = "% "
 		default:
 			return
 		}
 
 		m.MultiplicativeExpression.printSource(w, v)
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
 		w.WriteString(mo)
 	}
 
