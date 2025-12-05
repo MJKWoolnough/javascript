@@ -2561,7 +2561,12 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 func (e ExponentiationExpression) printSource(w writer, v bool) {
 	if e.ExponentiationExpression != nil {
 		e.ExponentiationExpression.printSource(w, v)
-		w.WriteString(" ** ")
+
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("** ")
 	}
 
 	e.UnaryExpression.printSource(w, v)
