@@ -3963,6 +3963,84 @@ func TestIterationStatementDo(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"do // A\na // B\nwhile // C\n( // D\n\n// E\nb // F\n\n// G\n) // H", func(t *test, tk Tokens) { // 12
+			t.Output = IterationStatementDo{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&MemberExpression{
+									PrimaryExpression: &PrimaryExpression{
+										IdentifierReference: &tk[4],
+										Tokens:              tk[4:5],
+									},
+									Comments: [5]Comments{nil, nil, nil, nil, {&tk[6]}},
+									Tokens:   tk[4:7],
+								}),
+								Tokens: tk[4:7],
+							},
+						},
+						Tokens: tk[4:7],
+					},
+					Tokens: tk[4:7],
+				},
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[18],
+									Tokens:              tk[18:19],
+								},
+								Comments: [5]Comments{{&tk[16]}, nil, nil, nil, {&tk[20]}},
+								Tokens:   tk[16:21],
+							}),
+							Tokens: tk[16:21],
+						},
+					},
+					Tokens: tk[16:21],
+				},
+				Comments: [6]Comments{{&tk[2]}, nil, {&tk[10]}, {&tk[14]}, {&tk[22]}, {&tk[26]}},
+				Tokens:   tk[:27],
+			}
+		}},
+		{"do // A\na;// B\nwhile // C\n( // D\n\n// E\nb // F\n\n// G\n) // H", func(t *test, tk Tokens) { // 13
+			t.Output = IterationStatementDo{
+				Statement: Statement{
+					ExpressionStatement: &Expression{
+						Expressions: []AssignmentExpression{
+							{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									IdentifierReference: &tk[4],
+									Tokens:              tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:6],
+				},
+				Expression: Expression{
+					Expressions: []AssignmentExpression{
+						{
+							ConditionalExpression: WrapConditional(&MemberExpression{
+								PrimaryExpression: &PrimaryExpression{
+									IdentifierReference: &tk[18],
+									Tokens:              tk[18:19],
+								},
+								Comments: [5]Comments{{&tk[16]}, nil, nil, nil, {&tk[20]}},
+								Tokens:   tk[16:21],
+							}),
+							Tokens: tk[16:21],
+						},
+					},
+					Tokens: tk[16:21],
+				},
+				Comments: [6]Comments{{&tk[2]}, {&tk[6]}, {&tk[10]}, {&tk[14]}, {&tk[22]}, {&tk[26]}},
+				Tokens:   tk[:27],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var is IterationStatementDo
 
