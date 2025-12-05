@@ -2879,6 +2879,11 @@ func TestPrintingModule(t *testing.T) {
 			"for await (const [] of b) ;",
 			"for // A\nawait // B\n( // C\n\n\t// D\n\tconst // E\n\t[] // F\n\tof // G\n\tb // H\n\n// I\n) // J\n;",
 		},
+		{ // 60
+			"export * // A\nas a from 'b'",
+			"export * as a from 'b';",
+			"export * // A\nas a from 'b';",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseModule(makeTokeniser(parser.NewStringTokeniser(in)))
