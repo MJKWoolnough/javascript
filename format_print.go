@@ -1304,7 +1304,11 @@ func (a AssignmentElement) printSource(w writer, v bool) {
 	a.DestructuringAssignmentTarget.printSource(w, v)
 
 	if a.Initializer != nil {
-		w.WriteString(" = ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("= ")
 		a.Initializer.printSource(w, v)
 	}
 }
