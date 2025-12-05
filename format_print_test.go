@@ -2534,6 +2534,16 @@ func TestPrintingScript(t *testing.T) {
 			"a ** b;",
 			"a // A\n** // B\nb;",
 		},
+		{ // 501
+			"do /* A */a /* B */; /* C */ while ( // D\n\n// E\nb // F\n\n// G\n) // H",
+			"do a; while (b);",
+			"do /* A */ a /* B */; /* C */ while ( // D\n\n\t// E\n\tb // F\n\n// G\n) // H\n",
+		},
+		{ // 502
+			"do /* A */{}/* B */ while ( // C\n\n// D\nb // E\n\n// F\n) // G",
+			"do {} while (b);",
+			"do /* A */ {} /* B */ while ( // C\n\n\t// D\n\tb // E\n\n// F\n) // G\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
