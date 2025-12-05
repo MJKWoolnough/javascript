@@ -2774,7 +2774,11 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 			}
 
 			if e.ExportFromClause != nil {
-				w.WriteString(" as ")
+				if !w.LastIsWhitespace() {
+					w.WriteString(" ")
+				}
+
+				w.WriteString("as ")
 
 				if v && len(e.Comments[3]) > 0 {
 					e.Comments[3].printSource(w, true, false)
