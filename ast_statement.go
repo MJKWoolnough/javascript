@@ -490,6 +490,7 @@ func (is *IfStatement) parse(j *jsParser, yield, await, ret bool) error {
 type IterationStatementDo struct {
 	Statement  Statement
 	Expression Expression
+	Comments   [6]Comments
 	Tokens     Tokens
 }
 
@@ -497,6 +498,8 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "do"}) {
 		return j.Error("IterationStatementDo", ErrInvalidIterationStatementDo)
 	}
+
+	is.Comments[0] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -512,13 +515,17 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 
 	j.Score(g)
 
-	g = j.NewGoal()
+	is.Comments[1] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
+
+	g = j.NewGoal()
 
 	if !j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"}) {
 		return j.Error("IterationStatementDo", ErrInvalidIterationStatementDo)
 	}
+
+	is.Comments[2] = j.AcceptRunWhitespaceComments()
 
 	j.AcceptRunWhitespace()
 
@@ -526,7 +533,9 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 		return j.Error("IterationStatementDo", ErrMissingOpeningParenthesis)
 	}
 
-	j.AcceptRunWhitespace()
+	is.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
+
+	j.AcceptRunWhitespaceNoComment()
 
 	g = j.NewGoal()
 
@@ -535,11 +544,16 @@ func (is *IterationStatementDo) parse(j *jsParser, yield, await, ret bool) error
 	}
 
 	j.Score(g)
+
+	is.Comments[4] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
 		return j.Error("IterationStatementDo", ErrMissingClosingParenthesis)
 	}
+
+	is.Comments[5] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	if !j.parseSemicolon() {
 		return j.Error("IterationStatementDo", ErrMissingSemiColon)
