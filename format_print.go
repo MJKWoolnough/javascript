@@ -3127,7 +3127,11 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 			e.Comments[1].printSource(w, false, false)
 		}
 
-		w.WriteString(" as ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("as ")
 
 		if v {
 			e.Comments[2].printSource(w, true, false)
