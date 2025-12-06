@@ -3038,7 +3038,11 @@ func (f FromClause) printSource(w writer, v bool) {
 		return
 	}
 
-	w.WriteString(" from ")
+	if !w.LastIsWhitespace() {
+		w.WriteString(" ")
+	}
+
+	w.WriteString("from ")
 
 	if v {
 		f.Comments.printSource(w, true, false)
