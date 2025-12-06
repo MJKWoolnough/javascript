@@ -857,7 +857,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[8],
 			}
 		}},
-		{`++?`, func(t *test, tk Tokens) { /// 73
+		{`++?`, func(t *test, tk Tokens) { // 73
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -940,7 +940,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"a\n??\nb", func(t *test, tk Tokens) { // 73
+		{"a\n??\nb", func(t *test, tk Tokens) { // 74
 			t.Output = ConditionalExpression{
 				CoalesceExpression: &CoalesceExpression{
 					CoalesceExpressionHead: &CoalesceExpression{
@@ -953,7 +953,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"a\n??\nb\n??\nc", func(t *test, tk Tokens) { // 74
+		{"a\n??\nb\n??\nc", func(t *test, tk Tokens) { // 75
 			t.Output = ConditionalExpression{
 				CoalesceExpression: &CoalesceExpression{
 					CoalesceExpressionHead: &CoalesceExpression{
@@ -970,7 +970,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"a\n??\n!", func(t *test, tk Tokens) { // 75
+		{"a\n??\n!", func(t *test, tk Tokens) { // 76
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1041,7 +1041,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{"1++", func(t *test, tk Tokens) { // 76
+		{"1++", func(t *test, tk Tokens) { // 77
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1100,7 +1100,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"1--", func(t *test, tk Tokens) { // 77
+		{"1--", func(t *test, tk Tokens) { // 78
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1159,7 +1159,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"#a in b", func(t *test, tk Tokens) { // 78
+		{"#a in b", func(t *test, tk Tokens) { // 79
 			t.In = true
 			t.Output = *WrapConditional(RelationalExpression{
 				PrivateIdentifier:    &tk[0],
@@ -1198,7 +1198,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:5],
 			})
 		}},
-		{"#a in b", func(t *test, tk Tokens) { // 79
+		{"#a in b", func(t *test, tk Tokens) { // 80
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1273,7 +1273,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"#a of b", func(t *test, tk Tokens) { // 80
+		{"#a of b", func(t *test, tk Tokens) { // 81
 			t.In = true
 			t.Err = Error{
 				Err: Error{
@@ -1349,7 +1349,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"#a in #b", func(t *test, tk Tokens) { // 81
+		{"#a in #b", func(t *test, tk Tokens) { // 82
 			t.In = true
 			t.Err = Error{
 				Err: Error{
@@ -1425,7 +1425,7 @@ func TestConditional(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"this.#a", func(t *test, tk Tokens) { // 82
+		{"this.#a", func(t *test, tk Tokens) { // 83
 			t.Output = *WrapConditional(MemberExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -1438,7 +1438,7 @@ func TestConditional(t *testing.T) {
 				Tokens:            tk[:3],
 			})
 		}},
-		{"this.#a++", func(t *test, tk Tokens) { // 83
+		{"this.#a++", func(t *test, tk Tokens) { // 84
 			t.Output = *WrapConditional(UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
 					NewExpression: &NewExpression{
@@ -1461,7 +1461,7 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:4],
 			})
 		}},
-		{"// A\na /* B */ ++ // C\n", func(t *test, tk Tokens) { // 84
+		{"// A\na /* B */ ++ // C\n", func(t *test, tk Tokens) { // 85
 			t.Output = wrapConditional(UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
 					NewExpression: &NewExpression{
@@ -1482,7 +1482,7 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:9],
 			})
 		}},
-		{"// A\na /* B */ -- // C\n", func(t *test, tk Tokens) { // 85
+		{"// A\na /* B */ -- // C\n", func(t *test, tk Tokens) { // 86
 			t.Output = wrapConditional(UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
 					NewExpression: &NewExpression{
@@ -1503,7 +1503,7 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:9],
 			})
 		}},
-		{"// A\n++ // B\na // C\n", func(t *test, tk Tokens) { // 86
+		{"// A\n++ // B\na // C\n", func(t *test, tk Tokens) { // 87
 			t.Output = wrapConditional(UpdateExpression{
 				UnaryExpression: &UnaryExpression{
 					UpdateExpression: UpdateExpression{
@@ -1530,7 +1530,7 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:9],
 			})
 		}},
-		{"// A\n-- // B\na // C\n", func(t *test, tk Tokens) { // 87
+		{"// A\n-- // B\na // C\n", func(t *test, tk Tokens) { // 88
 			t.Output = wrapConditional(UpdateExpression{
 				UnaryExpression: &UnaryExpression{
 					UpdateExpression: UpdateExpression{
@@ -1557,7 +1557,7 @@ func TestConditional(t *testing.T) {
 				Tokens:         tk[:9],
 			})
 		}},
-		{"// A\n// B\ntypeof // C\na // D\n", func(t *test, tk Tokens) { // 88
+		{"// A\n// B\ntypeof // C\na // D\n", func(t *test, tk Tokens) { // 89
 			t.Output = wrapConditional(UnaryExpression{
 				UnaryOperators: []UnaryOperatorComments{{
 					UnaryOperator: UnaryTypeOf,
@@ -1574,7 +1574,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:11],
 			})
 		}},
-		{"// A\nvoid // B\n+ // C\na // D\n", func(t *test, tk Tokens) { // 89
+		{"// A\nvoid // B\n+ // C\na // D\n", func(t *test, tk Tokens) { // 90
 			t.Output = wrapConditional(UnaryExpression{
 				UnaryOperators: []UnaryOperatorComments{
 					{
@@ -1597,7 +1597,7 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:13],
 			})
 		}},
-		{"// A\n#a /* B */ in /* C */ b // D", func(t *test, tk Tokens) { // 90
+		{"// A\n#a /* B */ in /* C */ b // D", func(t *test, tk Tokens) { // 91
 			t.In = true
 			t.Output = *WrapConditional(RelationalExpression{
 				PrivateIdentifier:    &tk[2],
