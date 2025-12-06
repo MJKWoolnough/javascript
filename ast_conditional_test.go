@@ -1597,6 +1597,47 @@ func TestConditional(t *testing.T) {
 				Tokens: tk[:13],
 			})
 		}},
+		{"// A\n#a /* B */ in /* C */ b // D", func(t *test, tk Tokens) { // 90
+			t.In = true
+			t.Output = *WrapConditional(RelationalExpression{
+				PrivateIdentifier:    &tk[2],
+				RelationshipOperator: RelationshipIn,
+				ShiftExpression: ShiftExpression{
+					AdditiveExpression: AdditiveExpression{
+						MultiplicativeExpression: MultiplicativeExpression{
+							ExponentiationExpression: ExponentiationExpression{
+								UnaryExpression: UnaryExpression{
+									UpdateExpression: UpdateExpression{
+										LeftHandSideExpression: &LeftHandSideExpression{
+											NewExpression: &NewExpression{
+												MemberExpression: MemberExpression{
+													PrimaryExpression: &PrimaryExpression{
+														IdentifierReference: &tk[10],
+														Tokens:              tk[10:11],
+													},
+													Comments: [5]Comments{{&tk[8]}, nil, nil, nil, {&tk[12]}},
+													Tokens:   tk[8:13],
+												},
+												Tokens: tk[8:13],
+											},
+											Tokens: tk[8:13],
+										},
+										Tokens: tk[8:13],
+									},
+									Tokens: tk[8:13],
+								},
+								Tokens: tk[8:13],
+							},
+							Tokens: tk[8:13],
+						},
+						Tokens: tk[8:13],
+					},
+					Tokens: tk[8:13],
+				},
+				Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+				Tokens:   tk[:13],
+			})
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 
