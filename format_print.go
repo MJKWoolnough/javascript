@@ -2481,8 +2481,19 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 
 func (r RelationalExpression) printSource(w writer, v bool) {
 	if r.PrivateIdentifier != nil {
+		if v {
+			r.Comments[0].printSource(w, true, false)
+		}
+
 		w.WriteString(r.PrivateIdentifier.Data)
-		w.WriteString(" in ")
+
+		if v && len(r.Comments[1]) > 0 {
+			r.Comments[1].printSource(w, true, false)
+		} else {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("in ")
 	} else if r.RelationalExpression != nil {
 		var ro string
 
