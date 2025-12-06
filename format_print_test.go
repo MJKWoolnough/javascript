@@ -2549,6 +2549,11 @@ func TestPrintingScript(t *testing.T) {
 			"([a = b] = c);",
 			"([a // A\n\t= b] = c);",
 		},
+		{ // 504
+			"// A\n\n// B\n#a /* C */ in /* D */ b // E",
+			"#a in b;",
+			"// A\n\n// B\n#a /* C */ in /* D */ b // E\n",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
