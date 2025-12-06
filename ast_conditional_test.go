@@ -1401,7 +1401,7 @@ func TestConditional(t *testing.T) {
 												Token:   tk[4],
 											},
 											Parsing: "RelationalExpression",
-											Token:   tk[0],
+											Token:   tk[4],
 										},
 										Parsing: "EqualityExpression",
 										Token:   tk[0],

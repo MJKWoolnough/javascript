@@ -506,38 +506,47 @@ type RelationalExpression struct {
 	RelationalExpression *RelationalExpression
 	RelationshipOperator RelationshipOperator
 	ShiftExpression      ShiftExpression
+	Comments             [2]Comments
 	Tokens               Tokens
 }
 
 func (re *RelationalExpression) parse(j *jsParser, in, yield, await bool) error {
 	g := j.NewGoal()
 
+	g.AcceptRunWhitespace()
+
 	if in && g.Accept(TokenPrivateIdentifier) {
-		re.PrivateIdentifier = g.GetLastToken()
 
 		g.AcceptRunWhitespace()
 
 		if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
-			g.AcceptRunWhitespace()
+			re.Comments[0] = j.AcceptRunWhitespaceComments()
 
-			h := g.NewGoal()
+			j.AcceptRunWhitespace()
+
+			re.PrivateIdentifier = j.Next()
+			re.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
 
 			re.RelationshipOperator = RelationshipIn
-			if err := re.ShiftExpression.parse(&h, yield, await); err != nil {
+			if err := re.ShiftExpression.parse(&g, yield, await); err != nil {
 				return j.Error("RelationalExpression", err)
 			}
 
-			g.Score(h)
 			j.Score(g)
 
 			re.Tokens = j.ToTokens()
 
 			return nil
 		}
-
-		re.PrivateIdentifier = nil
-		g = j.NewGoal()
 	}
+
+	g = j.NewGoal()
 
 	for {
 		if err := re.ShiftExpression.parse(&g, yield, await); err != nil {
