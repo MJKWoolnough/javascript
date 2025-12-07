@@ -2877,7 +2877,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:21],
 			}
 		}},
-		{"// A\n[a] // B\n= b", func(t *test, tk Tokens) { // 72
+		{"// A\n[a] // B\n= b", func(t *test, tk Tokens) { // 71
 			t.Output = AssignmentExpression{
 				AssignmentPattern: &AssignmentPattern{
 					ArrayAssignmentPattern: &ArrayAssignmentPattern{
@@ -2918,7 +2918,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"// A\n{a} // B\n= b", func(t *test, tk Tokens) { // 73
+		{"// A\n{a} // B\n= b", func(t *test, tk Tokens) { // 72
 			t.Output = AssignmentExpression{
 				AssignmentPattern: &AssignmentPattern{
 					ObjectAssignmentPattern: &ObjectAssignmentPattern{
@@ -2963,7 +2963,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"// A\nyield /* B */ a // C", func(t *test, tk Tokens) { // 74
+		{"// A\nyield /* B */ a // C", func(t *test, tk Tokens) { // 73
 			t.Yield = true
 			t.Output = AssignmentExpression{
 				Yield: true,
@@ -2982,7 +2982,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens:   tk[:9],
 			}
 		}},
-		{"// A\nyield /* B */ * /* C */ a // D", func(t *test, tk Tokens) { // 75
+		{"// A\nyield /* B */ * /* C */ a // D", func(t *test, tk Tokens) { // 74
 			t.Yield = true
 			t.Output = AssignmentExpression{
 				Yield:    true,
