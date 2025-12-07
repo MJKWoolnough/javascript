@@ -3161,7 +3161,11 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 			i.Comments[1].printSource(w, false, false)
 		}
 
-		w.WriteString(" as ")
+		if !w.LastIsWhitespace() {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("as ")
 
 		if v {
 			i.Comments[2].printSource(w, true, false)
