@@ -462,6 +462,8 @@ func (ni *NamedImports) parse(j *jsParser) error {
 
 	ni.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
+	var c Comments
+
 	for {
 		g := j.NewGoal()
 
@@ -473,24 +475,54 @@ func (ni *NamedImports) parse(j *jsParser) error {
 
 		j.AcceptRunWhitespaceNoComment()
 
-		if !j.SkipTypeImport() {
-			g := j.NewGoal()
-			is := len(ni.ImportList)
+		g = j.NewGoal()
 
-			ni.ImportList = append(ni.ImportList, ImportSpecifier{})
-			if err := ni.ImportList[is].parse(&g); err != nil {
-				return j.Error("NamedImports", err)
+		g.AcceptRunWhitespace()
+
+		if g.SkipTypeImport() {
+			g.AcceptRunWhitespaceCommentsInList()
+
+			h := g.NewGoal()
+
+			h.AcceptRunWhitespace()
+
+			if h.Accept(TokenRightBracePunctuator) {
+				c = append(c, g.ToTypescriptComments()...)
+
+				j.Score(g)
+
+				break
+			} else if !h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ","}) {
+				return g.Error("NamedImports", ErrInvalidNamedImport)
 			}
 
-			name := ni.ImportList[is].ImportedBinding.Data
-			for _, im := range ni.ImportList[:is] {
-				if im.ImportedBinding.Data == name {
-					return j.Error("NamedImports", ErrInvalidNamedImport)
-				}
-			}
+			g.Score(h)
+
+			c = append(c, g.ToTypescriptComments()...)
 
 			j.Score(g)
+
+			continue
 		}
+
+		g = j.NewGoal()
+		is := len(ni.ImportList)
+
+		ni.ImportList = append(ni.ImportList, ImportSpecifier{Comments: [4]Comments{c}})
+		if err := ni.ImportList[is].parse(&g); err != nil {
+			return j.Error("NamedImports", err)
+		}
+
+		c = nil
+
+		name := ni.ImportList[is].ImportedBinding.Data
+		for _, im := range ni.ImportList[:is] {
+			if im.ImportedBinding.Data == name {
+				return j.Error("NamedImports", ErrInvalidNamedImport)
+			}
+		}
+
+		j.Score(g)
 
 		g = j.NewGoal()
 
@@ -505,7 +537,7 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		j.Score(g)
 	}
 
-	ni.Comments[1] = j.AcceptRunWhitespaceComments()
+	ni.Comments[1] = append(c, j.AcceptRunWhitespaceComments()...)
 
 	j.AcceptRunWhitespace()
 	j.Skip()
@@ -527,7 +559,7 @@ type ImportSpecifier struct {
 }
 
 func (is *ImportSpecifier) parse(j *jsParser) error {
-	is.Comments[0] = j.AcceptRunWhitespaceComments()
+	is.Comments[0] = append(is.Comments[0], j.AcceptRunWhitespaceComments()...)
 
 	j.AcceptRunWhitespace()
 

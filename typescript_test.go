@@ -498,7 +498,8 @@ static readonly E;
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
 								NamedImports: &NamedImports{
-									Tokens: tk[2:7],
+									Comments: [2]Comments{nil, jsParser(tk[3:6]).toTypescript()},
+									Tokens:   tk[2:7],
 								},
 								Tokens: tk[2:7],
 							},
@@ -541,7 +542,8 @@ static readonly E;
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
 								NamedImports: &NamedImports{
-									Tokens: tk[2:7],
+									Comments: [2]Comments{nil, jsParser(tk[3:6]).toTypescript()},
+									Tokens:   tk[2:7],
 								},
 								Tokens: tk[2:7],
 							},
@@ -596,7 +598,8 @@ static readonly E;
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
 								NamedImports: &NamedImports{
-									Tokens: tk[2:11],
+									Comments: [2]Comments{nil, jsParser(tk[3:10]).toTypescript()},
+									Tokens:   tk[2:11],
 								},
 								Tokens: tk[2:11],
 							},
@@ -3479,7 +3482,8 @@ case "b":
 						ImportDeclaration: &ImportDeclaration{
 							ImportClause: &ImportClause{
 								NamedImports: &NamedImports{
-									Tokens: tk[2:11],
+									Comments: [2]Comments{nil, jsParser(tk[3:10]).toTypescript()},
+									Tokens:   tk[2:11],
 								},
 								Tokens: tk[2:11],
 							},
