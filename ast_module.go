@@ -646,7 +646,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 	if j.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
 		ed.Comments[2] = j.AcceptRunWhitespaceComments()
 
-		j.AcceptRunWhitespaceNoComment()
+		j.AcceptRunWhitespace()
 
 		g := j.NewGoal()
 
@@ -667,12 +667,20 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			j.Score(g)
 		case "abstract":
 			h := g.NewGoal()
+			i := h.NewGoal()
 
-			if h.SkipAbstract() {
-				h.AcceptRunWhitespaceNoNewLine()
+			if i.SkipAbstract() {
+				i.AcceptRunWhitespace()
 			}
 
-			if h.Peek() == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+			if i.Peek() == (parser.Token{Type: TokenKeyword, Data: "class"}) {
+				h.Skip()
+
+				ed.Comments[2] = append(ed.Comments[2], h.ToTypescriptComments()...)
+				ed.Comments[2] = append(ed.Comments[2], h.AcceptRunWhitespaceComments()...)
+
+				h.AcceptRunWhitespace()
+
 				ed.DefaultClass = new(ClassDeclaration)
 				if err := ed.DefaultClass.parse(&h, false, false, true); err != nil {
 					return j.Error("ExportDeclaration", err)

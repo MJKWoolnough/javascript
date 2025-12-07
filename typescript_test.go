@@ -2439,7 +2439,8 @@ i <J> () {}
 								BindingIdentifier: &tk[8],
 								Tokens:            tk[4:12],
 							},
-							Tokens: tk[:12],
+							Comments: [7]Comments{nil, nil, {&tk[4]}},
+							Tokens:   tk[:12],
 						},
 						Tokens: tk[:12],
 					},
@@ -3056,6 +3057,9 @@ case "b":
 		}},
 		{`export default abstract class!`, func(t *test, tk Tokens) { // 79
 			t.Typescript = true
+			tk4 := tk[4]
+			tk4.Type |= tokenTypescript
+
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3064,7 +3068,7 @@ case "b":
 						Token:   tk[7],
 					},
 					Parsing: "ExportDeclaration",
-					Token:   tk[4],
+					Token:   tk4,
 				},
 				Parsing: "ModuleItem",
 				Token:   tk[0],
@@ -5503,7 +5507,7 @@ func TestPrintingTypescript(t *testing.T) {
 			"import {type A as B} from './c'",
 			"import {\n/*type A as B*/} from './c';",
 		},
-		{ // 52
+		{ // 53
 			"import {a, type A as B, c} from './c'",
 			"import {a as a, /*type A as B,*/ c as c} from './c';",
 		},
