@@ -5511,6 +5511,10 @@ func TestPrintingTypescript(t *testing.T) {
 			"import {a, type A as B, c} from './c'",
 			"import {a as a, /*type A as B,*/ c as c} from './c';",
 		},
+		{ // 54
+			"export default abstract class A {}",
+			"export default /*abstract*/ class A {}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
