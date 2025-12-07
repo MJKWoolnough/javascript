@@ -23,7 +23,7 @@ func (s Script) printSource(w writer, v bool) {
 
 func (s StatementListItem) printSource(w writer, v bool) {
 	if v {
-		s.Comments[0].printSource(w, true, false)
+		s.Comments[0].printSource(w, s.Statement != nil || s.Declaration != nil, false)
 	}
 
 	if s.Statement != nil {
