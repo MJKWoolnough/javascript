@@ -5499,6 +5499,14 @@ func TestPrintingTypescript(t *testing.T) {
 			"export type A = B",
 			"/*export type A = B*/",
 		},
+		{ // 52
+			"import {type A as B} from './c'",
+			"import {\n/*type A as B*/} from './c';",
+		},
+		{ // 52
+			"import {a, type A as B, c} from './c'",
+			"import {a as a, /*type A as B,*/ c as c} from './c';",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
