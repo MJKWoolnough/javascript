@@ -73,10 +73,8 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "export"}:
 		if g.SkipExportType() {
 			ml.StatementListItem = &StatementListItem{
-				Statement: &Statement{
-					Tokens: g.ToTokens(),
-				},
-				Tokens: g.ToTokens(),
+				Comments: [2]Comments{g.ToTypescriptComments()},
+				Tokens:   g.ToTokens(),
 			}
 
 			break
@@ -91,10 +89,8 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "import"}:
 		if g.SkipImportType() {
 			ml.StatementListItem = &StatementListItem{
-				Statement: &Statement{
-					Tokens: g.ToTokens(),
-				},
-				Tokens: g.ToTokens(),
+				Comments: [2]Comments{g.ToTypescriptComments()},
+				Tokens:   g.ToTokens(),
 			}
 
 			break

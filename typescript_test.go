@@ -39,19 +39,15 @@ func TestTypescriptModule(t *testing.T) {
 					},
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[8:18],
-							},
-							Tokens: tk[8:18],
+							Comments: [2]Comments{jsParser(tk[8:18]).toTypescript()},
+							Tokens:   tk[8:18],
 						},
 						Tokens: tk[8:18],
 					},
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[18:33],
-							},
-							Tokens: tk[18:33],
+							Comments: [2]Comments{jsParser(tk[18:33]).toTypescript()},
+							Tokens:   tk[18:33],
 						},
 						Tokens: tk[18:33],
 					},
@@ -2482,10 +2478,8 @@ public abstract d;
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:9],
-							},
-							Tokens: tk[:9],
+							Comments: [2]Comments{jsParser(tk[:9]).toTypescript()},
+							Tokens:   tk[:9],
 						},
 						Tokens: tk[:9],
 					},
@@ -2855,10 +2849,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:10],
-							},
-							Tokens: tk[:10],
+							Comments: [2]Comments{jsParser(tk[:10]).toTypescript()},
+							Tokens:   tk[:10],
 						},
 						Tokens: tk[:10],
 					},
@@ -2872,10 +2864,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:8],
-							},
-							Tokens: tk[:8],
+							Comments: [2]Comments{jsParser(tk[:8]).toTypescript()},
+							Tokens:   tk[:8],
 						},
 						Tokens: tk[:8],
 					},
@@ -3472,10 +3462,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:12],
-							},
-							Tokens: tk[:12],
+							Comments: [2]Comments{jsParser(tk[:12]).toTypescript()},
+							Tokens:   tk[:12],
 						},
 						Tokens: tk[:12],
 					},
