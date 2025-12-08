@@ -5465,6 +5465,18 @@ func TestPrintingTypescript(t *testing.T) {
 			"export default abstract class A {}",
 			"export default /*abstract*/ class A {}",
 		},
+		{ // 55
+			"type A = B",
+			"/*type A = B*/",
+		},
+		{ // 56
+			"interface A {}",
+			"/*interface A {}*/",
+		},
+		{ // 57
+			"declare namespace A{ interface B {} }",
+			"/*declare namespace A{ interface B {} }*/",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
