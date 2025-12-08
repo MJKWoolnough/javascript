@@ -33,7 +33,7 @@ func (s StatementListItem) printSource(w writer, v bool) {
 	}
 
 	if v {
-		s.Comments[1].printSource(w, true, false)
+		s.Comments[1].printSource(w, false, false)
 	}
 }
 
