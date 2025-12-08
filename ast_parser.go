@@ -13,6 +13,8 @@ type Token struct {
 	Pos, Line, LinePos uint64
 }
 
+// IsTypescript returns true when the token was processed as part of a
+// TypeScript section.
 func (t Token) IsTypescript() bool {
 	return t.Type&tokenTypescript != 0
 }
