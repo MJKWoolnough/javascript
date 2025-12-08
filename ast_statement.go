@@ -64,14 +64,19 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 
 	j.AcceptRunWhitespace()
 
-	if j.SkipType() || j.SkipInterface() || j.SkipDeclare() {
-		si.Statement = &Statement{Tokens: j.ToTokens()}
+	g := j.NewGoal()
+
+	if g.SkipType() || g.SkipInterface() || g.SkipDeclare() {
+		si.Comments[1] = g.ToTypescriptComments()
+
+		j.Score(g)
+
 		si.Tokens = j.ToTokens()
 
 		return nil
 	}
 
-	g := j.NewGoal()
+	g = j.NewGoal()
 
 	var declaration bool
 

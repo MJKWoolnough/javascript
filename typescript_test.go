@@ -635,10 +635,8 @@ type B = number;
 					},
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[3:11],
-							},
-							Tokens: tk[3:11],
+							Comments: [2]Comments{nil, jsParser(tk[3:11]).toTypescript()},
+							Tokens:   tk[3:11],
 						},
 						Tokens: tk[3:11],
 					},
@@ -1716,10 +1714,8 @@ i <J> () {}
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:23],
-							},
-							Tokens: tk[:23],
+							Comments: [2]Comments{nil, jsParser(tk[:23]).toTypescript()},
+							Tokens:   tk[:23],
 						},
 						Tokens: tk[:23],
 					},
@@ -2362,10 +2358,8 @@ i <J> () {}
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:14],
-							},
-							Tokens: tk[:14],
+							Comments: [2]Comments{nil, jsParser(tk[:14]).toTypescript()},
+							Tokens:   tk[:14],
 						},
 						Tokens: tk[:14],
 					},
@@ -2836,10 +2830,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:18],
-							},
-							Tokens: tk[:18],
+							Comments: [2]Comments{nil, jsParser(tk[:18]).toTypescript()},
+							Tokens:   tk[:18],
 						},
 						Tokens: tk[:18],
 					},
@@ -2883,10 +2875,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:23],
-							},
-							Tokens: tk[:23],
+							Comments: [2]Comments{nil, jsParser(tk[:23]).toTypescript()},
+							Tokens:   tk[:23],
 						},
 						Tokens: tk[:23],
 					},
@@ -3418,10 +3408,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:11],
-							},
-							Tokens: tk[:11],
+							Comments: [2]Comments{nil, jsParser(tk[:11]).toTypescript()},
+							Tokens:   tk[:11],
 						},
 						Tokens: tk[:11],
 					},
@@ -3435,10 +3423,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:6],
-							},
-							Tokens: tk[:6],
+							Comments: [2]Comments{nil, jsParser(tk[:6]).toTypescript()},
+							Tokens:   tk[:6],
 						},
 						Tokens: tk[:6],
 					},
@@ -3452,10 +3438,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:13],
-							},
-							Tokens: tk[:13],
+							Comments: [2]Comments{nil, jsParser(tk[:13]).toTypescript()},
+							Tokens:   tk[:13],
 						},
 						Tokens: tk[:13],
 					},
@@ -3509,10 +3493,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:9],
-							},
-							Tokens: tk[:9],
+							Comments: [2]Comments{nil, jsParser(tk[:9]).toTypescript()},
+							Tokens:   tk[:9],
 						},
 						Tokens: tk[:9],
 					},
@@ -3526,10 +3508,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:9],
-							},
-							Tokens: tk[:9],
+							Comments: [2]Comments{nil, jsParser(tk[:9]).toTypescript()},
+							Tokens:   tk[:9],
 						},
 						Tokens: tk[:9],
 					},
@@ -3543,10 +3523,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:9],
-							},
-							Tokens: tk[:9],
+							Comments: [2]Comments{nil, jsParser(tk[:9]).toTypescript()},
+							Tokens:   tk[:9],
 						},
 						Tokens: tk[:9],
 					},
@@ -3560,10 +3538,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:15],
-							},
-							Tokens: tk[:15],
+							Comments: [2]Comments{nil, jsParser(tk[:15]).toTypescript()},
+							Tokens:   tk[:15],
 						},
 						Tokens: tk[:15],
 					},
@@ -3577,10 +3553,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:11],
-							},
-							Tokens: tk[:11],
+							Comments: [2]Comments{nil, jsParser(tk[:11]).toTypescript()},
+							Tokens:   tk[:11],
 						},
 						Tokens: tk[:11],
 					},
@@ -3594,10 +3568,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:8],
-							},
-							Tokens: tk[:8],
+							Comments: [2]Comments{nil, jsParser(tk[:8]).toTypescript()},
+							Tokens:   tk[:8],
 						},
 						Tokens: tk[:8],
 					},
@@ -3611,10 +3583,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:18],
-							},
-							Tokens: tk[:18],
+							Comments: [2]Comments{nil, jsParser(tk[:18]).toTypescript()},
+							Tokens:   tk[:18],
 						},
 						Tokens: tk[:18],
 					},
@@ -3628,10 +3598,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:14],
-							},
-							Tokens: tk[:14],
+							Comments: [2]Comments{nil, jsParser(tk[:14]).toTypescript()},
+							Tokens:   tk[:14],
 						},
 						Tokens: tk[:14],
 					},
@@ -3645,10 +3613,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:16],
-							},
-							Tokens: tk[:16],
+							Comments: [2]Comments{nil, jsParser(tk[:16]).toTypescript()},
+							Tokens:   tk[:16],
 						},
 						Tokens: tk[:16],
 					},
@@ -3662,10 +3628,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:16],
-							},
-							Tokens: tk[:16],
+							Comments: [2]Comments{nil, jsParser(tk[:16]).toTypescript()},
+							Tokens:   tk[:16],
 						},
 						Tokens: tk[:16],
 					},
@@ -3679,10 +3643,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:13],
-							},
-							Tokens: tk[:13],
+							Comments: [2]Comments{nil, jsParser(tk[:13]).toTypescript()},
+							Tokens:   tk[:13],
 						},
 						Tokens: tk[:13],
 					},
@@ -3696,10 +3658,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:23],
-							},
-							Tokens: tk[:23],
+							Comments: [2]Comments{nil, jsParser(tk[:23]).toTypescript()},
+							Tokens:   tk[:23],
 						},
 						Tokens: tk[:23],
 					},
@@ -3713,10 +3673,8 @@ case "b":
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:12],
-							},
-							Tokens: tk[:12],
+							Comments: [2]Comments{nil, jsParser(tk[:12]).toTypescript()},
+							Tokens:   tk[:12],
 						},
 						Tokens: tk[:12],
 					},
@@ -4071,10 +4029,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:19],
-							},
-							Tokens: tk[:19],
+							Comments: [2]Comments{nil, jsParser(tk[:19]).toTypescript()},
+							Tokens:   tk[:19],
 						},
 						Tokens: tk[:19],
 					},
@@ -4123,10 +4079,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:28],
-							},
-							Tokens: tk[:28],
+							Comments: [2]Comments{nil, jsParser(tk[:28]).toTypescript()},
+							Tokens:   tk[:28],
 						},
 						Tokens: tk[:28],
 					},
@@ -4230,10 +4184,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:36],
-							},
-							Tokens: tk[:36],
+							Comments: [2]Comments{nil, jsParser(tk[:36]).toTypescript()},
+							Tokens:   tk[:36],
 						},
 						Tokens: tk[:36],
 					},
@@ -4317,10 +4269,8 @@ function a() {}`, func(t *test, tk Tokens) { // 105
 				ModuleListItems: []ModuleItem{
 					{
 						StatementListItem: &StatementListItem{
-							Statement: &Statement{
-								Tokens: tk[:11],
-							},
-							Tokens: tk[:11],
+							Comments: [2]Comments{nil, jsParser(tk[:11]).toTypescript()},
+							Tokens:   tk[:11],
 						},
 						Tokens: tk[:11],
 					},
