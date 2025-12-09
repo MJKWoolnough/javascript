@@ -34,7 +34,6 @@ type FunctionDeclaration struct {
 func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		fd.Type = FunctionAsync
-
 		fd.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
 		j.AcceptRunWhitespaceNoNewLine()
@@ -66,7 +65,6 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		}
 	} else {
 		fd.BindingIdentifier = bi
-
 		g := j.NewGoal()
 
 		if g.SkipFunctionOverload(bi, yield, await) {
@@ -312,13 +310,11 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 		be.SingleNameBinding = singleNameBinding
 	} else if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 		be.ArrayBindingPattern = new(ArrayBindingPattern)
-
 		if err := be.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
 	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		be.ObjectBindingPattern = new(ObjectBindingPattern)
-
 		if err := be.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("BindingElement", err)
 		}
