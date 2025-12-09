@@ -256,9 +256,7 @@ func (j *jsParser) AcceptRunWhitespaceNoNewLine() parser.TokenType {
 	for {
 		if tt = j.AcceptRun(TokenWhitespace); tt != TokenMultiLineComment {
 			return tt
-		}
-
-		if strings.ContainsAny(j.Peek().Data, lineTerminators) {
+		} else if strings.ContainsAny(j.Peek().Data, lineTerminators) {
 			return tt
 		}
 
