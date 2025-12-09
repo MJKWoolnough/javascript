@@ -117,6 +117,7 @@ func (ml *ModuleItem) parse(j *jsParser) error {
 		j.AcceptRunWhitespaceNoComment()
 
 		g = j.NewGoal()
+
 		ml.StatementListItem = new(StatementListItem)
 		if err := ml.StatementListItem.parse(&g, false, true, false); err != nil {
 			return j.Error("ModuleItem", err)
@@ -363,7 +364,6 @@ func (ic *ImportClause) parse(j *jsParser) error {
 		j.Score(g)
 
 		ic.Comments[1] = j.AcceptRunWhitespaceComments()
-
 		g = j.NewGoal()
 
 		g.AcceptRunWhitespace()
@@ -514,8 +514,8 @@ func (ni *NamedImports) parse(j *jsParser) error {
 		}
 
 		c = nil
-
 		name := ni.ImportList[is].ImportedBinding.Data
+
 		for _, im := range ni.ImportList[:is] {
 			if im.ImportedBinding.Data == name {
 				return j.Error("NamedImports", ErrInvalidNamedImport)
@@ -726,6 +726,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 			j.Score(g)
 
 			ed.Comments[4] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			g = j.NewGoal()
