@@ -1746,6 +1746,7 @@ func (j *jsParser) SkipMethodOverload(static bool, cen *ClassElementName, yield,
 			return true
 		}
 	}
+
 	return false
 }
 
