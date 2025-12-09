@@ -236,7 +236,6 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.Skip()
 
 		s.Comments[0] = g.AcceptRunWhitespaceComments()
-
 		h := g.NewGoal()
 
 		if !h.parseSemicolon() {
@@ -262,7 +261,6 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.Skip()
 
 		s.Type = StatementReturn
-
 		h := g.NewGoal()
 
 		if !h.parseSemicolon() {
@@ -322,7 +320,6 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 		g.Skip()
 
 		s.Type = StatementDebugger
-
 		s.Comments[0] = g.AcceptRunWhitespaceComments()
 
 		if !g.parseSemicolon() {
@@ -714,10 +711,9 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 
 	is.Comments[2] = j.AcceptRunWhitespaceNoNewlineComments()
 	is.Comments[3] = j.AcceptRunWhitespaceComments()
+	is.Type = ForNormal
 
 	j.AcceptRunWhitespace()
-
-	is.Type = ForNormal
 
 	switch j.Peek() {
 	case parser.Token{Type: TokenPunctuator, Data: ";"}:
@@ -823,7 +819,6 @@ func (is *IterationStatementFor) parse(j *jsParser, yield, await, ret bool) erro
 		}
 
 		j.Score(g)
-
 		j.AcceptRunWhitespace()
 
 		if len(is.InitExpression.Expressions) == 1 && is.InitExpression.Expressions[0].ConditionalExpression != nil && is.InitExpression.Expressions[0].ConditionalExpression.LogicalORExpression != nil {
@@ -1079,6 +1074,7 @@ func (ss *SwitchStatement) parse(j *jsParser, yield, await, ret bool) error {
 			j.Skip()
 
 			ss.Comments[6] = j.AcceptRunWhitespaceComments()
+
 			j.AcceptRunWhitespace()
 
 			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
@@ -1236,6 +1232,7 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	j.Score(g)
 
 	ws.Comments[2] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
@@ -1243,6 +1240,7 @@ func (ws *WithStatement) parse(j *jsParser, yield, await, ret bool) error {
 	}
 
 	ws.Comments[3] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 
 	g = j.NewGoal()
