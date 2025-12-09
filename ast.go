@@ -241,13 +241,11 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 
 	if t := g.Peek(); t == (parser.Token{Type: TokenPunctuator, Data: "["}) {
 		lb.ArrayBindingPattern = new(ArrayBindingPattern)
-
 		if err := lb.ArrayBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
 		}
 	} else if t == (parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		lb.ObjectBindingPattern = new(ObjectBindingPattern)
-
 		if err := lb.ObjectBindingPattern.parse(&g, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
 		}
@@ -282,8 +280,8 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 		j.Score(g)
 
 		g = j.NewGoal()
-		lb.Initializer = new(AssignmentExpression)
 
+		lb.Initializer = new(AssignmentExpression)
 		if err := lb.Initializer.parse(&g, in, yield, await); err != nil {
 			return j.Error("LexicalBinding", err)
 		}
@@ -329,7 +327,6 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 			j.AcceptRunWhitespaceNoComment()
 
 			g := j.NewGoal()
-
 			ab.BindingElementList = append(ab.BindingElementList, BindingElement{
 				Comments: [2]Comments{g.AcceptRunWhitespaceComments()},
 				Tokens:   g.ToTokens(),
@@ -489,7 +486,6 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	}
 
 	ob.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
-
 	g := j.NewGoal()
 
 	g.AcceptRunWhitespace()
@@ -515,7 +511,6 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 				}
 
 				ob.Comments[3] = j.AcceptRunWhitespaceNoNewlineComments()
-
 				g = j.NewGoal()
 
 				g.AcceptRunWhitespace()
@@ -662,7 +657,6 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	g.Score(h)
 
 	h = g.NewGoal()
-
 	bp.Comments[1] = h.AcceptRunWhitespaceCommentsInList()
 
 	h.AcceptRunWhitespace()
@@ -680,7 +674,6 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 
 		lpn := *bp.PropertyName.LiteralPropertyName
 		snb = &lpn
-
 		bp.BindingElement.Comments = bp.Comments
 		bp.Comments = [2]Comments{}
 	} else {
@@ -1006,7 +999,6 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 					LiteralPropertyName: i,
 					Tokens:              h.ToTokens(),
 				}
-
 				pd.AssignmentExpression = &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
 						IdentifierReference: &Token{
@@ -1061,7 +1053,6 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				g.Score(h)
 
 				pd.Comments[1] = g.AcceptRunWhitespaceCommentsInList()
-
 				h = g.NewGoal()
 
 				h.AcceptRunWhitespace()
@@ -1193,7 +1184,6 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 	j.AcceptRunWhitespace()
 
 	af.Async = j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"})
-
 	af.Comments[1] = j.AcceptRunWhitespaceNoNewlineComments()
 
 	j.AcceptRunWhitespaceNoNewLine()
