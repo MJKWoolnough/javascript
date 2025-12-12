@@ -114,14 +114,12 @@ type AssignmentExpression struct {
 
 func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error {
 	done := false
-
 	g := j.NewGoal()
 
 	g.AcceptRunWhitespace()
 
 	if yield && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "yield"}) {
 		ae.Yield = true
-
 		ae.Comments[0] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
@@ -135,7 +133,6 @@ func (ae *AssignmentExpression) parse(j *jsParser, in, yield, await bool) error 
 
 		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "*"}) {
 			ae.Delegate = true
-
 			ae.Comments[1] = j.AcceptRunWhitespaceComments()
 
 			j.AcceptRunWhitespaceNoNewLine()
