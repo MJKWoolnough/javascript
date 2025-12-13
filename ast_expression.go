@@ -1956,7 +1956,6 @@ func (ce *CallExpression) parse(j *jsParser, me *MemberExpression, yield, await 
 			}
 
 			d = h.AcceptRunWhitespaceCommentsInList()
-
 			i := h.NewGoal()
 
 			i.AcceptRunWhitespaceNoNewLine()
