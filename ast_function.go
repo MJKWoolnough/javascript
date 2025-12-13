@@ -7,7 +7,7 @@ import (
 // FunctionType determines which type of function is specified by FunctionDeclaration
 type FunctionType uint8
 
-// Valid FunctionType's
+// Valid FunctionTypes
 const (
 	FunctionNormal FunctionType = iota
 	FunctionGenerator
