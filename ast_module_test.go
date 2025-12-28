@@ -1012,7 +1012,18 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-		{"// A\nimport \"a\"; // B\n\n// C", func(t *test, tk Tokens) { // 11
+		{"import a from 'b' with c", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingOpeningBrace,
+					Parsing: "WithClause",
+					Token:   tk[10],
+				},
+				Parsing: "ImportDeclaration",
+				Token:   tk[8],
+			}
+		}},
+		{"// A\nimport \"a\"; // B\n\n// C", func(t *test, tk Tokens) { // 12
 			t.Output = ImportDeclaration{
 				FromClause: FromClause{
 					ModuleSpecifier: &tk[4],
@@ -1022,7 +1033,7 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens:   tk[:8],
 			}
 		}},
-		{"// A\nimport /* B */\"a\" /* C */; // B\n\n// C\n", func(t *test, tk Tokens) { // 12
+		{"// A\nimport /* B */\"a\" /* C */; // B\n\n// C\n", func(t *test, tk Tokens) { // 13
 			t.Output = ImportDeclaration{
 				FromClause: FromClause{
 					ModuleSpecifier: &tk[5],
@@ -1032,7 +1043,7 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens:   tk[:11],
 			}
 		}},
-		{"// A\nimport /* B */ a /* C */ from // D\n'b' /* E */ with /* F */ {c:'d'} /* G */; // G\n", func(t *test, tk Tokens) { // 13
+		{"// A\nimport /* B */ a /* C */ from // D\n'b' /* E */ with /* F */ {c:'d'} /* G */; // G\n", func(t *test, tk Tokens) { // 14
 			t.Output = ImportDeclaration{
 				ImportClause: &ImportClause{
 					ImportedDefaultBinding: &tk[6],
@@ -1059,7 +1070,7 @@ func TestImportDeclaration(t *testing.T) {
 				Tokens:   tk[:32],
 			}
 		}},
-		{"// A\nimport /* B */ \"\" /* C */; // D\n", func(t *test, tk Tokens) { // 14
+		{"// A\nimport /* B */ \"\" /* C */; // D\n", func(t *test, tk Tokens) { // 15
 			t.Output = ImportDeclaration{
 				FromClause: FromClause{
 					ModuleSpecifier: &tk[6],
