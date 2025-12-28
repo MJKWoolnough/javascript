@@ -82,8 +82,6 @@ func unquoteEscape(ret *strings.Builder, s *parser.Tokeniser) bool {
 		s.Get()
 		s.Except("")
 		ret.WriteString(s.Get())
-
-		return true
 	}
 
 	return true
