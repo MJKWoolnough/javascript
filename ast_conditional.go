@@ -43,35 +43,33 @@ func (ce *ConditionalExpression) parse(j *jsParser, in, yield, await bool) error
 	}
 
 	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "?"}) {
-		if !g.OnOptionalType() {
-			j.Score(g)
-			j.AcceptRunWhitespaceNoComment()
+		j.Score(g)
+		j.AcceptRunWhitespaceNoComment()
 
-			g = j.NewGoal()
+		g = j.NewGoal()
 
-			ce.True = new(AssignmentExpression)
-			if err := ce.True.parse(&g, true, yield, await); err != nil {
-				return j.Error("ConditionalExpression", err)
-			}
-
-			j.Score(g)
-			j.AcceptRunWhitespace()
-
-			if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
-				return j.Error("ConditionalExpression", ErrMissingColon)
-			}
-
-			j.AcceptRunWhitespaceNoComment()
-
-			g = j.NewGoal()
-
-			ce.False = new(AssignmentExpression)
-			if err := ce.False.parse(&g, true, yield, await); err != nil {
-				return j.Error("ConditionalExpression", err)
-			}
-
-			j.Score(g)
+		ce.True = new(AssignmentExpression)
+		if err := ce.True.parse(&g, true, yield, await); err != nil {
+			return j.Error("ConditionalExpression", err)
 		}
+
+		j.Score(g)
+		j.AcceptRunWhitespace()
+
+		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+			return j.Error("ConditionalExpression", ErrMissingColon)
+		}
+
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
+
+		ce.False = new(AssignmentExpression)
+		if err := ce.False.parse(&g, true, yield, await); err != nil {
+			return j.Error("ConditionalExpression", err)
+		}
+
+		j.Score(g)
 	}
 
 	ce.Tokens = j.ToTokens()
