@@ -406,71 +406,6 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-func (ab *ArrayBindingPattern) from(al *ArrayLiteral) error {
-	ab.BindingElementList = make([]BindingElement, 0, len(al.ElementList))
-	hasSpread := false
-
-	for _, ae := range al.ElementList {
-		if hasSpread {
-			z := jsParser(al.Tokens[:0])
-
-			return z.Error("ArrayBindingPattern", ErrBadRestElement)
-		} else if ae.Spread {
-			hasSpread = true
-			ab.BindingRestElement = new(BindingElement)
-
-			if err := ab.BindingRestElement.from(&ae.AssignmentExpression); err != nil {
-				z := jsParser(al.Tokens[:0])
-
-				return z.Error("ArrayBindingPattern", err)
-			}
-		} else {
-			var be BindingElement
-
-			if err := be.from(&ae.AssignmentExpression); err != nil {
-				z := jsParser(al.Tokens[:0])
-
-				return z.Error("ArrayBindingPattern", err)
-			}
-
-			ab.BindingElementList = append(ab.BindingElementList, be)
-		}
-	}
-
-	ab.Tokens = al.Tokens
-
-	return nil
-}
-
-func (ab *ArrayBindingPattern) fromAP(ap *ArrayAssignmentPattern) error {
-	ab.BindingElementList = make([]BindingElement, len(ap.AssignmentElements))
-
-	for n, ae := range ap.AssignmentElements {
-		if err := ab.BindingElementList[n].fromAP(ae.DestructuringAssignmentTarget.LeftHandSideExpression, ae.DestructuringAssignmentTarget.AssignmentPattern); err != nil {
-			z := jsParser(ap.Tokens[:0])
-
-			return z.Error("ArrayBindingPattern", err)
-		}
-
-		ab.BindingElementList[n].Initializer = ae.Initializer
-		ab.BindingElementList[n].Tokens = ae.Tokens
-	}
-
-	if ap.AssignmentRestElement != nil {
-		ab.BindingRestElement = new(BindingElement)
-
-		if err := ab.BindingRestElement.fromAP(ap.AssignmentRestElement, nil); err != nil {
-			z := jsParser(ap.Tokens[:0])
-
-			return z.Error("ArrayBindingPattern", err)
-		}
-	}
-
-	ab.Tokens = ap.Tokens
-
-	return nil
-}
-
 // ObjectBindingPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ObjectBindingPattern
 type ObjectBindingPattern struct {
@@ -559,76 +494,6 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-func (ob *ObjectBindingPattern) from(ol *ObjectLiteral) error {
-	for _, pd := range ol.PropertyDefinitionList {
-		if pd.AssignmentExpression == nil {
-			z := jsParser(ol.Tokens[:0])
-
-			return z.Error("ObjectBindingPattern", ErrNoIdentifier)
-		}
-
-		bp := BindingProperty{
-			Tokens: pd.Tokens,
-		}
-
-		if pd.PropertyName != nil {
-			bp.PropertyName = *pd.PropertyName
-
-			if pd.IsCoverInitializedName {
-				bp.BindingElement.SingleNameBinding = pd.PropertyName.LiteralPropertyName
-				bp.BindingElement.Initializer = pd.AssignmentExpression
-				bp.BindingElement.Tokens = pd.Tokens
-			} else if err := bp.BindingElement.from(pd.AssignmentExpression); err != nil {
-				z := jsParser(ol.Tokens[:0])
-
-				return z.Error("ObjectBindingPattern", err)
-			}
-		} else {
-			if pe, ok := UnwrapConditional(pd.AssignmentExpression.ConditionalExpression).(*PrimaryExpression); ok && pe.IdentifierReference != nil {
-				ob.BindingRestProperty = pe.IdentifierReference
-
-				break
-			} else {
-				z := jsParser(ol.Tokens[:0])
-
-				return z.Error("ObjectBindingPattern", ErrNoIdentifier)
-			}
-		}
-
-		ob.BindingPropertyList = append(ob.BindingPropertyList, bp)
-	}
-
-	ob.Tokens = ol.Tokens
-
-	return nil
-}
-
-func (ob *ObjectBindingPattern) fromAP(op *ObjectAssignmentPattern) error {
-	ob.BindingPropertyList = make([]BindingProperty, len(op.AssignmentPropertyList))
-
-	for n := range op.AssignmentPropertyList {
-		if err := ob.BindingPropertyList[n].fromAP(&op.AssignmentPropertyList[n]); err != nil {
-			z := jsParser(op.Tokens[:0])
-
-			return z.Error("ObjectBindingPattern", err)
-		}
-	}
-
-	if op.AssignmentRestElement != nil {
-		if op.AssignmentRestElement.CallExpression != nil || op.AssignmentRestElement.OptionalExpression != nil || len(op.AssignmentRestElement.NewExpression.News) != 0 || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression == nil || op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-			z := jsParser(op.Tokens[:0])
-
-			return z.Error("ObjectBindingPattern", ErrBadRestElement)
-		}
-
-		ob.BindingRestProperty = op.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
-	}
-
-	ob.Tokens = op.Tokens
-
-	return nil
-}
-
 // BindingProperty as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingProperty
 //
@@ -691,55 +556,6 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	j.Score(g)
 
 	bp.Tokens = j.ToTokens()
-
-	return nil
-}
-
-func (bp *BindingProperty) fromAP(ap *AssignmentProperty) error {
-	bp.PropertyName = ap.PropertyName
-
-	if ap.DestructuringAssignmentTarget != nil {
-		if ap.DestructuringAssignmentTarget.LeftHandSideExpression != nil {
-			if ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression == nil || len(ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) != 0 || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression == nil || ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference == nil {
-				y := jsParser(ap.Tokens[:0])
-				z := jsParser(ap.DestructuringAssignmentTarget.Tokens[:0])
-
-				return y.Error("BindingProperty", z.Error("BindingElement", ErrNoIdentifier))
-			}
-
-			bp.BindingElement.SingleNameBinding = ap.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference
-		} else if ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern != nil {
-			bp.BindingElement.ArrayBindingPattern = new(ArrayBindingPattern)
-
-			if err := bp.BindingElement.ArrayBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern); err != nil {
-				z := jsParser(ap.Tokens[:0])
-
-				return z.Error("BindingProperty", err)
-			}
-		} else {
-			bp.BindingElement.ObjectBindingPattern = new(ObjectBindingPattern)
-
-			if err := bp.BindingElement.ObjectBindingPattern.fromAP(ap.DestructuringAssignmentTarget.AssignmentPattern.ObjectAssignmentPattern); err != nil {
-				z := jsParser(ap.Tokens[:0])
-
-				return z.Error("BindingProperty", err)
-			}
-		}
-
-		for n := range ap.Tokens {
-			if &ap.Tokens[n] == &ap.DestructuringAssignmentTarget.Tokens[0] {
-				bp.BindingElement.Tokens = ap.Tokens[n:]
-
-				break
-			}
-		}
-	} else {
-		bp.BindingElement.SingleNameBinding = bp.PropertyName.LiteralPropertyName
-		bp.BindingElement.Tokens = ap.Tokens
-	}
-
-	bp.BindingElement.Initializer = ap.Initializer
-	bp.Tokens = ap.Tokens
 
 	return nil
 }
