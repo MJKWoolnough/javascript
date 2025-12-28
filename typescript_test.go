@@ -5382,118 +5382,122 @@ func TestPrintingTypescript(t *testing.T) {
 			"class A {\n\tb /*();b*/() {}\n}",
 		},
 		{ // 29
+			"class A{b();b();b();b(){}}",
+			"class A {\n\tb /*();b();b();b*/() {}\n}",
+		},
+		{ // 30
 			"a as b",
 			"a /*as b*/;",
 		},
-		{ // 30
+		{ // 31
 			"a as b as c",
 			"a /*as b as c*/;",
 		},
-		{ // 31
+		{ // 32
 			"a?.<b>()",
 			"a?. /*<b>*/ ();",
 		},
-		{ // 32
+		{ // 33
 			"a?.b!",
 			"a?.b /*!*/;",
 		},
-		{ // 33
+		{ // 34
 			"a?.b?.<c>()",
 			"a?.b?. /*<c>*/ ();",
 		},
-		{ // 34
+		{ // 35
 			"a?.b?.c!",
 			"a?.b?.c /*!*/;",
 		},
-		{ // 35
+		{ // 36
 			"a!",
 			"a /*!*/;",
 		},
-		{ // 36
+		{ // 37
 			"a!()",
 			"a /*!*/();",
 		},
-		{ // 37
+		{ // 38
 			"a.b.c!",
 			"a.b.c /*!*/;",
 		},
-		{ // 38
+		{ // 39
 			"a.b!()",
 			"a.b /*!*/();",
 		},
-		{ // 39
+		{ // 40
 			"a<b>()",
 			"a /*<b>*/ ();",
 		},
-		{ // 40
+		{ // 41
 			"a.b<c>()",
 			"a.b /*<c>*/ ();",
 		},
-		{ // 41
+		{ // 42
 			"a()!",
 			"a() /*!*/;",
 		},
-		{ // 42
+		{ // 43
 			"a.b()!",
 			"a.b() /*!*/;",
 		},
-		{ // 43
+		{ // 44
 			"function A<B>(): C {}",
 			"function A /*<B>*/ () /*: C*/ {}",
 		},
-		{ // 44
+		{ // 45
 			"function a(): b;\nfunction a(): c;\nfunction a() {}",
 			"function a /*(): b;\nfunction a(): c;\nfunction a*/ () {}",
 		},
-		{ // 45
+		{ // 46
 			"function a(this): A {}",
 			"function a( /*this*/) /*: A*/ {}",
 		},
-		{ // 46
+		{ // 47
 			"function a(this: A): B {}",
 			"function a( /*this: A*/) /*: B*/ {}",
 		},
-		{ // 47
+		{ // 48
 			"function a(this, b) {}",
 			"function a( /*this,*/b) {}",
 		},
-		{ // 48
+		{ // 49
 			"function a(this : A, b) {}",
 			"function a( /*this : A,*/b) {}",
 		},
-		{ // 49
+		{ // 50
 			"function a(b: c) {}",
 			"function a(b /*: c*/) {}",
 		},
-		{ // 50
+		{ // 51
 			"import type A from 'b'",
 			"/*import type A from 'b'*/",
 		},
-		{ // 51
+		{ // 52
 			"export type A = B",
 			"/*export type A = B*/",
 		},
-		{ // 52
+		{ // 53
 			"import {type A as B} from './c'",
 			"import {\n/*type A as B*/} from './c';",
 		},
-		{ // 53
+		{ // 54
 			"import {a, type A as B, c} from './c'",
 			"import {a as a, /*type A as B,*/ c as c} from './c';",
 		},
-		{ // 54
+		{ // 55
 			"export default abstract class A {}",
 			"export default /*abstract*/ class A {}",
 		},
-		{ // 55
+		{ // 56
 			"type A = B",
 			"/*type A = B*/",
 		},
-		{ // 56
+		{ // 57
 			"interface A {}",
 			"/*interface A {}*/",
 		},
-		{ // 57
+		{ // 58
 			"declare namespace A{ interface B {} }",
 			"/*declare namespace A{ interface B {} }*/",
 		},
