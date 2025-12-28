@@ -296,10 +296,6 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 			h.AcceptRunWhitespace()
 
-			if h.SkipGeneric() {
-				h.AcceptRunWhitespace()
-			}
-
 			isMethod = h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "("})
 		}
 
