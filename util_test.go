@@ -218,6 +218,11 @@ func TestUnquote(t *testing.T) {
 			"",
 			ErrInvalidQuoted,
 		},
+		{ // 42
+			"\"\\/\"",
+			"/",
+			nil,
+		},
 	} {
 		if o, err := Unquote(test.Input); !errors.Is(err, test.Err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)
