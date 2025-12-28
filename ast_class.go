@@ -412,18 +412,6 @@ func (cen *ClassElementName) parse(j *jsParser, static, class, yield, await bool
 		h = g.NewGoal()
 
 		if h.SkipMethodOverload(static, cen, yield, await) {
-			i := h.NewGoal()
-
-			i.AcceptRunWhitespace()
-
-			for h.SkipMethodOverload(static, cen, yield, await) {
-				h.Score(i)
-
-				i = h.NewGoal()
-
-				i.AcceptRunWhitespace()
-			}
-
 			cen.Comments[1] = append(cen.Comments[1], h.ToTypescriptComments()...)
 			cen.Comments[1] = append(cen.Comments[1], h.AcceptRunWhitespaceComments()...)
 
