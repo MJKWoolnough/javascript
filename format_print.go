@@ -2526,17 +2526,10 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 
 func (a AdditiveExpression) printSource(w writer, v bool) {
 	if a.AdditiveExpression != nil {
-		var ao string
-
-		switch a.AdditiveOperator {
-		case AdditiveAdd:
-			ao = "+ "
-		case AdditiveMinus:
-			ao = "- "
-		default:
+		ao := a.AdditiveOperator.String()
+		if ao == "" || ao == unknown {
 			return
 		}
-
 		a.AdditiveExpression.printSource(w, v)
 
 		if !w.LastIsWhitespace() {
@@ -2544,6 +2537,7 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(ao)
+		w.WriteString(" ")
 	}
 
 	a.MultiplicativeExpression.printSource(w, v)
