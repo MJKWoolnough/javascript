@@ -1120,41 +1120,8 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 	} else if a.ArrowFunction != nil {
 		a.ArrowFunction.printSource(w, v)
 	} else if a.LeftHandSideExpression != nil && a.AssignmentExpression != nil {
-		ao := "= "
-
-		switch a.AssignmentOperator {
-		case AssignmentAssign:
-		case AssignmentMultiply:
-			ao = "*= "
-		case AssignmentDivide:
-			ao = "/= "
-		case AssignmentRemainder:
-			ao = "%= "
-		case AssignmentAdd:
-			ao = "+= "
-		case AssignmentSubtract:
-			ao = "-= "
-		case AssignmentLeftShift:
-			ao = "<<= "
-		case AssignmentSignPropagatingRightShift:
-			ao = ">>= "
-		case AssignmentZeroFillRightShift:
-			ao = ">>>= "
-		case AssignmentBitwiseAND:
-			ao = "&= "
-		case AssignmentBitwiseXOR:
-			ao = "^= "
-		case AssignmentBitwiseOR:
-			ao = "|= "
-		case AssignmentExponentiation:
-			ao = "**= "
-		case AssignmentLogicalAnd:
-			ao = "&&= "
-		case AssignmentLogicalOr:
-			ao = "||= "
-		case AssignmentNullish:
-			ao = "??= "
-		default:
+		ao := a.AssignmentOperator.String()
+		if ao == "" || ao == unknown {
 			return
 		}
 
@@ -1165,6 +1132,7 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(ao)
+		w.WriteString(" ")
 		a.AssignmentExpression.printSource(w, v)
 	} else if a.AssignmentPattern != nil && a.AssignmentExpression != nil && a.AssignmentOperator == AssignmentAssign {
 		a.AssignmentPattern.printSource(w, v)
