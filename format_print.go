@@ -2582,23 +2582,15 @@ func (u UnaryOperatorComments) printSource(w writer, v bool) {
 		u.Comments.printSource(w, true, false)
 	}
 
-	switch u.UnaryOperator {
-	case UnaryDelete:
-		w.WriteString("delete ")
-	case UnaryVoid:
-		w.WriteString("void ")
-	case UnaryTypeOf:
-		w.WriteString("typeof ")
-	case UnaryAdd:
-		w.WriteString("+")
-	case UnaryMinus:
-		w.WriteString("-")
-	case UnaryBitwiseNot:
-		w.WriteString("~")
-	case UnaryLogicalNot:
-		w.WriteString("!")
-	case UnaryAwait:
-		w.WriteString("await ")
+	uo := u.UnaryOperator.String()
+	if uo == "" || uo == unknown {
+		return
+	}
+
+	w.WriteString(uo)
+
+	if len(uo) > 1 {
+		w.WriteString(" ")
 	}
 }
 
