@@ -2452,18 +2452,8 @@ func (b BitwiseANDExpression) printSource(w writer, v bool) {
 
 func (e EqualityExpression) printSource(w writer, v bool) {
 	if e.EqualityExpression != nil {
-		var eo string
-
-		switch e.EqualityOperator {
-		case EqualityEqual:
-			eo = "== "
-		case EqualityNotEqual:
-			eo = "!= "
-		case EqualityStrictEqual:
-			eo = "=== "
-		case EqualityStrictNotEqual:
-			eo = "!== "
-		default:
+		eo := e.EqualityOperator.String()
+		if eo == unknown || eo == "" {
 			return
 		}
 
@@ -2474,6 +2464,7 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(eo)
+		w.WriteString(" ")
 	}
 
 	e.RelationalExpression.printSource(w, v)
