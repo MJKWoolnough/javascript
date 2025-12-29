@@ -656,9 +656,9 @@ func (u UpdateOperator) String() string {
 	case UpdateNone:
 		return ""
 	case UpdatePostIncrement:
-		return " ++"
+		return "++"
 	case UpdatePostDecrement:
-		return " --"
+		return "--"
 	case UpdatePreIncrement:
 		return "++"
 	case UpdatePreDecrement:
