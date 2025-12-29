@@ -900,6 +900,7 @@ const (
 	UnaryAwait
 )
 
+// UnaryOperatorComments is a UnaryOperator and any following comments.
 type UnaryOperatorComments struct {
 	UnaryOperator
 	Comments
