@@ -607,7 +607,7 @@ func (re *RelationalExpression) hasLastComment() bool {
 	return re.ShiftExpression.hasLastComment()
 }
 
-// ShiftOperator determines the shift tyoe for ShiftExpression
+// ShiftOperator determines the shift type for ShiftExpression
 type ShiftOperator int
 
 // Valid ShiftOperator's
