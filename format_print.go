@@ -2453,7 +2453,7 @@ func (b BitwiseANDExpression) printSource(w writer, v bool) {
 func (e EqualityExpression) printSource(w writer, v bool) {
 	if e.EqualityExpression != nil {
 		eo := e.EqualityOperator.String()
-		if eo == unknown || eo == "" {
+		if eo == "" || eo == unknown {
 			return
 		}
 
@@ -2486,23 +2486,8 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 
 		w.WriteString("in ")
 	} else if r.RelationalExpression != nil {
-		var ro string
-
-		switch r.RelationshipOperator {
-		case RelationshipLessThan:
-			ro = "< "
-		case RelationshipGreaterThan:
-			ro = "> "
-		case RelationshipLessThanEqual:
-			ro = "<= "
-		case RelationshipGreaterThanEqual:
-			ro = ">= "
-		case RelationshipInstanceOf:
-			ro = "instanceof "
-		case RelationshipIn:
-			ro = "in "
-		default:
-			return
+		ro := r.RelationshipOperator.String()
+		if ro == "" || ro == unknown {
 		}
 
 		r.RelationalExpression.printSource(w, v)
@@ -2512,6 +2497,7 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(ro)
+		w.WriteString(" ")
 	}
 
 	r.ShiftExpression.printSource(w, v)
