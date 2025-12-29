@@ -2488,6 +2488,7 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 	} else if r.RelationalExpression != nil {
 		ro := r.RelationshipOperator.String()
 		if ro == "" || ro == unknown {
+			return
 		}
 
 		r.RelationalExpression.printSource(w, v)
@@ -2505,16 +2506,8 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 
 func (s ShiftExpression) printSource(w writer, v bool) {
 	if s.ShiftExpression != nil {
-		var so string
-
-		switch s.ShiftOperator {
-		case ShiftLeft:
-			so = "<< "
-		case ShiftRight:
-			so = ">> "
-		case ShiftUnsignedRight:
-			so = ">>> "
-		default:
+		so := s.ShiftOperator.String()
+		if so == "" || so == unknown {
 			return
 		}
 
@@ -2525,6 +2518,7 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(so)
+		w.WriteString(" ")
 	}
 
 	s.AdditiveExpression.printSource(w, v)
