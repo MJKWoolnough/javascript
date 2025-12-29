@@ -2545,16 +2545,8 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 
 func (m MultiplicativeExpression) printSource(w writer, v bool) {
 	if m.MultiplicativeExpression != nil {
-		var mo string
-
-		switch m.MultiplicativeOperator {
-		case MultiplicativeMultiply:
-			mo = "* "
-		case MultiplicativeDivide:
-			mo = "/ "
-		case MultiplicativeRemainder:
-			mo = "% "
-		default:
+		mo := m.MultiplicativeOperator.String()
+		if mo == "" || mo == unknown {
 			return
 		}
 
@@ -2565,6 +2557,7 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 		}
 
 		w.WriteString(mo)
+		w.WriteString(" ")
 	}
 
 	m.ExponentiationExpression.printSource(w, v)
