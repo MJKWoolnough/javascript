@@ -1,6 +1,8 @@
 package minify
 
 import (
+	"slices"
+
 	"vimagination.zapto.org/javascript"
 	"vimagination.zapto.org/javascript/scope"
 	"vimagination.zapto.org/javascript/walk"
@@ -56,6 +58,13 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 		changed = blockAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Expression:
 		changed = expressionsAsModule(t, removeDeadCodeFromModule)
+	case *javascript.StatementListItem:
+		if t.Statement != nil && t.Statement.ExpressionStatement != nil {
+			if newExpressions := removeDeadExpressions(t.Statement.ExpressionStatement.Expressions); len(newExpressions) != len(t.Statement.ExpressionStatement.Expressions) {
+				t.Statement.ExpressionStatement.Expressions = newExpressions
+				changed = true
+			}
+		}
 	}
 
 	if changed {
@@ -289,4 +298,20 @@ func removeDeadSLI(sli *javascript.StatementListItem) bool {
 	}
 
 	return false
+}
+
+func removeDeadExpressions(expressions []javascript.AssignmentExpression) []javascript.AssignmentExpression {
+	for n := 0; n < len(expressions); n++ {
+		if expressions[n].ConditionalExpression == nil {
+			continue
+		}
+
+		switch javascript.UnwrapConditional(expressions[n].ConditionalExpression).(type) {
+		case *javascript.PrimaryExpression:
+			expressions = slices.Delete(expressions, n, 1)
+			n--
+		}
+	}
+
+	return expressions
 }
