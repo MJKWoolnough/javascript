@@ -96,7 +96,7 @@ func removeDeadCodeFromModule(m *javascript.Module) bool {
 			}
 		case bindableFunction:
 			if m.ModuleListItems[i].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier.Data == "" {
-				m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
+				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, 1)
 				i--
 			}
 		case bindableClass:
