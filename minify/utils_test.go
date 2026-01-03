@@ -10,13 +10,12 @@ import (
 func TestBlockAsModule(t *testing.T) {
 	for n, test := range [...]struct {
 		Input    *javascript.Block
-		Callback func(*javascript.Module)
+		Callback func(*javascript.Module) bool
 		Output   *javascript.Block
 	}{
 		{ // 1
 			&javascript.Block{},
-			func(m *javascript.Module) {
-			},
+			func(m *javascript.Module) bool { return false },
 			&javascript.Block{},
 		},
 		{ // 2
@@ -44,13 +43,15 @@ func TestBlockAsModule(t *testing.T) {
 					},
 				},
 			},
-			func(m *javascript.Module) {
+			func(m *javascript.Module) bool {
 				for i := 0; i < len(m.ModuleListItems); i++ {
 					if m.ModuleListItems[i].StatementListItem.Statement.Type == javascript.StatementDebugger {
 						m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
 						i--
 					}
 				}
+
+				return false
 			},
 			&javascript.Block{
 				StatementList: []javascript.StatementListItem{
@@ -78,13 +79,12 @@ func TestBlockAsModule(t *testing.T) {
 func TestExpressionsAsModule(t *testing.T) {
 	for n, test := range [...]struct {
 		Input    *javascript.Expression
-		Callback func(*javascript.Module)
+		Callback func(*javascript.Module) bool
 		Output   *javascript.Expression
 	}{
 		{ // 1
 			&javascript.Expression{},
-			func(m *javascript.Module) {
-			},
+			func(m *javascript.Module) bool { return false },
 			&javascript.Expression{},
 		},
 		{ // 2
@@ -117,12 +117,14 @@ func TestExpressionsAsModule(t *testing.T) {
 					},
 				},
 			},
-			func(m *javascript.Module) {
+			func(m *javascript.Module) bool {
 				for i := 0; i < len(m.ModuleListItems); i++ {
 					if javascript.UnwrapConditional(m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference.Data == "b" {
 						m.ModuleListItems = append(m.ModuleListItems[:i], m.ModuleListItems[i+1:]...)
 					}
 				}
+
+				return false
 			},
 			&javascript.Expression{
 				Expressions: []javascript.AssignmentExpression{

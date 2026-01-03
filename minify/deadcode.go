@@ -7,15 +7,19 @@ import (
 )
 
 func removeDeadCode(m *javascript.Module) {
-	for {
+	c := changeTracker(true)
+
+	for c {
 		s, err := scope.ModuleScope(m, nil)
 		if err != nil {
 			return
 		}
 
+		c = false
+
 		clearSinglesFromScope(s)
 
-		walk.Walk(m, walk.HandlerFunc(deadWalker))
+		walk.Walk(m, walk.HandlerFunc(c.deadWalker))
 	}
 }
 
@@ -40,22 +44,32 @@ func clearSinglesFromScope(s *scope.Scope) bool {
 	return changed
 }
 
-func deadWalker(t javascript.Type) error {
+type changeTracker bool
+
+func (c *changeTracker) deadWalker(t javascript.Type) error {
+	var changed bool
+
 	switch t := t.(type) {
 	case *javascript.Module:
-		removeDeadCodeFromModule(t)
+		changed = removeDeadCodeFromModule(t)
 	case *javascript.Block:
-		blockAsModule(t, removeDeadCodeFromModule)
+		changed = blockAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Expression:
-		expressionsAsModule(t, removeDeadCodeFromModule)
+		changed = expressionsAsModule(t, removeDeadCodeFromModule)
 	default:
-		deadWalker(t)
+		c.deadWalker(t)
+	}
+
+	if changed {
+		*c = true
 	}
 
 	return nil
 }
 
-func removeDeadCodeFromModule(m *javascript.Module) {
+func removeDeadCodeFromModule(m *javascript.Module) bool {
+	var changed bool
+
 	for i := 0; i < len(m.ModuleListItems); i++ {
 		switch sliBindable(m.ModuleListItems[i].StatementListItem) {
 		case bindableConst, bindableLet:
@@ -86,6 +100,8 @@ func removeDeadCodeFromModule(m *javascript.Module) {
 			}
 		}
 	}
+
+	return changed
 }
 
 func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.ModuleItem {

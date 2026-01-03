@@ -609,13 +609,15 @@ func (m *Minifier) minifyLHSExpressionParens(lhs *javascript.LeftHandSideExpress
 	}
 }
 
-func (m *Minifier) minifyEmptyStatement(jm *javascript.Module) {
+func (m *Minifier) minifyEmptyStatement(jm *javascript.Module) bool {
 	for i := 0; i < len(jm.ModuleListItems); i++ {
 		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
 			jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 			i--
 		}
 	}
+
+	return false
 }
 
 func (m *Minifier) minifyLastReturnStatement(f *javascript.FunctionDeclaration) {
@@ -630,7 +632,7 @@ func (m *Minifier) minifyLastReturnStatementInArrowFn(af *javascript.ArrowFuncti
 	}
 }
 
-func (m *Minifier) minifyExpressionRun(jm *javascript.Module) {
+func (m *Minifier) minifyExpressionRun(jm *javascript.Module) bool {
 	if m.Has(CombineExpressionRuns) && len(jm.ModuleListItems) > 1 {
 		lastWasExpression := isStatementListItemExpression(jm.ModuleListItems[0].StatementListItem)
 		for i := 1; i < len(jm.ModuleListItems); i++ {
@@ -645,9 +647,11 @@ func (m *Minifier) minifyExpressionRun(jm *javascript.Module) {
 			}
 		}
 	}
+
+	return false
 }
 
-func (m *Minifier) fixFirstExpression(jm *javascript.Module) {
+func (m *Minifier) fixFirstExpression(jm *javascript.Module) bool {
 	if m.Has(UnwrapParens) {
 		for n := range jm.ModuleListItems {
 			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
@@ -655,6 +659,8 @@ func (m *Minifier) fixFirstExpression(jm *javascript.Module) {
 			}
 		}
 	}
+
+	return false
 }
 
 func (m *Minifier) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
@@ -689,7 +695,7 @@ func (m *Minifier) minifyRemoveDeadCode(b *javascript.Block) {
 	}
 }
 
-func (m *Minifier) minifyLexical(jm *javascript.Module) {
+func (m *Minifier) minifyLexical(jm *javascript.Module) bool {
 	if m.Has(MergeLexical) {
 		last := bindableNone
 
@@ -713,9 +719,11 @@ func (m *Minifier) minifyLexical(jm *javascript.Module) {
 			last = next
 		}
 	}
+
+	return false
 }
 
-func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
+func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) bool {
 	if m.Has(MergeLexical) && m.Has(CombineExpressionRuns) {
 		for i := 2; i < len(jm.ModuleListItems); i++ {
 			if last := sliBindable(jm.ModuleListItems[i-2].StatementListItem); (last == bindableLet || last == bindableConst || last == bindableVar) && isStatementListItemExpression(jm.ModuleListItems[i-1].StatementListItem) && sliBindable(jm.ModuleListItems[i].StatementListItem) == last {
@@ -762,4 +770,6 @@ func (m *Minifier) minifyExpressionsBetweenLexicals(jm *javascript.Module) {
 			}
 		}
 	}
+
+	return false
 }

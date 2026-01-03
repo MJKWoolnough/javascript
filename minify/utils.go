@@ -4,27 +4,29 @@ import (
 	"vimagination.zapto.org/javascript"
 )
 
-func blockAsModule(b *javascript.Block, fn func(*javascript.Module)) {
+func blockAsModule(b *javascript.Block, fn func(*javascript.Module) bool) bool {
 	if len(b.StatementList) == 0 {
-		return
+		return false
 	}
 
 	m := javascript.ScriptToModule(&javascript.Script{
 		StatementList: b.StatementList,
 	})
 
-	fn(m)
+	changed := fn(m)
 
 	b.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
 
 	for n, mi := range m.ModuleListItems {
 		b.StatementList[n] = *mi.StatementListItem
 	}
+
+	return changed
 }
 
-func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module)) {
+func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module) bool) bool {
 	if len(e.Expressions) == 0 {
-		return
+		return false
 	}
 
 	m := &javascript.Module{
@@ -43,13 +45,15 @@ func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module)) 
 		}
 	}
 
-	fn(m)
+	changed := fn(m)
 
 	e.Expressions = make([]javascript.AssignmentExpression, len(m.ModuleListItems))
 
 	for n := range m.ModuleListItems {
 		e.Expressions[n] = m.ModuleListItems[n].StatementListItem.Statement.ExpressionStatement.Expressions[0]
 	}
+
+	return changed
 }
 
 func isReturnStatement(s *javascript.Statement) bool {
