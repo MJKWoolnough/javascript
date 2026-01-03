@@ -165,6 +165,7 @@ func extractStatementsFromClass(cd *javascript.ClassDeclaration) []javascript.Mo
 		} else if ce.ClassStaticBlock != nil {
 		}
 	}
+
 	return nil
 }
 
