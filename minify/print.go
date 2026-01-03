@@ -37,13 +37,14 @@ func (w *writer) WriteString(str string) {
 }
 
 func (w *writer) WriteEOS() {
-	if w.err == nil && w.lastChar != '}' {
+	if w.err == nil && w.lastChar != '}' && w.lastChar != -1 {
 		w.WriteString(";")
+		w.lastChar = -1
 	}
 }
 
 func Print(w io.Writer, m *javascript.Module) (int64, error) {
-	wr := writer{Writer: w}
+	wr := writer{Writer: w, lastChar: -1}
 
 	for n := range m.ModuleListItems {
 		if n > 0 {
