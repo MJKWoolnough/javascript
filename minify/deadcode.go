@@ -27,7 +27,7 @@ func clearSinglesFromScope(s *scope.Scope) bool {
 	changed := false
 
 	for name, bindings := range s.Bindings {
-		if name == "this" || name == "arguments" || len(bindings) != 1 {
+		if name == "this" || name == "arguments" || len(bindings) != 1 || bindings[0].BindingType == scope.BindingRef {
 			continue
 		}
 
