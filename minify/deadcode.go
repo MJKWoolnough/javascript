@@ -57,7 +57,7 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 	case *javascript.Expression:
 		changed = expressionsAsModule(t, removeDeadCodeFromModule)
 	default:
-		c.deadWalker(t)
+		walk.Walk(t, walk.HandlerFunc(c.deadWalker))
 	}
 
 	if changed {
