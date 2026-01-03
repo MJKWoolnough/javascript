@@ -56,15 +56,13 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 		changed = blockAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Expression:
 		changed = expressionsAsModule(t, removeDeadCodeFromModule)
-	default:
-		walk.Walk(t, walk.HandlerFunc(c.deadWalker))
 	}
 
 	if changed {
 		*c = true
 	}
 
-	return nil
+	return walk.Walk(t, walk.HandlerFunc(c.deadWalker))
 }
 
 func removeDeadCodeFromModule(m *javascript.Module) bool {
