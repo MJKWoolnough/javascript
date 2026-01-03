@@ -19,7 +19,7 @@ func removeDeadCode(m *javascript.Module) {
 
 		clearSinglesFromScope(s)
 
-		walk.Walk(m, walk.HandlerFunc(c.deadWalker))
+		c.deadWalker(m)
 	}
 }
 
