@@ -99,7 +99,7 @@ func isSLIExpression(s *javascript.StatementListItem) bool {
 }
 
 func isStatementExpression(s *javascript.Statement) bool {
-	return s != nil && s.Type == javascript.StatementNormal && s.ExpressionStatement != nil
+	return s != nil && s.Type == javascript.StatementNormal && s.ExpressionStatement != nil && len(s.ExpressionStatement.Expressions) > 0
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
