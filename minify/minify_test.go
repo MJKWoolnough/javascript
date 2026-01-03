@@ -2,6 +2,7 @@ package minify
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"vimagination.zapto.org/javascript"
@@ -6182,6 +6183,62 @@ func TestTransforms(t *testing.T) {
 		w.Handle(test.Input)
 		if !reflect.DeepEqual(test.Input, test.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, test.Output, test.Input)
+		}
+	}
+}
+
+func TestMinify(t *testing.T) {
+	for n, test := range [...]struct {
+		Options       []Option
+		Input, Output string
+	}{
+		{
+			[]Option{},
+			"",
+			"",
+		},
+		{
+			[]Option{RenameIdentifiers},
+			"const a = 1",
+			"const _=1",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"const a = 1",
+			"",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"const a = 1, b = a",
+			"",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"a(1)",
+			"a(1)",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"const a = 1, b = c(a)",
+			"const a=1;c(a)",
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+		m, err := javascript.ParseModule(&tk)
+		if err != nil {
+			t.Errorf("test %d.1: unexpected error: %s", n+1, err)
+
+			continue
+		}
+
+		New(test.Options...).Process(m)
+
+		var buf strings.Builder
+
+		Print(&buf, m)
+
+		if output := buf.String(); output != test.Output {
+			t.Errorf("test %d.2: expecting output %q, got %q", n+1, test.Output, output)
 		}
 	}
 }
