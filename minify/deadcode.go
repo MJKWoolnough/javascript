@@ -99,13 +99,18 @@ func removeDeadCodeFromModule(m *javascript.Module) bool {
 			}
 		case bindableFunction:
 			if m.ModuleListItems[i].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier.Data == "" {
-				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, 1)
+				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, i+1)
 				i--
 			}
 		case bindableClass:
 			if cd := m.ModuleListItems[i].StatementListItem.Declaration.ClassDeclaration; cd.BindingIdentifier.Data == "" {
 				mis := extractStatementsFromClass(cd)
 				m.ModuleListItems = append(m.ModuleListItems[:i], append(mis, m.ModuleListItems[i+1:]...)...)
+				i--
+			}
+		default:
+			if isSLIExpression(m.ModuleListItems[i].StatementListItem) && len(m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions) == 0 {
+				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, i+1)
 				i--
 			}
 		}
@@ -274,7 +279,7 @@ func sliBindable(sli *javascript.StatementListItem) bindable {
 			return bindableVar
 		}
 
-		if isStatementExpression(sli.Statement) {
+		if isNonEmptyStatementExpression(sli.Statement) {
 			if sli.Statement.ExpressionStatement.Expressions[0].AssignmentOperator == javascript.AssignmentAssign {
 				return bindableBare
 			}
@@ -311,7 +316,7 @@ func removeDeadExpressions(expressions []javascript.AssignmentExpression) []java
 
 		switch javascript.UnwrapConditional(expressions[n].ConditionalExpression).(type) {
 		case *javascript.PrimaryExpression:
-			expressions = slices.Delete(expressions, n, 1)
+			expressions = slices.Delete(expressions, n, n+1)
 			n--
 		}
 	}
