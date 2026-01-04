@@ -94,12 +94,20 @@ func statementsListItemsAsExpressionsAndReturn(sli []javascript.StatementListIte
 	return expressions, hasReturn
 }
 
+func isNonEmptySLIExpression(s *javascript.StatementListItem) bool {
+	return s != nil && s.Declaration == nil && isNonEmptyStatementExpression(s.Statement)
+}
+
 func isSLIExpression(s *javascript.StatementListItem) bool {
 	return s != nil && s.Declaration == nil && isStatementExpression(s.Statement)
 }
 
+func isNonEmptyStatementExpression(s *javascript.Statement) bool {
+	return isStatementExpression(s) && len(s.ExpressionStatement.Expressions) > 0
+}
+
 func isStatementExpression(s *javascript.Statement) bool {
-	return s != nil && s.Type == javascript.StatementNormal && s.ExpressionStatement != nil && len(s.ExpressionStatement.Expressions) > 0
+	return s != nil && s.Type == javascript.StatementNormal && s.ExpressionStatement != nil
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
