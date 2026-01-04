@@ -6252,6 +6252,16 @@ func TestMinify(t *testing.T) {
 			"if (a()) 1\nelse b()",
 			"if(!a())b()",
 		},
+		{
+			[]Option{RemoveDeadCode},
+			"while (a()) 1",
+			"while(a());",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"do 1\nwhile (a())",
+			"do;while(a())",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
