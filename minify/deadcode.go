@@ -47,6 +47,8 @@ func clearSinglesFromScope(s *scope.Scope) bool {
 type changeTracker bool
 
 func (c *changeTracker) deadWalker(t javascript.Type) error {
+	walk.Walk(t, walk.HandlerFunc(c.deadWalker))
+
 	var changed bool
 
 	switch t := t.(type) {
@@ -56,17 +58,53 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 		changed = blockAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Expression:
 		changed = expressionsAsModule(t, removeDeadCodeFromModule)
-	case *javascript.StatementListItem:
-		if t.Statement != nil && t.Statement.ExpressionStatement != nil {
-			if newExpressions := removeDeadExpressions(t.Statement.ExpressionStatement.Expressions); len(newExpressions) != len(t.Statement.ExpressionStatement.Expressions) {
-				t.Statement.ExpressionStatement.Expressions = newExpressions
+	case *javascript.Statement:
+		if t.ExpressionStatement != nil {
+			if newExpressions := removeDeadExpressions(t.ExpressionStatement.Expressions); len(newExpressions) != len(t.ExpressionStatement.Expressions) {
+				t.ExpressionStatement.Expressions = newExpressions
 				changed = true
 			}
+		} else if t.IfStatement != nil && isEmptyStatement(&t.IfStatement.Statement) {
+			t.ExpressionStatement = &t.IfStatement.Expression
+			t.IfStatement = nil
+			changed = true
 		}
 	case *javascript.ParenthesizedExpression:
 		if newExpressions := removeDeadExpressions(t.Expressions[:len(t.Expressions)-1]); len(newExpressions) != len(t.Expressions)-1 {
 			t.Expressions = append(newExpressions, t.Expressions[len(t.Expressions)-1])
 			changed = true
+		}
+	case *javascript.IfStatement:
+		if isEmptyStatement(&t.Statement) {
+			if t.ElseStatement != nil {
+				t.Expression.Expressions = []javascript.AssignmentExpression{
+					{
+						ConditionalExpression: javascript.WrapConditional(&javascript.UnaryExpression{
+							UnaryOperators: []javascript.UnaryOperatorComments{
+								{
+									UnaryOperator: javascript.UnaryLogicalNot,
+								},
+							},
+							UpdateExpression: javascript.UpdateExpression{
+								LeftHandSideExpression: &javascript.LeftHandSideExpression{
+									NewExpression: &javascript.NewExpression{
+										MemberExpression: javascript.MemberExpression{
+											PrimaryExpression: &javascript.PrimaryExpression{
+												ParenthesizedExpression: &javascript.ParenthesizedExpression{
+													Expressions: t.Expression.Expressions,
+												},
+											},
+										},
+									},
+								},
+							},
+						}),
+					},
+				}
+				t.Statement = *t.ElseStatement
+				t.ElseStatement = nil
+				changed = true
+			}
 		}
 	}
 
@@ -74,7 +112,7 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 		*c = true
 	}
 
-	return walk.Walk(t, walk.HandlerFunc(c.deadWalker))
+	return nil
 }
 
 func removeDeadCodeFromModule(m *javascript.Module) bool {
