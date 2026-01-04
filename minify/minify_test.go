@@ -6222,6 +6222,16 @@ func TestMinify(t *testing.T) {
 			"const a = 1, b = c(a)",
 			"const a=1;c(a)",
 		},
+		{
+			[]Option{RemoveDeadCode, UnwrapParens},
+			"const a = (1, 2, 3)",
+			"",
+		},
+		{
+			[]Option{RemoveDeadCode, UnwrapParens},
+			"a((1, 2, 3))",
+			"a(3)",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
