@@ -96,6 +96,10 @@ func (m *Minifier) Process(jm *javascript.Module) {
 
 	walk.Walk(jm, &walker{Minifier: m})
 
+	if m.Has(RemoveDeadCode) {
+		removeDeadCode(jm)
+	}
+
 	if m.Has(RenameIdentifiers) {
 		renameIdentifiers(jm)
 	}
