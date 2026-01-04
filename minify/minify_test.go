@@ -6232,6 +6232,26 @@ func TestMinify(t *testing.T) {
 			"a((1, 2, 3))",
 			"a(3)",
 		},
+		{
+			[]Option{RemoveDeadCode, UnwrapParens},
+			"a((1, 2, 3))",
+			"a(3)",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"if (true) 1",
+			"",
+		},
+		{
+			[]Option{RemoveDeadCode},
+			"if (a()) 1",
+			"a()",
+		},
+		{
+			[]Option{RemoveDeadCode, UnwrapParens},
+			"if (a()) 1\nelse b()",
+			"if(!a())b()",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 		m, err := javascript.ParseModule(&tk)
