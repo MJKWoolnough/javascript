@@ -17,9 +17,7 @@ func removeDeadCode(m *javascript.Module) {
 			return
 		}
 
-		c = false
-
-		clearSinglesFromScope(s)
+		c = changeTracker(clearSinglesFromScope(s))
 
 		c.deadWalker(m)
 	}
@@ -64,6 +62,11 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 				t.Statement.ExpressionStatement.Expressions = newExpressions
 				changed = true
 			}
+		}
+	case *javascript.ParenthesizedExpression:
+		if newExpressions := removeDeadExpressions(t.Expressions[:len(t.Expressions)-1]); len(newExpressions) != len(t.Expressions)-1 {
+			t.Expressions = append(newExpressions, t.Expressions[len(t.Expressions)-1])
+			changed = true
 		}
 	}
 
