@@ -111,7 +111,7 @@ func isStatementExpression(s *javascript.Statement) bool {
 }
 
 func isEmptyStatement(s *javascript.Statement) bool {
-	return s != nil && s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && s.ExpressionStatement == nil && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
+	return s != nil && s.Type == javascript.StatementNormal && s.BlockStatement == nil && s.VariableStatement == nil && (s.ExpressionStatement == nil || len(s.ExpressionStatement.Expressions) == 0) && s.IfStatement == nil && s.IterationStatementDo == nil && s.IterationStatementFor == nil && s.IterationStatementWhile == nil && s.SwitchStatement == nil && s.WithStatement == nil && s.LabelledItemFunction == nil && s.LabelledItemStatement == nil && s.TryStatement == nil
 }
 
 func isHoistable(s *javascript.StatementListItem) bool {
