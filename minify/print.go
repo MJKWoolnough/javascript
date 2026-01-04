@@ -303,7 +303,12 @@ func (w *writer) WriteIterationStatementWhile(i *javascript.IterationStatementWh
 	w.WriteString("while(")
 	w.WriteExpressionStatement(&i.Expression)
 	w.WriteString(")")
-	w.WriteStatement(&i.Statement)
+
+	if isEmptyStatement(&i.Statement) {
+		w.WriteEOS()
+	} else {
+		w.WriteStatement(&i.Statement)
+	}
 }
 
 func (w *writer) WriteIterationStatementFor(i *javascript.IterationStatementFor) {
