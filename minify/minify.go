@@ -144,8 +144,10 @@ func (p *processor) minifyLiterals(pe *javascript.PrimaryExpression) {
 				switch pe.Literal.Data {
 				case "true":
 					pe.Literal.Data = "!0"
+					p.changed = true
 				case "false":
 					pe.Literal.Data = "!1"
+					p.changed = true
 				}
 			case javascript.TokenStringLiteral:
 				str, err := javascript.Unquote(pe.Literal.Data)
@@ -162,12 +164,14 @@ func (p *processor) minifyLiterals(pe *javascript.PrimaryExpression) {
 					pe.Literal = nil
 					pe.TemplateLiteral.NoSubstitutionTemplate.Type = javascript.TokenNoSubstitutionTemplate
 					pe.TemplateLiteral.NoSubstitutionTemplate.Data = tmpl
+					p.changed = true
 				}
 			case javascript.TokenNumericLiteral:
-				minifyNumbers(pe.Literal)
+				p.minifyNumbers(pe.Literal)
 			}
 		} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == "undefined" {
 			pe.IdentifierReference.Data = "void 0"
+			p.changed = true
 		} else if pe.TemplateLiteral != nil && pe.TemplateLiteral.NoSubstitutionTemplate != nil {
 			str, err := javascript.UnquoteTemplate(pe.TemplateLiteral.NoSubstitutionTemplate.Data)
 			if err != nil {
@@ -181,16 +185,18 @@ func (p *processor) minifyLiterals(pe *javascript.PrimaryExpression) {
 				tk.Type = javascript.TokenStringLiteral
 				pe.TemplateLiteral = nil
 				pe.Literal = tk
+				p.changed = true
 			}
 		}
 	}
 }
 
-func minifyNumbers(nt *javascript.Token) {
+func (p *processor) minifyNumbers(nt *javascript.Token) {
 	d := strings.ReplaceAll(nt.Data, "_", "")
 
 	if len(d) < len(nt.Data) {
 		nt.Data = d
+		p.changed = true
 	}
 
 	if !strings.HasSuffix(d, "n") {
@@ -258,6 +264,7 @@ func minifyNumbers(nt *javascript.Token) {
 
 	if len(d) < len(nt.Data) {
 		nt.Data = d
+		p.changed = true
 	}
 }
 
