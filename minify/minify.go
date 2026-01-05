@@ -274,13 +274,16 @@ func (p *processor) minifyArrowFunc(af *javascript.ArrowFunction) {
 			if fp := af.FormalParameters.FormalParameterList[0]; fp.Initializer == nil && fp.SingleNameBinding != nil && fp.ArrayBindingPattern == nil && fp.ObjectBindingPattern == nil {
 				af.BindingIdentifier = fp.SingleNameBinding
 				af.FormalParameters = nil
+				p.changed = true
 			}
 		}
+
 		if af.FunctionBody != nil {
 			if af.FormalParameters != nil {
 				if len(af.FormalParameters.FormalParameterList) == 1 && af.FormalParameters.FormalParameterList[0].SingleNameBinding != nil && af.FormalParameters.FormalParameterList[0].Initializer == nil && af.FormalParameters.BindingIdentifier == nil && af.FormalParameters.ArrayBindingPattern == nil && af.FormalParameters.ObjectBindingPattern == nil {
 					af.BindingIdentifier = af.FormalParameters.FormalParameterList[0].SingleNameBinding
 					af.FormalParameters = nil
+					p.changed = true
 				}
 			}
 
@@ -289,6 +292,7 @@ func (p *processor) minifyArrowFunc(af *javascript.ArrowFunction) {
 				if len(expressions) == 1 {
 					af.FunctionBody = nil
 					af.AssignmentExpression = &expressions[0]
+					p.changed = true
 				} else if len(expressions) != 0 {
 					af.AssignmentExpression = &javascript.AssignmentExpression{
 						ConditionalExpression: javascript.WrapConditional(&javascript.ParenthesizedExpression{
@@ -298,6 +302,7 @@ func (p *processor) minifyArrowFunc(af *javascript.ArrowFunction) {
 						Tokens: af.FunctionBody.Tokens,
 					}
 					af.FunctionBody = nil
+					p.changed = true
 				}
 			}
 		}
