@@ -393,6 +393,7 @@ func (p *processor) minifyIfToConditional(s *javascript.Statement) {
 func (p *processor) removeDebugger(s *javascript.Statement) {
 	if p.Has(RemoveDebugger) && s.Type == javascript.StatementDebugger {
 		s.Type = javascript.StatementNormal
+		p.changed = true
 	}
 }
 
