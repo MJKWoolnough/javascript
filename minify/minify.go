@@ -422,22 +422,23 @@ func (p *processor) minifyBlockToStatement(s *javascript.Statement) {
 func (p *processor) minifyObjectKeys(pn *javascript.PropertyName) {
 	if p.Has(Keys) {
 		if ae := pn.ComputedPropertyName; ae != nil && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil && !ae.Yield {
-			pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.PrimaryExpression)
-			if ok && pe.Literal != nil && pe.Literal.Type != javascript.TokenRegularExpressionLiteral {
+			if pe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.Literal != nil && pe.Literal.Type != javascript.TokenRegularExpressionLiteral {
 				pn.LiteralPropertyName = pe.Literal
 				pn.ComputedPropertyName = nil
+				p.changed = true
 			}
 		}
 
 		if pn.LiteralPropertyName != nil && pn.LiteralPropertyName.Type == javascript.TokenStringLiteral {
-			key, err := javascript.Unquote(pn.LiteralPropertyName.Data)
-			if err == nil {
+			if key, err := javascript.Unquote(pn.LiteralPropertyName.Data); err == nil {
 				if isIdentifier(key) {
 					pn.LiteralPropertyName.Data = key
 					pn.LiteralPropertyName.Type = javascript.TokenIdentifier // This type may not be technically correct, but should not matter.
+					p.changed = true
 				} else if isSimpleNumber(key) {
 					pn.LiteralPropertyName.Data = key
 					pn.LiteralPropertyName.Type = javascript.TokenNumericLiteral
+					p.changed = true
 				}
 			}
 		}
