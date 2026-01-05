@@ -6179,7 +6179,7 @@ func TestTransforms(t *testing.T) {
 			},
 		},
 	} {
-		w := walker{New(test.Options...)}
+		w := processor{Minifier: New(test.Options...)}
 		w.Handle(test.Input)
 		if !reflect.DeepEqual(test.Input, test.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, test.Output, test.Input)
