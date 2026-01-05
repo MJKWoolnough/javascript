@@ -108,7 +108,7 @@ func (m *Minifier) Process(jm *javascript.Module) {
 	}
 }
 
-func minifyTemplate(t *javascript.Token) {
+func (p *processor) minifyTemplate(t *javascript.Token) {
 	if t != nil {
 		str, err := javascript.UnquoteTemplate(t.Data)
 		if err != nil {
@@ -118,20 +118,21 @@ func minifyTemplate(t *javascript.Token) {
 		res := javascript.QuoteTemplate(str, javascript.TokenTypeToTemplateType(t.Type))
 		if len(res) < len(t.Data) {
 			t.Data = res
+			p.changed = true
 		}
 	}
 }
 
 func (p *processor) minifyTemplates(t *javascript.TemplateLiteral) {
 	if p.Has(Literals) {
-		minifyTemplate(t.NoSubstitutionTemplate)
-		minifyTemplate(t.TemplateHead)
+		p.minifyTemplate(t.NoSubstitutionTemplate)
+		p.minifyTemplate(t.TemplateHead)
 
 		for _, m := range t.TemplateMiddleList {
-			minifyTemplate(m)
+			p.minifyTemplate(m)
 		}
 
-		minifyTemplate(t.TemplateTail)
+		p.minifyTemplate(t.TemplateTail)
 	}
 }
 
