@@ -91,20 +91,20 @@ func (p *processor) Handle(t javascript.Type) error {
 }
 
 func (m *Minifier) Process(jm *javascript.Module) {
-	p := &processor{Minifier: m}
+	p := &processor{changed: true, Minifier: m}
 
-	if p.Has(RemoveDeadCode) {
-		removeDeadCode(jm)
-	}
+	for p.changed {
+		p.changed = false
 
-	walk.Walk(jm, p)
+		if p.Has(RemoveDeadCode) {
+			p.removeDeadCode(jm)
+		}
 
-	if p.Has(RemoveDeadCode) {
-		removeDeadCode(jm)
-	}
+		walk.Walk(jm, p)
 
-	if p.Has(RenameIdentifiers) {
-		renameIdentifiers(jm)
+		if p.Has(RenameIdentifiers) {
+			renameIdentifiers(jm)
+		}
 	}
 }
 

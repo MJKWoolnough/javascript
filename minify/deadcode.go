@@ -8,46 +8,33 @@ import (
 	"vimagination.zapto.org/javascript/walk"
 )
 
-func removeDeadCode(m *javascript.Module) {
-	c := changeTracker(true)
-
-	for c {
-		s, err := scope.ModuleScope(m, nil)
-		if err != nil {
-			return
-		}
-
-		c = changeTracker(clearSinglesFromScope(s))
-
-		c.deadWalker(m)
+func (p *processor) removeDeadCode(m *javascript.Module) {
+	s, err := scope.ModuleScope(m, nil)
+	if err != nil {
+		return
 	}
+
+	p.clearSinglesFromScope(s)
+	p.deadWalker(m)
 }
 
-func clearSinglesFromScope(s *scope.Scope) bool {
-	changed := false
-
+func (p *processor) clearSinglesFromScope(s *scope.Scope) {
 	for name, bindings := range s.Bindings {
 		if name == "this" || name == "arguments" || len(bindings) != 1 || bindings[0].BindingType == scope.BindingRef {
 			continue
 		}
 
 		bindings[0].Token.Data = ""
-		changed = true
+		p.changed = true
 	}
 
 	for _, cs := range s.Scopes {
-		if clearSinglesFromScope(cs) {
-			changed = true
-		}
+		p.clearSinglesFromScope(cs)
 	}
-
-	return changed
 }
 
-type changeTracker bool
-
-func (c *changeTracker) deadWalker(t javascript.Type) error {
-	walk.Walk(t, walk.HandlerFunc(c.deadWalker))
+func (p *processor) deadWalker(t javascript.Type) error {
+	walk.Walk(t, walk.HandlerFunc(p.deadWalker))
 
 	var changed bool
 
@@ -109,7 +96,7 @@ func (c *changeTracker) deadWalker(t javascript.Type) error {
 	}
 
 	if changed {
-		*c = true
+		p.changed = true
 	}
 
 	return nil
