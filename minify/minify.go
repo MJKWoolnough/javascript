@@ -325,10 +325,13 @@ func (p *processor) minifyIfToConditional(s *javascript.Statement) {
 		if isNonEmptyReturnStatement(&s.IfStatement.Statement) {
 			ifReturn = true
 			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
+			p.changed = true
 		} else if isStatementExpression(&s.IfStatement.Statement) {
 			ifExpressions = s.IfStatement.Statement.ExpressionStatement.Expressions
+			p.changed = true
 		} else if s.IfStatement.Statement.BlockStatement != nil {
 			ifExpressions, ifReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.Statement.BlockStatement.StatementList)
+			p.changed = true
 		}
 
 		if len(ifExpressions) == 0 {
@@ -338,10 +341,13 @@ func (p *processor) minifyIfToConditional(s *javascript.Statement) {
 		if isNonEmptyReturnStatement(s.IfStatement.ElseStatement) {
 			elseReturn = true
 			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
+			p.changed = true
 		} else if isStatementExpression(s.IfStatement.ElseStatement) {
 			elseExpressions = s.IfStatement.ElseStatement.ExpressionStatement.Expressions
+			p.changed = true
 		} else if s.IfStatement.ElseStatement.BlockStatement != nil {
 			elseExpressions, elseReturn = statementsListItemsAsExpressionsAndReturn(s.IfStatement.ElseStatement.BlockStatement.StatementList)
+			p.changed = true
 		}
 
 		if ifReturn != elseReturn {
@@ -380,6 +386,7 @@ func (p *processor) minifyIfToConditional(s *javascript.Statement) {
 
 		s.ExpressionStatement = &s.IfStatement.Expression
 		s.IfStatement = nil
+		p.changed = true
 	}
 }
 
