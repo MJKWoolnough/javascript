@@ -402,6 +402,7 @@ func (p *processor) minifyBlockToStatement(s *javascript.Statement) {
 		if l := len(s.BlockStatement.StatementList); l == 1 {
 			if s.BlockStatement.StatementList[0].Statement != nil {
 				*s = *s.BlockStatement.StatementList[0].Statement
+				p.changed = true
 			}
 		} else if l > 1 {
 			if expressions, hasReturn := statementsListItemsAsExpressionsAndReturn(s.BlockStatement.StatementList); !hasReturn && len(expressions) > 0 {
@@ -412,6 +413,7 @@ func (p *processor) minifyBlockToStatement(s *javascript.Statement) {
 					},
 					Tokens: s.Tokens,
 				}
+				p.changed = true
 			}
 		}
 	}
