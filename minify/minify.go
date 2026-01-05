@@ -449,8 +449,10 @@ func (p *processor) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
 	if p.Has(RemoveExpressionNames) {
 		if pe.FunctionExpression != nil {
 			pe.FunctionExpression.BindingIdentifier = nil
+			p.changed = true
 		} else if pe.ClassExpression != nil {
 			pe.ClassExpression.BindingIdentifier = nil
+			p.changed = true
 		}
 	}
 }
