@@ -682,14 +682,14 @@ func (p *processor) minifyEmptyStatement(jm *javascript.Module) bool {
 }
 
 func (p *processor) minifyLastReturnStatement(f *javascript.FunctionDeclaration) {
-	if p.Has(RemoveLastEmptyReturn) {
-		removeLastReturnStatement(&f.FunctionBody)
+	if p.Has(RemoveLastEmptyReturn) && removeLastReturnStatement(&f.FunctionBody) {
+		p.changed = true
 	}
 }
 
 func (p *processor) minifyLastReturnStatementInArrowFn(af *javascript.ArrowFunction) {
-	if p.Has(RemoveLastEmptyReturn) && af.FunctionBody != nil {
-		removeLastReturnStatement(af.FunctionBody)
+	if p.Has(RemoveLastEmptyReturn) && af.FunctionBody != nil && removeLastReturnStatement(af.FunctionBody) {
+		p.changed = true
 	}
 }
 
