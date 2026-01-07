@@ -751,6 +751,7 @@ func (p *processor) minifyRemoveDeadCode(b *javascript.Block) {
 				if !isHoistable(&b.StatementList[i]) {
 					b.StatementList = append(b.StatementList[:i], b.StatementList[i+1:]...)
 					i--
+					p.changed = true
 				}
 			}
 		}
