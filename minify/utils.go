@@ -255,10 +255,12 @@ func leftMostLHS(c javascript.ConditionalWrappable) *javascript.LeftHandSideExpr
 	}
 }
 
-func fixWrapping(s *javascript.Statement) {
+func fixWrapping(s *javascript.Statement) bool {
 	if s == nil || s.ExpressionStatement == nil || len(s.ExpressionStatement.Expressions) == 0 {
-		return
+		return false
 	}
+
+	var changed bool
 
 	if ae := &s.ExpressionStatement.Expressions[0]; aeIsCE(ae) {
 		if lhs := leftMostLHS(ae.ConditionalExpression); lhs != nil && lhs.NewExpression != nil && len(lhs.NewExpression.News) == 0 {
@@ -281,16 +283,22 @@ func fixWrapping(s *javascript.Statement) {
 					},
 					Tokens: me.PrimaryExpression.Tokens,
 				}
+
+				changed = true
 			}
 		}
+
 		switch javascript.UnwrapConditional(ae.ConditionalExpression).(type) {
 		case *javascript.ObjectLiteral, *javascript.FunctionDeclaration, *javascript.ClassDeclaration:
 			ae.ConditionalExpression = javascript.WrapConditional(&javascript.ParenthesizedExpression{
 				Expressions: []javascript.AssignmentExpression{*ae},
 				Tokens:      ae.Tokens,
 			})
+			changed = true
 		}
 	}
+
+	return changed
 }
 
 func scoreCE(ce javascript.ConditionalWrappable) int {
