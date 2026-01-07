@@ -491,14 +491,12 @@ func (p *processor) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignmen
 func (p *processor) minifyExpressionParens(e *javascript.Expression) {
 	if p.Has(UnwrapParens) {
 		e.Expressions = p.minifyParens(e.Expressions)
-		p.changed = true
 	}
 }
 
 func (p *processor) minifyParenthsizedExpressionParens(pe *javascript.ParenthesizedExpression) {
 	if p.Has(UnwrapParens) {
 		pe.Expressions = p.minifyParens(pe.Expressions)
-		p.changed = true
 	}
 }
 
