@@ -703,6 +703,7 @@ func (p *processor) minifyExpressionRun(jm *javascript.Module) bool {
 				e.Expressions = append(e.Expressions, jm.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions...)
 				jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 				i--
+				p.changed = true
 			} else {
 				lastWasExpression = isExpression
 			}
@@ -715,8 +716,8 @@ func (p *processor) minifyExpressionRun(jm *javascript.Module) bool {
 func (p *processor) fixFirstExpression(jm *javascript.Module) bool {
 	if p.Has(UnwrapParens) {
 		for n := range jm.ModuleListItems {
-			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) {
-				fixWrapping(jm.ModuleListItems[n].StatementListItem.Statement)
+			if isStatementListItemExpression(jm.ModuleListItems[n].StatementListItem) && fixWrapping(jm.ModuleListItems[n].StatementListItem.Statement) {
+				p.changed = true
 			}
 		}
 	}
@@ -725,12 +726,12 @@ func (p *processor) fixFirstExpression(jm *javascript.Module) bool {
 }
 
 func (p *processor) fixFirstArrowFuncExpression(af *javascript.ArrowFunction) {
-	if p.Has(UnwrapParens) && af.AssignmentExpression != nil {
-		fixWrapping(&javascript.Statement{
-			ExpressionStatement: &javascript.Expression{
-				Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
-			},
-		})
+	if p.Has(UnwrapParens) && af.AssignmentExpression != nil && fixWrapping(&javascript.Statement{
+		ExpressionStatement: &javascript.Expression{
+			Expressions: []javascript.AssignmentExpression{*af.AssignmentExpression},
+		},
+	}) {
+		p.changed = true
 	}
 }
 
