@@ -674,6 +674,7 @@ func (p *processor) minifyEmptyStatement(jm *javascript.Module) bool {
 		if jm.ModuleListItems[i].StatementListItem != nil && isEmptyStatement(jm.ModuleListItems[i].StatementListItem.Statement) {
 			jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 			i--
+			p.changed = true
 		}
 	}
 
