@@ -481,6 +481,7 @@ func (p *processor) minifyFunctionExpressionAsArrowFunc(ae *javascript.Assignmen
 				Tokens:           fe.Tokens,
 			}
 			ae.ConditionalExpression = nil
+			p.changed = true
 
 			p.minifyArrowFunc(ae.ArrowFunction)
 		}
