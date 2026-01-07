@@ -341,12 +341,16 @@ func isConditionalWrappingAConditional(w javascript.ConditionalWrappable, below 
 	return pe.Expressions[0].ConditionalExpression
 }
 
-func removeLastReturnStatement(b *javascript.Block) {
+func removeLastReturnStatement(b *javascript.Block) bool {
 	if b != nil && len(b.StatementList) > 0 {
 		if s := b.StatementList[len(b.StatementList)-1].Statement; isReturnStatement(s) && s.ExpressionStatement == nil {
 			b.StatementList = b.StatementList[:len(b.StatementList)-1]
+
+			return true
 		}
 	}
+
+	return false
 }
 
 func isSimpleAE(ae *javascript.AssignmentExpression) bool {
