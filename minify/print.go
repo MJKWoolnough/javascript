@@ -549,6 +549,7 @@ func (w *writer) WriteArguments(a *javascript.Arguments) {
 		if n > 0 {
 			w.WriteString(",")
 		}
+
 		w.WriteArgument(&a.ArgumentList[n])
 	}
 
@@ -650,6 +651,7 @@ func (w *writer) WritePropertyDefinition(pd *javascript.PropertyDefinition) {
 					done = pe.IdentifierReference.Type == pd.PropertyName.LiteralPropertyName.Type && pe.IdentifierReference.Data == pd.PropertyName.LiteralPropertyName.Data
 				}
 			}
+
 			if !done {
 				if pd.IsCoverInitializedName {
 					w.WriteString("=")
