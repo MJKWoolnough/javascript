@@ -38,11 +38,17 @@ func (p *processor) deadWalker(t javascript.Type) error {
 
 	switch t := t.(type) {
 	case *javascript.Module:
-		p.changed = removeDeadCodeFromModule(t)
+		if removeDeadCodeFromModule(t) {
+			p.changed = true
+		}
 	case *javascript.Block:
-		p.changed = blockAsModule(t, removeDeadCodeFromModule)
+		if blockAsModule(t, removeDeadCodeFromModule) {
+			p.changed = true
+		}
 	case *javascript.Expression:
-		p.changed = expressionsAsModule(t, removeDeadCodeFromModule)
+		if expressionsAsModule(t, removeDeadCodeFromModule) {
+			p.changed = true
+		}
 	case *javascript.Statement:
 		if t.ExpressionStatement != nil {
 			if newExpressions := removeDeadExpressions(t.ExpressionStatement.Expressions); len(newExpressions) != len(t.ExpressionStatement.Expressions) {
