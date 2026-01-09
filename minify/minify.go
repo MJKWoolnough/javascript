@@ -769,11 +769,13 @@ func (p *processor) minifyLexical(jm *javascript.Module) bool {
 					ld.BindingList = append(ld.BindingList, jm.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration.BindingList...)
 					jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 					i--
+					p.changed = true
 				case bindableVar:
 					vs := jm.ModuleListItems[i-1].StatementListItem.Statement.VariableStatement
 					vs.VariableDeclarationList = append(vs.VariableDeclarationList, jm.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList...)
 					jm.ModuleListItems = append(jm.ModuleListItems[:i], jm.ModuleListItems[i+1:]...)
 					i--
+					p.changed = true
 				}
 			}
 
@@ -827,6 +829,7 @@ func (p *processor) minifyExpressionsBetweenLexicals(jm *javascript.Module) bool
 				}
 
 				jm.ModuleListItems = append(jm.ModuleListItems[:i-back], jm.ModuleListItems[i+1:]...)
+				p.changed = true
 				i--
 			}
 		}
