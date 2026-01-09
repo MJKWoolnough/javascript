@@ -76,6 +76,7 @@ func (p *processor) Handle(t javascript.Type) error {
 		blockAsModule(t, p.minifyLexical)
 		blockAsModule(t, p.minifyExpressionsBetweenLexicals)
 	case *javascript.Module:
+		p.removeDeadCode(t)
 		p.minifyEmptyStatement(t)
 		p.minifyExpressionRun(t)
 		p.fixFirstExpression(t)
@@ -96,12 +97,7 @@ func (m *Minifier) Process(jm *javascript.Module) {
 	for p.changed {
 		p.changed = false
 
-		if p.Has(RemoveDeadCode) {
-			p.removeDeadCode(jm)
-		}
-
 		walk.Walk(jm, p)
-
 	}
 
 	if p.Has(RenameIdentifiers) {

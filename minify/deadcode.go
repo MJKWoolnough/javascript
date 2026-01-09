@@ -9,6 +9,10 @@ import (
 )
 
 func (p *processor) removeDeadCode(m *javascript.Module) {
+	if !p.Has(RemoveDeadCode) {
+		return
+	}
+
 	s, err := scope.ModuleScope(m, nil)
 	if err != nil {
 		return
