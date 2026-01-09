@@ -102,9 +102,10 @@ func (m *Minifier) Process(jm *javascript.Module) {
 
 		walk.Walk(jm, p)
 
-		if p.Has(RenameIdentifiers) {
-			renameIdentifiers(jm)
-		}
+	}
+
+	if p.Has(RenameIdentifiers) {
+		renameIdentifiers(jm)
 	}
 }
 
