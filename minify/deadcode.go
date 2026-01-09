@@ -104,10 +104,12 @@ func removeDeadCodeFromModule(m *javascript.Module) bool {
 		case bindableConst, bindableLet:
 			if ld := m.ModuleListItems[i].StatementListItem.Declaration.LexicalDeclaration; removeDeadLexicalBindings(&m.ModuleListItems, i, &ld.BindingList, lexicalMaker(ld.LetOrConst)) {
 				i--
+				changed = true
 			}
 		case bindableVar:
 			if removeDeadLexicalBindings(&m.ModuleListItems, i, &m.ModuleListItems[i].StatementListItem.Statement.VariableStatement.VariableDeclarationList, variableMaker) {
 				i--
+				changed = true
 			}
 		case bindableBare:
 			expr := m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement
@@ -115,22 +117,26 @@ func removeDeadCodeFromModule(m *javascript.Module) bool {
 			if pe, ok := javascript.UnwrapConditional(expr.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression); ok && pe.IdentifierReference != nil && pe.IdentifierReference.Data == "" {
 				expr.Expressions[0] = *expr.Expressions[0].AssignmentExpression
 				i--
+				changed = true
 			}
 		case bindableFunction:
 			if m.ModuleListItems[i].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier.Data == "" {
 				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, i+1)
 				i--
+				changed = true
 			}
 		case bindableClass:
 			if cd := m.ModuleListItems[i].StatementListItem.Declaration.ClassDeclaration; cd.BindingIdentifier.Data == "" {
 				mis := extractStatementsFromClass(cd)
 				m.ModuleListItems = append(m.ModuleListItems[:i], append(mis, m.ModuleListItems[i+1:]...)...)
 				i--
+				changed = true
 			}
 		default:
 			if isSLIExpression(m.ModuleListItems[i].StatementListItem) && len(m.ModuleListItems[i].StatementListItem.Statement.ExpressionStatement.Expressions) == 0 {
 				m.ModuleListItems = slices.Delete(m.ModuleListItems, i, i+1)
 				i--
+				changed = true
 			}
 		}
 	}
