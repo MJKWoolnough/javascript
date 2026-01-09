@@ -36,30 +36,28 @@ func (p *processor) clearSinglesFromScope(s *scope.Scope) {
 func (p *processor) deadWalker(t javascript.Type) error {
 	walk.Walk(t, walk.HandlerFunc(p.deadWalker))
 
-	var changed bool
-
 	switch t := t.(type) {
 	case *javascript.Module:
-		changed = removeDeadCodeFromModule(t)
+		p.changed = removeDeadCodeFromModule(t)
 	case *javascript.Block:
-		changed = blockAsModule(t, removeDeadCodeFromModule)
+		p.changed = blockAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Expression:
-		changed = expressionsAsModule(t, removeDeadCodeFromModule)
+		p.changed = expressionsAsModule(t, removeDeadCodeFromModule)
 	case *javascript.Statement:
 		if t.ExpressionStatement != nil {
 			if newExpressions := removeDeadExpressions(t.ExpressionStatement.Expressions); len(newExpressions) != len(t.ExpressionStatement.Expressions) {
 				t.ExpressionStatement.Expressions = newExpressions
-				changed = true
+				p.changed = true
 			}
 		} else if t.IfStatement != nil && isEmptyStatement(&t.IfStatement.Statement) {
 			t.ExpressionStatement = &t.IfStatement.Expression
 			t.IfStatement = nil
-			changed = true
+			p.changed = true
 		}
 	case *javascript.ParenthesizedExpression:
 		if newExpressions := removeDeadExpressions(t.Expressions[:len(t.Expressions)-1]); len(newExpressions) != len(t.Expressions)-1 {
 			t.Expressions = append(newExpressions, t.Expressions[len(t.Expressions)-1])
-			changed = true
+			p.changed = true
 		}
 	case *javascript.IfStatement:
 		if isEmptyStatement(&t.Statement) {
@@ -90,13 +88,9 @@ func (p *processor) deadWalker(t javascript.Type) error {
 				}
 				t.Statement = *t.ElseStatement
 				t.ElseStatement = nil
-				changed = true
+				p.changed = true
 			}
 		}
-	}
-
-	if changed {
-		p.changed = true
 	}
 
 	return nil
