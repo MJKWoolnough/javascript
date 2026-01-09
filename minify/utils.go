@@ -12,9 +12,7 @@ func blockAsModule(b *javascript.Block, fn func(*javascript.Module) bool) bool {
 	m := javascript.ScriptToModule(&javascript.Script{
 		StatementList: b.StatementList,
 	})
-
 	changed := fn(m)
-
 	b.StatementList = make([]javascript.StatementListItem, len(m.ModuleListItems))
 
 	for n, mi := range m.ModuleListItems {
@@ -46,7 +44,6 @@ func expressionsAsModule(e *javascript.Expression, fn func(*javascript.Module) b
 	}
 
 	changed := fn(m)
-
 	e.Expressions = make([]javascript.AssignmentExpression, len(m.ModuleListItems))
 
 	for n := range m.ModuleListItems {
