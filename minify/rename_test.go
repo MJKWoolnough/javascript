@@ -57,8 +57,8 @@ func TestOrderedScope(t *testing.T) {
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
-		m, err := javascript.ParseModule(&tk)
-		if err != nil {
+
+		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if s, err := scope.ModuleScope(m, nil); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
@@ -136,8 +136,8 @@ func TestRename(t *testing.T) {
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
-		m, err := javascript.ParseModule(&tk)
-		if err != nil {
+
+		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else if err = renameIdentifiers(m); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)

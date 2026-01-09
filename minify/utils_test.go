@@ -1496,6 +1496,7 @@ func TestFixWrapping(t *testing.T) {
 		},
 	} {
 		fixWrapping(test.Input)
+
 		if !reflect.DeepEqual(test.Input, test.Output) {
 			t.Errorf("test %d: expecting %v, got %v", n+1, test.Output, test.Input)
 		}
@@ -1789,6 +1790,7 @@ func TestRemoveLastReturnStatement(t *testing.T) {
 		},
 	} {
 		removeLastReturnStatement(test.Input)
+
 		if !reflect.DeepEqual(test.Input, test.Output) {
 			t.Errorf("test %d: expecting %b, got %v", n+1, test.Output, test.Input)
 		}

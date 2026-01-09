@@ -6181,6 +6181,7 @@ func TestTransforms(t *testing.T) {
 	} {
 		w := processor{Minifier: New(test.Options...)}
 		w.Handle(test.Input)
+
 		if !reflect.DeepEqual(test.Input, test.Output) {
 			t.Errorf("test %d: expecting \n%+v\n...got...\n%+v", n+1, test.Output, test.Input)
 		}
@@ -6264,6 +6265,7 @@ func TestMinify(t *testing.T) {
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
+
 		m, err := javascript.ParseModule(&tk)
 		if err != nil {
 			t.Errorf("test %d.1: unexpected error: %s", n+1, err)
@@ -6271,10 +6273,9 @@ func TestMinify(t *testing.T) {
 			continue
 		}
 
-		New(test.Options...).Process(m)
-
 		var buf strings.Builder
 
+		New(test.Options...).Process(m)
 		Print(&buf, m)
 
 		if output := buf.String(); output != test.Output {
