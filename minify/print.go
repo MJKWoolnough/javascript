@@ -1521,7 +1521,6 @@ func (w *writer) WriteUpdateExpression(ue *javascript.UpdateExpression) {
 			w.err = ErrInvalidAST
 
 			return
-		default:
 		}
 
 		w.WriteLeftHandSideExpression(ue.LeftHandSideExpression)
