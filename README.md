@@ -13,7 +13,7 @@ Package javascript implements a javascript tokeniser and AST.
 
  - Parse javascript code into AST.
  - Modify parsed code.
- - Consistant javascript formatting.
+ - Consistent javascript formatting.
  - Parse Typescript as comments, allowing it to be parsed as normal Javascript.
  - Scoping package to allowing the processing of identifier references.
 
