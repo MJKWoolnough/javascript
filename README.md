@@ -7,14 +7,14 @@
 --
     import "vimagination.zapto.org/javascript"
 
-Package javascript implements a javascript tokeniser and AST.
+Package javascript implements a JavaScript tokeniser and AST.
 
 ## Highlights
 
- - Parse javascript code into AST.
+ - Parse JavaScript code into AST.
  - Modify parsed code.
- - Consistent javascript formatting.
- - Parse Typescript as comments, allowing it to be parsed as normal Javascript.
+ - Consistent JavaScript formatting.
+ - Parse Typescript as comments, allowing it to be parsed as normal JavaScript.
  - Scoping package to allowing the processing of identifier references.
 
 ## Usage
