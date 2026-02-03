@@ -14,7 +14,7 @@ type Token struct {
 }
 
 // IsTypescript returns true when the token was processed as part of a
-// TypeScript section.
+// Typescript section.
 func (t Token) IsTypescript() bool {
 	return t.Type&tokenTypescript != 0
 }
