@@ -2,14 +2,14 @@ package javascript // import "vimagination.zapto.org/javascript"
 
 import "vimagination.zapto.org/parser"
 
-// Script represents the top-level of a parsed javascript text
+// Script represents the top-level of a parsed JavaScript text
 type Script struct {
 	StatementList []StatementListItem
 	Comments      [2]Comments
 	Tokens        Tokens
 }
 
-// ParseScript parses a javascript input into an AST.
+// ParseScript parses a JavaScript input into an AST.
 //
 // It is recommended to use ParseModule instead of this function.
 func ParseScript(t Tokeniser) (*Script, error) {
