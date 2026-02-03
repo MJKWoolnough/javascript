@@ -87,7 +87,7 @@ func unquoteEscape(ret *strings.Builder, s *parser.Tokeniser) bool {
 	return true
 }
 
-// Unquote parses a javascript quoted string and produces the unquoted version
+// Unquote parses a JavaScript quoted string and produces the unquoted version
 func Unquote(str string) (string, error) {
 	s := parser.NewStringTokeniser(str)
 
@@ -126,7 +126,7 @@ Loop:
 	return "", ErrInvalidQuoted
 }
 
-// UnquoteTemplate parses a javascript template (either NoSubstitution Template, or any template part),
+// UnquoteTemplate parses a JavaScript template (either NoSubstitution Template, or any template part),
 // and produces the unquoted version.
 func UnquoteTemplate(t string) (string, error) {
 	if strings.HasPrefix(t, "`") || strings.HasPrefix(t, "}") {
