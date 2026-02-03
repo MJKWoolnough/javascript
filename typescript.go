@@ -26,10 +26,10 @@ func (t *typescript) Iter(fn func(parser.Token) bool) {
 
 // AsTypescript converts the tokeniser to one that reads Typescript.
 //
-// When used with ParseScript or ParseModule, will produce Javascript AST from
+// When used with ParseScript or ParseModule, will produce JavaScript AST from
 // most valid Typescript files, though it may also parse invalid Typescript.
 //
-// Currently does not support any Typescript feature that requires codegen or
+// Currently does not support any Typescript feature that requires code-gen or
 // lookahead/lookback, such as the Typescript 'private' modifier, or the 'enum'
 // and 'namespace' declarations.
 func AsTypescript(t Tokeniser) Tokeniser {
