@@ -4,14 +4,14 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-// Module represents the top-level of a parsed javascript module
+// Module represents the top-level of a parsed JavaScript module
 type Module struct {
 	ModuleListItems []ModuleItem
 	Comments        [2]Comments
 	Tokens          Tokens
 }
 
-// ParseModule parses a javascript module
+// ParseModule parses a JavaScript module
 func ParseModule(t Tokeniser) (*Module, error) {
 	j, err := newJSParser(t)
 	if err != nil {
