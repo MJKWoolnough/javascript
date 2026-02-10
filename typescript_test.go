@@ -4686,6 +4686,21 @@ export default function() {}`, func(t *test, tk Tokens) { // 108
 				Tokens: tk[:15],
 			}
 		}},
+		{`export interface A { [B.C]: D }`, func(t *test, tk Tokens) { // 132
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Comments: [2]Comments{jsParser(tk[:18]).toTypescript()},
+							Tokens:   tk[:18],
+						},
+						Tokens: tk[:18],
+					},
+				},
+				Tokens: tk[:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
