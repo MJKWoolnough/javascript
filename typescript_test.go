@@ -3780,11 +3780,67 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:28],
 			}
 		}},
+		{`export function a(): b;
+export function a(): c;
+export function a() {}`, func(t *test, tk Tokens) { // 107
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							Declaration: &Declaration{
+								FunctionDeclaration: &FunctionDeclaration{
+									BindingIdentifier: &tk[4],
+									FormalParameters: FormalParameters{
+										Tokens: tk[29:31],
+									},
+									FunctionBody: Block{
+										Tokens: tk[32:34],
+									},
+									Comments: [5]Comments{nil, nil, nil, jsParser(tk[5:29]).toTypescript()},
+									Tokens:   tk[2:34],
+								},
+								Tokens: tk[2:34],
+							},
+							Tokens: tk[:34],
+						},
+						Tokens: tk[:34],
+					},
+				},
+				Tokens: tk[:34],
+			}
+		}},
+		{`export default function(): b;
+export default function(): c;
+export default function() {}`, func(t *test, tk Tokens) { // 108
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						ExportDeclaration: &ExportDeclaration{
+							DefaultFunction: &FunctionDeclaration{
+								FormalParameters: FormalParameters{
+									Tokens: tk[29:31],
+								},
+								FunctionBody: Block{
+									Tokens: tk[32:34],
+								},
+								Comments: [5]Comments{nil, nil, nil, jsParser(tk[5:29]).toTypescript()},
+								Tokens:   tk[4:34],
+							},
+							Tokens: tk[:34],
+						},
+						Tokens: tk[:34],
+					},
+				},
+				Tokens: tk[:34],
+			}
+		}},
 		{`class A {
 	static b(c: string): this
 	static b(d: number): this;
 	static b(): this {}
-}`, func(t *test, tk Tokens) { // 107
+}`, func(t *test, tk Tokens) { // 109
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3833,7 +3889,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 	[b: number]: string;
 	[c] = d;
 	[e]!
-}`, func(t *test, tk Tokens) { // 108
+}`, func(t *test, tk Tokens) { // 110
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3903,7 +3959,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:35],
 			}
 		}},
-		{`a as any as b as c`, func(t *test, tk Tokens) { // 109
+		{`a as any as b as c`, func(t *test, tk Tokens) { // 111
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3946,7 +4002,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:13],
 			}
 		}},
-		{`const a = (b :c) => {}`, func(t *test, tk Tokens) { // 110
+		{`const a = (b :c) => {}`, func(t *test, tk Tokens) { // 112
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -3992,7 +4048,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:17],
 			}
 		}},
-		{`const a = b?.c()!;`, func(t *test, tk Tokens) { // 111
+		{`const a = b?.c()!;`, func(t *test, tk Tokens) { // 113
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4043,7 +4099,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:13],
 			}
 		}},
-		{`type A = {[B in C]: D;}`, func(t *test, tk Tokens) { // 112
+		{`type A = {[B in C]: D;}`, func(t *test, tk Tokens) { // 114
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4058,7 +4114,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:19],
 			}
 		}},
-		{`function a<const B extends C[]>(d: B) {}`, func(t *test, tk Tokens) { // 113
+		{`function a<const B extends C[]>(d: B) {}`, func(t *test, tk Tokens) { // 115
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4093,7 +4149,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:23],
 			}
 		}},
-		{`type A<B> = { B(): C; finally(): B; }`, func(t *test, tk Tokens) { // 114
+		{`type A<B> = { B(): C; finally(): B; }`, func(t *test, tk Tokens) { // 116
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4108,7 +4164,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:28],
 			}
 		}},
-		{`((): this is b => true)`, func(t *test, tk Tokens) { // 115
+		{`((): this is b => true)`, func(t *test, tk Tokens) { // 117
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4155,7 +4211,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:15],
 			}
 		}},
-		{`class A {b(): a is b {}}`, func(t *test, tk Tokens) { // 116
+		{`class A {b(): a is b {}}`, func(t *test, tk Tokens) { // 118
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4198,7 +4254,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:19],
 			}
 		}},
-		{`type A<B extends any[]> = B extends [b: infer C] ? C : B;`, func(t *test, tk Tokens) { // 117
+		{`type A<B extends any[]> = B extends [b: infer C] ? C : B;`, func(t *test, tk Tokens) { // 119
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4213,7 +4269,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:36],
 			}
 		}},
-		{`class A extends B<C<D>> {}`, func(t *test, tk Tokens) { // 118
+		{`class A extends B<C<D>> {}`, func(t *test, tk Tokens) { // 120
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4248,7 +4304,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:16],
 			}
 		}},
-		{`const a: import("mod").A = 1`, func(t *test, tk Tokens) { // 119
+		{`const a: import("mod").A = 1`, func(t *test, tk Tokens) { // 121
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4283,7 +4339,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:15],
 			}
 		}},
-		{`type A = [B?];`, func(t *test, tk Tokens) { // 120
+		{`type A = [B?];`, func(t *test, tk Tokens) { // 122
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4298,7 +4354,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:11],
 			}
 		}},
-		{`a.method().method2<string>()`, func(t *test, tk Tokens) { // 121
+		{`a.method().method2<string>()`, func(t *test, tk Tokens) { // 123
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4351,7 +4407,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:12],
 			}
 		}},
-		{`a?.<string>()`, func(t *test, tk Tokens) { // 122
+		{`a?.<string>()`, func(t *test, tk Tokens) { // 124
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4393,7 +4449,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:7],
 			}
 		}},
-		{`a?.method<string>()`, func(t *test, tk Tokens) { // 123
+		{`a?.method<string>()`, func(t *test, tk Tokens) { // 125
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4438,7 +4494,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:8],
 			}
 		}},
-		{`const a = b as c ?? d`, func(t *test, tk Tokens) { // 124
+		{`const a = b as c ?? d`, func(t *test, tk Tokens) { // 126
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4495,7 +4551,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:15],
 			}
 		}},
-		{`a?.b!.c`, func(t *test, tk Tokens) { // 125
+		{`a?.b!.c`, func(t *test, tk Tokens) { // 127
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
@@ -4539,7 +4595,7 @@ function a() {}`, func(t *test, tk Tokens) { // 106
 				Tokens: tk[:6],
 			}
 		}},
-		{`a()<b`, func(t *test, tk Tokens) { // 126
+		{`a()<b`, func(t *test, tk Tokens) { // 128
 			t.Typescript = true
 			t.Output = Module{
 				ModuleListItems: []ModuleItem{
