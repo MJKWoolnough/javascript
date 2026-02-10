@@ -4641,6 +4641,51 @@ export default function() {}`, func(t *test, tk Tokens) { // 108
 				Tokens: tk[:5],
 			}
 		}},
+		{`type A = | B;`, func(t *test, tk Tokens) { // 129
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Comments: [2]Comments{nil, jsParser(tk[:10]).toTypescript()},
+							Tokens:   tk[:10],
+						},
+						Tokens: tk[:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`type A = & B | C;`, func(t *test, tk Tokens) { // 130
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Comments: [2]Comments{nil, jsParser(tk[:14]).toTypescript()},
+							Tokens:   tk[:14],
+						},
+						Tokens: tk[:14],
+					},
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{`type A = |& B & C;`, func(t *test, tk Tokens) { // 131
+			t.Typescript = true
+			t.Output = Module{
+				ModuleListItems: []ModuleItem{
+					{
+						StatementListItem: &StatementListItem{
+							Comments: [2]Comments{nil, jsParser(tk[:15]).toTypescript()},
+							Tokens:   tk[:15],
+						},
+						Tokens: tk[:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
 			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
