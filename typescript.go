@@ -193,6 +193,10 @@ func (j *jsParser) ReadType() bool {
 func (j *jsParser) ReadUnionOrIntersectionOrPrimaryType() bool {
 	g := j.NewGoal()
 
+	g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "|"})
+	g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "&"})
+	g.AcceptRunWhitespace()
+
 	for {
 		if !g.ReadTypeOperator() {
 			return false
