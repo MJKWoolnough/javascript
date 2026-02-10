@@ -268,6 +268,14 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 			j.Score(g)
 
 			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ")"}) {
+				break
+			}
 		}
 	}
 
