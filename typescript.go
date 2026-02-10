@@ -885,13 +885,19 @@ func (j *jsParser) ReadIndexSignature() bool {
 		return false
 	}
 
-	g.AcceptRunWhitespace()
+	for {
+		g.AcceptRunWhitespace()
 
-	if !g.ReadParameter() {
-		return false
+		if !g.ReadParameter() {
+			return false
+		}
+
+		g.AcceptRunWhitespace()
+
+		if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			break
+		}
 	}
-
-	g.AcceptRunWhitespace()
 
 	if !g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "]"}) {
 		return false
