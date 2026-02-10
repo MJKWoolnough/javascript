@@ -1876,7 +1876,7 @@ func (j *jsParser) ReadFunctionDeclaration() bool {
 	return true
 }
 
-func (j *jsParser) SkipFunctionOverload(bi *Token, yield, await bool) bool {
+func (j *jsParser) SkipFunctionOverload(bi *Token, yield, await, def, export, async bool) bool {
 	g := j.NewGoal()
 
 	if g.IsTypescript() {
@@ -1893,14 +1893,22 @@ func (j *jsParser) SkipFunctionOverload(bi *Token, yield, await bool) bool {
 				g.AcceptRunWhitespace()
 			}
 
-			if g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
+			if async && g.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 				g.AcceptRunWhitespaceNoNewLine()
+			}
+
+			if export && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "export"}) {
+				g.AcceptRunWhitespaceNoNewLine()
+
+				if def && g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "default"}) {
+					g.AcceptRunWhitespaceNoNewLine()
+				}
 			}
 
 			if g.AcceptToken(parser.Token{Type: TokenKeyword, Data: "function"}) {
 				g.AcceptRunWhitespace()
 
-				if g.AcceptToken(bi.Token) {
+				if bi == nil || g.AcceptToken(bi.Token) {
 					j.Score(g)
 
 					return true

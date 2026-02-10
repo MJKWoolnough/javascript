@@ -186,7 +186,7 @@ func TestParseFunction(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var fd FunctionDeclaration
 
-		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
+		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def, false)
 
 		return fd, err
 	})
@@ -527,7 +527,7 @@ func TestFunctionDeclaration(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var fd FunctionDeclaration
 
-		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def)
+		err := fd.parse(&t.Tokens, t.Yield, t.Await, t.Def, false)
 
 		return fd, err
 	})

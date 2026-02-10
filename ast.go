@@ -116,7 +116,7 @@ type Declaration struct {
 	Tokens              Tokens
 }
 
-func (d *Declaration) parse(j *jsParser, yield, await bool) error {
+func (d *Declaration) parse(j *jsParser, yield, await, export bool) error {
 	g := j.NewGoal()
 	h := g.NewGoal()
 	i := h.NewGoal()
@@ -145,7 +145,7 @@ func (d *Declaration) parse(j *jsParser, yield, await bool) error {
 	} else if tk == (parser.Token{Type: TokenIdentifier, Data: "async"}) || tk == (parser.Token{Type: TokenKeyword, Data: "function"}) {
 		d.FunctionDeclaration = new(FunctionDeclaration)
 
-		if err := d.FunctionDeclaration.parse(&g, yield, await, false); err != nil {
+		if err := d.FunctionDeclaration.parse(&g, yield, await, false, export); err != nil {
 			return j.Error("Declaration", err)
 		}
 	} else {

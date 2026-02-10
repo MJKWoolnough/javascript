@@ -1090,7 +1090,7 @@ func TestDeclaration(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var d Declaration
 
-		err := d.parse(&t.Tokens, t.Yield, t.Await)
+		err := d.parse(&t.Tokens, t.Yield, t.Await, false)
 
 		return d, err
 	})

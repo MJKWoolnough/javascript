@@ -31,7 +31,7 @@ type FunctionDeclaration struct {
 	Tokens            Tokens
 }
 
-func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error {
+func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def, export bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "async"}) {
 		fd.Type = FunctionAsync
 		fd.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
@@ -59,20 +59,20 @@ func (fd *FunctionDeclaration) parse(j *jsParser, yield, await, def bool) error 
 		j.AcceptRunWhitespace()
 	}
 
-	if bi := j.parseIdentifier(yield, await); bi == nil {
-		if !def {
-			return j.Error("FunctionDeclaration", ErrNoIdentifier)
-		}
+	if bi := j.parseIdentifier(yield, await); bi == nil && !def {
+		return j.Error("FunctionDeclaration", ErrNoIdentifier)
 	} else {
 		fd.BindingIdentifier = bi
 		g := j.NewGoal()
 
-		if g.SkipFunctionOverload(bi, yield, await) {
+		async := fd.Type == FunctionAsync || fd.Type == FunctionAsyncGenerator
+
+		if g.SkipFunctionOverload(bi, yield, await, def, export, async) {
 			h := g.NewGoal()
 
 			h.AcceptRunWhitespace()
 
-			for g.SkipFunctionOverload(bi, yield, await) {
+			for g.SkipFunctionOverload(bi, yield, await, def, export, async) {
 				g.Score(h)
 
 				h = g.NewGoal()

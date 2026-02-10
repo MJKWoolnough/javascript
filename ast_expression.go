@@ -1535,7 +1535,7 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 
 		pe.FunctionExpression = new(FunctionDeclaration)
-		if err := pe.FunctionExpression.parse(&g, false, false, true); err != nil {
+		if err := pe.FunctionExpression.parse(&g, false, false, true, false); err != nil {
 			return j.Error("PrimaryExpression", err)
 		}
 

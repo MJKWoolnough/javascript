@@ -653,7 +653,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		switch g.Peek().Data {
 		case "async", "function":
 			ed.DefaultFunction = new(FunctionDeclaration)
-			if err := ed.DefaultFunction.parse(&g, false, false, true); err != nil {
+			if err := ed.DefaultFunction.parse(&g, false, false, true, true); err != nil {
 				return j.Error("ExportDeclaration", err)
 			}
 
@@ -791,7 +791,7 @@ func (ed *ExportDeclaration) parse(j *jsParser) error {
 		}
 	} else {
 		ed.Declaration = new(Declaration)
-		if err := ed.Declaration.parse(&g, false, true); err != nil {
+		if err := ed.Declaration.parse(&g, false, true, true); err != nil {
 			return j.Error("ExportDeclaration", err)
 		}
 

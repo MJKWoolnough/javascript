@@ -125,7 +125,7 @@ func (si *StatementListItem) parse(j *jsParser, yield, await, ret bool) error {
 
 	if declaration {
 		si.Declaration = new(Declaration)
-		if err := si.Declaration.parse(&g, yield, await); err != nil {
+		if err := si.Declaration.parse(&g, yield, await, false); err != nil {
 			return j.Error("StatementListItem", err)
 		}
 	} else {
@@ -346,7 +346,7 @@ func (s *Statement) parse(j *jsParser, yield, await, ret bool) error {
 
 				if h.Peek() == (parser.Token{Type: TokenKeyword, Data: "function"}) {
 					s.LabelledItemFunction = new(FunctionDeclaration)
-					if err := s.LabelledItemFunction.parse(&h, yield, await, false); err != nil {
+					if err := s.LabelledItemFunction.parse(&h, yield, await, false, false); err != nil {
 						return g.Error("Statement", err)
 					}
 				} else {
