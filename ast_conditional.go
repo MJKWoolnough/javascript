@@ -293,7 +293,7 @@ func (bo *BitwiseORExpression) parse(j *jsParser, in, yield, await bool) error {
 
 func (bo *BitwiseORExpression) hasFirstComment() bool {
 	if bo.BitwiseORExpression != nil {
-		return bo.hasFirstComment()
+		return bo.BitwiseORExpression.hasFirstComment()
 	}
 
 	return bo.BitwiseXORExpression.hasFirstComment()
