@@ -1502,7 +1502,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 296
 			"({a=b}=c)",
 			"({a = b} = c);",
-			"({a = b} = c);",
+			"({a: a = b} = c);",
 		},
 		{ // 297
 			"a.#b",
@@ -2357,7 +2357,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 467
 			"({\n// A\na // B\n= // C\nb // D\n} = c)",
 			"({a = b} = c);",
-			"({\n\t// A\n\ta // B\n\t= // C\n\tb // D\n} = c);",
+			"({\n\t// A\n\ta // B\n\t: a = // C\n\tb // D\n} = c);",
 		},
 		{ // 468
 			"({\n// A\na // B\n: // C\nb // D\n= // E\nc // F\n} = d)",
