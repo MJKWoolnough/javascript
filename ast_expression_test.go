@@ -2000,6 +2000,22 @@ func TestAssignmentExpression(t *testing.T) {
 									LiteralPropertyName: &tk[1],
 									Tokens:              tk[1:2],
 								},
+								DestructuringAssignmentTarget: &DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[1],
+													Tokens:              tk[1:2],
+												},
+												Tokens: tk[1:2],
+											},
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: WrapConditional(&PrimaryExpression{
 										IdentifierReference: &tk[3],
@@ -2708,6 +2724,22 @@ func TestAssignmentExpression(t *testing.T) {
 								PropertyName: PropertyName{
 									LiteralPropertyName: &tk[4],
 									Tokens:              tk[4:5],
+								},
+								DestructuringAssignmentTarget: &DestructuringAssignmentTarget{
+									LeftHandSideExpression: &LeftHandSideExpression{
+										NewExpression: &NewExpression{
+											MemberExpression: MemberExpression{
+												PrimaryExpression: &PrimaryExpression{
+													IdentifierReference: &tk[4],
+													Tokens:              tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
 								},
 								Initializer: &AssignmentExpression{
 									ConditionalExpression: WrapConditional(&MemberExpression{
