@@ -1267,6 +1267,42 @@ func TestScriptScope(t *testing.T) {
 			},
 		},
 		{ // 37
+			`let {a, b} = {};({a, b = 1} = {})`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[javascript.Type]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingLexicalLet,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 38
 			`var c;{let c;{var c}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -1275,7 +1311,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 38
+		{ // 39
 			`const {a: [b]} = {}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1294,7 +1330,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 39
+		{ // 40
 			`var [{a}] = []`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -1313,7 +1349,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 40
+		{ // 41
 			`function a() {for (let a = 0; a < 2; a++){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1368,7 +1404,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 41
+		{ // 42
 			`function a() {for (var a = 0; a < 2; a++){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1425,7 +1461,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 42
+		{ // 43
 			`function a() {for (b = 0; b < 2; b++){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1480,7 +1516,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 43
+		{ // 44
 			`function a() {let a;for (const a in {}){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1533,7 +1569,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 44
+		{ // 45
 			`function a() {let a;for (const a of []){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1586,7 +1622,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 45
+		{ // 46
 			`function a() {for (var a of []){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1633,7 +1669,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 46
+		{ // 47
 			`function a() {for (let [a] of []){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1679,7 +1715,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 47
+		{ // 48
 			`function a() {for (let {a} of []){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1725,7 +1761,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 48
+		{ // 49
 			`function a() {var a;try{}catch(a){a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1785,7 +1821,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 49
+		{ // 50
 			`function a() {var a;try{}catch(a){let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -1794,7 +1830,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 50
+		{ // 51
 			`function a() {var a;try{}catch(a){a;var a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1859,7 +1895,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 51
+		{ // 52
 			`function a() {var a;try{}catch(a){{let a}}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1928,7 +1964,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 52
+		{ // 53
 			`function a() {var a;try{a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -1980,7 +2016,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 53
+		{ // 54
 			`function a() {var a;try{let a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2035,7 +2071,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 54
+		{ // 55
 			`function a() {try{var a}finally{}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2084,7 +2120,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 55
+		{ // 56
 			`function a() {try{}catch(b){var a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2140,7 +2176,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 56
+		{ // 57
 			`function a() {try{}catch(b){let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2195,7 +2231,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 57
+		{ // 58
 			`function a() {try{}finally{var a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2244,7 +2280,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 58
+		{ // 59
 			`function a() {try{}finally{let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2292,7 +2328,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 59
+		{ // 60
 			`function a() {let a;switch(a){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2338,7 +2374,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 60
+		{ // 61
 			`function a() {let a;switch(a){case a:}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2389,7 +2425,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 61
+		{ // 62
 			`function a() {let a;switch(a){case a:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2448,7 +2484,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 62
+		{ // 63
 			`function a() {let a;switch(a){case 1:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2457,7 +2493,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 63
+		{ // 64
 			`function a() {let a;switch(a){case 1:let a;break;default:break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2466,7 +2502,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 64
+		{ // 65
 			`function a() {let a;switch(a){default:break;case 1:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2475,7 +2511,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 65
+		{ // 66
 			`function a() {let a;switch(a){default:let a;break;case 2:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2484,7 +2520,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 66
+		{ // 67
 			`function a() {let a;switch(a){case 1:let a;break;default:let a}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -2493,7 +2529,7 @@ func TestScriptScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 67
+		{ // 68
 			`function a() {switch(0){case 1:{let a};case 2:{let a}}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2558,7 +2594,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 68
+		{ // 69
 			`function a() {const a = () => this}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2602,7 +2638,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 69
+		{ // 70
 			`function a() {const a = () => arguments}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2645,7 +2681,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 70
+		{ // 71
 			`class a{}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -2664,7 +2700,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 71
+		{ // 72
 			`class a{}class b extends a{}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := &Scope{
@@ -2695,7 +2731,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 72
+		{ // 73
 			`class a{b(){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2723,7 +2759,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 73
+		{ // 74
 			`class a{b(){}a(){}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2760,7 +2796,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 74
+		{ // 75
 			`class a{b(){var a;let b}}`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2802,7 +2838,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 75
+		{ // 76
 			`const a = (a) => a`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
@@ -2840,7 +2876,7 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 76
+		{ // 77
 			`function a() {b = 1}let b = 0;`,
 			func(s *javascript.Script) (*Scope, error) {
 				scope := new(Scope)
