@@ -616,8 +616,13 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 				NewExpression: &NewExpression{
 					MemberExpression: MemberExpression{
 						PrimaryExpression: &PrimaryExpression{
-							IdentifierReference: a.PropertyName.LiteralPropertyName,
-							Tokens:              a.PropertyName.Tokens,
+							IdentifierReference: &Token{
+								Token:   a.PropertyName.LiteralPropertyName.Token,
+								Pos:     a.PropertyName.LiteralPropertyName.Pos,
+								Line:    a.PropertyName.LiteralPropertyName.Line,
+								LinePos: a.PropertyName.LiteralPropertyName.LinePos,
+							},
+							Tokens: a.PropertyName.Tokens,
 						},
 						Tokens: a.PropertyName.Tokens,
 					},
