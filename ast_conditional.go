@@ -244,7 +244,7 @@ func (la *LogicalANDExpression) parse(j *jsParser, in, yield, await bool) error 
 
 func (la *LogicalANDExpression) hasFirstComment() bool {
 	if la.LogicalANDExpression != nil {
-		return la.hasFirstComment()
+		return la.LogicalANDExpression.hasFirstComment()
 	}
 
 	return la.BitwiseORExpression.hasFirstComment()
