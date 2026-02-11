@@ -611,6 +611,23 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	a.PropertyName = *pd.PropertyName
 
 	if pd.IsCoverInitializedName {
+		a.DestructuringAssignmentTarget = &DestructuringAssignmentTarget{
+			LeftHandSideExpression: &LeftHandSideExpression{
+				NewExpression: &NewExpression{
+					MemberExpression: MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: a.PropertyName.LiteralPropertyName,
+							Tokens:              a.PropertyName.Tokens,
+						},
+						Tokens: a.PropertyName.Tokens,
+					},
+					Tokens: a.PropertyName.Tokens,
+				},
+				Tokens: a.PropertyName.Tokens,
+			},
+			Tokens: a.PropertyName.Tokens,
+		}
+
 		a.Initializer = pd.AssignmentExpression
 	} else {
 		a.DestructuringAssignmentTarget = new(DestructuringAssignmentTarget)
