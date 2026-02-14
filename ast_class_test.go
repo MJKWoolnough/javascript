@@ -2374,7 +2374,36 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:14],
 			}
 		}},
-		{"class a {set\n#b(c)\n{}}", func(t *test, tk Tokens) { // 86
+		{"class a {\n// A\nget b(){}}", func(t *test, tk Tokens) { // 86
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						MethodDefinition: &MethodDefinition{
+							Type: MethodGetter,
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Tokens: tk[10:11],
+							},
+							Params: FormalParameters{
+								Tokens: tk[11:13],
+							},
+							FunctionBody: Block{
+								Tokens: tk[13:15],
+							},
+							Comments: [4]Comments{{&tk[6]}},
+							Tokens:   tk[6:15],
+						},
+						Tokens: tk[6:15],
+					},
+				},
+				Tokens: tk[:16],
+			}
+		}},
+		{"class a {set\n#b(c)\n{}}", func(t *test, tk Tokens) { // 87
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2405,7 +2434,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
-		{"class a {get}", func(t *test, tk Tokens) { // 87
+		{"class a {get}", func(t *test, tk Tokens) { // 88
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2426,7 +2455,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"class a {set}", func(t *test, tk Tokens) { // 88
+		{"class a {set}", func(t *test, tk Tokens) { // 89
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2447,7 +2476,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"class a {get\n= 1}", func(t *test, tk Tokens) { // 89
+		{"class a {get\n= 1}", func(t *test, tk Tokens) { // 90
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2475,7 +2504,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"class a {set\n= 1}", func(t *test, tk Tokens) { // 90
+		{"class a {set\n= 1}", func(t *test, tk Tokens) { // 91
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2503,7 +2532,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"class a {set = 1\n#set = 2;a\n=\n3\nb = 4;;static async c(){}static\nasync d(){}#e(){}static{}#f=5;g=6\nh=7;i\n[j]}", func(t *test, tk Tokens) { // 91
+		{"class a {set = 1\n#set = 2;a\n=\n3\nb = 4;;static async c(){}static\nasync d(){}#e(){}static{}#f=5;g=6\nh=7;i\n[j]}", func(t *test, tk Tokens) { // 92
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2742,7 +2771,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:74],
 			}
 		}},
-		{"class a {static{function}}", func(t *test, tk Tokens) { // 92
+		{"class a {static{function}}", func(t *test, tk Tokens) { // 93
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2765,7 +2794,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {a b}", func(t *test, tk Tokens) { // 93
+		{"class a {a b}", func(t *test, tk Tokens) { // 94
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingSemiColon,
@@ -2776,7 +2805,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {a/* */b}", func(t *test, tk Tokens) { // 94
+		{"class a {a/* */b}", func(t *test, tk Tokens) { // 95
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingSemiColon,
@@ -2787,7 +2816,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {a/*\n*/b}", func(t *test, tk Tokens) { // 95
+		{"class a {a/*\n*/b}", func(t *test, tk Tokens) { // 96
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2822,7 +2851,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"class a {a//\nc}", func(t *test, tk Tokens) { // 96
+		{"class a {a//\nc}", func(t *test, tk Tokens) { // 97
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -2857,7 +2886,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{"class a {b()}", func(t *test, tk Tokens) { // 97
+		{"class a {b()}", func(t *test, tk Tokens) { // 98
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2876,7 +2905,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {+}", func(t *test, tk Tokens) { // 98
+		{"class a {+}", func(t *test, tk Tokens) { // 99
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2895,7 +2924,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {b = +}", func(t *test, tk Tokens) { // 99
+		{"class a {b = +}", func(t *test, tk Tokens) { // 100
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2986,7 +3015,7 @@ func TestClassDeclaration(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
-		{"class a {\n// A\nb /* B */(){}\n}", func(t *test, tk Tokens) { // 100
+		{"class a {\n// A\nb /* B */(){}\n}", func(t *test, tk Tokens) { // 101
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3014,7 +3043,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
-		{"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}", func(t *test, tk Tokens) { // 101
+		{"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}", func(t *test, tk Tokens) { // 102
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3062,7 +3091,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:27],
 			}
 		}},
-		{"class a {static //A\nb /* B */() {} }", func(t *test, tk Tokens) { // 102
+		{"class a {static //A\nb /* B */() {} }", func(t *test, tk Tokens) { // 103
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3091,7 +3120,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:19],
 			}
 		}},
-		{"class a {static /* A */ [\"b\"]// B\n() {} }", func(t *test, tk Tokens) { // 103
+		{"class a {static /* A */ [\"b\"]// B\n() {} }", func(t *test, tk Tokens) { // 104
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3126,7 +3155,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:21],
 			}
 		}},
-		{"class a {static // A\n#b// B\n() {} }", func(t *test, tk Tokens) { // 104
+		{"class a {static // A\n#b// B\n() {} }", func(t *test, tk Tokens) { // 105
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3152,7 +3181,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:19],
 			}
 		}},
-		{"class a {static // A\nb// B\n}", func(t *test, tk Tokens) { // 105
+		{"class a {static // A\nb// B\n}", func(t *test, tk Tokens) { // 106
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3175,7 +3204,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"class a {static // A\nb // B\n= 1}", func(t *test, tk Tokens) { // 106
+		{"class a {static // A\nb // B\n= 1}", func(t *test, tk Tokens) { // 107
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3205,7 +3234,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
-		{"class a {static // A\n[b] // B\n}", func(t *test, tk Tokens) { // 107
+		{"class a {static // A\n[b] // B\n}", func(t *test, tk Tokens) { // 108
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3234,7 +3263,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:16],
 			}
 		}},
-		{"class a {\n// A\nstatic // B\n{} // C\n}", func(t *test, tk Tokens) { // 108
+		{"class a {\n// A\nstatic // B\n{} // C\n}", func(t *test, tk Tokens) { // 109
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3250,7 +3279,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:18],
 			}
 		}},
-		{"class\na\nextends\nb\n{\n}", func(t *test, tk Tokens) { // 109
+		{"class\na\nextends\nb\n{\n}", func(t *test, tk Tokens) { // 110
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassHeritage: &LeftHandSideExpression{
@@ -3269,14 +3298,14 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"class // A\na // B\n{ // C\n\n// D\n}", func(t *test, tk Tokens) { // 110
+		{"class // A\na // B\n{ // C\n\n// D\n}", func(t *test, tk Tokens) { // 111
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[4],
 				Comments:          [5]Comments{{&tk[2]}, {&tk[6]}, nil, {&tk[10]}, {&tk[12]}},
 				Tokens:            tk[:15],
 			}
 		}},
-		{"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}", func(t *test, tk Tokens) { // 111
+		{"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}", func(t *test, tk Tokens) { // 112
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3307,7 +3336,7 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens:   tk[:38],
 			}
 		}},
-		{"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}", func(t *test, tk Tokens) { // 112
+		{"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}", func(t *test, tk Tokens) { // 113
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
@@ -3781,7 +3810,27 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:24],
 			}
 		}},
-		{"// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n", func(t *test, tk Tokens) { // 29
+		{"/* A\n B\n C */\nget a() {}", func(t *test, tk Tokens) { // 29
+			t.Output = MethodDefinition{
+				Type: MethodGetter,
+				ClassElementName: ClassElementName{
+					PropertyName: &PropertyName{
+						LiteralPropertyName: &tk[4],
+						Tokens:              tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Params: FormalParameters{
+					Tokens: tk[5:7],
+				},
+				FunctionBody: Block{
+					Tokens: tk[8:10],
+				},
+				Comments: [4]Comments{{&tk[0]}},
+				Tokens:   tk[:10],
+			}
+		}},
+		{"// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n", func(t *test, tk Tokens) { // 30
 			t.Output = MethodDefinition{
 				Type: MethodSetter,
 				ClassElementName: ClassElementName{
@@ -3810,7 +3859,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:30],
 			}
 		}},
-		{"// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n", func(t *test, tk Tokens) { // 30
+		{"// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n", func(t *test, tk Tokens) { // 31
 			t.Output = MethodDefinition{
 				ClassElementName: ClassElementName{
 					PropertyName: &PropertyName{
@@ -3838,7 +3887,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:26],
 			}
 		}},
-		{"// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G", func(t *test, tk Tokens) { // 31
+		{"// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G", func(t *test, tk Tokens) { // 32
 			t.Output = MethodDefinition{
 				Type: MethodAsync,
 				ClassElementName: ClassElementName{
@@ -3860,7 +3909,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:24],
 			}
 		}},
-		{"// A\n* // B\na // C\n() {}", func(t *test, tk Tokens) { // 32
+		{"// A\n* // B\na // C\n() {}", func(t *test, tk Tokens) { // 33
 			t.Output = MethodDefinition{
 				Type: MethodGenerator,
 				ClassElementName: ClassElementName{
@@ -3881,7 +3930,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:15],
 			}
 		}},
-		{"// A\nasync /* B*/ * // C\na(){}", func(t *test, tk Tokens) { // 33
+		{"// A\nasync /* B*/ * // C\na(){}", func(t *test, tk Tokens) { // 34
 			t.Output = MethodDefinition{
 				Type: MethodAsyncGenerator,
 				ClassElementName: ClassElementName{
@@ -3902,7 +3951,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens:   tk[:15],
 			}
 		}},
-		{"// A\nasync // B\n(){}", func(t *test, tk Tokens) { // 34
+		{"// A\nasync // B\n(){}", func(t *test, tk Tokens) { // 35
 			t.Output = MethodDefinition{
 				ClassElementName: ClassElementName{
 					PropertyName: &PropertyName{
@@ -3921,7 +3970,7 @@ func TestMethodDefinition(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{"// A\nget // B\n(){}", func(t *test, tk Tokens) { // 35
+		{"// A\nget // B\n(){}", func(t *test, tk Tokens) { // 36
 			t.Output = MethodDefinition{
 				ClassElementName: ClassElementName{
 					PropertyName: &PropertyName{
