@@ -263,6 +263,8 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 		g = j.NewGoal()
 		h := g.NewGoal()
 
+		h.AcceptRunWhitespace()
+
 		var (
 			cen      ClassElementName
 			isMethod bool
