@@ -1674,7 +1674,7 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 }
 
 func (a ArrowFunction) printSource(w writer, v bool) {
-	if a.FunctionBody == nil && a.AssignmentExpression == nil || (a.BindingIdentifier == nil && a.FormalParameters == nil) {
+	if a.FunctionBody == nil && a.AssignmentExpression == nil || a.BindingIdentifier == nil && a.FormalParameters == nil {
 		return
 	}
 
