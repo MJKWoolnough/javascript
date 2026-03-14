@@ -1132,12 +1132,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 222
 			"var a={\nb\n:\nc\n}",
 			"var a = {b: c};",
-			"var a = {\n	b: c\n};",
+			"var a = {b: c};",
 		},
 		{ // 223
 			"var a={\nb\n:\nc\n,\nd\n:\ne\n}",
 			"var a = {b: c, d: e};",
-			"var a = {\n	b: c,\n	d: e\n};",
+			"var a = {b: c, d: e};",
 		},
 		{ // 224
 			"a^b",
@@ -1147,7 +1147,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 225
 			"var a\n=\n{\nb\n:\nc\n,\nd\n,\ne\n=\nf\n,\ng\n(\n)\n{\n}\n,\n...\nh\n}\n",
 			"var a = {b: c, d, e = f, g() {}, ...h};",
-			"var a = {\n	b: c,\n	d: d,\n	e = f,\n	g() {},\n	...h\n};",
+			"var a = {b: c, d: d, e = f, g() {}, ...h};",
 		},
 		{ // 226
 			"a&b",
@@ -1732,12 +1732,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 342
 			"var a = {[ // A\n\n// B\nb // C\n\n// D\n]:c}",
 			"var a = {[b]: c};",
-			"var a = {[ // A\n\n\t\t// B\n\t\tb // C\n\n\t// D\n\t]: c\n};",
+			"var a = {[ // A\n\n\t// B\n\tb // C\n\n// D\n]: c};",
 		},
 		{ // 343
 			"var a = {[ // A\n\nb]:c}",
 			"var a = {[b]: c};",
-			"var a = {[ // A\n\n\t\tb]: c\n};",
+			"var a = {[ // A\n\n\tb]: c};",
 		},
 		{ // 344
 			"() => { // A\n\n// B\na // C\n\n// D\n}",

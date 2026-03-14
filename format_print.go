@@ -2141,13 +2141,17 @@ func (a Argument) printSource(w writer, v bool) {
 func (a Arguments) printSource(w writer, v bool) {
 	w.WriteString("(")
 
-	ip := w.Indent()
-
 	if v {
 		a.Comments[0].printSource(w, false, true)
 	}
 
 	if len(a.ArgumentList) > 0 {
+		ip := w
+
+		if v && a.hasSingleLineComment() {
+			ip = w.Indent()
+		}
+
 		if v && a.ArgumentList[0].hasFirstComment() {
 			ip.WriteString("\n")
 		}
@@ -2292,42 +2296,24 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 	}
 
 	if len(o.PropertyDefinitionList) > 0 {
-		var lastLine uint64
-
 		x := w
+		sep := ", "
 
-		if v && len(o.Tokens) > 0 {
-			lastLine = o.Tokens[0].Line
+		if v && o.hasSingleLineComment() {
+			sep = ",\n"
 			x = w.Indent()
+			x.WriteString("\n")
 		}
 
-		for n, pd := range o.PropertyDefinitionList {
-			if n > 0 {
-				if v && len(pd.Tokens) > 0 {
-					if ll := pd.Tokens[0].Line; ll > lastLine {
-						lastLine = ll
+		o.PropertyDefinitionList[0].printSource(x, v)
 
-						x.WriteString(",\n")
-					} else {
-						x.WriteString(", ")
-					}
-				} else {
-					x.WriteString(", ")
-				}
-			} else if v && len(pd.Tokens) > 0 {
-				if ll := pd.Tokens[0].Line; ll > lastLine {
-					lastLine = ll
-
-					x.WriteString("\n")
-				}
-			}
-
+		for _, pd := range o.PropertyDefinitionList[1:] {
+			x.WriteString(sep)
 			pd.printSource(x, v)
 		}
-		if v && len(o.Tokens) > 0 {
-			if ll := o.Tokens[len(o.Tokens)-1].Line; ll > lastLine {
-				w.WriteString("\n")
-			}
+
+		if x != w {
+			w.WriteString("\n")
 		}
 	}
 
