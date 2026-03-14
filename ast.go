@@ -736,6 +736,10 @@ func (ol *ObjectLiteral) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (ol *ObjectLiteral) hasSingleLineComment() bool {
+	return ol != nil && (hasSingleLineComment(ol.Comments[:]) || hasSingleLineComment(ol.PropertyDefinitionList))
+}
+
 // PropertyDefinition as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-PropertyDefinition
 //
@@ -919,6 +923,10 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (pd PropertyDefinition) hasSingleLineComment() bool {
+	return hasSingleLineComment(pd.Comments[:]) || pd.AssignmentExpression.hasSingleLineComment() || pd.MethodDefinition.hasSingleLineComment()
+}
+
 // TemplateLiteral as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-TemplateLiteral
 //
@@ -1100,4 +1108,8 @@ func (af *ArrowFunction) hasLastComment() bool {
 	}
 
 	return false
+}
+
+func (af *ArrowFunction) hasSingleLineComment() bool {
+	return af != nil && hasSingleLineComment(af.Comments[:])
 }

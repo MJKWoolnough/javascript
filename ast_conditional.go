@@ -105,6 +105,10 @@ func (ce *ConditionalExpression) hasLastComment() bool {
 	return false
 }
 
+func (ce *ConditionalExpression) hasSingleLineComment() bool {
+	return ce != nil && (ce.LogicalORExpression.hasSingleLineComment() || ce.True.hasSingleLineComment() || ce.False.hasSingleLineComment() || ce.CoalesceExpression.hasSingleLineComment())
+}
+
 // CoalesceExpression as defined in TC39
 // https://tc39.es/ecma262/#prod-CoalesceExpression
 type CoalesceExpression struct {
@@ -156,6 +160,10 @@ func (ce *CoalesceExpression) hasLastComment() bool {
 	return ce.BitwiseORExpression.hasLastComment()
 }
 
+func (ce *CoalesceExpression) hasSingleLineComment() bool {
+	return ce != nil && (ce.CoalesceExpressionHead.hasSingleLineComment() || ce.BitwiseORExpression.hasSingleLineComment())
+}
+
 // LogicalORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-LogicalORExpression
 type LogicalORExpression struct {
@@ -203,6 +211,10 @@ func (lo *LogicalORExpression) hasFirstComment() bool {
 
 func (lo *LogicalORExpression) hasLastComment() bool {
 	return lo.LogicalANDExpression.hasLastComment()
+}
+
+func (lo *LogicalORExpression) hasSingleLineComment() bool {
+	return lo != nil && (lo.LogicalORExpression.hasSingleLineComment() || lo.LogicalANDExpression.hasSingleLineComment())
 }
 
 // LogicalANDExpression as defined in ECMA-262
@@ -254,6 +266,10 @@ func (la *LogicalANDExpression) hasLastComment() bool {
 	return la.BitwiseORExpression.hasLastComment()
 }
 
+func (la *LogicalANDExpression) hasSingleLineComment() bool {
+	return la != nil && (la.LogicalANDExpression.hasSingleLineComment() || la.BitwiseORExpression.hasSingleLineComment())
+}
+
 // BitwiseORExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseORExpression
 type BitwiseORExpression struct {
@@ -301,6 +317,10 @@ func (bo *BitwiseORExpression) hasFirstComment() bool {
 
 func (bo *BitwiseORExpression) hasLastComment() bool {
 	return bo.BitwiseXORExpression.hasLastComment()
+}
+
+func (bo *BitwiseORExpression) hasSingleLineComment() bool {
+	return bo != nil && (bo.BitwiseORExpression.hasSingleLineComment() || bo.BitwiseXORExpression.hasSingleLineComment())
 }
 
 // BitwiseXORExpression as defined in ECMA-262
@@ -352,6 +372,10 @@ func (bx *BitwiseXORExpression) hasLastComment() bool {
 	return bx.BitwiseANDExpression.hasLastComment()
 }
 
+func (bx *BitwiseXORExpression) hasSingleLineComment() bool {
+	return bx != nil && (bx.BitwiseXORExpression.hasSingleLineComment() || bx.BitwiseANDExpression.hasSingleLineComment())
+}
+
 // BitwiseANDExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BitwiseANDExpression
 type BitwiseANDExpression struct {
@@ -399,6 +423,10 @@ func (ba *BitwiseANDExpression) hasFirstComment() bool {
 
 func (ba *BitwiseANDExpression) hasLastComment() bool {
 	return ba.EqualityExpression.hasLastComment()
+}
+
+func (ba *BitwiseANDExpression) hasSingleLineComment() bool {
+	return ba != nil && (ba.BitwiseANDExpression.hasSingleLineComment() || ba.EqualityExpression.hasSingleLineComment())
 }
 
 // EqualityOperator determines the type of EqualityExpression
@@ -475,6 +503,10 @@ func (ee *EqualityExpression) hasFirstComment() bool {
 
 func (ee *EqualityExpression) hasLastComment() bool {
 	return ee.RelationalExpression.hasLastComment()
+}
+
+func (ee *EqualityExpression) hasSingleLineComment() bool {
+	return ee != nil && (ee.EqualityExpression.hasSingleLineComment() || ee.RelationalExpression.hasSingleLineComment())
 }
 
 // RelationshipOperator determines the relationship type for RelationalExpression
@@ -607,6 +639,10 @@ func (re *RelationalExpression) hasLastComment() bool {
 	return re.ShiftExpression.hasLastComment()
 }
 
+func (re *RelationalExpression) hasSingleLineComment() bool {
+	return re != nil && (hasSingleLineComment(re.Comments[:]) || re.RelationalExpression.hasSingleLineComment() || re.ShiftExpression.hasSingleLineComment())
+}
+
 // ShiftOperator determines the shift type for ShiftExpression
 type ShiftOperator int
 
@@ -685,6 +721,10 @@ func (se *ShiftExpression) hasLastComment() bool {
 	return se.AdditiveExpression.hasLastComment()
 }
 
+func (se *ShiftExpression) hasSingleLineComment() bool {
+	return se != nil && (se.ShiftExpression.hasSingleLineComment() || se.AdditiveExpression.hasSingleLineComment())
+}
+
 // AdditiveOperator determines the additive type for AdditiveExpression
 type AdditiveOperator int
 
@@ -754,6 +794,10 @@ func (ae *AdditiveExpression) hasFirstComment() bool {
 
 func (ae *AdditiveExpression) hasLastComment() bool {
 	return ae.MultiplicativeExpression.hasLastComment()
+}
+
+func (ae *AdditiveExpression) hasSingleLineComment() bool {
+	return ae != nil && (ae.AdditiveExpression.hasSingleLineComment() || ae.MultiplicativeExpression.hasSingleLineComment())
 }
 
 // MultiplicativeOperator determines the multiplication type for MultiplicativeExpression
@@ -830,6 +874,10 @@ func (me *MultiplicativeExpression) hasLastComment() bool {
 	return me.ExponentiationExpression.hasLastComment()
 }
 
+func (me *MultiplicativeExpression) hasSingleLineComment() bool {
+	return me != nil && (me.MultiplicativeExpression.hasSingleLineComment() || me.ExponentiationExpression.hasSingleLineComment())
+}
+
 // ExponentiationExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExponentiationExpression
 type ExponentiationExpression struct {
@@ -882,6 +930,10 @@ func (ee *ExponentiationExpression) hasFirstComment() bool {
 
 func (ee *ExponentiationExpression) hasLastComment() bool {
 	return ee.UnaryExpression.hasLastComment()
+}
+
+func (ee *ExponentiationExpression) hasSingleLineComment() bool {
+	return ee != nil && (ee.ExponentiationExpression.hasSingleLineComment() || ee.UnaryExpression.hasSingleLineComment())
 }
 
 // UnaryOperator determines a unary operator within UnaryExpression
@@ -977,6 +1029,10 @@ func (ue *UnaryExpression) hasFirstComment() bool {
 
 func (ue *UnaryExpression) hasLastComment() bool {
 	return ue.UpdateExpression.hasLastComment()
+}
+
+func (ue *UnaryExpression) hasSingleLineComment() bool {
+	return ue != nil && (hasSingleLineComment(ue.UnaryOperators) || ue.UpdateExpression.hasSingleLineComment())
 }
 
 // UpdateOperator determines the type of update operation for UpdateExpression
@@ -1089,4 +1145,8 @@ func (ue *UpdateExpression) hasLastComment() bool {
 	}
 
 	return ue.LeftHandSideExpression != nil && ue.LeftHandSideExpression.hasLastComment()
+}
+
+func (ue *UpdateExpression) hasSingleLineComment() bool {
+	return ue != nil && (ue.Comments.hasSingleLineComment() || ue.LeftHandSideExpression.hasSingleLineComment() || ue.UnaryExpression.hasSingleLineComment())
 }

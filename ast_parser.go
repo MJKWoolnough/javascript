@@ -13,6 +13,10 @@ type Token struct {
 	Pos, Line, LinePos uint64
 }
 
+func (t *Token) hasSingleLineComment() bool {
+	return t.Type == TokenSingleLineComment
+}
+
 // IsTypescript returns true when the token was processed as part of a
 // Typescript section.
 func (t Token) IsTypescript() bool {
@@ -24,6 +28,20 @@ type Tokens []Token
 
 // Comments is a collection of Comment Tokens.
 type Comments []*Token
+
+func (c Comments) hasSingleLineComment() bool {
+	return hasSingleLineComment(c)
+}
+
+func hasSingleLineComment[T interface{ hasSingleLineComment() bool }](vs []T) bool {
+	for _, v := range vs {
+		if v.hasSingleLineComment() {
+			return true
+		}
+	}
+
+	return false
+}
 
 type jsParser Tokens
 

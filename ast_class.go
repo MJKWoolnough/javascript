@@ -427,6 +427,10 @@ func (cen *ClassElementName) parse(j *jsParser, static, class, yield, await bool
 	return nil
 }
 
+func (cen *ClassElementName) hasSingleLineComment() bool {
+	return cen != nil && hasSingleLineComment(cen.Comments[:])
+}
+
 // FieldDefinition as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-FieldDefinition
 type FieldDefinition struct {
@@ -681,6 +685,10 @@ func (md *MethodDefinition) parse(j *jsParser, static, class, yield, await bool)
 	md.Tokens = j.ToTokens()
 
 	return nil
+}
+
+func (md *MethodDefinition) hasSingleLineComment() bool {
+	return md != nil && (hasSingleLineComment(md.Comments[:]) || md.ClassElementName.hasSingleLineComment())
 }
 
 // PropertyName as defined in ECMA-262

@@ -312,6 +312,10 @@ func (ae *AssignmentExpression) hasLastComment() bool {
 	return false
 }
 
+func (ae *AssignmentExpression) hasSingleLineComment() bool {
+	return ae != nil && (hasSingleLineComment(ae.Comments[:]) || ae.ConditionalExpression.hasSingleLineComment() || ae.AssignmentPattern.hasSingleLineComment() || ae.LeftHandSideExpression.hasSingleLineComment() || ae.ArrowFunction.hasSingleLineComment())
+}
+
 // LeftHandSideExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-LeftHandSideExpression
 //
@@ -479,6 +483,10 @@ func (lhs *LeftHandSideExpression) hasLastComment() bool {
 	return false
 }
 
+func (lhs *LeftHandSideExpression) hasSingleLineComment() bool {
+	return lhs != nil && (hasSingleLineComment(lhs.Comments[:]) || lhs.NewExpression.hasSingleLineComment() || lhs.CallExpression.hasSingleLineComment() || lhs.OptionalExpression.hasSingleLineComment())
+}
+
 // AssignmentPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentPattern
 //
@@ -519,6 +527,10 @@ func (a *AssignmentPattern) from(me *MemberExpression) error {
 
 func (a *AssignmentPattern) hasFirstComment() bool {
 	return len(a.Comments[0]) > 0
+}
+
+func (a *AssignmentPattern) hasSingleLineComment() bool {
+	return a != nil && hasSingleLineComment(a.Comments[:])
 }
 
 // ObjectAssignmentPattern as defined in ECMA-262
@@ -883,6 +895,10 @@ func (oe *OptionalExpression) hasLastComment() bool {
 	return oe.OptionalChain.hasLastComment()
 }
 
+func (oe *OptionalExpression) hasSingleLineComment() bool {
+	return oe != nil && (oe.MemberExpression.hasSingleLineComment() || oe.CallExpression.hasSingleLineComment() || oe.OptionalExpression.hasSingleLineComment())
+}
+
 // OptionalChain as defined in TC39
 // https://tc39.es/ecma262/#prod-OptionalExpression
 //
@@ -1201,6 +1217,10 @@ func (ne *NewExpression) hasLastComment() bool {
 	return ne.MemberExpression.hasLastComment()
 }
 
+func (ne *NewExpression) hasSingleLineComment() bool {
+	return ne != nil && (hasSingleLineComment(ne.News) || ne.MemberExpression.hasSingleLineComment())
+}
+
 // MemberExpression as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-MemberExpression
 //
@@ -1511,6 +1531,10 @@ func (me *MemberExpression) hasLastComment() bool {
 	return len(me.Comments[4]) > 0
 }
 
+func (me *MemberExpression) hasSingleLineComment() bool {
+	return me != nil && (hasSingleLineComment(me.Comments[:]) || me.MemberExpression.hasSingleLineComment())
+}
+
 // PrimaryExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-PrimaryExpression
 //
@@ -1727,6 +1751,10 @@ func (a *Arguments) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (a *Arguments) hasSingleLineComment() bool {
+	return a != nil && (hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.ArgumentList))
+}
+
 // Argument is an item in an ArgumentList and contains the spread information
 // and the AssignementExpression
 type Argument struct {
@@ -1769,6 +1797,10 @@ func (a *Argument) hasFirstComment() bool {
 	}
 
 	return a.AssignmentExpression.hasFirstComment()
+}
+
+func (a Argument) hasSingleLineComment() bool {
+	return hasSingleLineComment(a.Comments[:]) || a.AssignmentExpression.hasSingleLineComment()
 }
 
 // CallExpression as defined in ECMA-262
@@ -2032,4 +2064,8 @@ func (ce *CallExpression) hasFirstComment() bool {
 
 func (ce *CallExpression) hasLastComment() bool {
 	return len(ce.Comments[4]) > 0
+}
+
+func (ce *CallExpression) hasSingleLineComment() bool {
+	return ce != nil && (hasSingleLineComment(ce.Comments[:]) || ce.MemberExpression.hasSingleLineComment() || ce.CallExpression.hasSingleLineComment())
 }
