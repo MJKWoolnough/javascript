@@ -2599,6 +2599,21 @@ func TestPrintingScript(t *testing.T) {
 			"import(() => {\n\treturn a;\n});",
 			"import( // A\n\n\t() => {\n\t\treturn a;\n\t});",
 		},
+		{ // 516
+			"a()[() => {}]",
+			"a()[() => {}];",
+			"a()[() => {}];",
+		},
+		{ // 517
+			"a()[() => {return b}]",
+			"a()[() => {\n\treturn b;\n}];",
+			"a()[() => {\n\treturn b;\n}];",
+		},
+		{ // 518
+			"a()[// A\n() => {return b}]",
+			"a()[() => {\n\treturn b;\n}];",
+			"a()[ // A\n\n\t() => {\n\t\treturn b;\n\t}];",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
