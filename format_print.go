@@ -1759,12 +1759,16 @@ func (c CallExpression) printSource(w writer, v bool) {
 			c.CallExpression.printSource(w, v)
 			w.WriteString("[")
 
-			ip := w.Indent()
+			ip := w
 
 			if v {
+				if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
+					ip = w.Indent()
+				}
+
 				c.Comments[2].printSource(w, true, false)
 
-				if c.Expression.hasFirstComment() {
+				if w != ip {
 					ip.WriteString("\n")
 				}
 			}
