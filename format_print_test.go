@@ -2554,6 +2554,16 @@ func TestPrintingScript(t *testing.T) {
 			"#a in b;",
 			"// A\n\n// B\n#a /* C */ in /* D */ b // E\n",
 		},
+		{ // 507
+			"a({b: () => {\nc();\n}});",
+			"a({b: () => {\n\tc();\n}});",
+			"a({b: () => {\n\tc();\n}});",
+		},
+		{ // 508
+			"a({b: // A\n() => {\nc();\n}});",
+			"a({b: () => {\n\tc();\n}});",
+			"a({\n\tb: // A\n\t() => {\n\t\tc();\n\t}\n});",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
