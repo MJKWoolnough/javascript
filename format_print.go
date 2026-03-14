@@ -1721,12 +1721,16 @@ func (c CallExpression) printSource(w writer, v bool) {
 
 		w.WriteString("(")
 
-		ip := w.Indent()
+		ip := w
 
 		if v {
+			if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
+				ip = w.Indent()
+			}
+
 			c.Comments[2].printSource(w, true, false)
 
-			if c.ImportCall.hasFirstComment() {
+			if w != ip {
 				ip.WriteString("\n")
 			}
 		}
@@ -3080,11 +3084,11 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v && oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
-			ip = w.Indent()
-		}
-
 		if v {
+			if oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
+				ip = w.Indent()
+			}
+
 			oe.Comments[1].printSource(w, true, false)
 
 			if w != ip {
