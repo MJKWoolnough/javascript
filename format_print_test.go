@@ -61,13 +61,13 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 8
 			"() => {return}",
-			"() => {\n	return;\n};",
-			"() => { return; };",
+			"() => {\n\treturn;\n};",
+			"() => {\n\treturn;\n};",
 		},
 		{ // 9
 			"() => {return a}",
-			"() => {\n	return a;\n};",
-			"() => { return a; };",
+			"() => {\n\treturn a;\n};",
+			"() => {\n\treturn a;\n};",
 		},
 		{ // 10
 			"throw a",
@@ -76,23 +76,23 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 11
 			"{\n1\n}",
-			"{\n	1;\n}",
-			"{\n	1;\n}",
+			"{\n\t1;\n}",
+			"{\n\t1;\n}",
 		},
 		{ // 12
 			"{\n1\n2\n}",
-			"{\n	1;\n	2;\n}",
-			"{\n	1;\n	2;\n}",
+			"{\n\t1;\n\t2;\n}",
+			"{\n\t1;\n\t2;\n}",
 		},
 		{ // 13
 			"{1;}",
-			"{\n	1;\n}",
-			"{ 1; }",
+			"{\n\t1;\n}",
+			"{\n\t1;\n}",
 		},
 		{ // 14
 			"{1;2;}",
-			"{\n	1;\n	2;\n}",
-			"{ 1; 2; }",
+			"{\n\t1;\n\t2;\n}",
+			"{\n\t1;\n\t2;\n}",
 		},
 		{ // 15
 			"var\na;",
@@ -132,7 +132,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 22
 			"if\n(\na\n)\n{\n}",
 			"if (a) {}",
-			"if (\n	a\n) {}",
+			"if (\n\ta\n) {}",
 		},
 		{ // 23
 			"if(a)b; else c",
@@ -142,20 +142,20 @@ func TestPrintingScript(t *testing.T) {
 		{ // 24
 			"if\n(\na\n)\nb\nelse\nc",
 			"if (a) b; else c;",
-			"if (\n	a\n) b; else c;",
+			"if (\n\ta\n) b; else c;",
 		},
 		{ // 25
 			"if(a){b}else{c}",
-			"if (a) {\n	b;\n} else {\n	c;\n}",
-			"if (a) { b; } else { c; }",
+			"if (a) {\n\tb;\n} else {\n\tc;\n}",
+			"if (a) {\n\tb;\n} else {\n\tc;\n}",
 		},
 		{ // 26
 			"if\n(\na\n)\n{\nb\n}\nelse\n{\nc\n}",
-			"if (a) {\n	b;\n} else {\n	c;\n}",
-			"if (\n	a\n) {\n	b;\n} else {\n	c;\n}",
+			"if (a) {\n\tb;\n} else {\n\tc;\n}",
+			"if (\n\ta\n) {\n\tb;\n} else {\n\tc;\n}",
 		},
 		{ // 27
-			"do\n	a\nwhile(1)",
+			"do\n\ta\nwhile(1)",
 			"do a; while (1);",
 			"do a; while (1);",
 		},
@@ -182,7 +182,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 32
 			"while\n(\na\n)\nb\n;",
 			"while (a) b;",
-			"while (\n	a\n) b;",
+			"while (\n\ta\n) b;",
 		},
 		{ // 33
 			"for\n(\n;\n;\n)\na",
@@ -202,7 +202,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 36
 			"for(\nvar a=b;\nc<d;\ne++){}",
 			"for (var a = b; c < d; e++) {}",
-			"for (\n	var a = b;\n	c < d;\n	e++\n) {}",
+			"for (\n\tvar a = b;\n\tc < d;\n\te++\n) {}",
 		},
 		{ // 37
 			"for(let a=b;c<d;e++){}",
@@ -212,7 +212,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 38
 			"for(\nlet a=b;\nc<d;\ne++){}",
 			"for (let a = b; c < d; e++) {}",
-			"for (\n	let a = b;\n	c < d;\n	e++\n) {}",
+			"for (\n\tlet a = b;\n\tc < d;\n\te++\n) {}",
 		},
 		{ // 39
 			"for(const a=b;c<d;e++){}",
@@ -222,7 +222,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 40
 			"for(\nconst a=b;\nc<d;\ne++){}",
 			"for (const a = b; c < d; e++) {}",
-			"for (\n	const a = b;\n	c < d;\n	e++\n) {}",
+			"for (\n\tconst a = b;\n\tc < d;\n\te++\n) {}",
 		},
 		{ // 41
 			"for(a in b){}",
@@ -232,7 +232,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 42
 			"for\n(a\nin\nb\n)\n{}",
 			"for (a in b) {}",
-			"for (\n	a in b\n) {}",
+			"for (\n\ta in b\n) {}",
 		},
 		{ // 43
 			"for(var a in b){}",
@@ -272,7 +272,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 50
 			"for\n(a\nof\nb\n)\n{}",
 			"for (a of b) {}",
-			"for (\n	a of b\n) {}",
+			"for (\n\ta of b\n) {}",
 		},
 		{ // 51
 			"for(var a of b){}",
@@ -306,13 +306,13 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 57
 			"async () => {\nfor await(a of b) {}\n}",
-			"async () => {\n	for await (a of b) {}\n};",
-			"async () => {\n	for await (a of b) {}\n};",
+			"async () => {\n\tfor await (a of b) {}\n};",
+			"async () => {\n\tfor await (a of b) {}\n};",
 		},
 		{ // 58
 			"async () => {\nfor\nawait(a\nof\nb)\n{}\n}",
-			"async () => {\n	for await (a of b) {}\n};",
-			"async () => {\n	for await (\n		a of b\n	) {}\n};",
+			"async () => {\n\tfor await (a of b) {}\n};",
+			"async () => {\n\tfor await (\n\t	a of b\n\t) {}\n};",
 		},
 		{ // 59
 			"switch(a) {}",
@@ -322,7 +322,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 60
 			"switch\n(\na\n)\n{\n}",
 			"switch (a) {}",
-			"switch (\n	a\n) {}",
+			"switch (\n\ta\n) {}",
 		},
 		{ // 61
 			"switch(a){case b:case c:default:case d:case e:}",
@@ -332,7 +332,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 62
 			"switch\n\n(\n\na\n\n)\n\n{\n\ncase\n\nb\n\n:\n\ncase\n\nc\n\n:\n\ndefault\n\n:\n\ncase\n\nd\n\n:\n\ncase\n\ne\n\n:\n\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
-			"switch (\n	a\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
+			"switch (\n\ta\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
 		{ // 63
 			"with(a)b",
@@ -342,7 +342,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 64
 			"with\n(\na\n)\nb",
 			"with (a) b;",
-			"with (\n	a\n) b;",
+			"with (\n\ta\n) b;",
 		},
 		{ // 65
 			"function a(){}",
@@ -611,8 +611,8 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 118
 			"function* a() {yield a}",
-			"function* a() {\n	yield a;\n}",
-			"function* a() { yield a; }",
+			"function* a() {\n\tyield a;\n}",
+			"function* a() {\n\tyield a;\n}",
 		},
 		{ // 119
 			"() => {}",
@@ -721,8 +721,8 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 140
 			"switch (a) {case 1:b;c;d}",
-			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
-			"switch (a) {\ncase 1:\n	b;\n	c;\n	d;\n}",
+			"switch (a) {\ncase 1:\n\tb;\n\tc;\n\td;\n}",
+			"switch (a) {\ncase 1:\n\tb;\n\tc;\n\td;\n}",
 		},
 		{ // 141
 			"function a(b){}",
@@ -741,63 +741,63 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 144
 			"class\na{b(){}c\n(){}}",
-			"class a {\n	b() {}\n	c() {}\n}",
-			"class a {\n	b() {}\n	c() {}\n}",
+			"class a {\n\tb() {}\n\tc() {}\n}",
+			"class a {\n\tb() {}\n\tc() {}\n}",
 		},
 		{ // 145
 			"class\na{*b(){}\n*\nc\n(){}}",
-			"class a {\n	* b() {}\n	* c() {}\n}",
-			"class a {\n	* b() {}\n	* c() {}\n}",
+			"class a {\n\t* b() {}\n\t* c() {}\n}",
+			"class a {\n\t* b() {}\n\t* c() {}\n}",
 		},
 		{ // 146
 			"class\na{async b(){}\nasync c\n(){}}",
-			"class a {\n	async b() {}\n	async c() {}\n}",
-			"class a {\n	async b() {}\n	async c() {}\n}",
+			"class a {\n\tasync b() {}\n\tasync c() {}\n}",
+			"class a {\n\tasync b() {}\n\tasync c() {}\n}",
 		},
 		{ // 147
 			"class\na{async *b(){}\nasync *\nc\n(){}}",
-			"class a {\n	async * b() {}\n	async * c() {}\n}",
-			"class a {\n	async * b() {}\n	async * c() {}\n}",
+			"class a {\n\tasync * b() {}\n\tasync * c() {}\n}",
+			"class a {\n\tasync * b() {}\n\tasync * c() {}\n}",
 		},
 		{ // 148
 			"class\na{get\nb(){}\nget c\n(){}}",
-			"class a {\n	get b() {}\n	get c() {}\n}",
-			"class a {\n	get b() {}\n	get c() {}\n}",
+			"class a {\n\tget b() {}\n\tget c() {}\n}",
+			"class a {\n\tget b() {}\n\tget c() {}\n}",
 		},
 		{ // 149
 			"class\na{set\nb(c){}\nset d\n(e){}}",
-			"class a {\n	set b(c) {}\n	set d(e) {}\n}",
-			"class a {\n	set b(c) {}\n	set d(e) {}\n}",
+			"class a {\n\tset b(c) {}\n\tset d(e) {}\n}",
+			"class a {\n\tset b(c) {}\n\tset d(e) {}\n}",
 		},
 		{ // 150
 			"class\na{static\nb(){}\nstatic c\n(){}}",
-			"class a {\n	static b() {}\n	static c() {}\n}",
-			"class a {\n	static b() {}\n	static c() {}\n}",
+			"class a {\n\tstatic b() {}\n\tstatic c() {}\n}",
+			"class a {\n\tstatic b() {}\n\tstatic c() {}\n}",
 		},
 		{ // 151
 			"class\na{static\n*b(){}\nstatic *\nc\n(){}}",
-			"class a {\n	static * b() {}\n	static * c() {}\n}",
-			"class a {\n	static * b() {}\n	static * c() {}\n}",
+			"class a {\n\tstatic * b() {}\n\tstatic * c() {}\n}",
+			"class a {\n\tstatic * b() {}\n\tstatic * c() {}\n}",
 		},
 		{ // 152
 			"class\na{static\nasync b(){}\nstatic async c\n(){}}",
-			"class a {\n	static async b() {}\n	static async c() {}\n}",
-			"class a {\n	static async b() {}\n	static async c() {}\n}",
+			"class a {\n\tstatic async b() {}\n\tstatic async c() {}\n}",
+			"class a {\n\tstatic async b() {}\n\tstatic async c() {}\n}",
 		},
 		{ // 153
 			"class\na{static\nasync *b(){}\nstatic async *\nc(){}}",
-			"class a {\n	static async * b() {}\n	static async * c() {}\n}",
-			"class a {\n	static async * b() {}\n	static async * c() {}\n}",
+			"class a {\n\tstatic async * b() {}\n\tstatic async * c() {}\n}",
+			"class a {\n\tstatic async * b() {}\n\tstatic async * c() {}\n}",
 		},
 		{ // 154
 			"class\na{static\nget\nb(){}static get c\n(){}}",
-			"class a {\n	static get b() {}\n	static get c() {}\n}",
-			"class a {\n	static get b() {}\n	static get c() {}\n}",
+			"class a {\n\tstatic get b() {}\n\tstatic get c() {}\n}",
+			"class a {\n\tstatic get b() {}\n\tstatic get c() {}\n}",
 		},
 		{ // 155
 			"class\na{static\nset\nb(c){}static set d\n(e){}}",
-			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
-			"class a {\n	static set b(c) {}\n	static set d(e) {}\n}",
+			"class a {\n\tstatic set b(c) {}\n\tstatic set d(e) {}\n}",
+			"class a {\n\tstatic set b(c) {}\n\tstatic set d(e) {}\n}",
 		},
 		{ // 156
 			"a",
@@ -1286,8 +1286,8 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 253
 			"async function a(){await b}",
-			"async function a() {\n	await b;\n}",
-			"async function a() { await b; }",
+			"async function a() {\n\tawait b;\n}",
+			"async function a() {\n\tawait b;\n}",
 		},
 		{ // 254
 			"a ++",
@@ -1332,7 +1332,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 262
 			"for(var a,b,\nc;;){}",
 			"for (var a, b, c;;) {}",
-			"for (var a, b,\n	c;;) {}",
+			"for (var a, b,\n\tc;;) {}",
 		},
 		{ // 263
 			"for(var{a}in b){}",
@@ -1346,13 +1346,13 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 265
 			"switch(a){default:b}",
-			"switch (a) {\ndefault:\n	b;\n}",
-			"switch (a) {\ndefault:\n	b;\n}",
+			"switch (a) {\ndefault:\n\tb;\n}",
+			"switch (a) {\ndefault:\n\tb;\n}",
 		},
 		{ // 266
 			"function*a(){yield *b}",
-			"function* a() {\n	yield * b;\n}",
-			"function* a() { yield * b; }",
+			"function* a() {\n\tyield * b;\n}",
+			"function* a() {\n\tyield * b;\n}",
 		},
 		{ // 267
 			"a*=b",
@@ -1431,23 +1431,23 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 282
 			"{a}",
-			"{\n	a;\n}",
-			"{ a; }",
+			"{\n\ta;\n}",
+			"{\n\ta;\n}",
 		},
 		{ // 283
 			"{a;b}",
-			"{\n	a;\n	b;\n}",
-			"{ a; b; }",
+			"{\n\ta;\n\tb;\n}",
+			"{\n\ta;\n\tb;\n}",
 		},
 		{ // 284
 			"{a;\nb}",
-			"{\n	a;\n	b;\n}",
-			"{ a;\n	b; }",
+			"{\n\ta;\n\tb;\n}",
+			"{\n\ta;\n\tb;\n}",
 		},
 		{ // 285
 			"{\na;\nb\n}",
-			"{\n	a;\n	b;\n}",
-			"{\n	a;\n	b;\n}",
+			"{\n\ta;\n\tb;\n}",
+			"{\n\ta;\n\tb;\n}",
 		},
 		{ // 286
 			"({a, b} = {a: 1, b: 2})",
@@ -1526,68 +1526,68 @@ func TestPrintingScript(t *testing.T) {
 		},
 		{ // 301
 			"class\na\n{\nb\n}",
-			"class a {\n	b;\n}",
-			"class a {\n	b;\n}",
+			"class a {\n\tb;\n}",
+			"class a {\n\tb;\n}",
 		},
 		{ // 302
 			"class a { b () {} }",
-			"class a {\n	b() {}\n}",
-			"class a {\n	b() {}\n}",
+			"class a {\n\tb() {}\n}",
+			"class a {\n\tb() {}\n}",
 		},
 		{ // 303
 			"class\na\n{\n#b\n}",
-			"class a {\n	#b;\n}",
-			"class a {\n	#b;\n}",
+			"class a {\n\t#b;\n}",
+			"class a {\n\t#b;\n}",
 		},
 		{ // 304
 			"class a { #b () {} }",
-			"class a {\n	#b() {}\n}",
-			"class a {\n	#b() {}\n}",
+			"class a {\n\t#b() {}\n}",
+			"class a {\n\t#b() {}\n}",
 		},
 		{ // 305
 			"class a { #b = 1 }",
-			"class a {\n	#b = 1;\n}",
-			"class a {\n	#b = 1;\n}",
+			"class a {\n\t#b = 1;\n}",
+			"class a {\n\t#b = 1;\n}",
 		},
 		{ // 306
 			"class a { #b = 1; #c = 2 }",
-			"class a {\n	#b = 1;\n	#c = 2;\n}",
-			"class a {\n	#b = 1;\n	#c = 2;\n}",
+			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
+			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 		},
 		{ // 307
 			"class a { #b = 1\n#c = 2 }",
-			"class a {\n	#b = 1;\n	#c = 2;\n}",
-			"class a {\n	#b = 1;\n	#c = 2;\n}",
+			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
+			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 		},
 		{ // 308
 			"class a { #b(){}#c = 2 }",
-			"class a {\n	#b() {}\n	#c = 2;\n}",
-			"class a {\n	#b() {}\n	#c = 2;\n}",
+			"class a {\n\t#b() {}\n\t#c = 2;\n}",
+			"class a {\n\t#b() {}\n\t#c = 2;\n}",
 		},
 		{ // 309
 			"class a { #b\n#c(){}}",
-			"class a {\n	#b;\n	#c() {}\n}",
-			"class a {\n	#b;\n	#c() {}\n}",
+			"class a {\n\t#b;\n\t#c() {}\n}",
+			"class a {\n\t#b;\n\t#c() {}\n}",
 		},
 		{ // 310
 			"class a { #b = 1\n#c(){}}",
-			"class a {\n	#b = 1;\n	#c() {}\n}",
-			"class a {\n	#b = 1;\n	#c() {}\n}",
+			"class a {\n\t#b = 1;\n\t#c() {}\n}",
+			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 		},
 		{ // 311
 			"class a { #b = 1;#c(){}}",
-			"class a {\n	#b = 1;\n	#c() {}\n}",
-			"class a {\n	#b = 1;\n	#c() {}\n}",
+			"class a {\n\t#b = 1;\n\t#c() {}\n}",
+			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 		},
 		{ // 312
 			"class a { #b;#c(){}}",
-			"class a {\n	#b;\n	#c() {}\n}",
-			"class a {\n	#b;\n	#c() {}\n}",
+			"class a {\n\t#b;\n\t#c() {}\n}",
+			"class a {\n\t#b;\n\t#c() {}\n}",
 		},
 		{ // 313
 			"class a {static a;static b\nstatic c = 2;static d(){};static{}static{e}static{e;f}}",
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
-			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic { e; }\n\tstatic { e; f; }\n}",
+			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
 		},
 		{ // 314
 			"#a in b",

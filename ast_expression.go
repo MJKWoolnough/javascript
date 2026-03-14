@@ -1165,6 +1165,20 @@ func (e *Expression) hasFirstComment() bool {
 	return e.Expressions[0].hasFirstComment()
 }
 
+func (e *Expression) hasSingleLineComment() bool {
+	if e == nil {
+		return false
+	}
+
+	for _, ae := range e.Expressions {
+		if ae.hasSingleLineComment() {
+			return true
+		}
+	}
+
+	return false
+}
+
 // NewExpression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-NewExpression
 //

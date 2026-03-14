@@ -154,55 +154,24 @@ func (d Declaration) printSource(w writer, v bool) {
 func (b Block) printSource(w writer, v bool) {
 	w.WriteString("{")
 
-	var lastLine uint64
-
-	if v && len(b.Tokens) > 0 {
-		lastLine = b.Tokens[0].Line
-	}
-
 	if v && len(b.Comments[0]) > 0 {
 		b.Comments[0].printSource(w, false, true)
-
-		lastLine = b.Comments[0][len(b.Comments[0])-1].Line
 	}
 
 	ip := w.Indent()
 
-	for _, stmt := range b.StatementList {
-		if v {
-			if len(stmt.Tokens) > 0 {
-				ll := stmt.Tokens[0].Line
-
-				if ll > lastLine {
-					ip.WriteString("\n")
-				} else {
-					ip.WriteString(" ")
-				}
-
-				lastLine = ll
-			} else {
-				ip.WriteString("\n")
-			}
-		} else {
+	if len(b.StatementList) > 0 {
+		for _, stmt := range b.StatementList {
 			ip.WriteString("\n")
+			stmt.printSource(ip, v)
 		}
-
-		stmt.printSource(ip, v)
 	}
 
 	if v && len(b.Comments[1]) > 0 {
 		w.WriteString("\n")
 		b.Comments[1].printSource(w, false, true)
 	} else if len(b.StatementList) > 0 && !w.LastIsWhitespace() {
-		if v && len(b.Tokens) > 0 {
-			if b.Tokens[len(b.Tokens)-1].Line > lastLine {
-				w.WriteString("\n")
-			} else {
-				ip.WriteString(" ")
-			}
-		} else {
-			w.WriteString("\n")
-		}
+		w.WriteString("\n")
 	}
 
 	w.WriteString("}")
@@ -3109,19 +3078,23 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 	} else if oe.Expression != nil {
 		w.WriteString("[")
 
-		ip := w.Indent()
+		ip := w
+
+		if v && oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
+			ip = w.Indent()
+		}
 
 		if v {
 			oe.Comments[1].printSource(w, true, false)
 
-			if oe.Expression.hasFirstComment() {
+			if w != ip {
 				ip.WriteString("\n")
 			}
 		}
 
 		oe.Expression.printSource(ip, v)
 
-		if v && len(oe.Comments[2]) > 0 {
+		if v && w != ip {
 			w.WriteString("\n")
 			oe.Comments[2].printSource(w, false, false)
 		}

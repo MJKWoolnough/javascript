@@ -5451,7 +5451,7 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 17
 			"class A {\n// A\n/* B */ static /* C */ readonly /* D */ {b};}",
-			"class A {\n\t// A\n\t/* B */\n\tstatic /* C */ /*readonly*/ /* D */ { b; }\n}",
+			"class A {\n\t// A\n\t/* B */\n\tstatic /* C */ /*readonly*/ /* D */ {\n\t\tb;\n\t}\n}",
 		},
 		{ // 18
 			"class A {b: string}",
