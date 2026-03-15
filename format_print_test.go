@@ -132,7 +132,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 22
 			"if\n(\na\n)\n{\n}",
 			"if (a) {}",
-			"if (\n\ta\n) {}",
+			"if (a) {}",
 		},
 		{ // 23
 			"if(a)b; else c",
@@ -142,7 +142,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 24
 			"if\n(\na\n)\nb\nelse\nc",
 			"if (a) b; else c;",
-			"if (\n\ta\n) b; else c;",
+			"if (a) b; else c;",
 		},
 		{ // 25
 			"if(a){b}else{c}",
@@ -152,7 +152,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 26
 			"if\n(\na\n)\n{\nb\n}\nelse\n{\nc\n}",
 			"if (a) {\n\tb;\n} else {\n\tc;\n}",
-			"if (\n\ta\n) {\n\tb;\n} else {\n\tc;\n}",
+			"if (a) {\n\tb;\n} else {\n\tc;\n}",
 		},
 		{ // 27
 			"do\n\ta\nwhile(1)",

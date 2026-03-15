@@ -252,20 +252,18 @@ func (i IfStatement) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		i.Comments[1].printSource(w, false, true)
+		ip := w
 
-		ip := w.Indent()
-		nl := false
+		if v && (hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment()) {
+			ip = w.Indent()
 
-		if len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && (i.Expression.Tokens[0].Line > i.Tokens[0].Line || i.Expression.hasFirstComment()) {
-			nl = true
-
+			i.Comments[1].printSource(w, false, false)
 			ip.WriteString("\n")
 		}
 
 		i.Expression.printSource(ip, true)
 
-		if nl || len(i.Comments[2]) > 0 {
+		if v && w != ip {
 			w.WriteString("\n")
 			i.Comments[2].printSource(w, false, false)
 		}
@@ -1346,10 +1344,10 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 
 	if v && a.hasSingleLineComment() {
 		ip = w.Indent()
+		sep = ",\n"
+
 		a.Comments[0].printSource(w, false, true)
 		ip.WriteString("\n")
-
-		sep = ",\n"
 	}
 
 	for n, be := range a.BindingElementList {
