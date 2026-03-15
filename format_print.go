@@ -254,7 +254,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 	if v {
 		ip := w
 
-		if v && (hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment()) {
+		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
 			i.Comments[1].printSource(w, false, false)
@@ -263,7 +263,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 
 		i.Expression.printSource(ip, true)
 
-		if v && w != ip {
+		if w != ip {
 			w.WriteString("\n")
 			i.Comments[2].printSource(w, false, false)
 		}
@@ -324,7 +324,7 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 	if v {
 		ip := w
 
-		if v && (hasSingleLineComment(i.Comments[3:4]) || i.Expression.hasSingleLineComment()) {
+		if hasSingleLineComment(i.Comments[3:4]) || i.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
 			i.Comments[3].printSource(w, false, false)
@@ -333,7 +333,7 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 
 		i.Expression.printSource(ip, true)
 
-		if v && w != ip {
+		if w != ip {
 			w.WriteString("\n")
 			i.Comments[4].printSource(w, false, false)
 		}
@@ -360,31 +360,23 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		i.Comments[1].printSource(w, false, true)
-	}
+		ip := w
 
-	if v {
-		ip := w.Indent()
-		nl := false
+		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
+			ip = w.Indent()
 
-		if (len(i.Tokens) > 0 && len(i.Expression.Tokens) > 0 && i.Expression.Tokens[0].Line > i.Tokens[0].Line) || i.Expression.hasFirstComment() {
+			i.Comments[1].printSource(w, false, false)
 			ip.WriteString("\n")
-
-			nl = true
 		}
 
 		i.Expression.printSource(ip, true)
 
-		if nl && !w.LastIsWhitespace() {
+		if w != ip {
 			w.WriteString("\n")
+			i.Comments[2].printSource(w, false, false)
 		}
 	} else {
 		i.Expression.printSource(w, false)
-	}
-
-	if v && len(i.Comments[2]) > 0 {
-		w.WriteString("\n")
-		i.Comments[2].printSource(w, false, true)
 	}
 
 	w.WriteString(") ")
