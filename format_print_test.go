@@ -172,12 +172,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 30
 			"do\na\nwhile\n(\n1\n)",
 			"do a; while (1);",
-			"do a; while (\n\t1\n);",
+			"do a; while (1);",
 		},
 		{ // 31
 			"do\n{\n}\nwhile\n(\n1\n)",
 			"do {} while (1);",
-			"do {} while (\n\t1\n);",
+			"do {} while (1);",
 		},
 		{ // 32
 			"while(a)b",

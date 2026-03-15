@@ -322,25 +322,20 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		i.Comments[3].printSource(w, false, true)
+		ip := w
 
-		ip := w.Indent()
-		nl := false
+		if v && (hasSingleLineComment(i.Comments[3:4]) || i.Expression.hasSingleLineComment()) {
+			ip = w.Indent()
 
-		if len(i.Expression.Tokens) > 0 && len(i.Tokens) > 0 && i.Expression.Tokens[0].Line < i.Tokens[len(i.Tokens)-1].Line {
-			nl = true
-
+			i.Comments[3].printSource(w, false, false)
 			ip.WriteString("\n")
 		}
 
 		i.Expression.printSource(ip, true)
 
-		if len(i.Comments[4]) > 0 {
+		if v && w != ip {
 			w.WriteString("\n")
-
-			i.Comments[4].printSource(w, false, true)
-		} else if nl {
-			w.WriteString("\n")
+			i.Comments[4].printSource(w, false, false)
 		}
 	} else {
 		i.Expression.printSource(w, false)
