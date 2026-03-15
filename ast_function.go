@@ -369,3 +369,7 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 
 	return nil
 }
+
+func (be *BindingElement) hasSingleLineComment() bool {
+	return be != nil && (hasSingleLineComment(be.Comments[:]) || be.Initializer.hasSingleLineComment())
+}

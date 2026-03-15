@@ -406,6 +406,10 @@ func (ab *ArrayBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (ab *ArrayBindingPattern) hasSingleLineComment() bool {
+	return ab != nil && (hasSingleLineComment(ab.Comments[:]) || hasSingleLineComment(ab.BindingElementList) || ab.BindingRestElement.hasSingleLineComment())
+}
+
 // ObjectBindingPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ObjectBindingPattern
 type ObjectBindingPattern struct {
@@ -494,6 +498,10 @@ func (ob *ObjectBindingPattern) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (ob *ObjectBindingPattern) hasSingleLineComment() bool {
+	return ob != nil && (hasSingleLineComment(ob.Comments[:]) || hasSingleLineComment(ob.BindingPropertyList))
+}
+
 // BindingProperty as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingProperty
 //
@@ -558,6 +566,10 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 	bp.Tokens = j.ToTokens()
 
 	return nil
+}
+
+func (bp BindingProperty) hasSingleLineComment() bool {
+	return hasSingleLineComment(bp.Comments[:]) || bp.BindingElement.hasSingleLineComment()
 }
 
 // VariableDeclaration as defined in ECMA-262

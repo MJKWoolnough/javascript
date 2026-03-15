@@ -484,7 +484,7 @@ func (lhs *LeftHandSideExpression) hasLastComment() bool {
 }
 
 func (lhs *LeftHandSideExpression) hasSingleLineComment() bool {
-	return lhs != nil && (hasSingleLineComment(lhs.Comments[:]) || lhs.NewExpression.hasSingleLineComment() || lhs.CallExpression.hasSingleLineComment() || lhs.OptionalExpression.hasSingleLineComment())
+	return lhs != nil && (lhs.Comments.hasSingleLineComment() || lhs.NewExpression.hasSingleLineComment() || lhs.CallExpression.hasSingleLineComment() || lhs.OptionalExpression.hasSingleLineComment())
 }
 
 // AssignmentPattern as defined in ECMA-262
@@ -1814,7 +1814,7 @@ func (a *Argument) hasFirstComment() bool {
 }
 
 func (a Argument) hasSingleLineComment() bool {
-	return hasSingleLineComment(a.Comments[:]) || a.AssignmentExpression.hasSingleLineComment()
+	return a.Comments.hasSingleLineComment() || a.AssignmentExpression.hasSingleLineComment()
 }
 
 // CallExpression as defined in ECMA-262

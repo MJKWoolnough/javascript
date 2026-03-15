@@ -30,12 +30,21 @@ type Tokens []Token
 type Comments []*Token
 
 func (c Comments) hasSingleLineComment() bool {
-	return hasSingleLineComment(c)
+	for _, tk := range c {
+		if tk.hasSingleLineComment() {
+			return true
+		}
+	}
+
+	return false
 }
 
-func hasSingleLineComment[T interface{ hasSingleLineComment() bool }](vs []T) bool {
-	for _, v := range vs {
-		if v.hasSingleLineComment() {
+func hasSingleLineComment[T any, PT interface {
+	*T
+	hasSingleLineComment() bool
+}](vs []T) bool {
+	for n := range vs {
+		if PT(&vs[n]).hasSingleLineComment() {
 			return true
 		}
 	}
