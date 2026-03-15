@@ -1289,19 +1289,20 @@ func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 func (o ObjectBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("{")
 
-	ip := w.Indent()
+	ip := w
+	sep := ", "
 
-	if v && len(o.Comments[0]) > 0 {
+	if v && o.hasSingleLineComment() {
+		ip = w.Indent()
+
 		o.Comments[0].printSource(w, false, true)
-	}
-
-	if v && (len(o.Comments[0]) > 0 || len(o.BindingPropertyList) > 0 && len(o.BindingPropertyList[0].Comments[0]) > 0) {
 		ip.WriteString("\n")
+		sep = ",\n"
 	}
 
 	for n, bp := range o.BindingPropertyList {
 		if n > 0 {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 		}
 
 		bp.printSource(ip, v)
@@ -1309,7 +1310,7 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 
 	if o.BindingRestProperty != nil {
 		if len(o.BindingPropertyList) > 0 {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 		}
 
 		if v {
@@ -1329,7 +1330,7 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(o.Comments[4]) > 0 {
+	if v && (len(o.Comments[4]) > 0 || w != ip && !w.LastIsWhitespace()) {
 		w.WriteString("\n")
 		o.Comments[4].printSource(w, false, false)
 	}

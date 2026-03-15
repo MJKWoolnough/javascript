@@ -1752,7 +1752,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 346
 			"let {\n// A\na// B\n} = b;",
 			"let {a} = b;",
-			"let {a: // A\n\ta // B\n} = b;",
+			"let {\n\ta: // A\n\ta // B\n} = b;",
 		},
 		{ // 347
 			"let {\n// A\na// B\n: // C\nb // D\n} = c;",
@@ -1762,7 +1762,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 348
 			"let {\n// A\na// B\n= // C\nb // D\n} = c;",
 			"let {a = b} = c;",
-			"let {a: // A\n\ta // B\n\t= // C\n\tb // D\n} = c;",
+			"let {\n\ta: // A\n\ta // B\n\t= // C\n\tb // D\n} = c;",
 		},
 		{ // 349
 			"let {\n// A\na// B\n: // C\nb // D\n= // E\nc // F\n} = d;",
@@ -1782,7 +1782,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 352
 			"let { // A\n\n// B\na // C\n, // D\n...// E\nb // F\n\n// G\n} = c",
 			"let {a, ...b} = c;",
-			"let { // A\n\n\ta: // B\n\ta // C\n\t, // D\n\t... // E\n\tb // F\n\n// G\n} = c;",
+			"let { // A\n\n\ta: // B\n\ta // C\n\t,\n\t// D\n\t... // E\n\tb // F\n\n// G\n} = c;",
 		},
 		{ // 353
 			"let [ // A\n\n// B\n] = a",
