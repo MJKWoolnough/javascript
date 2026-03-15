@@ -1341,19 +1341,20 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 func (a ArrayBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("[")
 
-	ip := w.Indent()
+	ip := w
+	sep := ", "
 
-	if v {
+	if v && a.hasSingleLineComment() {
+		ip = w.Indent()
 		a.Comments[0].printSource(w, false, true)
-	}
-
-	if v && (len(a.Comments[0]) > 0 || len(a.BindingElementList) > 0 && len(a.BindingElementList[0].Comments[0]) > 0) {
 		ip.WriteString("\n")
+
+		sep = ",\n"
 	}
 
 	for n, be := range a.BindingElementList {
 		if n > 0 {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 		}
 
 		be.printSource(ip, v)
@@ -1361,7 +1362,7 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 
 	if a.BindingRestElement != nil {
 		if len(a.BindingElementList) > 0 {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 		}
 
 		if v {
@@ -1372,7 +1373,7 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 		a.BindingRestElement.printSource(ip, v)
 	}
 
-	if v && len(a.Comments[2]) > 0 {
+	if v && (len(a.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace()) {
 		w.WriteString("\n")
 		a.Comments[2].printSource(w, false, true)
 	}
