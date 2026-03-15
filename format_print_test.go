@@ -155,2461 +155,2466 @@ func TestPrintingScript(t *testing.T) {
 			"if (a) {\n\tb;\n} else {\n\tc;\n}",
 		},
 		{ // 27
+			"if ( // A\na) b",
+			"if (a) b;",
+			"if ( // A\n\n\ta\n) b;",
+		},
+		{ // 28
 			"do\n\ta\nwhile(1)",
 			"do a; while (1);",
 			"do a; while (1);",
 		},
-		{ // 28
+		{ // 29
 			"do{}while(1)",
 			"do {} while (1);",
 			"do {} while (1);",
 		},
-		{ // 29
+		{ // 30
 			"do\na\nwhile\n(\n1\n)",
 			"do a; while (1);",
 			"do a; while (\n\t1\n);",
 		},
-		{ // 30
+		{ // 31
 			"do\n{\n}\nwhile\n(\n1\n)",
 			"do {} while (1);",
 			"do {} while (\n\t1\n);",
 		},
-		{ // 31
+		{ // 32
 			"while(a)b",
 			"while (a) b;",
 			"while (a) b;",
 		},
-		{ // 32
+		{ // 33
 			"while\n(\na\n)\nb\n;",
 			"while (a) b;",
 			"while (\n\ta\n) b;",
 		},
-		{ // 33
+		{ // 34
 			"for\n(\n;\n;\n)\na",
 			"for (;;) a;",
 			"for (;;) a;",
 		},
-		{ // 34
+		{ // 35
 			"for\n(a;;) b",
 			"for (a;;) b;",
 			"for (\n\ta;;\n) b;",
 		},
-		{ // 35
+		{ // 36
 			"for(var a=b;c<d;e++){}",
 			"for (var a = b; c < d; e++) {}",
 			"for (var a = b; c < d; e++) {}",
 		},
-		{ // 36
+		{ // 37
 			"for(\nvar a=b;\nc<d;\ne++){}",
 			"for (var a = b; c < d; e++) {}",
 			"for (\n\tvar a = b;\n\tc < d;\n\te++\n) {}",
 		},
-		{ // 37
+		{ // 38
 			"for(let a=b;c<d;e++){}",
 			"for (let a = b; c < d; e++) {}",
 			"for (let a = b; c < d; e++) {}",
 		},
-		{ // 38
+		{ // 39
 			"for(\nlet a=b;\nc<d;\ne++){}",
 			"for (let a = b; c < d; e++) {}",
 			"for (\n\tlet a = b;\n\tc < d;\n\te++\n) {}",
 		},
-		{ // 39
+		{ // 40
 			"for(const a=b;c<d;e++){}",
 			"for (const a = b; c < d; e++) {}",
 			"for (const a = b; c < d; e++) {}",
 		},
-		{ // 40
+		{ // 41
 			"for(\nconst a=b;\nc<d;\ne++){}",
 			"for (const a = b; c < d; e++) {}",
 			"for (\n\tconst a = b;\n\tc < d;\n\te++\n) {}",
 		},
-		{ // 41
+		{ // 42
 			"for(a in b){}",
 			"for (a in b) {}",
 			"for (a in b) {}",
 		},
-		{ // 42
+		{ // 43
 			"for\n(a\nin\nb\n)\n{}",
 			"for (a in b) {}",
 			"for (\n\ta in b\n) {}",
 		},
-		{ // 43
+		{ // 44
 			"for(var a in b){}",
 			"for (var a in b) {}",
 			"for (var a in b) {}",
 		},
-		{ // 44
+		{ // 45
 			"for\n(var\na\nin\nb\n)\n{}",
 			"for (var a in b) {}",
 			"for (var a in b) {}",
 		},
-		{ // 45
+		{ // 46
 			"for(let a in b){}",
 			"for (let a in b) {}",
 			"for (let a in b) {}",
 		},
-		{ // 46
+		{ // 47
 			"for\n(let\na\nin\nb\n)\n{}",
 			"for (let a in b) {}",
 			"for (let a in b) {}",
 		},
-		{ // 47
+		{ // 48
 			"for(const a in b){}",
 			"for (const a in b) {}",
 			"for (const a in b) {}",
 		},
-		{ // 48
+		{ // 49
 			"for\n(const\na\nin\nb\n)\n{}",
 			"for (const a in b) {}",
 			"for (const a in b) {}",
 		},
-		{ // 49
+		{ // 50
 			"for(a of b){}",
 			"for (a of b) {}",
 			"for (a of b) {}",
 		},
-		{ // 50
+		{ // 51
 			"for\n(a\nof\nb\n)\n{}",
 			"for (a of b) {}",
 			"for (\n\ta of b\n) {}",
 		},
-		{ // 51
+		{ // 52
 			"for(var a of b){}",
 			"for (var a of b) {}",
 			"for (var a of b) {}",
 		},
-		{ // 52
+		{ // 53
 			"for\n(var\na\nof\nb\n)\n{}",
 			"for (var a of b) {}",
 			"for (var a of b) {}",
 		},
-		{ // 53
+		{ // 54
 			"for(let a of b){}",
 			"for (let a of b) {}",
 			"for (let a of b) {}",
 		},
-		{ // 54
+		{ // 55
 			"for\n(let\na\nof\nb\n)\n{}",
 			"for (let a of b) {}",
 			"for (let a of b) {}",
 		},
-		{ // 55
+		{ // 56
 			"for(const a of b){}",
 			"for (const a of b) {}",
 			"for (const a of b) {}",
 		},
-		{ // 56
+		{ // 57
 			"for\n(const\na\nof\nb\n)\n{}",
 			"for (const a of b) {}",
 			"for (const a of b) {}",
 		},
-		{ // 57
+		{ // 58
 			"async () => {\nfor await(a of b) {}\n}",
 			"async () => {\n\tfor await (a of b) {}\n};",
 			"async () => {\n\tfor await (a of b) {}\n};",
 		},
-		{ // 58
+		{ // 59
 			"async () => {\nfor\nawait(a\nof\nb)\n{}\n}",
 			"async () => {\n\tfor await (a of b) {}\n};",
 			"async () => {\n\tfor await (\n\t	a of b\n\t) {}\n};",
 		},
-		{ // 59
+		{ // 60
 			"switch(a) {}",
 			"switch (a) {}",
 			"switch (a) {}",
 		},
-		{ // 60
+		{ // 61
 			"switch\n(\na\n)\n{\n}",
 			"switch (a) {}",
 			"switch (\n\ta\n) {}",
 		},
-		{ // 61
+		{ // 62
 			"switch(a){case b:case c:default:case d:case e:}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
-		{ // 62
+		{ // 63
 			"switch\n\n(\n\na\n\n)\n\n{\n\ncase\n\nb\n\n:\n\ncase\n\nc\n\n:\n\ndefault\n\n:\n\ncase\n\nd\n\n:\n\ncase\n\ne\n\n:\n\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 			"switch (\n\ta\n) {\ncase b:\ncase c:\ndefault:\ncase d:\ncase e:\n}",
 		},
-		{ // 63
+		{ // 64
 			"with(a)b",
 			"with (a) b;",
 			"with (a) b;",
 		},
-		{ // 64
+		{ // 65
 			"with\n(\na\n)\nb",
 			"with (a) b;",
 			"with (\n\ta\n) b;",
 		},
-		{ // 65
+		{ // 66
 			"function a(){}",
 			"function a() {}",
 			"function a() {}",
 		},
-		{ // 66
+		{ // 67
 			"function a(b){}",
 			"function a(b) {}",
 			"function a(b) {}",
 		},
-		{ // 67
+		{ // 68
 			"function a(b,c){}",
 			"function a(b, c) {}",
 			"function a(b, c) {}",
 		},
-		{ // 68
+		{ // 69
 			"function\na(\nb\n,\nc\n){}",
 			"function a(b, c) {}",
 			"function a(b, c) {}",
 		},
-		{ // 69
+		{ // 70
 			"function*a(){}",
 			"function* a() {}",
 			"function* a() {}",
 		},
-		{ // 70
+		{ // 71
 			"function* a(b){}",
 			"function* a(b) {}",
 			"function* a(b) {}",
 		},
-		{ // 71
+		{ // 72
 			"function *a(b,c){}",
 			"function* a(b, c) {}",
 			"function* a(b, c) {}",
 		},
-		{ // 72
+		{ // 73
 			"function\n*a(\nb\n,\nc\n){}",
 			"function* a(b, c) {}",
 			"function* a(b, c) {}",
 		},
-		{ // 73
+		{ // 74
 			"async function a(){}",
 			"async function a() {}",
 			"async function a() {}",
 		},
-		{ // 74
+		{ // 75
 			"async function a(b){}",
 			"async function a(b) {}",
 			"async function a(b) {}",
 		},
-		{ // 75
+		{ // 76
 			"async function a(b,c){}",
 			"async function a(b, c) {}",
 			"async function a(b, c) {}",
 		},
-		{ // 76
+		{ // 77
 			"async function\na(\nb\n,\nc\n){}",
 			"async function a(b, c) {}",
 			"async function a(b, c) {}",
 		},
-		{ // 77
+		{ // 78
 			"async function*a(){}",
 			"async function* a() {}",
 			"async function* a() {}",
 		},
-		{ // 78
+		{ // 79
 			"async function* a(b){}",
 			"async function* a(b) {}",
 			"async function* a(b) {}",
 		},
-		{ // 79
+		{ // 80
 			"async function *a(b,c){}",
 			"async function* a(b, c) {}",
 			"async function* a(b, c) {}",
 		},
-		{ // 80
+		{ // 81
 			"async function\n*a(\nb\n,\nc\n){}",
 			"async function* a(b, c) {}",
 			"async function* a(b, c) {}",
 		},
-		{ // 81
+		{ // 82
 			"a = function(){}",
 			"a = function () {};",
 			"a = function () {};",
 		},
-		{ // 82
+		{ // 83
 			"a=function(b){}",
 			"a = function (b) {};",
 			"a = function (b) {};",
 		},
-		{ // 83
+		{ // 84
 			"a=function *(b,c){}",
 			"a = function* (b, c) {};",
 			"a = function* (b, c) {};",
 		},
-		{ // 84
+		{ // 85
 			"a=function\n(\nb\n,\nc\n){}",
 			"a = function (b, c) {};",
 			"a = function (b, c) {};",
 		},
-		{ // 85
+		{ // 86
 			"try{}catch{}",
 			"try {} catch {}",
 			"try {} catch {}",
 		},
-		{ // 86
+		{ // 87
 			"try\n{\n}\ncatch\n{\n}",
 			"try {} catch {}",
 			"try {} catch {}",
 		},
-		{ // 87
+		{ // 88
 			"try{}catch(a){}",
 			"try {} catch (a) {}",
 			"try {} catch (a) {}",
 		},
-		{ // 88
+		{ // 89
 			"try\n{\n}\ncatch\n(\na\n)\n{\n}",
 			"try {} catch (a) {}",
 			"try {} catch (a) {}",
 		},
-		{ // 89
+		{ // 90
 			"try{}catch({}){}",
 			"try {} catch ({}) {}",
 			"try {} catch ({}) {}",
 		},
-		{ // 90
+		{ // 91
 			"try{}catch([]){}",
 			"try {} catch ([]) {}",
 			"try {} catch ([]) {}",
 		},
-		{ // 91
+		{ // 92
 			"try{}finally{}",
 			"try {} finally {}",
 			"try {} finally {}",
 		},
-		{ // 92
+		{ // 93
 			"try\n{\n}\nfinally\n{\n}",
 			"try {} finally {}",
 			"try {} finally {}",
 		},
-		{ // 93
+		{ // 94
 			"try{}catch{}finally{}",
 			"try {} catch {} finally {}",
 			"try {} catch {} finally {}",
 		},
-		{ // 94
+		{ // 95
 			"try\n{\n}\ncatch\n{\n}\nfinally\n{\n}",
 			"try {} catch {} finally {}",
 			"try {} catch {} finally {}",
 		},
-		{ // 95
+		{ // 96
 			"try{}catch(a){}finally{}",
 			"try {} catch (a) {} finally {}",
 			"try {} catch (a) {} finally {}",
 		},
-		{ // 96
+		{ // 97
 			"try\n{\n}\ncatch\n(\na\n)\n{\n}\nfinally\n{\n}",
 			"try {} catch (a) {} finally {}",
 			"try {} catch (a) {} finally {}",
 		},
-		{ // 97
+		{ // 98
 			"class a{}",
 			"class a {}",
 			"class a {}",
 		},
-		{ // 98
+		{ // 99
 			"class\na\n{\n}\n",
 			"class a {}",
 			"class a {}",
 		},
-		{ // 99
-			"class a extends b {}",
-			"class a extends b {}",
-			"class a extends b {}",
-		},
 		{ // 100
-			"class\na\nextends\nb\n{\n}",
+			"class a extends b {}",
 			"class a extends b {}",
 			"class a extends b {}",
 		},
 		{ // 101
+			"class\na\nextends\nb\n{\n}",
+			"class a extends b {}",
+			"class a extends b {}",
+		},
+		{ // 102
 			"a = class{}",
 			"a = class {};",
 			"a = class {};",
 		},
-		{ // 102
+		{ // 103
 			"a\n=\nclass\nb\n{\n}",
 			"a = class b {};",
 			"a = class b {};",
 		},
-		{ // 103
+		{ // 104
 			"a\n=\nclass\nextends\nb\n{\n}",
 			"a = class extends b {};",
 			"a = class extends b {};",
 		},
-		{ // 104
+		{ // 105
 			"let a = 1",
 			"let a = 1;",
 			"let a = 1;",
 		},
-		{ // 105
+		{ // 106
 			"let\na\n=\n1\n",
 			"let a = 1;",
 			"let a = 1;",
 		},
-		{ // 106
+		{ // 107
 			"let a=1,b=2,c=3",
 			"let a = 1, b = 2, c = 3;",
 			"let a = 1,\nb = 2,\nc = 3;",
 		},
-		{ // 107
+		{ // 108
 			"const a = 1",
 			"const a = 1;",
 			"const a = 1;",
 		},
-		{ // 108
+		{ // 109
 			"const\na\n=\n1\n",
 			"const a = 1;",
 			"const a = 1;",
 		},
-		{ // 109
+		{ // 110
 			"const a=1,b=2,c=3",
 			"const a = 1, b = 2, c = 3;",
 			"const a = 1,\nb = 2,\nc = 3;",
 		},
-		{ // 110
+		{ // 111
 			"let a",
 			"let a;",
 			"let a;",
 		},
-		{ // 111
+		{ // 112
 			"let\na\n,\nb\n=\n1\n,\nc\n",
 			"let a, b = 1, c;",
 			"let a,\nb = 1,\nc;",
 		},
-		{ // 112
+		{ // 113
 			"const a",
 			"const a;",
 			"const a;",
 		},
-		{ // 113
+		{ // 114
 			"const\na\n,\nb\n=\n1\n,\nc\n",
 			"const a, b = 1, c;",
 			"const a,\nb = 1,\nc;",
 		},
-		{ // 114
+		{ // 115
 			"let [a]=1",
 			"let [a] = 1;",
 			"let [a] = 1;",
 		},
-		{ // 115
+		{ // 116
 			"const\n[\na\n]\n=\n1",
 			"const [a] = 1;",
 			"const [a] = 1;",
 		},
-		{ // 116
+		{ // 117
 			"let {a}=1",
 			"let {a} = 1;",
 			"let {a: a} = 1;",
 		},
-		{ // 117
+		{ // 118
 			"const\n{\na\n}\n=\n1",
 			"const {a} = 1;",
 			"const {a: a} = 1;",
 		},
-		{ // 118
+		{ // 119
 			"function* a() {yield a}",
 			"function* a() {\n\tyield a;\n}",
 			"function* a() {\n\tyield a;\n}",
 		},
-		{ // 119
+		{ // 120
 			"() => {}",
 			"() => {};",
 			"() => {};",
 		},
-		{ // 120
+		{ // 121
 			"a=b",
 			"a = b;",
 			"a = b;",
 		},
-		{ // 121
+		{ // 122
 			"a/=b",
 			"a /= b;",
 			"a /= b;",
 		},
-		{ // 122
+		{ // 123
 			"a%=b",
 			"a %= b;",
 			"a %= b;",
 		},
-		{ // 123
+		{ // 124
 			"a+=b",
 			"a += b;",
 			"a += b;",
 		},
-		{ // 124
+		{ // 125
 			"a-=b",
 			"a -= b;",
 			"a -= b;",
 		},
-		{ // 125
+		{ // 126
 			"a<<=b",
 			"a <<= b;",
 			"a <<= b;",
 		},
-		{ // 126
+		{ // 127
 			"a>>=b",
 			"a >>= b;",
 			"a >>= b;",
 		},
-		{ // 127
+		{ // 128
 			"a>>>=b",
 			"a >>>= b;",
 			"a >>>= b;",
 		},
-		{ // 128
+		{ // 129
 			"a&=b",
 			"a &= b;",
 			"a &= b;",
 		},
-		{ // 129
+		{ // 130
 			"a^=b",
 			"a ^= b;",
 			"a ^= b;",
 		},
-		{ // 130
+		{ // 131
 			"a|=b",
 			"a |= b;",
 			"a |= b;",
 		},
-		{ // 131
+		{ // 132
 			"a**=b",
 			"a **= b;",
 			"a **= b;",
 		},
-		{ // 132
+		{ // 133
 			"a?b:c",
 			"a ? b : c;",
 			"a ? b : c;",
 		},
-		{ // 133
+		{ // 134
 			"new a",
 			"new a;",
 			"new a;",
 		},
-		{ // 134
+		{ // 135
 			"a()",
 			"a();",
 			"a();",
 		},
-		{ // 135
+		{ // 136
 			"var {a} = 1",
 			"var {a} = 1;",
 			"var {a: a} = 1;",
 		},
-		{ // 136
+		{ // 137
 			"var { a , b, ...c } = 1",
 			"var {a, b, ...c} = 1;",
 			"var {a: a, b: b, ...c} = 1;",
 		},
-		{ // 137
+		{ // 138
 			"var [a] = 1",
 			"var [a] = 1;",
 			"var [a] = 1;",
 		},
-		{ // 138
+		{ // 139
 			"var [ a , b, ...c ] = 1",
 			"var [a, b, ...c] = 1;",
 			"var [a, b, ...c] = 1;",
 		},
-		{ // 139
+		{ // 140
 			"switch (a) {case 1:}",
 			"switch (a) {\ncase 1:\n}",
 			"switch (a) {\ncase 1:\n}",
 		},
-		{ // 140
+		{ // 141
 			"switch (a) {case 1:b;c;d}",
 			"switch (a) {\ncase 1:\n\tb;\n\tc;\n\td;\n}",
 			"switch (a) {\ncase 1:\n\tb;\n\tc;\n\td;\n}",
 		},
-		{ // 141
+		{ // 142
 			"function a(b){}",
 			"function a(b) {}",
 			"function a(b) {}",
 		},
-		{ // 142
+		{ // 143
 			"function\na(\nb\n)\n{\n}\n",
 			"function a(b) {}",
 			"function a(b) {}",
 		},
-		{ // 143
+		{ // 144
 			"function a(b,c,...d){}",
 			"function a(b, c, ...d) {}",
 			"function a(b, c, ...d) {}",
 		},
-		{ // 144
+		{ // 145
 			"class\na{b(){}c\n(){}}",
 			"class a {\n\tb() {}\n\tc() {}\n}",
 			"class a {\n\tb() {}\n\tc() {}\n}",
 		},
-		{ // 145
+		{ // 146
 			"class\na{*b(){}\n*\nc\n(){}}",
 			"class a {\n\t* b() {}\n\t* c() {}\n}",
 			"class a {\n\t* b() {}\n\t* c() {}\n}",
 		},
-		{ // 146
+		{ // 147
 			"class\na{async b(){}\nasync c\n(){}}",
 			"class a {\n\tasync b() {}\n\tasync c() {}\n}",
 			"class a {\n\tasync b() {}\n\tasync c() {}\n}",
 		},
-		{ // 147
+		{ // 148
 			"class\na{async *b(){}\nasync *\nc\n(){}}",
 			"class a {\n\tasync * b() {}\n\tasync * c() {}\n}",
 			"class a {\n\tasync * b() {}\n\tasync * c() {}\n}",
 		},
-		{ // 148
+		{ // 149
 			"class\na{get\nb(){}\nget c\n(){}}",
 			"class a {\n\tget b() {}\n\tget c() {}\n}",
 			"class a {\n\tget b() {}\n\tget c() {}\n}",
 		},
-		{ // 149
+		{ // 150
 			"class\na{set\nb(c){}\nset d\n(e){}}",
 			"class a {\n\tset b(c) {}\n\tset d(e) {}\n}",
 			"class a {\n\tset b(c) {}\n\tset d(e) {}\n}",
 		},
-		{ // 150
+		{ // 151
 			"class\na{static\nb(){}\nstatic c\n(){}}",
 			"class a {\n\tstatic b() {}\n\tstatic c() {}\n}",
 			"class a {\n\tstatic b() {}\n\tstatic c() {}\n}",
 		},
-		{ // 151
+		{ // 152
 			"class\na{static\n*b(){}\nstatic *\nc\n(){}}",
 			"class a {\n\tstatic * b() {}\n\tstatic * c() {}\n}",
 			"class a {\n\tstatic * b() {}\n\tstatic * c() {}\n}",
 		},
-		{ // 152
+		{ // 153
 			"class\na{static\nasync b(){}\nstatic async c\n(){}}",
 			"class a {\n\tstatic async b() {}\n\tstatic async c() {}\n}",
 			"class a {\n\tstatic async b() {}\n\tstatic async c() {}\n}",
 		},
-		{ // 153
+		{ // 154
 			"class\na{static\nasync *b(){}\nstatic async *\nc(){}}",
 			"class a {\n\tstatic async * b() {}\n\tstatic async * c() {}\n}",
 			"class a {\n\tstatic async * b() {}\n\tstatic async * c() {}\n}",
 		},
-		{ // 154
+		{ // 155
 			"class\na{static\nget\nb(){}static get c\n(){}}",
 			"class a {\n\tstatic get b() {}\n\tstatic get c() {}\n}",
 			"class a {\n\tstatic get b() {}\n\tstatic get c() {}\n}",
 		},
-		{ // 155
+		{ // 156
 			"class\na{static\nset\nb(c){}static set d\n(e){}}",
 			"class a {\n\tstatic set b(c) {}\n\tstatic set d(e) {}\n}",
 			"class a {\n\tstatic set b(c) {}\n\tstatic set d(e) {}\n}",
 		},
-		{ // 156
+		{ // 157
 			"a",
 			"a;",
 			"a;",
 		},
-		{ // 157
+		{ // 158
 			"a?b:c",
 			"a ? b : c;",
 			"a ? b : c;",
 		},
-		{ // 158
+		{ // 159
 			"a\n?\nb\n:\nc\n",
 			"a ? b : c;",
 			"a ? b : c;",
 		},
-		{ // 159
+		{ // 160
 			"a=>b",
 			"a => b;",
 			"a => b;",
 		},
-		{ // 160
+		{ // 161
 			"a =>\nb",
 			"a => b;",
 			"a => b;",
 		},
-		{ // 161
+		{ // 162
 			"async a => b",
 			"async a => b;",
 			"async a => b;",
 		},
-		{ // 162
+		{ // 163
 			"(a,b)=>b",
 			"(a, b) => b;",
 			"(a, b) => b;",
 		},
-		{ // 163
+		{ // 164
 			"async (a,b)=>c",
 			"async (a, b) => c;",
 			"async (a, b) => c;",
 		},
-		{ // 164
+		{ // 165
 			"a=>{}",
 			"a => {};",
 			"a => {};",
 		},
-		{ // 165
+		{ // 166
 			"async a=>{}",
 			"async a => {};",
 			"async a => {};",
 		},
-		{ // 166
+		{ // 167
 			"(a,b)=>{}",
 			"(a, b) => {};",
 			"(a, b) => {};",
 		},
-		{ // 167
+		{ // 168
 			"async(a,b)=>{}",
 			"async (a, b) => {};",
 			"async (a, b) => {};",
 		},
-		{ // 168
+		{ // 169
 			"new a",
 			"new a;",
 			"new a;",
 		},
-		{ // 169
+		{ // 170
 			"new\nnew \n new	new\na",
 			"new new new new a;",
 			"new new new new a;",
 		},
-		{ // 170
+		{ // 171
 			"super()",
 			"super();",
 			"super();",
 		},
-		{ // 171
+		{ // 172
 			"super\n()",
 			"super();",
 			"super();",
 		},
-		{ // 172
+		{ // 173
 			"import(a)",
 			"import(a);",
 			"import(a);",
 		},
-		{ // 173
+		{ // 174
 			"import\n(a)",
 			"import(a);",
 			"import(a);",
 		},
-		{ // 174
+		{ // 175
 			"a()",
 			"a();",
 			"a();",
 		},
-		{ // 175
+		{ // 176
 			"a\n()",
 			"a();",
 			"a();",
 		},
-		{ // 176
+		{ // 177
 			"a\n()\n()",
 			"a()();",
 			"a()();",
 		},
-		{ // 177
+		{ // 178
 			"a()[b]",
 			"a()[b];",
 			"a()[b];",
 		},
-		{ // 178
+		{ // 179
 			"a().b",
 			"a().b;",
 			"a().b;",
 		},
-		{ // 179
+		{ // 180
 			"a()`b`",
 			"a()`b`;",
 			"a()`b`;",
 		},
-		{ // 180
+		{ // 181
 			"var{a}=b",
 			"var {a} = b;",
 			"var {a: a} = b;",
 		},
-		{ // 181
+		{ // 182
 			"var\n{\na\n:\nb\n}\n=\nc\n",
 			"var {a: b} = c;",
 			"var {a: b} = c;",
 		},
-		{ // 182
+		{ // 183
 			"var[a=b]=c",
 			"var [a = b] = c;",
 			"var [a = b] = c;",
 		},
-		{ // 183
+		{ // 184
 			"var[a=[b]] = c",
 			"var [a = [b]] = c;",
 			"var [a = [b]] = c;",
 		},
-		{ // 184
+		{ // 185
 			"var[a={b}] = c",
 			"var [a = {b}] = c;",
 			"var [a = {b: b}] = c;",
 		},
-		{ // 185
+		{ // 186
 			"var a={[\"b\"]:c}",
 			"var a = {[\"b\"]: c};",
 			"var a = {[\"b\"]: c};",
 		},
-		{ // 186
+		{ // 187
 			"a||b",
 			"a || b;",
 			"a || b;",
 		},
-		{ // 187
+		{ // 188
 			"(a,b,c)",
 			"(a, b, c);",
 			"(a, b, c);",
 		},
-		{ // 188
+		{ // 189
 			"(\na\n,\nb\n,\nc\n)\n",
 			"(a, b, c);",
 			"(a, b, c);",
 		},
-		{ // 189
+		{ // 190
 			"var a=(b,c,...d)=>{}",
 			"var a = (b, c, ...d) => {};",
 			"var a = (b, c, ...d) => {};",
 		},
-		{ // 190
+		{ // 191
 			"var a=(b,c,...[e])=>{}",
 			"var a = (b, c, ...[e]) => {};",
 			"var a = (b, c, ...[e]) => {};",
 		},
-		{ // 191
+		{ // 192
 			"var a=(b,c,...{...e})=>{}",
 			"var a = (b, c, ...{...e}) => {};",
 			"var a = (b, c, ...{...e}) => {};",
 		},
-		{ // 192
+		{ // 193
 			"new a()",
 			"new a();",
 			"new a();",
 		},
-		{ // 193
+		{ // 194
 			"new\nnew\na\n(\n)\n(\n)\n",
 			"new new a()();",
 			"new new a()();",
 		},
-		{ // 194
+		{ // 195
 			"a\n[\n1\n]\n",
 			"a[1];",
 			"a[1];",
 		},
-		{ // 195
+		{ // 196
 			"a\n.\nb\n",
 			"a.b;",
 			"a\n.b;",
 		},
-		{ // 196
+		{ // 197
 			"a\n`b`",
 			"a`b`;",
 			"a`b`;",
 		},
-		{ // 197
+		{ // 198
 			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)\n",
 			"new super[a][b].c`d`(new.target);",
 			"new super[a][b]\n.c`d`(new.target);",
 		},
-		{ // 198
+		{ // 199
 			"a(b,c,...d)",
 			"a(b, c, ...d);",
 			"a(b, c, ...d);",
 		},
-		{ // 199
+		{ // 200
 			"a\n(\n...\nb\n)\n",
 			"a(...b);",
 			"a(...b);",
 		},
-		{ // 200
+		{ // 201
 			"`a`",
 			"`a`;",
 			"`a`;",
 		},
-		{ // 201
+		{ // 202
 			"`a${b}c`",
 			"`a${b}c`;",
 			"`a${b}c`;",
 		},
-		{ // 202
+		{ // 203
 			"`a${\nb\n}c${\nd\n}e`",
 			"`a${b}c${d}e`;",
 			"`a${b}c${d}e`;",
 		},
-		{ // 203
+		{ // 204
 			"{\n`a`\n}",
 			"{\n\t`a`;\n}",
 			"{\n\t`a`;\n}",
 		},
-		{ // 204
+		{ // 205
 			"{\n`a\nb`\n}",
 			"{\n\t`a\nb`;\n}",
 			"{\n\t`a\nb`;\n}",
 		},
-		{ // 205
+		{ // 206
 			"{\n`a\nb${c}d\ne${f}g\nh`\n}",
 			"{\n\t`a\nb${c}d\ne${f}g\nh`;\n}",
 			"{\n\t`a\nb${c}d\ne${f}g\nh`;\n}",
 		},
-		{ // 206
+		{ // 207
 			"a&&b",
 			"a && b;",
 			"a && b;",
 		},
-		{ // 207
+		{ // 208
 			"this",
 			"this;",
 			"this;",
 		},
-		{ // 208
+		{ // 209
 			"a",
 			"a;",
 			"a;",
 		},
-		{ // 209
+		{ // 210
 			"1",
 			"1;",
 			"1;",
 		},
-		{ // 210
+		{ // 211
 			"[\n]\n",
 			"[];",
 			"[];",
 		},
-		{ // 211
+		{ // 212
 			"var a={}",
 			"var a = {};",
 			"var a = {};",
 		},
-		{ // 212
+		{ // 213
 			"var a=function(){}",
 			"var a = function () {};",
 			"var a = function () {};",
 		},
-		{ // 213
+		{ // 214
 			"var a=class{}",
 			"var a = class {};",
 			"var a = class {};",
 		},
-		{ // 214
+		{ // 215
 			"`a`",
 			"`a`;",
 			"`a`;",
 		},
-		{ // 215
+		{ // 216
 			"(a)",
 			"(a);",
 			"(a);",
 		},
-		{ // 216
+		{ // 217
 			"a|b",
 			"a | b;",
 			"a | b;",
 		},
-		{ // 217
+		{ // 218
 			"[a,b,...c]",
 			"[a, b, ...c];",
 			"[a, b, ...c];",
 		},
-		{ // 218
+		{ // 219
 			"[...a]",
 			"[...a];",
 			"[...a];",
 		},
-		{ // 219
+		{ // 220
 			"[a]",
 			"[a];",
 			"[a];",
 		},
-		{ // 220
+		{ // 221
 			"var a={b:c}",
 			"var a = {b: c};",
 			"var a = {b: c};",
 		},
-		{ // 221
+		{ // 222
 			"var a={b:c,d:e}",
 			"var a = {b: c, d: e};",
 			"var a = {b: c, d: e};",
 		},
-		{ // 222
+		{ // 223
 			"var a={\nb\n:\nc\n}",
 			"var a = {b: c};",
 			"var a = {b: c};",
 		},
-		{ // 223
+		{ // 224
 			"var a={\nb\n:\nc\n,\nd\n:\ne\n}",
 			"var a = {b: c, d: e};",
 			"var a = {b: c, d: e};",
 		},
-		{ // 224
+		{ // 225
 			"a^b",
 			"a ^ b;",
 			"a ^ b;",
 		},
-		{ // 225
+		{ // 226
 			"var a\n=\n{\nb\n:\nc\n,\nd\n,\ne\n=\nf\n,\ng\n(\n)\n{\n}\n,\n...\nh\n}\n",
 			"var a = {b: c, d, e = f, g() {}, ...h};",
 			"var a = {b: c, d: d, e = f, g() {}, ...h};",
 		},
-		{ // 226
+		{ // 227
 			"a&b",
 			"a & b;",
 			"a & b;",
 		},
-		{ // 227
+		{ // 228
 			"a==b",
 			"a == b;",
 			"a == b;",
 		},
-		{ // 228
+		{ // 229
 			"a!=b",
 			"a != b;",
 			"a != b;",
 		},
-		{ // 229
+		{ // 230
 			"a===b",
 			"a === b;",
 			"a === b;",
 		},
-		{ // 230
+		{ // 231
 			"a!==b",
 			"a !== b;",
 			"a !== b;",
 		},
-		{ // 231
+		{ // 232
 			"a<b",
 			"a < b;",
 			"a < b;",
 		},
-		{ // 232
+		{ // 233
 			"a>b",
 			"a > b;",
 			"a > b;",
 		},
-		{ // 233
+		{ // 234
 			"a<=b",
 			"a <= b;",
 			"a <= b;",
 		},
-		{ // 234
+		{ // 235
 			"a>=b",
 			"a >= b;",
 			"a >= b;",
 		},
-		{ // 235
+		{ // 236
 			"a instanceof b",
 			"a instanceof b;",
 			"a instanceof b;",
 		},
-		{ // 236
+		{ // 237
 			"a in b",
 			"a in b;",
 			"a in b;",
 		},
-		{ // 237
+		{ // 238
 			"a<<b",
 			"a << b;",
 			"a << b;",
 		},
-		{ // 238
+		{ // 239
 			"a>>b",
 			"a >> b;",
 			"a >> b;",
 		},
-		{ // 239
+		{ // 240
 			"a>>>b",
 			"a >>> b;",
 			"a >>> b;",
 		},
-		{ // 240
+		{ // 241
 			"a+b",
 			"a + b;",
 			"a + b;",
 		},
-		{ // 241
+		{ // 242
 			"a-b",
 			"a - b;",
 			"a - b;",
 		},
-		{ // 242
+		{ // 243
 			"a*b",
 			"a * b;",
 			"a * b;",
 		},
-		{ // 243
+		{ // 244
 			"a/b",
 			"a / b;",
 			"a / b;",
 		},
-		{ // 244
+		{ // 245
 			"a%b",
 			"a % b;",
 			"a % b;",
 		},
-		{ // 245
+		{ // 246
 			"a**b",
 			"a ** b;",
 			"a ** b;",
 		},
-		{ // 246
+		{ // 247
 			"delete a",
 			"delete a;",
 			"delete a;",
 		},
-		{ // 247
+		{ // 248
 			"void a",
 			"void a;",
 			"void a;",
 		},
-		{ // 248
+		{ // 249
 			"typeof a",
 			"typeof a;",
 			"typeof a;",
 		},
-		{ // 249
+		{ // 250
 			"+\na",
 			"+a;",
 			"+a;",
 		},
-		{ // 250
+		{ // 251
 			"-\na",
 			"-a;",
 			"-a;",
 		},
-		{ // 251
+		{ // 252
 			"~\na",
 			"~a;",
 			"~a;",
 		},
-		{ // 252
+		{ // 253
 			"!\na",
 			"!a;",
 			"!a;",
 		},
-		{ // 253
+		{ // 254
 			"async function a(){await b}",
 			"async function a() {\n\tawait b;\n}",
 			"async function a() {\n\tawait b;\n}",
 		},
-		{ // 254
+		{ // 255
 			"a ++",
 			"a++;",
 			"a++;",
 		},
-		{ // 255
+		{ // 256
 			"a --",
 			"a--;",
 			"a--;",
 		},
-		{ // 256
+		{ // 257
 			"++\na",
 			"++a;",
 			"++a;",
 		},
-		{ // 257
+		{ // 258
 			"--\na",
 			"--a;",
 			"--a;",
 		},
-		{ // 258
+		{ // 259
 			"a: function b(){}",
 			"a: function b() {}",
 			"a: function b() {}",
 		},
-		{ // 259
+		{ // 260
 			"a: b",
 			"a: b;",
 			"a: b;",
 		},
-		{ // 260
+		{ // 261
 			"continue a",
 			"continue a;",
 			"continue a;",
 		},
-		{ // 261
+		{ // 262
 			"debugger",
 			"debugger;",
 			"debugger;",
 		},
-		{ // 262
+		{ // 263
 			"for(var a,b,\nc;;){}",
 			"for (var a, b, c;;) {}",
 			"for (var a, b,\n\tc;;) {}",
 		},
-		{ // 263
+		{ // 264
 			"for(var{a}in b){}",
 			"for (var {a} in b) {}",
 			"for (var {a: a} in b) {}",
 		},
-		{ // 264
+		{ // 265
 			"for(var[a]in b){}",
 			"for (var [a] in b) {}",
 			"for (var [a] in b) {}",
 		},
-		{ // 265
+		{ // 266
 			"switch(a){default:b}",
 			"switch (a) {\ndefault:\n\tb;\n}",
 			"switch (a) {\ndefault:\n\tb;\n}",
 		},
-		{ // 266
+		{ // 267
 			"function*a(){yield *b}",
 			"function* a() {\n\tyield * b;\n}",
 			"function* a() {\n\tyield * b;\n}",
 		},
-		{ // 267
+		{ // 268
 			"a*=b",
 			"a *= b;",
 			"a *= b;",
 		},
-		{ // 268
+		{ // 269
 			"var[[a]]=b",
 			"var [[a]] = b;",
 			"var [[a]] = b;",
 		},
-		{ // 269
+		{ // 270
 			"var[{a}]=b",
 			"var [{a}] = b;",
 			"var [{a: a}] = b;",
 		},
-		{ // 270
+		{ // 271
 			"super\n.\na\n",
 			"super.a;",
 			"super.a;",
 		},
-		{ // 271
+		{ // 272
 			"a\n?.\nb",
 			"a?.b;",
 			"a?.b;",
 		},
-		{ // 272
+		{ // 273
 			"a\n??\nb",
 			"a ?? b;",
 			"a ?? b;",
 		},
-		{ // 273
+		{ // 274
 			"a\n??\nb\n??\nc",
 			"a ?? b ?? c;",
 			"a ?? b ?? c;",
 		},
-		{ // 274
+		{ // 275
 			"a = ([b]) => b",
 			"a = ([b]) => b;",
 			"a = ([b]) => b;",
 		},
-		{ // 275
+		{ // 276
 			"a?.b().c",
 			"a?.b().c;",
 			"a?.b().c;",
 		},
-		{ // 276
+		{ // 277
 			"a?.b()?.c",
 			"a?.b()?.c;",
 			"a?.b()?.c;",
 		},
-		{ // 277
+		{ // 278
 			"a&&=1",
 			"a &&= 1;",
 			"a &&= 1;",
 		},
-		{ // 278
+		{ // 279
 			"a||=1",
 			"a ||= 1;",
 			"a ||= 1;",
 		},
-		{ // 279
+		{ // 280
 			"a??=1",
 			"a ??= 1;",
 			"a ??= 1;",
 		},
-		{ // 280
+		{ // 281
 			"[a, b] = [b, a]",
 			"[a, b] = [b, a];",
 			"[a, b] = [b, a];",
 		},
-		{ // 281
+		{ // 282
 			"[a.b, a.c] = [a.c, a.b]",
 			"[a.b, a.c] = [a.c, a.b];",
 			"[a.b, a.c] = [a.c, a.b];",
 		},
-		{ // 282
+		{ // 283
 			"{a}",
 			"{\n\ta;\n}",
 			"{\n\ta;\n}",
 		},
-		{ // 283
+		{ // 284
 			"{a;b}",
 			"{\n\ta;\n\tb;\n}",
 			"{\n\ta;\n\tb;\n}",
 		},
-		{ // 284
+		{ // 285
 			"{a;\nb}",
 			"{\n\ta;\n\tb;\n}",
 			"{\n\ta;\n\tb;\n}",
 		},
-		{ // 285
+		{ // 286
 			"{\na;\nb\n}",
 			"{\n\ta;\n\tb;\n}",
 			"{\n\ta;\n\tb;\n}",
 		},
-		{ // 286
+		{ // 287
 			"({a, b} = {a: 1, b: 2})",
 			"({a, b} = {a: 1, b: 2});",
 			"({a: a, b: b} = {a: 1, b: 2});",
 		},
-		{ // 287
+		{ // 288
 			"[a,b,...c] = [b, a]",
 			"[a, b, ...c] = [b, a];",
 			"[a, b, ...c] = [b, a];",
 		},
-		{ // 288
+		{ // 289
 			"({a,b,...c}=d)",
 			"({a, b, ...c} = d);",
 			"({a: a, b: b, ...c} = d);",
 		},
-		{ // 289
+		{ // 290
 			"({a:{b,c: d,...e},...f}=g)",
 			"({a: {b, c: d, ...e}, ...f} = g);",
 			"({a: {b: b, c: d, ...e}, ...f} = g);",
 		},
-		{ // 290
+		{ // 291
 			"[a, ,[b,{c},,...d],,...e]=f",
 			"[a, , [b, {c}, , ...d], , ...e] = f;",
 			"[a, , [b, {c: c}, , ...d], , ...e] = f;",
 		},
-		{ // 291
+		{ // 292
 			"a() ?.\nb",
 			"a()?.b;",
 			"a()?.b;",
 		},
-		{ // 292
+		{ // 293
 			"a ?. [1]",
 			"a?.[1];",
 			"a?.[1];",
 		},
-		{ // 293
+		{ // 294
 			"a ?. `1`",
 			"a?.`1`;",
 			"a?.`1`;",
 		},
-		{ // 294
+		{ // 295
 			"a()\n.then()\n.catch()",
 			"a().then().catch();",
 			"a()\n.then()\n.catch();",
 		},
-		{ // 295
+		{ // 296
 			"[a=b]=c",
 			"[a = b] = c;",
 			"[a = b] = c;",
 		},
-		{ // 296
+		{ // 297
 			"({a=b}=c)",
 			"({a = b} = c);",
 			"({a: a = b} = c);",
 		},
-		{ // 297
+		{ // 298
 			"a.#b",
 			"a.#b;",
 			"a.#b;",
 		},
-		{ // 298
+		{ // 299
 			"a\n.#b",
 			"a.#b;",
 			"a\n.#b;",
 		},
-		{ // 299
+		{ // 300
 			"a.#b.c",
 			"a.#b.c;",
 			"a.#b.c;",
 		},
-		{ // 300
+		{ // 301
 			"a\n.#b\n.c",
 			"a.#b.c;",
 			"a\n.#b\n.c;",
 		},
-		{ // 301
+		{ // 302
 			"class\na\n{\nb\n}",
 			"class a {\n\tb;\n}",
 			"class a {\n\tb;\n}",
 		},
-		{ // 302
+		{ // 303
 			"class a { b () {} }",
 			"class a {\n\tb() {}\n}",
 			"class a {\n\tb() {}\n}",
 		},
-		{ // 303
+		{ // 304
 			"class\na\n{\n#b\n}",
 			"class a {\n\t#b;\n}",
 			"class a {\n\t#b;\n}",
 		},
-		{ // 304
+		{ // 305
 			"class a { #b () {} }",
 			"class a {\n\t#b() {}\n}",
 			"class a {\n\t#b() {}\n}",
 		},
-		{ // 305
+		{ // 306
 			"class a { #b = 1 }",
 			"class a {\n\t#b = 1;\n}",
 			"class a {\n\t#b = 1;\n}",
 		},
-		{ // 306
+		{ // 307
 			"class a { #b = 1; #c = 2 }",
 			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 		},
-		{ // 307
+		{ // 308
 			"class a { #b = 1\n#c = 2 }",
 			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 			"class a {\n\t#b = 1;\n\t#c = 2;\n}",
 		},
-		{ // 308
+		{ // 309
 			"class a { #b(){}#c = 2 }",
 			"class a {\n\t#b() {}\n\t#c = 2;\n}",
 			"class a {\n\t#b() {}\n\t#c = 2;\n}",
 		},
-		{ // 309
+		{ // 310
 			"class a { #b\n#c(){}}",
 			"class a {\n\t#b;\n\t#c() {}\n}",
 			"class a {\n\t#b;\n\t#c() {}\n}",
 		},
-		{ // 310
+		{ // 311
 			"class a { #b = 1\n#c(){}}",
 			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 		},
-		{ // 311
+		{ // 312
 			"class a { #b = 1;#c(){}}",
 			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 			"class a {\n\t#b = 1;\n\t#c() {}\n}",
 		},
-		{ // 312
+		{ // 313
 			"class a { #b;#c(){}}",
 			"class a {\n\t#b;\n\t#c() {}\n}",
 			"class a {\n\t#b;\n\t#c() {}\n}",
 		},
-		{ // 313
+		{ // 314
 			"class a {static a;static b\nstatic c = 2;static d(){};static{}static{e}static{e;f}}",
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
 		},
-		{ // 314
+		{ // 315
 			"#a in b",
 			"#a in b;",
 			"#a in b;",
 		},
-		{ // 315
+		{ // 316
 			"#a\nin\nb",
 			"#a in b;",
 			"#a in b;",
 		},
-		{ // 316
+		{ // 317
 			"a().#b",
 			"a().#b;",
 			"a().#b;",
 		},
-		{ // 317
+		{ // 318
 			"a\n(\n)\n.\n#b",
 			"a().#b;",
 			"a()\n.#b;",
 		},
-		{ // 318
+		{ // 319
 			"a\n?.\n#b",
 			"a?.#b;",
 			"a?.#b;",
 		},
-		{ // 319
+		{ // 320
 			"a?.c.#d",
 			"a?.c.#d;",
 			"a?.c.#d;",
 		},
-		{ // 320
+		{ // 321
 			"// A\n// B\n\na();\n// C\n// D\n",
 			"a();",
 			"// A\n// B\n\na();\n// C\n// D\n",
 		},
-		{ // 321
+		{ // 322
 			"/* A *//* B */\n// C\n\na();\n// D\n/* E */   /* F */\n",
 			"a();",
 			"/* A */ /* B */\n// C\n\na();\n// D\n/* E */ /* F */",
 		},
-		{ // 322
+		{ // 323
 			"/*\nA\n*//* B */\n// C\n\na();\n// D\n/* E */   /*\n\nF\n\n*/\n",
 			"a();",
 			"/*\nA\n*/ /* B */\n// C\n\na();\n// D\n/* E */ /*\n\nF\n\n*/",
 		},
-		{ // 323
+		{ // 324
 			"/*\nA\n*//* B */\n// C\n\n// D\na(); // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
 			"a();",
 			"/*\nA\n*/ /* B */\n// C\n\n// D\na(); // E\n     // F\n\n// G\n/* H */ /*\n\nI\n\n*/",
 		},
-		{ // 324
+		{ // 325
 			"// A\n\n// B\nsuper // C\n[ // D\n1\n // E\n]// F\n",
 			"super[1];",
 			"// A\n\n// B\nsuper // C\n[ // D\n\n\t1\n// E\n] // F\n",
 		},
-		{ // 325
+		{ // 326
 			"// A\n\n// B\nsuper /* C */ . /* D */ a // E\n",
 			"super.a;",
 			"// A\n\n// B\nsuper /* C */ . /* D */ a // E\n",
 		},
-		{ // 326
+		{ // 327
 			"// A\n\n// B\nnew /* C */./* D */target /* E */",
 			"new.target;",
 			"// A\n\n// B\nnew /* C */ . /* D */ target /* E */;",
 		},
-		{ // 327
+		{ // 328
 			"// A\n\n/* B */import/* C */./* D */meta/* E */",
 			"import.meta;",
 			"// A\n\n/* B */ import /* C */ . /* D */ meta /* E */;",
 		},
-		{ // 328
+		{ // 329
 			"// A\n\n// B\nnew/* C */1/* D */() // E\n",
 			"new 1();",
 			"// A\n\n// B\nnew /* C */ 1 /* D */ () // E\n",
 		},
-		{ // 329
+		{ // 330
 			"// A\n\n// B\na // C\n",
 			"a;",
 			"// A\n\n// B\na // C\n",
 		},
-		{ // 330
+		{ // 331
 			"// A\n\n// B\na /* C */``/* D */",
 			"a``;",
 			"// A\n\n// B\na /* C */ `` /* D */;",
 		},
-		{ // 331
+		{ // 332
 			"// A\n\n/* B */a/* C */./* D */#b/* E */",
 			"a.#b;",
 			"// A\n\n/* B */ a /* C */ . /* D */ #b /* E */;",
 		},
-		{ // 332
+		{ // 333
 			"// A\n\n/* B */a/* C */./* D */#b/* E */./* F */c // G\n",
 			"a.#b.c;",
 			"// A\n\n/* B */ a /* C */ . /* D */ #b /* E */ . /* F */ c // G\n",
 		},
-		{ // 333
+		{ // 334
 			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\"c\"\n// G\n] /* H */",
 			"a.#b[\"c\"];",
 			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n\t\"c\"\n// G\n] /* H */;",
 		},
-		{ // 334
+		{ // 335
 			"super[ // C\n\n// D\n1 // E\n\n// F\n]",
 			"super[1];",
 			"super[ // C\n\n\t// D\n\t1 // E\n\n// F\n];",
 		},
-		{ // 335
+		{ // 336
 			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n// G\n\"c\" // H\n\n// I\n] /* J */",
 			"a.#b[\"c\"];",
 			"// A\n\n// B\na /* C */ . /* D */ #b /* E */ [ // F\n\n\t// G\n\t\"c\" // H\n\n// I\n] /* J */;",
 		},
-		{ // 336
+		{ // 337
 			"a( // A\n\n// B\n)",
 			"a();",
 			"a( // A\n\n// B\n);",
 		},
-		{ // 337
+		{ // 338
 			"a( // A\n\n// B\nb // C\n\n// D\n, // E\nc // F\n\n//G\n)",
 			"a(b, c);",
 			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t, // E\n\tc // F\n\n//G\n);",
 		},
-		{ // 338
+		{ // 339
 			"a( // A\n\n// B\nb // C\n\n// D\n, // E\n...// F\nc // G\n\n//H\n)",
 			"a(b, ...c);",
 			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t, // E\n\t... // F\n\tc // G\n\n//H\n);",
 		},
-		{ // 339
+		{ // 340
 			"( // A\n\n// B\na // C\n\n// D\n, // E\nb // F\n\n//G\n)",
 			"(a, b);",
 			"( // A\n\n\t// B\n\ta // C\n\n\t// D\n\t, // E\n\tb // F\n\n//G\n);",
 		},
-		{ // 340
+		{ // 341
 			"[\n// A\n...// B\na // C\n]",
 			"[...a];",
 			"[\n\t// A\n\t... // B\n\ta // C\n];",
 		},
-		{ // 341
+		{ // 342
 			"[ // A\n// B\n\n// C\na // D\n\n// E\n, // F\n\n// G\nb // H\n// I\n\n// J\n]",
 			"[a, b];",
 			"[ // A\n  // B\n\n\t// C\n\ta // D\n\n\t// E\n\t, // F\n\n\t// G\n\tb // H\n\t  // I\n\n// J\n];",
 		},
-		{ // 342
+		{ // 343
 			"var a = {[ // A\n\n// B\nb // C\n\n// D\n]:c}",
 			"var a = {[b]: c};",
 			"var a = {[ // A\n\n\t// B\n\tb // C\n\n// D\n]: c};",
 		},
-		{ // 343
+		{ // 344
 			"var a = {[ // A\n\nb]:c}",
 			"var a = {[b]: c};",
 			"var a = {[ // A\n\n\tb]: c};",
 		},
-		{ // 344
+		{ // 345
 			"() => { // A\n\n// B\na // C\n\n// D\n}",
 			"() => {\n\ta;\n};",
 			"() => { // A\n\n\t// B\n\ta // C\n\n// D\n};",
 		},
-		{ // 345
+		{ // 346
 			"let [\n// A\na// B\n] = b;",
 			"let [a] = b;",
 			"let [\n\t// A\n\ta // B\n] = b;",
 		},
-		{ // 346
+		{ // 347
 			"let {\n// A\na// B\n} = b;",
 			"let {a} = b;",
 			"let {\n\ta: // A\n\ta // B\n} = b;",
 		},
-		{ // 347
+		{ // 348
 			"let {\n// A\na// B\n: // C\nb // D\n} = c;",
 			"let {a: b} = c;",
 			"let {\n\t// A\n\ta // B\n\t: // C\n\tb // D\n} = c;",
 		},
-		{ // 348
+		{ // 349
 			"let {\n// A\na// B\n= // C\nb // D\n} = c;",
 			"let {a = b} = c;",
 			"let {\n\ta: // A\n\ta // B\n\t= // C\n\tb // D\n} = c;",
 		},
-		{ // 349
+		{ // 350
 			"let {\n// A\na// B\n: // C\nb // D\n= // E\nc // F\n} = d;",
 			"let {a: b = c} = d;",
 			"let {\n\t// A\n\ta // B\n\t: // C\n\tb // D\n\t= // E\n\tc // F\n} = d;",
 		},
-		{ // 350
+		{ // 351
 			"let { // A\n\n// B\na // C\n\n// D\n} = b",
 			"let {a} = b;",
 			"let { // A\n\n\ta: // B\n\ta // C\n\n// D\n} = b;",
 		},
-		{ // 351
+		{ // 352
 			"let { // A\n\n// B\n...// C\na // D\n// E\n\n//F\n} = b",
 			"let {...a} = b;",
 			"let { // A\n\n\t// B\n\t... // C\n\ta // D\n\t  // E\n\n//F\n} = b;",
 		},
-		{ // 352
+		{ // 353
 			"let { // A\n\n// B\na // C\n, // D\n...// E\nb // F\n\n// G\n} = c",
 			"let {a, ...b} = c;",
 			"let { // A\n\n\ta: // B\n\ta // C\n\t,\n\t// D\n\t... // E\n\tb // F\n\n// G\n} = c;",
 		},
-		{ // 353
+		{ // 354
 			"let [ // A\n\n// B\n] = a",
 			"let [] = a;",
 			"let [ // A\n\n\n// B\n] = a;",
 		},
-		{ // 354
+		{ // 355
 			"let [ // A\n\n// B\n...// C\na // D\n\n// E\n] = b",
 			"let [...a] = b;",
 			"let [ // A\n\n\t// B\n\t... // C\n\ta // D\n\n// E\n] = b;",
 		},
-		{ // 355
+		{ // 356
 			"let [ // A\n\n// B\na // C\n, // D\n\n// E\n, // F\n... // G\nb // H\n\n// I\n] = c",
 			"let [a, , ...b] = c;",
 			"let [ // A\n\n\t// B\n\ta // C\n\t,\n\t// D\n\n\t// E\n\t,\n\t// F\n\t... // G\n\tb // H\n\n// I\n] = c;",
 		},
-		{ // 356
+		{ // 357
 			"function a( // A\n\n// B\n){}",
 			"function a() {}",
 			"function a( // A\n\n// B\n) {}",
 		},
-		{ // 357
+		{ // 358
 			"function a( // A\n\n// B\n... // C\nb // D\n\n// E\n){}",
 			"function a(...b) {}",
 			"function a( // A\n\n\t// B\n\t... // C\n\tb // D\n\n// E\n) {}",
 		},
-		{ // 358
+		{ // 359
 			"function a( // A\n\n// B\nb // C\n\n// D\n){}",
 			"function a(b) {}",
 			"function a( // A\n\n\t// B\n\tb // C\n\n// D\n) {}",
 		},
-		{ // 359
+		{ // 360
 			"function a( // A\n\n// B\nb // C\n, // D\nc // E\n\n// F\n){}",
 			"function a(b, c) {}",
 			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\tc // E\n\n// F\n) {}",
 		},
-		{ // 360
+		{ // 361
 			"function a( // A\n\n// B\nb // C\n, // D\n... // E\nc // F\n\n// G\n){}",
 			"function a(b, ...c) {}",
 			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\t... // E\n\tc // F\n\n// G\n) {}",
 		},
-		{ // 361
+		{ // 362
 			"function a( // A\n\n// B\n... // C\n[]// D\n\n// E\n){}",
 			"function a(...[]) {}",
 			"function a( // A\n\n\t// B\n\t... // C\n\t[] // D\n\n// E\n) {}",
 		},
-		{ // 362
+		{ // 363
 			"function a( // A\n\n// B\n... // C\n{}// D\n\n// E\n){}",
 			"function a(...{}) {}",
 			"function a( // A\n\n\t// B\n\t... // C\n\t{} // D\n\n// E\n) {}",
 		},
-		{ // 363
+		{ // 364
 			"class a {\n// A\nb /* B */(){}\n}",
 			"class a {\n\tb() {}\n}",
 			"class a {\n\t// A\n\tb /* B */() {}\n}",
 		},
-		{ // 364
+		{ // 365
 			"class a {\n// A\na /* B */(){}\n/* C */ b// D\n(){}\n}",
 			"class a {\n\ta() {}\n\tb() {}\n}",
 			"class a {\n\t// A\n\ta /* B */() {}\n\t/* C */ b // D\n\t() {}\n}",
 		},
-		{ // 365
+		{ // 366
 			"class a {static //A\nb /* B */() {} }",
 			"class a {\n\tstatic b() {}\n}",
 			"class a {\n\tstatic //A\n\tb /* B */() {}\n}",
 		},
-		{ // 366
+		{ // 367
 			"class a {static /* A */ [\"b\"]// B\n() {} }",
 			"class a {\n\tstatic [\"b\"]() {}\n}",
 			"class a {\n\tstatic /* A */ [\"b\"] // B\n\t() {}\n}",
 		},
-		{ // 367
+		{ // 368
 			"class a {static // A\n#b// B\n() {} }",
 			"class a {\n\tstatic #b() {}\n}",
 			"class a {\n\tstatic // A\n\t#b // B\n\t() {}\n}",
 		},
-		{ // 368
+		{ // 369
 			"class a {static // A\nb// B\n}",
 			"class a {\n\tstatic b;\n}",
 			"class a {\n\tstatic // A\n\tb // B\n}",
 		},
-		{ // 369
+		{ // 370
 			"class a {static // A\nb // B\n= 1}",
 			"class a {\n\tstatic b = 1;\n}",
 			"class a {\n\tstatic // A\n\tb // B\n\t= 1;\n}",
 		},
-		{ // 370
+		{ // 371
 			"class a {static // A\n[b] // B\n}",
 			"class a {\n\tstatic [b];\n}",
 			"class a {\n\tstatic // A\n\t[b] // B\n}",
 		},
-		{ // 371
+		{ // 372
 			"// A\n\n// B\nnew // C\na // D\n",
 			"new a;",
 			"// A\n\n// B\nnew // C\na // D\n",
 		},
-		{ // 372
+		{ // 373
 			"// A\n\n// B\nnew // C\na // D\n() // E\n",
 			"new a();",
 			"// A\n\n// B\nnew // C\na // D\n() // E\n",
 		},
-		{ // 373
+		{ // 374
 			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
 			"new new a();",
 			"// A\n\n// B\nnew // C\nnew // D\na // E\n() // F\n",
 		},
-		{ // 374
+		{ // 375
 			"({\n// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n})",
 			"({get a() {}});",
 			"({\n\t// A\n\tget // B\n\ta // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n\n});",
 		},
-		{ // 375
+		{ // 376
 			"({\n// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n})",
 			"({set a(b) {}});",
 			"({\n\t// A\n\tset // B\n\ta // C\n\t( // D\n\n\t\t// E\n\t\tb // F\n\n\t// G\n\t) // H\n\t{} // I\n\n});",
 		},
-		{ // 376
+		{ // 377
 			"({\n// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n})",
 			"({a(b) {}});",
 			"({\n\t// A\n\ta // B\n\t( // C\n\n\t\t// D\n\t\tb // E\n\n\t// F\n\t) // G\n\t{} // H\n\n});",
 		},
-		{ // 377
+		{ // 378
 			"({\n// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G\n})",
 			"({async a() {}});",
 			"({\n\t// A\n\tasync /* B */ a // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n\n});",
 		},
-		{ // 378
+		{ // 379
 			"({\n// A\n* // B\na // C\n() {}})",
 			"({* a() {}});",
 			"({\n\t// A\n\t* // B\n\ta // C\n\t() {}\n});",
 		},
-		{ // 379
+		{ // 380
 			"({\n// A\nasync /* B*/ * // C\na(){}})",
 			"({async * a() {}});",
 			"({\n\t// A\n\tasync /* B*/ * // C\n\ta() {}\n});",
 		},
-		{ // 380
+		{ // 381
 			"({\n// A\nasync // B\n(){}})",
 			"({async() {}});",
 			"({\n\t// A\n\tasync // B\n\t() {}\n});",
 		},
-		{ // 381
+		{ // 382
 			"({\n// A\nget // B\n(){}})",
 			"({get() {}});",
 			"({\n\t// A\n\tget // B\n\t() {}\n});",
 		},
-		{ // 382
+		{ // 383
 			"({\n// A\n... // B\na // C\n})",
 			"({...a});",
 			"({\n\t// A\n\t... // B\n\ta // C\n\n});",
 		},
-		{ // 383
+		{ // 384
 			"({\n// A\na // B\n,})",
 			"({a});",
 			"({\n\t// A\n\ta // B\n\t: a\n});",
 		},
-		{ // 384
+		{ // 385
 			"({\n// A\na // B\n= // C\nb // D\n})",
 			"({a = b});",
 			"({\n\t// A\n\ta // B\n\t= // C\n\tb // D\n\n});",
 		},
-		{ // 385
+		{ // 386
 			"({\n// A\na // B\n: // C\nb // D\n})",
 			"({a: b});",
 			"({\n\t// A\n\ta // B\n\t: // C\n\tb // D\n\n});",
 		},
-		{ // 386
+		{ // 387
 			"({\n// A\n[ // B\na\n// C\n] // D\n: // E\nb // F\n})",
 			"({[a]: b});",
 			"({\n\t// A\n\t[ // B\n\n\t\ta\n\t// C\n\t] // D\n\t: // E\n\tb // F\n\n});",
 		},
-		{ // 387
+		{ // 388
 			"({ // A\n// B\n\n// C\n})",
 			"({});",
 			"({ // A\n   // B\n\n// C\n});",
 		},
-		{ // 388
+		{ // 389
 			"({ // A\n// B\n\n// C\na // D\n// E\n\n// F\n})",
 			"({a});",
 			"({ // A\n   // B\n\n\t// C\n\ta // D\n\t  // E\n\t: a\n\n// F\n});",
 		},
-		{ // 389
+		{ // 390
 			"({ // A\n\n// B\na // C\n, // D\nb // E\n\n// F\n})",
 			"({a, b});",
 			"({ // A\n\n\t// B\n\ta // C\n\t: a,\n\t// D\n\tb // E\n\t: b\n\n// F\n});",
 		},
-		{ // 390
+		{ // 391
 			"function // A\na // B\n()// C\n{}",
 			"function a() {}",
 			"function // A\na // B\n() // C\n{}",
 		},
-		{ // 391
+		{ // 392
 			"async /* A */ function // B\na // C\n()// D\n{}",
 			"async function a() {}",
 			"async /* A */ function // B\na // C\n() // D\n{}",
 		},
-		{ // 392
+		{ // 393
 			"function // A\n* // B\na // C\n()// D\n{}",
 			"function* a() {}",
 			"function // A\n* // B\na // C\n() // D\n{}",
 		},
-		{ // 393
+		{ // 394
 			"(function // A\n()// B\n{})",
 			"(function () {});",
 			"(function // A\n() // B\n{});",
 		},
-		{ // 394
+		{ // 395
 			"(async /* A */ function // B\n()// C\n{})",
 			"(async function () {});",
 			"(async /* A */ function // B\n() // C\n{});",
 		},
-		{ // 395
+		{ // 396
 			"(function // A\n* // B\n()// C\n{})",
 			"(function* () {});",
 			"(function // A\n* // B\n() // C\n{});",
 		},
-		{ // 396
+		{ // 397
 			"(async /* A */ function // B\n* // C\n()// D\n{})",
 			"(async function* () {});",
 			"(async /* A */ function // B\n* // C\n() // D\n{});",
 		},
-		{ // 397
+		{ // 398
 			"`${ // A\n\n// B\na // C\n\n// D\n}`",
 			"`${a}`;",
 			"`${ // A\n\n// B\na // C\n\n// D\n}`;",
 		},
-		{ // 398
+		{ // 399
 			"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`",
 			"`${a}${b}`;",
 			"`${ // A\na // B\n\n// C\n}${ // D\nb // E\n}`;",
 		},
-		{ // 399
+		{ // 400
 			"// A\n\n// B\na /* C */ ++ // D\n",
 			"a++;",
 			"// A\n\n// B\na /* C */++ // D\n",
 		},
-		{ // 400
+		{ // 401
 			"// A\n\n// B\na /* C */ -- // D\n",
 			"a--;",
 			"// A\n\n// B\na /* C */-- // D\n",
 		},
-		{ // 401
+		{ // 402
 			"// A\n\n// B\n++ // C\na // D\n",
 			"++a;",
 			"// A\n\n// B\n++ // C\na // D\n",
 		},
-		{ // 402
+		{ // 403
 			"// A\n\n// B\n-- // C\na // D\n",
 			"--a;",
 			"// A\n\n// B\n-- // C\na // D\n",
 		},
-		{ // 403
+		{ // 404
 			"// A\n\n// B\ntypeof // C\na // D\n",
 			"typeof a;",
 			"// A\n\n// B\ntypeof // C\na // D\n",
 		},
-		{ // 404
+		{ // 405
 			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
 			"void +a;",
 			"// A\n\n// B\nvoid // C\n+ // D\na // E\n",
 		},
-		{ // 405
+		{ // 406
 			"// A\n\n// B\nsuper // C\n()// D\n",
 			"super();",
 			"// A\n\n// B\nsuper // C\n() // D\n",
 		},
-		{ // 406
+		{ // 407
 			"// A\n\n// B\nimport // C\n( // D\n\n// E\na // F\n\n// G\n) // H\n",
 			"import(a);",
 			"// A\n\n// B\nimport // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n",
 		},
-		{ // 407
+		{ // 408
 			"// A\n\n// B\nsuper // C\n()// D\n`` // E",
 			"super()``;",
 			"// A\n\n// B\nsuper // C\n() // D\n`` // E\n",
 		},
-		{ // 408
+		{ // 409
 			"// A\n\n// B\nsuper // C\n()// D\n()// E\n",
 			"super()();",
 			"// A\n\n// B\nsuper // C\n() // D\n() // E\n",
 		},
-		{ // 409
+		{ // 410
 			"// A\n\n// B\nsuper // C\n()// D\n[ // E\n\n// F\na // G\n\n// H\n]// I",
 			"super()[a];",
 			"// A\n\n// B\nsuper // C\n() // D\n[ // E\n\n\t// F\n\ta // G\n\n// H\n] // I\n",
 		},
-		{ // 410
+		{ // 411
 			"// A\n\n// B\nsuper // C\n()// D\n. // E\na // F",
 			"super().a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\na // F\n",
 		},
-		{ // 411
+		{ // 412
 			"// A\n\n// B\nsuper // C\n()// D\n. // E\n#a // F",
 			"super().#a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\n#a // F\n",
 		},
-		{ // 412
+		{ // 413
 			"// A\n\n// B\na // C\n()// D\n",
 			"a();",
 			"// A\n\n// B\na // C\n() // D\n",
 		},
-		{ // 413
+		{ // 414
 			"// A\n\n// B\nclass a{} // C\n",
 			"class a {}",
 			"// A\n\n// B\nclass a {} // C\n",
 		},
-		{ // 414
+		{ // 415
 			"// A\n\n// B\nfunction a(){} // C\n",
 			"function a() {}",
 			"// A\n\n// B\nfunction a() {} // C\n",
 		},
-		{ // 415
+		{ // 416
 			"// A\n\n// B\nconst a = 1; // B\n",
 			"const a = 1;",
 			"// A\n\n// B\nconst a = 1; // B\n",
 		},
-		{ // 416
+		{ // 417
 			"// A\n\n// B\nlet a = 1; // B\n",
 			"let a = 1;",
 			"// A\n\n// B\nlet a = 1; // B\n",
 		},
-		{ // 417
+		{ // 418
 			"a?. // A\n() // B\n",
 			"a?.();",
 			"a?. // A\n() // B\n",
 		},
-		{ // 418
+		{ // 419
 			"a?. // A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n",
 			"a?.[b];",
 			"a?. // A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n",
 		},
-		{ // 419
+		{ // 420
 			"a?. // A\n[\n// C\nb\n// E\n] // F\n",
 			"a?.[b];",
 			"a?. // A\n[\n\t// C\n\tb\n// E\n] // F\n",
 		},
-		{ // 420
+		{ // 421
 			"a?. // A\nb // B\n",
 			"a?.b;",
 			"a?. // A\nb // B\n",
 		},
-		{ // 421
+		{ // 422
 			"a?. // A\n`` // B\n",
 			"a?.``;",
 			"a?. // A\n`` // B\n",
 		},
-		{ // 422
+		{ // 423
 			"a?. // A\n()// B\n`` // C\n",
 			"a?.()``;",
 			"a?. // A\n() // B\n`` // C\n",
 		},
-		{ // 423
+		{ // 424
 			"a?. // A\n`` // B\n[ // C\n\n// D\nb // E\n\n// F\n] // G\n",
 			"a?.``[b];",
 			"a?. // A\n`` // B\n[ // C\n\n\t// D\n\tb // E\n\n// F\n] // G\n",
 		},
-		{ // 424
+		{ // 425
 			"a?. //A\n[ // B\n\n// C\nb // D\n\n// E\n] // F\n. // G\nc// H\n",
 			"a?.[b].c;",
 			"a?. //A\n[ // B\n\n\t// C\n\tb // D\n\n// E\n] // F\n. // G\nc // H\n",
 		},
-		{ // 425
+		{ // 426
 			"class a {\n// A\nstatic // B\n{} // C\n}",
 			"class a {\n\tstatic {}\n}",
 			"class a {\n\t// A\n\tstatic // B\n\t{} // C\n}",
 		},
-		{ // 426
+		{ // 427
 			"class // A\na // B\n{ // C\n\n// D\n}",
 			"class a {}",
 			"class // A\na // B\n{ // C\n\n// D\n}",
 		},
-		{ // 427
+		{ // 428
 			"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}",
 			"class a {\n\ta() {}\n}",
 			"class a { // A\n\n\t// B\n\t// C\n\t// D\n\ta() {} // E\n\n// F\n\n// G\n}",
 		},
-		{ // 428
+		{ // 429
 			"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}",
 			"class a {\n\ta() {}\n\tb() {}\n}",
 			"class a { // A\n\n\t// B\n\ta() {} // C\n\t       // D\n\n\t// E\n\tb() {} // F\n\n// G\n}",
 		},
-		{ // 429
+		{ // 430
 			"let // A\na // B\n",
 			"let a;",
 			"let // A\na // B\n",
 		},
-		{ // 430
+		{ // 431
 			"let // A\na // B\n= // C\nb // D\n",
 			"let a = b;",
 			"let // A\na // B\n= // C\nb // D\n",
 		},
-		{ // 431
+		{ // 432
 			"let // A\n[]// B\n = // C\na // D",
 			"let [] = a;",
 			"let // A\n[] // B\n= // C\na // D\n",
 		},
-		{ // 432
+		{ // 433
 			"let // A\n{}// B\n = // C\na // D",
 			"let {} = a;",
 			"let // A\n{} // B\n= // C\na // D\n",
 		},
-		{ // 433
-			"continue /* A */ a // B\n",
-			"continue a;",
-			"continue /* A */ a // B\n",
-		},
 		{ // 434
-			"continue /* A */ a // B\n;",
+			"continue /* A */ a // B\n",
 			"continue a;",
 			"continue /* A */ a // B\n",
 		},
 		{ // 435
+			"continue /* A */ a // B\n;",
+			"continue a;",
+			"continue /* A */ a // B\n",
+		},
+		{ // 436
 			"continue /* A */;",
 			"continue;",
 			"continue /* A */;",
 		},
-		{ // 436
-			"break /* A */ a // B\n",
-			"break a;",
-			"break /* A */ a // B\n",
-		},
 		{ // 437
-			"break /* A */ a // B\n;",
+			"break /* A */ a // B\n",
 			"break a;",
 			"break /* A */ a // B\n",
 		},
 		{ // 438
+			"break /* A */ a // B\n;",
+			"break a;",
+			"break /* A */ a // B\n",
+		},
+		{ // 439
 			"break /* A */;",
 			"break;",
 			"break /* A */;",
 		},
-		{ // 439
+		{ // 440
 			"function a(){\nreturn /* A */ b // B\n}",
 			"function a() {\n\treturn b;\n}",
 			"function a() {\n\treturn /* A */ b // B\n}",
 		},
-		{ // 440
+		{ // 441
 			"function a(){\nreturn /* A */ b // B\n;}",
 			"function a() {\n\treturn b;\n}",
 			"function a() {\n\treturn /* A */ b // B\n}",
 		},
-		{ // 441
+		{ // 442
 			"function a(){\nreturn /* A */;\n}",
 			"function a() {\n\treturn;\n}",
 			"function a() {\n\treturn /* A */;\n}",
 		},
-		{ // 442
-			"debugger // A\n",
-			"debugger;",
-			"debugger // A\n",
-		},
 		{ // 443
-			"debugger /* A */;",
+			"debugger // A\n",
 			"debugger;",
-			"debugger /* A */;",
+			"debugger // A\n",
 		},
 		{ // 444
+			"debugger /* A */;",
+			"debugger;",
+			"debugger /* A */;",
+		},
+		{ // 445
 			"a /* A */: // B\ndebugger;",
 			"a: debugger;",
 			"a /* A */ : // B\ndebugger;",
 		},
-		{ // 445
+		{ // 446
 			"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G",
 			"if (a) b;",
 			"if // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
-		{ // 446
+		{ // 447
 			"// A\n\n// B\nif // C\n(// D\n\n// E\na // F\n\n// G\n) // H\n{// I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O",
 			"if (a) {} else {}",
 			"// A\n\n// B\nif // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{ // I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O\n",
 		},
-		{ // 447
+		{ // 448
 			"// A\na /* B */ || // C\nb // D\n|| c /* E */",
 			"a || b || c;",
 			"// A\n\na /* B */ || // C\nb // D\n|| c /* E */;",
 		},
-		{ // 448
+		{ // 449
 			"with // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G\n",
 			"with (a) b;",
 			"with // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
-		{ // 449
+		{ // 450
 			"while // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G\n",
 			"while (a) b;",
 			"while // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
-		{ // 450
+		{ // 451
 			"switch (a) {\n// A\ncase /* B */ b /* C */: // D\n\n// E\ncase c:\n// F\ncase /* G */ d /* H */: // I\n\n// J\n{} // F\ndefault:}",
 			"switch (a) {\ncase b:\ncase c:\ncase d:\n\t{}\ndefault:\n}",
 			"switch (a) {\n// A\ncase /* B */ b /* C */: // D\n\n// E\ncase c:\n// F\ncase /* G */ d /* H */: // I\n\n\t// J\n\t{} // F\n\ndefault:\n}",
 		},
-		{ // 451
+		{ // 452
 			"switch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{ // G\n\n// H\n}",
 			"switch (a) {}",
 			"switch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{ // G\n\n// H\n}",
 		},
-		{ // 452
+		{ // 453
 			"switch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{ // G\n\n// H\ncase /* I */ b /* J */ : // K\n\n// J\ncase c:// L\n\n// M\ndefault /* N */ : // O\n\td;// P\n\n// Q\n}",
 			"switch (a) {\ncase b:\ncase c:\ndefault:\n\td;\n}",
 			"switch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{ // G\n\n// H\ncase /* I */ b /* J */: // K\n\n// J\ncase c: // L\n\n// M\ndefault /* N */: // O\n\n\td; // P\n\n// Q\n}",
 		},
-		{ // 453
+		{ // 454
 			"try // A\n{} // B\ncatch // C\n{}",
 			"try {} catch {}",
 			"try // A\n{} // B\ncatch // C\n{}",
 		},
-		{ // 454
+		{ // 455
 			"try {}catch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{} // G",
 			"try {} catch (a) {}",
 			"try {} catch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{} // G\n",
 		},
-		{ // 455
+		{ // 456
 			"try{} // A\nfinally // B\n{} // C",
 			"try {} finally {}",
 			"try {} // A\nfinally // B\n{} // C\n",
 		},
-		{ // 456
+		{ // 457
 			"try // A\n{}// B\ncatch /* C */ ( // D\n\n// E\na // F\n\n// G\n) // H\n{}// I\nfinally /* J */ {} // K",
 			"try {} catch (a) {} finally {}",
 			"try // A\n{} // B\ncatch /* C */ ( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{} // I\nfinally /* J */ {} // K\n",
 		},
-		{ // 457
+		{ // 458
 			"for // A\n( // B\n\n// C\n; // D\n; // E\n\n// F\n) // G\na",
 			"for (;;) a;",
 			"for // A\n( // B\n\n\t// C\n\t; // D\n\t; // E\n\n// F\n) // G\na;",
 		},
-		{ // 458
+		{ // 459
 			"for ( // A\n\n// B\nvar // C\na // D\n, // E\nb // F\n; // G\nc // H\n; // I\n\n// J\n) // K\n{}",
 			"for (var a, b; c;) {}",
 			"for ( // A\n\n\t// B\n\tvar // C\n\ta // D\n\t, // E\n\tb // F\n\t; // G\n\tc // H\n\t; // I\n\n// J\n) // K\n{}",
 		},
-		{ // 459
+		{ // 460
 			"for ( // A\n\n// B\n; // C\na // D\n; // E\nb // F\n\n// G\n) // H\nc",
 			"for (; a; b) c;",
 			"for ( // A\n\n\t// B\n\t; // C\n\ta // D\n\t; // E\n\tb // F\n\n// G\n) // H\nc;",
 		},
-		{ // 460
+		{ // 461
 			"for ( // A\n\n// B\nlet // C\na // D\n; b; c) {}",
 			"for (let a; b; c) {}",
 			"for ( // A\n\n\t// B\n\tlet // C\n\ta // D\n\t; b; c) {}",
 		},
-		{ // 461
+		{ // 462
 			"for ( // A\n\n// B\nvar // C\n{}// D\n= // E\na // F\n;;);",
 			"for (var {} = a;;) ;",
 			"for ( // A\n\n\t// B\n\tvar // C\n\t{} // D\n\t= // E\n\ta // F\n\t;;) ;",
 		},
-		{ // 462
+		{ // 463
 			"for ( // A\n\n// B\nvar // C\n[]// D\n= a // E\n; // F\n; // G\n) // H\n;",
 			"for (var [] = a;;) ;",
 			"for ( // A\n\n\t// B\n\tvar // C\n\t[] // D\n\t= a // E\n\t; // F\n\t; // G\n) // H\n;",
 		},
-		{ // 463
+		{ // 464
 			"for (\n// A\nvar // B\na // C\nin // D\nb // E\n\n// F\n);",
 			"for (var a in b) ;",
 			"for (\n\t// A\n\tvar // B\n\ta // C\n\tin // D\n\tb // E\n\n// F\n) ;",
 		},
-		{ // 464
+		{ // 465
 			"[ // A\n\n// B\na.b // C\n, // D\na.c // E\n\n// F\n] = b",
 			"[a.b, a.c] = b;",
 			"[ // A\n\n\t// B\n\ta.b // C\n\t, // D\n\ta.c // E\n\n// F\n] = b;",
 		},
-		{ // 465
+		{ // 466
 			"[ // A\n\n// B\n... // C\na // D\n\n// E\n] = b",
 			"[...a] = b;",
 			"[ // A\n\n\t// B\n\t... // C\n\ta // D\n\n// E\n] = b;",
 		},
-		{ // 466
+		{ // 467
 			"({\n// A\na // B\n} = b)",
 			"({a} = b);",
 			"({\n\t// A\n\ta // B\n\t: a} = b);",
 		},
-		{ // 467
+		{ // 468
 			"({\n// A\na // B\n= // C\nb // D\n} = c)",
 			"({a = b} = c);",
 			"({\n\t// A\n\ta // B\n\t: a = // C\n\tb // D\n} = c);",
 		},
-		{ // 468
+		{ // 469
 			"({\n// A\na // B\n: // C\nb // D\n= // E\nc // F\n} = d)",
 			"({a: b = c} = d);",
 			"({\n\t// A\n\ta // B\n\t: // C\n\tb // D\n\t= // E\n\tc // F\n} = d);",
 		},
-		{ // 469
+		{ // 470
 			"({ // A\n\n// B\na // C\n\n// D\n} = b)",
 			"({a} = b);",
 			"({ // A\n\n\t// B\n\ta // C\n\t: a\n// D\n} = b);",
 		},
-		{ // 470
+		{ // 471
 			"({\n// A\n... // B\na // C\n} = b)",
 			"({...a} = b);",
 			"({\n\t// A\n\t... // B\n\ta // C\n} = b);",
 		},
-		{ // 471
+		{ // 472
 			"(\n// A\n[a] // B\n= b)",
 			"([a] = b);",
 			"(\n\t// A\n\t[a] // B\n\t= b\n);",
 		},
-		{ // 472
+		{ // 473
 			"(\n// A\n{a} // B\n= b)",
 			"({a} = b);",
 			"(\n\t// A\n\t{a: a} // B\n\t= b\n);",
 		},
-		{ // 473
+		{ // 474
 			"(\n// A\na /* B */ => // C\n{} // D\n)",
 			"(a => {});",
 			"(\n\t// A\n\ta /* B */ => // C\n\t{} // D\n);",
 		},
-		{ // 474
+		{ // 475
 			"(\n// A\n() /* B */ => /* C */ {} // D\n)",
 			"(() => {});",
 			"(\n\t// A\n\t() /* B */ => /* C */ {} // D\n);",
 		},
-		{ // 475
+		{ // 476
 			"(\n// A\nasync /* B */ a /* C */ => // D\nb // E\n)",
 			"(async a => b);",
 			"(\n\t// A\n\tasync /* B */ a /* C */ => // D\n\tb // E\n);",
 		},
-		{ // 476
+		{ // 477
 			"(// A\n\n// B\nasync /* C */ ()/* D */ => // E\n{}// F\n\n// G\n)",
 			"(async () => {});",
 			"( // A\n\n\t// B\n\tasync /* C */ () /* D */ => // E\n\t{} // F\n\n// G\n);",
 		},
-		{ // 477
+		{ // 478
 			"function *a() {\n// A\nyield /* B */ a // C\n}",
 			"function* a() {\n\tyield a;\n}",
 			"function* a() {\n\t// A\n\tyield /* B */ a // C\n}",
 		},
-		{ // 478
+		{ // 479
 			"function* a() {\n// A\nyield /* B */ * /* C */ a // D\n}",
 			"function* a() {\n\tyield * a;\n}",
 			"function* a() {\n\t// A\n\tyield /* B */ * /* C */ a // D\n}",
 		},
-		{ // 479
+		{ // 480
 			"a // A\n?? b",
 			"a ?? b;",
 			"a // A\n?? b;",
 		},
-		{ // 480
+		{ // 481
 			"a /* A */ ?? b",
 			"a ?? b;",
 			"a /* A */ ?? b;",
 		},
-		{ // 481
+		{ // 482
 			"a /* A */ ? /* B */ b /* C */ : /* D */ c",
 			"a ? b : c;",
 			"a /* A */ ? /* B */ b /* C */ : /* D */ c;",
 		},
-		{ // 482
+		{ // 483
 			"a // A\n? // B\nb // C\n: // D\nc",
 			"a ? b : c;",
 			"a // A\n? // B\nb // C\n: // D\nc;",
 		},
-		{ // 483
+		{ // 484
 			"a /* A */ && /* B */ b",
 			"a && b;",
 			"a /* A */ && /* B */ b;",
 		},
-		{ // 484
+		{ // 485
 			"a // A\n&& // B\nb",
 			"a && b;",
 			"a // A\n&& // B\nb;",
 		},
-		{ // 485
+		{ // 486
 			"a /* A */ | /* B */ b",
 			"a | b;",
 			"a /* A */ | /* B */ b;",
 		},
-		{ // 486
+		{ // 487
 			"a // A\n| // B\nb",
 			"a | b;",
 			"a // A\n| // B\nb;",
 		},
-		{ // 487
+		{ // 488
 			"a /* A */ ^ /* B */ b",
 			"a ^ b;",
 			"a /* A */ ^ /* B */ b;",
 		},
-		{ // 488
+		{ // 489
 			"a // A\n^ // B\nb",
 			"a ^ b;",
 			"a // A\n^ // B\nb;",
 		},
-		{ // 489
+		{ // 490
 			"a /* A */ & /* B */ b",
 			"a & b;",
 			"a /* A */ & /* B */ b;",
 		},
-		{ // 490
+		{ // 491
 			"a // A\n& // B\nb",
 			"a & b;",
 			"a // A\n& // B\nb;",
 		},
-		{ // 491
+		{ // 492
 			"a /* A */ == /* B */ b",
 			"a == b;",
 			"a /* A */ == /* B */ b;",
 		},
-		{ // 492
+		{ // 493
 			"a // A\n!== // B\nb",
 			"a !== b;",
 			"a // A\n!== // B\nb;",
 		},
-		{ // 493
+		{ // 494
 			"a /* A */ < /* B */ b",
 			"a < b;",
 			"a /* A */ < /* B */ b;",
 		},
-		{ // 494
+		{ // 495
 			"a // A\nin // B\nb",
 			"a in b;",
 			"a // A\nin // B\nb;",
 		},
-		{ // 495
+		{ // 496
 			"a /* A */ << /* B */ b",
 			"a << b;",
 			"a /* A */ << /* B */ b;",
 		},
-		{ // 496
+		{ // 497
 			"a // A\n>>> // B\nb",
 			"a >>> b;",
 			"a // A\n>>> // B\nb;",
 		},
-		{ // 497
+		{ // 498
 			"a /* A */ + /* B */ b",
 			"a + b;",
 			"a /* A */ + /* B */ b;",
 		},
-		{ // 498
+		{ // 499
 			"a // A\n- // B\nb",
 			"a - b;",
 			"a // A\n- // B\nb;",
 		},
-		{ // 499
+		{ // 500
 			"a /* A */ * /* B */ b",
 			"a * b;",
 			"a /* A */ * /* B */ b;",
 		},
-		{ // 500
+		{ // 501
 			"a // A\n% // B\nb",
 			"a % b;",
 			"a // A\n% // B\nb;",
 		},
-		{ // 501
+		{ // 502
 			"a /* A */ ** /* B */ b",
 			"a ** b;",
 			"a /* A */ ** /* B */ b;",
 		},
-		{ // 502
+		{ // 503
 			"a // A\n** // B\nb",
 			"a ** b;",
 			"a // A\n** // B\nb;",
 		},
-		{ // 503
+		{ // 504
 			"do /* A */a /* B */; /* C */ while ( // D\n\n// E\nb // F\n\n// G\n) // H",
 			"do a; while (b);",
 			"do /* A */ a /* B */; /* C */ while ( // D\n\n\t// E\n\tb // F\n\n// G\n) // H\n",
 		},
-		{ // 504
+		{ // 505
 			"do /* A */{}/* B */ while ( // C\n\n// D\nb // E\n\n// F\n) // G",
 			"do {} while (b);",
 			"do /* A */ {} /* B */ while ( // C\n\n\t// D\n\tb // E\n\n// F\n) // G\n",
 		},
-		{ // 505
+		{ // 506
 			"([a // A\n= b] = c)",
 			"([a = b] = c);",
 			"([a // A\n\t= b] = c);",
 		},
-		{ // 506
+		{ // 507
 			"// A\n\n// B\n#a /* C */ in /* D */ b // E",
 			"#a in b;",
 			"// A\n\n// B\n#a /* C */ in /* D */ b // E\n",
 		},
-		{ // 507
+		{ // 508
 			"a({b: () => {\nc();\n}});",
 			"a({b: () => {\n\tc();\n}});",
 			"a({b: () => {\n\tc();\n}});",
 		},
-		{ // 508
+		{ // 509
 			"a({b: // A\n() => {\nc();\n}});",
 			"a({b: () => {\n\tc();\n}});",
 			"a({\n\tb: // A\n\t() => {\n\t\tc();\n\t}\n});",
 		},
-		{ // 509
+		{ // 510
 			"a?.[() => { // A\n}]",
 			"a?.[() => {}];",
 			"a?.[() => { // A\n}];",
 		},
-		{ // 510
+		{ // 511
 			"a?.[ // A\n() => { // B\n}]",
 			"a?.[() => {}];",
 			"a?.[ // A\n\n\t() => { // B\n\t}\n];",
 		},
-		{ // 511
+		{ // 512
 			"a?.[() => { // A\nreturn c;}]",
 			"a?.[() => {\n\treturn c;\n}];",
 			"a?.[() => { // A\n\n\treturn c;\n}];",
 		},
-		{ // 512
+		{ // 513
 			"a?.[ // A\n() => { // B\nreturn c;}]",
 			"a?.[() => {\n\treturn c;\n}];",
 			"a?.[ // A\n\n\t() => { // B\n\n\t\treturn c;\n\t}\n];",
 		},
-		{ // 513
+		{ // 514
 			"import(() => {})",
 			"import(() => {});",
 			"import(() => {});",
 		},
-		{ // 514
+		{ // 515
 			"import(() => {return a})",
 			"import(() => {\n\treturn a;\n});",
 			"import(() => {\n\treturn a;\n});",
 		},
-		{ // 515
+		{ // 516
 			"import(// A\n() => {return a})",
 			"import(() => {\n\treturn a;\n});",
 			"import( // A\n\n\t() => {\n\t\treturn a;\n\t});",
 		},
-		{ // 516
+		{ // 517
 			"a()[() => {}]",
 			"a()[() => {}];",
 			"a()[() => {}];",
 		},
-		{ // 517
+		{ // 518
 			"a()[() => {return b}]",
 			"a()[() => {\n\treturn b;\n}];",
 			"a()[() => {\n\treturn b;\n}];",
 		},
-		{ // 518
+		{ // 519
 			"a()[// A\n() => {return b}]",
 			"a()[() => {\n\treturn b;\n}];",
 			"a()[ // A\n\n\t() => {\n\t\treturn b;\n\t}];",
