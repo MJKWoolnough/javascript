@@ -14,7 +14,7 @@ type Token struct {
 }
 
 func (t *Token) hasSingleLineComment() bool {
-	return t.Type == TokenSingleLineComment
+	return t != nil && t.Type == TokenSingleLineComment
 }
 
 // IsTypescript returns true when the token was processed as part of a
