@@ -818,14 +818,20 @@ func (t TryStatement) printSource(w writer, v bool) {
 		if t.CatchParameterBindingIdentifier != nil || t.CatchParameterArrayBindingPattern != nil || t.CatchParameterObjectBindingPattern != nil {
 			w.WriteString("(")
 
-			ip := w.Indent()
+			ip := w
 
 			if v {
-				t.Comments[3].printSource(w, false, true)
+				if hasSingleLineComment(t.Comments[3:7]) || t.CatchParameterBindingIdentifier.hasSingleLineComment() || t.CatchParameterArrayBindingPattern.hasSingleLineComment() || t.CatchParameterObjectBindingPattern.hasSingleLineComment() {
+					ip = w.Indent()
+
+					t.Comments[3].printSource(w, false, true)
+					ip.WriteString("\n")
+				} else {
+					t.Comments[3].printSource(w, true, false)
+				}
 
 				if len(t.Comments[4]) > 0 {
-					ip.WriteString("\n")
-					t.Comments[4].printSource(ip, true, false)
+					t.Comments[4].printSource(ip, true, w != ip)
 				}
 			}
 
@@ -840,10 +846,11 @@ func (t TryStatement) printSource(w writer, v bool) {
 			if v {
 				t.Comments[5].printSource(ip, false, true)
 
-				if len(t.Comments[6]) > 0 {
+				if w != ip {
 					w.WriteString("\n")
-					t.Comments[6].printSource(w, false, true)
 				}
+
+				t.Comments[6].printSource(w, false, w != ip)
 			}
 
 			w.WriteString(") ")
