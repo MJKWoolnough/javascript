@@ -673,31 +673,23 @@ func (ws WithStatement) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		ws.Comments[1].printSource(w, false, true)
-	}
+		ip := w
 
-	if v {
-		ip := w.Indent()
-		nl := false
+		if ws.Comments[1].hasSingleLineComment() || ws.Comments[2].hasSingleLineComment() || ws.Expression.hasSingleLineComment() {
+			ip = w.Indent()
 
-		if (len(ws.Tokens) > 0 && len(ws.Expression.Tokens) > 0 && ws.Expression.Tokens[0].Line > ws.Tokens[0].Line) || ws.Expression.hasFirstComment() {
-			nl = true
-
+			ws.Comments[1].printSource(w, true, true)
 			ip.WriteString("\n")
 		}
 
 		ws.Expression.printSource(ip, true)
 
-		if nl && !w.LastIsWhitespace() {
+		if w != ip {
 			w.WriteString("\n")
+			ws.Comments[2].printSource(w, true, false)
 		}
 	} else {
 		ws.Expression.printSource(w, false)
-	}
-
-	if v && len(ws.Comments[2]) > 0 {
-		w.WriteString("\n")
-		ws.Comments[2].printSource(w, false, true)
 	}
 
 	w.WriteString(") ")

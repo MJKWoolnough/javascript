@@ -362,7 +362,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 68
 			"with\n(\na\n)\nb",
 			"with (a) b;",
-			"with (\n\ta\n) b;",
+			"with (a) b;",
 		},
 		{ // 69
 			"function a(){}",
