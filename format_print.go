@@ -584,24 +584,21 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		s.Comments[1].printSource(w, true, false)
+		ip := w
 
-		ip := w.Indent()
-		nl := false
+		if s.Comments[1].hasSingleLineComment() || s.Comments[2].hasSingleLineComment() || s.Expression.hasSingleLineComment() {
+			ip = w.Indent()
 
-		if len(s.Tokens) > 0 && len(s.Expression.Tokens) > 0 && s.Expression.Tokens[0].Line > s.Tokens[0].Line {
-			nl = true
-
+			s.Comments[1].printSource(w, true, true)
 			ip.WriteString("\n")
 		}
 
 		s.Expression.printSource(ip, true)
 
-		if nl || len(s.Comments[2]) > 0 {
+		if w != ip {
 			w.WriteString("\n")
+			s.Comments[2].printSource(w, true, false)
 		}
-
-		s.Comments[2].printSource(w, true, false)
 	} else {
 		s.Expression.printSource(w, false)
 	}
