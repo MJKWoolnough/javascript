@@ -289,6 +289,10 @@ func (fp *FormalParameters) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
+func (fp *FormalParameters) hasSingleLineComment() bool {
+	return fp != nil && (hasSingleLineComment(fp.Comments[:]) || hasSingleLineComment(fp.FormalParameterList) || fp.BindingIdentifier.hasSingleLineComment() || fp.ArrayBindingPattern.hasSingleLineComment() || fp.ObjectBindingPattern.hasSingleLineComment())
+}
+
 // BindingElement as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-BindingElement
 //

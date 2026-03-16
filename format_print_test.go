@@ -1842,12 +1842,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 364
 			"function a( // A\n\n// B\nb // C\n, // D\nc // E\n\n// F\n){}",
 			"function a(b, c) {}",
-			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\tc // E\n\n// F\n) {}",
+			"function a( // A\n\n\t// B\n\tb // C\n\t,\n\t// D\n\tc // E\n\n// F\n) {}",
 		},
 		{ // 365
 			"function a( // A\n\n// B\nb // C\n, // D\n... // E\nc // F\n\n// G\n){}",
 			"function a(b, ...c) {}",
-			"function a( // A\n\n\t// B\n\tb // C\n\t, // D\n\t... // E\n\tc // F\n\n// G\n) {}",
+			"function a( // A\n\n\t// B\n\tb // C\n\t,\n\t// D\n\t... // E\n\tc // F\n\n// G\n) {}",
 		},
 		{ // 366
 			"function a( // A\n\n// B\n... // C\n[]// D\n\n// E\n){}",
@@ -2622,7 +2622,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 520
 			"import(// A\n() => {return a})",
 			"import(() => {\n\treturn a;\n});",
-			"import( // A\n\n\t() => {\n\t\treturn a;\n\t});",
+			"import( // A\n\n\t() => {\n\t\treturn a;\n\t}\n);",
 		},
 		{ // 521
 			"a()[() => {}]",
@@ -2637,7 +2637,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 523
 			"a()[// A\n() => {return b}]",
 			"a()[() => {\n\treturn b;\n}];",
-			"a()[ // A\n\n\t() => {\n\t\treturn b;\n\t}];",
+			"a()[ // A\n\n\t() => {\n\t\treturn b;\n\t}\n];",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {

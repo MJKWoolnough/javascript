@@ -5575,11 +5575,11 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 48
 			"function a(this, b) {}",
-			"function a( /*this,*/b) {}",
+			"function a( /*this,*/ b) {}",
 		},
 		{ // 49
 			"function a(this : A, b) {}",
-			"function a( /*this : A,*/b) {}",
+			"function a( /*this : A,*/ b) {}",
 		},
 		{ // 50
 			"function a(b: c) {}",

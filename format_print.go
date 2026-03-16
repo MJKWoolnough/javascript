@@ -257,16 +257,19 @@ func (i IfStatement) printSource(w writer, v bool) {
 		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
-			i.Comments[1].printSource(w, false, false)
+			i.Comments[1].printSource(w, false, true)
 			ip.WriteString("\n")
+		} else {
+			i.Comments[1].printSource(w, true, false)
 		}
 
 		i.Expression.printSource(ip, true)
 
 		if w != ip {
 			w.WriteString("\n")
-			i.Comments[2].printSource(w, false, false)
 		}
+
+		i.Comments[2].printSource(w, false, w != ip)
 	} else {
 		i.Expression.printSource(w, false)
 	}
@@ -327,16 +330,19 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 		if hasSingleLineComment(i.Comments[3:4]) || i.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
-			i.Comments[3].printSource(w, false, false)
+			i.Comments[3].printSource(w, false, true)
 			ip.WriteString("\n")
+		} else {
+			i.Comments[3].printSource(w, true, false)
 		}
 
 		i.Expression.printSource(ip, true)
 
 		if w != ip {
 			w.WriteString("\n")
-			i.Comments[4].printSource(w, false, false)
 		}
+
+		i.Comments[4].printSource(w, false, w != ip)
 	} else {
 		i.Expression.printSource(w, false)
 	}
@@ -365,16 +371,19 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
-			i.Comments[1].printSource(w, false, false)
+			i.Comments[1].printSource(w, false, true)
 			ip.WriteString("\n")
+		} else {
+			i.Comments[1].printSource(w, true, false)
 		}
 
 		i.Expression.printSource(ip, true)
 
 		if w != ip {
 			w.WriteString("\n")
-			i.Comments[2].printSource(w, false, false)
 		}
+
+		i.Comments[2].printSource(w, false, w != ip)
 	} else {
 		i.Expression.printSource(w, false)
 	}
@@ -449,16 +458,18 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	ip := w
 	sep := ", "
 
-	if v && hasSingleLineComment(i.Comments[2:7]) {
-		ip = w.Indent()
-		sep = ",\n"
+	if v {
+		if hasSingleLineComment(i.Comments[2:7]) {
+			ip = w.Indent()
+			sep = ",\n"
 
-		i.Comments[2].printSource(w, false, false)
-		ip.WriteString("\n")
-
-		if len(i.Comments[3]) > 0 {
-			i.Comments[3].printSource(ip, false, false)
+			i.Comments[2].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			i.Comments[2].printSource(w, true, false)
 		}
+
+		i.Comments[3].printSource(ip, false, false)
 	}
 
 	switch i.Type {
@@ -557,8 +568,8 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		i.Of.printSource(ip, v)
 	}
 
-	if v && w != ip {
-		if len(i.Comments[6]) > 0 || !ip.LastIsWhitespace() {
+	if v {
+		if w != ip && (len(i.Comments[6]) > 0 || !ip.LastIsWhitespace()) {
 			w.WriteString(sep[1:])
 		}
 
@@ -589,16 +600,19 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 		if s.Comments[1].hasSingleLineComment() || s.Comments[2].hasSingleLineComment() || s.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
-			s.Comments[1].printSource(w, true, true)
+			s.Comments[1].printSource(w, false, true)
 			ip.WriteString("\n")
+		} else {
+			s.Comments[1].printSource(w, true, false)
 		}
 
 		s.Expression.printSource(ip, true)
 
 		if w != ip {
 			w.WriteString("\n")
-			s.Comments[2].printSource(w, true, false)
 		}
+
+		s.Comments[2].printSource(w, false, w != ip)
 	} else {
 		s.Expression.printSource(w, false)
 	}
@@ -678,16 +692,19 @@ func (ws WithStatement) printSource(w writer, v bool) {
 		if ws.Comments[1].hasSingleLineComment() || ws.Comments[2].hasSingleLineComment() || ws.Expression.hasSingleLineComment() {
 			ip = w.Indent()
 
-			ws.Comments[1].printSource(w, true, true)
+			ws.Comments[1].printSource(w, false, true)
 			ip.WriteString("\n")
+		} else {
+			ws.Comments[1].printSource(w, true, false)
 		}
 
 		ws.Expression.printSource(ip, true)
 
 		if w != ip {
 			w.WriteString("\n")
-			ws.Comments[2].printSource(w, true, false)
 		}
+
+		ws.Comments[2].printSource(w, false, w != ip)
 	} else {
 		ws.Expression.printSource(w, false)
 	}
@@ -1189,12 +1206,16 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 	ip := w
 	sep := ", "
 
-	if v && o.hasSingleLineComment() {
-		ip = w.Indent()
+	if v {
+		if o.hasSingleLineComment() {
+			sep = ",\n"
+			ip = w.Indent()
 
-		o.Comments[0].printSource(w, false, true)
-		ip.WriteString("\n")
-		sep = ",\n"
+			o.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			o.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	for n, bp := range o.BindingPropertyList {
@@ -1227,8 +1248,11 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && (len(o.Comments[4]) > 0 || w != ip && !w.LastIsWhitespace()) {
-		w.WriteString("\n")
+	if v {
+		if len(o.Comments[4]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
 		o.Comments[4].printSource(w, false, false)
 	}
 
@@ -1241,12 +1265,16 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 	ip := w
 	sep := ", "
 
-	if v && a.hasSingleLineComment() {
-		ip = w.Indent()
-		sep = ",\n"
+	if v {
+		if a.hasSingleLineComment() {
+			sep = ",\n"
+			ip = w.Indent()
 
-		a.Comments[0].printSource(w, false, true)
-		ip.WriteString("\n")
+			a.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			a.Comments[0].printSource(w, false, true)
+		}
 	}
 
 	for n, be := range a.BindingElementList {
@@ -1270,8 +1298,11 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 		a.BindingRestElement.printSource(ip, v)
 	}
 
-	if v && (len(a.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace()) {
-		w.WriteString("\n")
+	if v {
+		if len(a.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
 		a.Comments[2].printSource(w, false, true)
 	}
 
@@ -1302,39 +1333,36 @@ func (c CaseClause) printSource(w writer, v bool) {
 func (f FormalParameters) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		f.Comments[0].printSource(w, false, false)
+		if f.hasSingleLineComment() {
+			sep = ",\n"
+			ip = w.Indent()
+
+			f.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			f.Comments[0].printSource(w, len(f.FormalParameterList) > 0 || f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil, false)
+		}
 	}
 
-	ip := w.Indent()
-
 	if len(f.FormalParameterList) > 0 {
-		if v && len(f.FormalParameterList[0].Comments[0]) > 0 {
-			if !w.LastIsWhitespace() {
-				w.WriteString("\n")
-			}
-
-			ip.WriteString("\n")
-		}
-
 		f.FormalParameterList[0].printSource(ip, v)
 
 		for _, be := range f.FormalParameterList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			be.printSource(ip, v)
 		}
 
 		if f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 		}
 	}
 
 	if f.BindingIdentifier != nil {
 		if v {
-			if len(f.FormalParameterList) == 0 {
-				ip.WriteString("\n")
-			}
-
 			f.Comments[1].printSource(ip, false, true)
 		}
 
@@ -1351,10 +1379,6 @@ func (f FormalParameters) printSource(w writer, v bool) {
 		}
 	} else if f.ArrayBindingPattern != nil {
 		if v {
-			if len(f.FormalParameterList) == 0 {
-				ip.WriteString("\n")
-			}
-
 			f.Comments[1].printSource(ip, false, true)
 		}
 
@@ -1371,10 +1395,6 @@ func (f FormalParameters) printSource(w writer, v bool) {
 		}
 	} else if f.ObjectBindingPattern != nil {
 		if v {
-			if len(f.FormalParameterList) == 0 {
-				ip.WriteString("\n")
-			}
-
 			f.Comments[1].printSource(ip, false, true)
 		}
 
@@ -1391,8 +1411,11 @@ func (f FormalParameters) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(f.Comments[4]) > 0 {
-		w.WriteString("\n")
+	if v {
+		if w != ip && (len(f.FormalParameterList) > 0 || f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil) {
+			w.WriteString("\n")
+		}
+
 		f.Comments[4].printSource(w, false, false)
 	}
 
@@ -1625,20 +1648,22 @@ func (c CallExpression) printSource(w writer, v bool) {
 		if v {
 			if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
 				ip = w.Indent()
-			}
 
-			c.Comments[2].printSource(w, true, false)
-
-			if w != ip {
+				c.Comments[2].printSource(w, false, true)
 				ip.WriteString("\n")
+			} else {
+				c.Comments[2].printSource(w, true, false)
 			}
 		}
 
 		c.ImportCall.printSource(ip, v)
 
-		if v && len(c.Comments[3]) > 0 {
-			w.WriteString("\n")
-			c.Comments[3].printSource(w, true, false)
+		if v {
+			if w != ip {
+				w.WriteString("\n")
+			}
+
+			c.Comments[3].printSource(w, true, w != ip)
 		}
 
 		w.WriteString(")")
@@ -1663,20 +1688,22 @@ func (c CallExpression) printSource(w writer, v bool) {
 			if v {
 				if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
 					ip = w.Indent()
-				}
 
-				c.Comments[2].printSource(w, true, false)
-
-				if w != ip {
+					c.Comments[2].printSource(w, false, true)
 					ip.WriteString("\n")
+				} else {
+					c.Comments[2].printSource(w, true, false)
 				}
 			}
 
 			c.Expression.printSource(ip, v)
 
-			if v && len(c.Comments[3]) > 0 {
-				w.WriteString("\n")
-				c.Comments[3].printSource(w, true, false)
+			if v {
+				if w != ip {
+					w.WriteString("\n")
+				}
+
+				c.Comments[3].printSource(w, true, w != ip)
 			}
 
 			w.WriteString("]")
