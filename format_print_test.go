@@ -207,7 +207,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 37
 			"for\n(a;;) b",
 			"for (a;;) b;",
-			"for (\n\ta;;\n) b;",
+			"for (a;;) b;",
 		},
 		{ // 38
 			"for(var a=b;c<d;e++){}",
@@ -217,7 +217,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 39
 			"for(\nvar a=b;\nc<d;\ne++){}",
 			"for (var a = b; c < d; e++) {}",
-			"for (\n\tvar a = b;\n\tc < d;\n\te++\n) {}",
+			"for (var a = b; c < d; e++) {}",
 		},
 		{ // 40
 			"for(let a=b;c<d;e++){}",
@@ -227,7 +227,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 41
 			"for(\nlet a=b;\nc<d;\ne++){}",
 			"for (let a = b; c < d; e++) {}",
-			"for (\n\tlet a = b;\n\tc < d;\n\te++\n) {}",
+			"for (let a = b; c < d; e++) {}",
 		},
 		{ // 42
 			"for(const a=b;c<d;e++){}",
@@ -237,7 +237,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 43
 			"for(\nconst a=b;\nc<d;\ne++){}",
 			"for (const a = b; c < d; e++) {}",
-			"for (\n\tconst a = b;\n\tc < d;\n\te++\n) {}",
+			"for (const a = b; c < d; e++) {}",
 		},
 		{ // 44
 			"for(a in b){}",
@@ -247,7 +247,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 45
 			"for\n(a\nin\nb\n)\n{}",
 			"for (a in b) {}",
-			"for (\n\ta in b\n) {}",
+			"for (a in b) {}",
 		},
 		{ // 46
 			"for(var a in b){}",
@@ -287,7 +287,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 53
 			"for\n(a\nof\nb\n)\n{}",
 			"for (a of b) {}",
-			"for (\n\ta of b\n) {}",
+			"for (a of b) {}",
 		},
 		{ // 54
 			"for(var a of b){}",
@@ -327,7 +327,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 61
 			"async () => {\nfor\nawait(a\nof\nb)\n{}\n}",
 			"async () => {\n\tfor await (a of b) {}\n};",
-			"async () => {\n\tfor await (\n\t	a of b\n\t) {}\n};",
+			"async () => {\n\tfor await (a of b) {}\n};",
 		},
 		{ // 62
 			"switch(a) {}",
@@ -1347,7 +1347,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 265
 			"for(var a,b,\nc;;){}",
 			"for (var a, b, c;;) {}",
-			"for (var a, b,\n\tc;;) {}",
+			"for (var a, b, c;;) {}",
 		},
 		{ // 266
 			"for(var{a}in b){}",
@@ -2327,7 +2327,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 461
 			"for ( // A\n\n// B\nvar // C\na // D\n, // E\nb // F\n; // G\nc // H\n; // I\n\n// J\n) // K\n{}",
 			"for (var a, b; c;) {}",
-			"for ( // A\n\n\t// B\n\tvar // C\n\ta // D\n\t, // E\n\tb // F\n\t; // G\n\tc // H\n\t; // I\n\n// J\n) // K\n{}",
+			"for ( // A\n\n\t// B\n\tvar // C\n\ta // D\n\t,\n\t// E\n\tb // F\n\t; // G\n\tc // H\n\t; // I\n\n// J\n) // K\n{}",
 		},
 		{ // 462
 			"for ( // A\n\n// B\n; // C\na // D\n; // E\nb // F\n\n// G\n) // H\nc",
@@ -2337,12 +2337,12 @@ func TestPrintingScript(t *testing.T) {
 		{ // 463
 			"for ( // A\n\n// B\nlet // C\na // D\n; b; c) {}",
 			"for (let a; b; c) {}",
-			"for ( // A\n\n\t// B\n\tlet // C\n\ta // D\n\t; b; c) {}",
+			"for ( // A\n\n\t// B\n\tlet // C\n\ta // D\n\t; b; c\n) {}",
 		},
 		{ // 464
 			"for ( // A\n\n// B\nvar // C\n{}// D\n= // E\na // F\n;;);",
 			"for (var {} = a;;) ;",
-			"for ( // A\n\n\t// B\n\tvar // C\n\t{} // D\n\t= // E\n\ta // F\n\t;;) ;",
+			"for ( // A\n\n\t// B\n\tvar // C\n\t{} // D\n\t= // E\n\ta // F\n\t;;\n) ;",
 		},
 		{ // 465
 			"for ( // A\n\n// B\nvar // C\n[]// D\n= a // E\n; // F\n; // G\n) // H\n;",

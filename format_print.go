@@ -446,99 +446,44 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	w.WriteString("(")
 
-	ip := w.Indent()
+	ip := w
+	sep := ", "
 
-	if v {
-		i.Comments[2].printSource(w, false, true)
+	if v && hasSingleLineComment(i.Comments[2:7]) {
+		ip = w.Indent()
+		sep = ",\n"
+
+		i.Comments[2].printSource(w, false, false)
+		ip.WriteString("\n")
 
 		if len(i.Comments[3]) > 0 {
-			ip.WriteString("\n")
-			i.Comments[3].printSource(ip, false, true)
+			i.Comments[3].printSource(ip, false, false)
 		}
 	}
-
-	hasStartComments := len(i.Comments[2]) > 0 || len(i.Comments[3]) > 0
-
-	var lastLine uint64
-
-	if v && len(i.Tokens) > 0 {
-		lastLine = i.Tokens[0].Line
-	}
-
-	endline := false
 
 	switch i.Type {
 	case ForNormal:
 		ip.WriteString(";")
 	case ForNormalVar:
-		if v && len(i.InitVar[0].Tokens) > 0 {
-			if !hasStartComments && i.InitVar[0].Tokens[0].Line > lastLine {
-				ip.WriteString("\n")
-			}
-
-			lastLine = i.InitVar[0].Tokens[len(i.InitVar[0].Tokens)-1].Line
-		}
-
 		ip.WriteString("var ")
 		LexicalBinding(i.InitVar[0]).printSource(ip, v)
 
 		for _, vd := range i.InitVar[1:] {
-			if v && len(vd.Tokens) > 0 {
-				if vd.Tokens[0].Line > lastLine && !vd.hasFirstComment() {
-					ip.WriteString(",\n")
-				} else {
-					ip.WriteString(", ")
-				}
-			} else {
-				ip.WriteString(", ")
-			}
-
+			ip.WriteString(sep)
 			vd.printSource(ip, v)
 		}
 
 		ip.WriteString(";")
 	case ForNormalLexicalDeclaration:
-		if v && len(i.InitLexical.Tokens) > 0 {
-			if !hasStartComments && i.InitLexical.Tokens[0].Line > lastLine {
-				endline = true
-
-				ip.WriteString("\n")
-			}
-
-			lastLine = i.InitLexical.Tokens[len(i.InitLexical.Tokens)-1].Line
-		}
-
 		i.InitLexical.printSource(ip, v)
 
 		if ip.LastChar() == '\n' {
 			ip.WriteString(";")
 		}
 	case ForNormalExpression:
-		if v && len(i.InitExpression.Tokens) > 0 {
-			if !hasStartComments && i.InitExpression.Tokens[0].Line > lastLine {
-				endline = true
-
-				ip.WriteString("\n")
-			}
-
-			lastLine = i.InitExpression.Tokens[len(i.InitExpression.Tokens)-1].Line
-		}
-
 		i.InitExpression.printSource(ip, v)
 		ip.WriteString(";")
 	case ForInLeftHandSide, ForOfLeftHandSide, ForAwaitOfLeftHandSide:
-		if v {
-			if len(i.LeftHandSideExpression.Tokens) > 0 {
-				if !hasStartComments && i.LeftHandSideExpression.Tokens[0].Line > lastLine {
-					endline = true
-
-					ip.WriteString("\n")
-				}
-
-				lastLine = i.LeftHandSideExpression.Tokens[len(i.LeftHandSideExpression.Tokens)-1].Line
-			}
-		}
-
 		i.LeftHandSideExpression.printSource(ip, v)
 	default:
 		switch i.Type {
@@ -566,21 +511,11 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	switch i.Type {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
 		if v {
-			i.Comments[4].printSource(ip, true, false)
+			i.Comments[4].printSource(ip, true, true)
 		}
 
 		if i.Conditional != nil {
-			if v && len(i.Conditional.Tokens) > 0 {
-				if !i.Conditional.hasFirstComment() && i.Conditional.Tokens[0].Line > lastLine {
-					endline = true
-
-					ip.WriteString("\n")
-				} else {
-					ip.WriteString(" ")
-				}
-
-				lastLine = i.Conditional.Tokens[len(i.Conditional.Tokens)-1].Line
-			} else {
+			if !v || !i.Conditional.hasFirstComment() {
 				ip.WriteString(" ")
 			}
 
@@ -594,15 +529,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		}
 
 		if i.Afterthought != nil {
-			if v && len(i.Afterthought.Tokens) > 0 {
-				if !i.Afterthought.hasFirstComment() && i.Afterthought.Tokens[0].Line > lastLine {
-					endline = true
-
-					ip.WriteString("\n")
-				} else {
-					ip.WriteString(" ")
-				}
-			} else {
+			if !v || !i.Afterthought.hasFirstComment() {
 				ip.WriteString(" ")
 			}
 
@@ -611,8 +538,10 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
 		if v && len(i.Comments[5]) > 0 {
 			i.Comments[5].printSource(ip, true, false)
-		} else {
-			ip.WriteString(" ")
+		}
+
+		if !ip.LastIsWhitespace() {
+			ip.WriteString(sep[1:])
 		}
 
 		ip.WriteString("in ")
@@ -628,15 +557,9 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		i.Of.printSource(ip, v)
 	}
 
-	endComment := w.LastIsWhitespace()
-
-	if !endComment && endline {
-		w.WriteString("\n")
-	}
-
-	if v && len(i.Comments[6]) > 0 {
-		if endComment {
-			w.WriteString("\n")
+	if v && w != ip {
+		if len(i.Comments[6]) > 0 || !ip.LastIsWhitespace() {
+			w.WriteString(sep[1:])
 		}
 
 		i.Comments[6].printSource(w, true, false)
