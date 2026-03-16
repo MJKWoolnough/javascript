@@ -2,6 +2,7 @@ package javascript
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"vimagination.zapto.org/parser"
@@ -171,10 +172,8 @@ func (j *jsParser) Peek() parser.Token {
 func (j *jsParser) Accept(ts ...parser.TokenType) bool {
 	tt := j.next().Type
 
-	for _, pt := range ts {
-		if pt == tt {
-			return true
-		}
+	if slices.Contains(ts, tt) {
+		return true
 	}
 
 	j.backup()
