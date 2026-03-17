@@ -1767,7 +1767,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 349
 			"var a = {[ // A\n\nb]:c}",
 			"var a = {[b]: c};",
-			"var a = {[ // A\n\n\tb]: c};",
+			"var a = {[ // A\n\n\tb\n]: c};",
 		},
 		{ // 350
 			"() => { // A\n\n// B\na // C\n\n// D\n}",

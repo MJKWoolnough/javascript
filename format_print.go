@@ -1815,20 +1815,29 @@ func (p PropertyName) printSource(w writer, v bool) {
 	if p.LiteralPropertyName != nil {
 		w.WriteString(p.LiteralPropertyName.Data)
 	} else if p.ComputedPropertyName != nil {
-		ip := w.Indent()
-
 		w.WriteString("[")
 
-		if v && len(p.Comments[0]) > 0 {
-			p.Comments[0].printSource(w, false, true)
-			ip.WriteString("\n")
+		ip := w
+
+		if v {
+			if hasSingleLineComment(p.Comments[:]) {
+				ip = w.Indent()
+
+				p.Comments[0].printSource(w, false, true)
+				ip.WriteString("\n")
+			} else {
+				p.Comments[0].printSource(w, true, false)
+			}
 		}
 
 		p.ComputedPropertyName.printSource(ip, v)
 
-		if v && len(p.Comments[1]) > 0 {
-			w.WriteString("\n")
-			p.Comments[1].printSource(w, false, false)
+		if v {
+			if len(p.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+				w.WriteString("\n")
+			}
+
+			p.Comments[1].printSource(w, false, w != ip)
 		}
 
 		w.WriteString("]")
