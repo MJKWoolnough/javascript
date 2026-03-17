@@ -1915,7 +1915,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 				m.Comments[2].printSource(w, true, false)
 			}
 
-			m.Arguments.printSource(w.Indent(), v)
+			m.Arguments.printSource(w, v)
 		} else if m.Expression != nil {
 			m.MemberExpression.printSource(w, v)
 
