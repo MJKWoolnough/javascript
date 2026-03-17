@@ -720,6 +720,10 @@ func (d *DestructuringAssignmentTarget) hasFirstComment() bool {
 	return d.LeftHandSideExpression != nil && d.LeftHandSideExpression.hasFirstComment() || d.AssignmentPattern != nil && d.AssignmentPattern.hasFirstComment()
 }
 
+func (d *DestructuringAssignmentTarget) hasSingleLineComment() bool {
+	return d != nil && (d.LeftHandSideExpression.hasSingleLineComment() || d.AssignmentPattern.hasSingleLineComment())
+}
+
 // AssignmentElement as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-AssignmentElement
 type AssignmentElement struct {
@@ -751,6 +755,10 @@ func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 
 func (a *AssignmentElement) hasFirstComment() bool {
 	return a.DestructuringAssignmentTarget.hasFirstComment()
+}
+
+func (a *AssignmentElement) hasSingleLineComment() bool {
+	return a.DestructuringAssignmentTarget.hasSingleLineComment() || a.Initializer.hasSingleLineComment()
 }
 
 // ArrayAssignmentPattern as defined in ECMA-262

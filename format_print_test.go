@@ -2372,7 +2372,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 470
 			"[ // A\n\n// B\na.b // C\n, // D\na.c // E\n\n// F\n] = b",
 			"[a.b, a.c] = b;",
-			"[ // A\n\n\t// B\n\ta.b // C\n\t, // D\n\ta.c // E\n\n// F\n] = b;",
+			"[ // A\n\n\t// B\n\ta.b // C\n\t,\n\t// D\n\ta.c // E\n\n// F\n] = b;",
 		},
 		{ // 471
 			"[ // A\n\n// B\n... // C\na // D\n\n// E\n] = b",
@@ -2577,7 +2577,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 511
 			"([a // A\n= b] = c)",
 			"([a = b] = c);",
-			"([a // A\n\t= b] = c);",
+			"([\n\ta // A\n\t= b\n] = c);",
 		},
 		{ // 512
 			"// A\n\n// B\n#a /* C */ in /* D */ b // E",

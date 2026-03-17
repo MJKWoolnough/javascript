@@ -1071,30 +1071,33 @@ func (a AssignmentPattern) printSource(w writer, v bool) {
 func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("[")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		a.Comments[0].printSource(w, false, true)
+		if hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.AssignmentElements) || a.AssignmentRestElement.hasSingleLineComment() {
+			sep = ",\n"
+			ip = w.Indent()
+
+			a.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			a.Comments[0].printSource(w, true, false)
+		}
 	}
 
-	ip := w.Indent()
-
 	if len(a.AssignmentElements) > 0 {
-		if v && a.AssignmentElements[0].hasFirstComment() {
-			ip.WriteString("\n")
-		}
-
 		a.AssignmentElements[0].printSource(ip, v)
 
 		for _, ae := range a.AssignmentElements[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			ae.printSource(ip, v)
 		}
 	}
 
 	if a.AssignmentRestElement != nil {
 		if len(a.AssignmentElements) > 0 {
-			ip.WriteString(", ")
-		} else if v && len(a.Comments[1]) > 0 {
-			ip.WriteString("\n")
+			ip.WriteString(sep)
 		}
 
 		if v {
@@ -1105,9 +1108,12 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 		a.AssignmentRestElement.printSource(ip, v)
 	}
 
-	if v && len(a.Comments[2]) > 0 {
-		w.WriteString("\n")
-		a.Comments[2].printSource(w, false, true)
+	if v {
+		if w != ip {
+			w.WriteString("\n")
+		}
+
+		a.Comments[2].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("]")
