@@ -2382,7 +2382,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 472
 			"({\n// A\na // B\n} = b)",
 			"({a} = b);",
-			"({\n\t// A\n\ta // B\n\t: a} = b);",
+			"({\n\t// A\n\ta // B\n\t: a\n} = b);",
 		},
 		{ // 473
 			"({\n// A\na // B\n= // C\nb // D\n} = c)",

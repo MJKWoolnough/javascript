@@ -1075,7 +1075,7 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 	sep := ", "
 
 	if v {
-		if hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.AssignmentElements) || a.AssignmentRestElement.hasSingleLineComment() {
+		if a.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
 
@@ -1109,7 +1109,7 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 	}
 
 	if v {
-		if w != ip {
+		if w != ip && (len(a.Comments[2]) > 0 || !ip.LastIsWhitespace()) {
 			w.WriteString("\n")
 		}
 
@@ -1122,30 +1122,33 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		o.Comments[0].printSource(w, false, true)
+		if o.hasSingleLineComment() {
+			sep = ",\n"
+			ip = w.Indent()
+
+			o.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			o.Comments[0].printSource(w, true, false)
+		}
 	}
 
-	ip := w.Indent()
-
 	if len(o.AssignmentPropertyList) > 0 {
-		if v && o.AssignmentPropertyList[0].hasFirstComment() {
-			ip.WriteString("\n")
-		}
-
 		o.AssignmentPropertyList[0].printSource(ip, v)
 
 		for _, ap := range o.AssignmentPropertyList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			ap.printSource(ip, v)
 		}
 	}
 
 	if o.AssignmentRestElement != nil {
 		if len(o.AssignmentPropertyList) > 0 {
-			ip.WriteString(", ")
-		} else if v && len(o.Comments[1]) > 0 {
-			ip.WriteString("\n")
+			ip.WriteString(sep)
 		}
 
 		if v {
@@ -1156,9 +1159,12 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 		o.AssignmentRestElement.printSource(ip, v)
 	}
 
-	if v && len(o.Comments[2]) > 0 {
-		w.WriteString("\n")
-		o.Comments[2].printSource(w, false, true)
+	if v {
+		if w != ip && (len(o.Comments[2]) > 0 || !ip.LastIsWhitespace()) {
+			w.WriteString("\n")
+		}
+
+		o.Comments[2].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("}")

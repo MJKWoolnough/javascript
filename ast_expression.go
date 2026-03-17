@@ -530,7 +530,7 @@ func (a *AssignmentPattern) hasFirstComment() bool {
 }
 
 func (a *AssignmentPattern) hasSingleLineComment() bool {
-	return a != nil && hasSingleLineComment(a.Comments[:])
+	return a != nil && (hasSingleLineComment(a.Comments[:]) || a.ArrayAssignmentPattern.hasSingleLineComment() || a.ObjectAssignmentPattern.hasSingleLineComment())
 }
 
 // ObjectAssignmentPattern as defined in ECMA-262
@@ -595,6 +595,10 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 
 func (o *ObjectAssignmentPattern) hasFirstComment() bool {
 	return len(o.AssignmentPropertyList) > 0 && o.AssignmentPropertyList[0].hasFirstComment() || o.AssignmentRestElement != nil && o.AssignmentRestElement.hasFirstComment()
+}
+
+func (o *ObjectAssignmentPattern) hasSingleLineComment() bool {
+	return o != nil && (hasSingleLineComment(o.Comments[:]) || hasSingleLineComment(o.AssignmentPropertyList) || o.AssignmentRestElement.hasSingleLineComment())
 }
 
 // AssignmentProperty as defined in ECMA-262
@@ -665,6 +669,10 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 
 func (a *AssignmentProperty) hasFirstComment() bool {
 	return len(a.Comments[0]) > 0
+}
+
+func (a *AssignmentProperty) hasSingleLineComment() bool {
+	return a != nil && (hasSingleLineComment(a.Comments[:]) || a.DestructuringAssignmentTarget.hasSingleLineComment() || a.Initializer.hasSingleLineComment())
 }
 
 // DestructuringAssignmentTarget as defined in ECMA-262
@@ -828,6 +836,10 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 
 func (a *ArrayAssignmentPattern) hasFirstComment() bool {
 	return len(a.AssignmentElements) > 0 && a.AssignmentElements[0].hasFirstComment() || a.AssignmentRestElement != nil && a.AssignmentRestElement.hasFirstComment()
+}
+
+func (a *ArrayAssignmentPattern) hasSingleLineComment() bool {
+	return a != nil && (hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.AssignmentElements) || a.AssignmentRestElement.hasSingleLineComment())
 }
 
 // OptionalExpression as defined in TC39
