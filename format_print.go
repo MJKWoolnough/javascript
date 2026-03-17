@@ -1862,30 +1862,35 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	ip := w
+	sep := ", "
 
-	if v && (len(c.Comments[0]) > 0 || len(c.Expressions) > 0 && c.Expressions[0].hasFirstComment()) {
-		ip = w.Indent()
+	if v {
+		if hasSingleLineComment(c.Comments[:]) || hasSingleLineComment(c.Expressions) {
+			ip = w.Indent()
+			sep = ",\n"
 
-		c.Comments[0].printSource(w, false, true)
-		ip.WriteString("\n")
-	} else if v && (len(c.Comments[1]) > 1 || len(c.Expressions) > 0 && c.Expressions[len(c.Expressions)-1].hasLastComment()) {
-		ip = w.Indent()
+			c.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			c.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(c.Expressions) > 0 {
 		c.Expressions[0].printSource(ip, v)
 
 		for _, e := range c.Expressions[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			e.printSource(ip, v)
 		}
 	}
 
-	if v && len(c.Comments[1]) > 0 {
-		ip.WriteString("\n")
-		c.Comments[1].printSource(w, true, false)
-	} else if w != ip && w.LastChar() != '\n' {
-		w.WriteString("\n")
+	if v {
+		if len(c.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		c.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString(")")

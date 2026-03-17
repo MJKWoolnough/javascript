@@ -530,7 +530,7 @@ func (a *AssignmentPattern) hasFirstComment() bool {
 }
 
 func (a *AssignmentPattern) hasSingleLineComment() bool {
-	return a != nil && (hasSingleLineComment(a.Comments[:]) || a.ArrayAssignmentPattern.hasSingleLineComment() || a.ObjectAssignmentPattern.hasSingleLineComment())
+	return a != nil && hasSingleLineComment(a.Comments[:])
 }
 
 // ObjectAssignmentPattern as defined in ECMA-262
