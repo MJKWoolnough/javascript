@@ -1925,18 +1925,27 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			w.WriteString("[")
 
-			ip := w.Indent()
+			ip := w
 
-			if v && len(m.Comments[1]) > 0 {
-				m.Comments[1].printSource(w, true, false)
-				ip.WriteString("\n")
+			if v {
+				if hasSingleLineComment(m.Comments[1:3]) || m.Expression.hasSingleLineComment() {
+					ip = w.Indent()
+
+					m.Comments[1].printSource(w, false, true)
+					ip.WriteString("\n")
+				} else {
+					m.Comments[1].printSource(w, true, false)
+				}
 			}
 
 			m.Expression.printSource(ip, v)
 
-			if v && len(m.Comments[2]) > 0 {
-				w.WriteString("\n")
-				m.Comments[2].printSource(w, true, true)
+			if v {
+				if len(m.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
+					w.WriteString("\n")
+				}
+
+				m.Comments[2].printSource(w, false, w != ip)
 			}
 
 			w.WriteString("]")
