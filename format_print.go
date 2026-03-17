@@ -2095,32 +2095,36 @@ func (a Argument) printSource(w writer, v bool) {
 func (a Arguments) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		a.Comments[0].printSource(w, false, true)
+		if a.hasSingleLineComment() {
+			ip = w.Indent()
+			sep = ",\n"
+
+			a.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			a.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(a.ArgumentList) > 0 {
-		ip := w
-
-		if v && a.hasSingleLineComment() {
-			ip = w.Indent()
-		}
-
-		if v && a.ArgumentList[0].hasFirstComment() {
-			ip.WriteString("\n")
-		}
-
 		a.ArgumentList[0].printSource(ip, v)
 
 		for _, ae := range a.ArgumentList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			ae.printSource(ip, v)
 		}
 	}
 
-	if v && len(a.Comments[1]) > 0 {
-		w.WriteString("\n")
-		a.Comments[1].printSource(w, false, true)
+	if v {
+		if len(a.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		a.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString(")")

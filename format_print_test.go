@@ -1732,17 +1732,17 @@ func TestPrintingScript(t *testing.T) {
 		{ // 342
 			"a( // A\n\n// B\n)",
 			"a();",
-			"a( // A\n\n// B\n);",
+			"a( // A\n\n\n// B\n);",
 		},
 		{ // 343
 			"a( // A\n\n// B\nb // C\n\n// D\n, // E\nc // F\n\n//G\n)",
 			"a(b, c);",
-			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t, // E\n\tc // F\n\n//G\n);",
+			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t,\n\t// E\n\tc // F\n\n//G\n);",
 		},
 		{ // 344
 			"a( // A\n\n// B\nb // C\n\n// D\n, // E\n...// F\nc // G\n\n//H\n)",
 			"a(b, ...c);",
-			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t, // E\n\t... // F\n\tc // G\n\n//H\n);",
+			"a( // A\n\n\t// B\n\tb // C\n\n\t// D\n\t,\n\t// E\n\t... // F\n\tc // G\n\n//H\n);",
 		},
 		{ // 345
 			"( // A\n\n// B\na // C\n\n// D\n, // E\nb // F\n\n//G\n)",
