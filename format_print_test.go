@@ -2659,6 +2659,21 @@ func TestPrintingScript(t *testing.T) {
 			"a[() => {\n\treturn b;\n}];",
 			"a[ // A\n\n\t() => {\n\t\treturn b;\n\t}\n];",
 		},
+		{ // 528
+			"super[() => {}]",
+			"super[() => {}];",
+			"super[() => {}];",
+		},
+		{ // 529
+			"super[() => {return b}]",
+			"super[() => {\n\treturn b;\n}];",
+			"super[() => {\n\treturn b;\n}];",
+		},
+		{ // 530
+			"super[// A\n() => {return b}]",
+			"super[() => {\n\treturn b;\n}];",
+			"super[ // A\n\n\t() => {\n\t\treturn b;\n\t}\n];",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
