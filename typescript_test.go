@@ -4475,7 +4475,8 @@ export default function() {}`, func(t *test, tk Tokens) { // 108
 													Arguments: &Arguments{
 														Tokens: tk[6:8],
 													},
-													Tokens: tk[1:8],
+													Comments: [4]Comments{jsParser(tk[3:6]).toTypescript()},
+													Tokens:   tk[1:8],
 												},
 												Tokens: tk[:8],
 											}),

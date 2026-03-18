@@ -982,7 +982,6 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 
 		if h.SkipTypeArguments() {
 			b = append(h.ToTypescriptComments(), h.AcceptRunWhitespaceComments()...)
-			b = nil
 			h.AcceptRunWhitespace()
 		}
 
