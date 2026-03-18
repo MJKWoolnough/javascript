@@ -296,10 +296,6 @@ func (lb *LexicalBinding) parse(j *jsParser, in, yield, await bool) error {
 	return nil
 }
 
-func (lb *LexicalBinding) hasFirstComment() bool {
-	return len(lb.Comments[0]) > 0
-}
-
 // ArrayBindingPattern as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ArrayBindingPattern
 type ArrayBindingPattern struct {
@@ -612,14 +608,6 @@ func (ae *ArrayElement) parse(j *jsParser, yield, await bool) error {
 	ae.Tokens = j.ToTokens()
 
 	return nil
-}
-
-func (ae *ArrayElement) hasFirstComment() bool {
-	if ae.Spread {
-		return len(ae.Comments) > 0
-	}
-
-	return ae.AssignmentExpression.hasFirstComment()
 }
 
 func (ae *ArrayElement) hasSingleLineComment() bool {
@@ -1112,18 +1100,6 @@ func (af *ArrowFunction) parse(j *jsParser, in, yield, await bool) error {
 
 func (af *ArrowFunction) hasFirstComment() bool {
 	return len(af.Comments[0]) > 0
-}
-
-func (af *ArrowFunction) hasLastComment() bool {
-	if af.FunctionBody != nil {
-		return len(af.Comments[0]) > 0
-	}
-
-	if af.AssignmentExpression != nil {
-		return af.AssignmentExpression.hasLastComment()
-	}
-
-	return false
 }
 
 func (af *ArrowFunction) hasSingleLineComment() bool {

@@ -296,22 +296,6 @@ func (ae *AssignmentExpression) hasFirstComment() bool {
 	return false
 }
 
-func (ae *AssignmentExpression) hasLastComment() bool {
-	if ae.ConditionalExpression != nil {
-		return ae.ConditionalExpression.hasLastComment()
-	}
-
-	if ae.AssignmentExpression != nil {
-		return ae.AssignmentExpression.hasLastComment()
-	}
-
-	if ae.ArrowFunction != nil {
-		return ae.ArrowFunction.hasLastComment()
-	}
-
-	return false
-}
-
 func (ae *AssignmentExpression) hasSingleLineComment() bool {
 	return ae != nil && (hasSingleLineComment(ae.Comments[:]) || ae.ConditionalExpression.hasSingleLineComment() || ae.AssignmentPattern.hasSingleLineComment() || ae.LeftHandSideExpression.hasSingleLineComment() || ae.ArrowFunction.hasSingleLineComment())
 }
@@ -467,22 +451,6 @@ func (lhs *LeftHandSideExpression) hasFirstComment() bool {
 	return false
 }
 
-func (lhs *LeftHandSideExpression) hasLastComment() bool {
-	if lhs.NewExpression != nil {
-		return lhs.NewExpression.hasLastComment()
-	}
-
-	if lhs.CallExpression != nil {
-		return lhs.CallExpression.hasLastComment()
-	}
-
-	if lhs.OptionalExpression != nil {
-		return lhs.OptionalExpression.hasLastComment()
-	}
-
-	return false
-}
-
 func (lhs *LeftHandSideExpression) hasSingleLineComment() bool {
 	return lhs != nil && (lhs.Comments.hasSingleLineComment() || lhs.NewExpression.hasSingleLineComment() || lhs.CallExpression.hasSingleLineComment() || lhs.OptionalExpression.hasSingleLineComment())
 }
@@ -593,10 +561,6 @@ func (o *ObjectAssignmentPattern) from(ol *ObjectLiteral) error {
 	return nil
 }
 
-func (o *ObjectAssignmentPattern) hasFirstComment() bool {
-	return len(o.AssignmentPropertyList) > 0 && o.AssignmentPropertyList[0].hasFirstComment() || o.AssignmentRestElement != nil && o.AssignmentRestElement.hasFirstComment()
-}
-
 func (o *ObjectAssignmentPattern) hasSingleLineComment() bool {
 	return o != nil && (hasSingleLineComment(o.Comments[:]) || hasSingleLineComment(o.AssignmentPropertyList) || o.AssignmentRestElement.hasSingleLineComment())
 }
@@ -667,10 +631,6 @@ func (a *AssignmentProperty) from(pd *PropertyDefinition) error {
 	return nil
 }
 
-func (a *AssignmentProperty) hasFirstComment() bool {
-	return len(a.Comments[0]) > 0
-}
-
 func (a *AssignmentProperty) hasSingleLineComment() bool {
 	return a != nil && (hasSingleLineComment(a.Comments[:]) || a.DestructuringAssignmentTarget.hasSingleLineComment() || a.Initializer.hasSingleLineComment())
 }
@@ -724,10 +684,6 @@ func (d *DestructuringAssignmentTarget) from(ae *AssignmentExpression) error {
 	return nil
 }
 
-func (d *DestructuringAssignmentTarget) hasFirstComment() bool {
-	return d.LeftHandSideExpression != nil && d.LeftHandSideExpression.hasFirstComment() || d.AssignmentPattern != nil && d.AssignmentPattern.hasFirstComment()
-}
-
 func (d *DestructuringAssignmentTarget) hasSingleLineComment() bool {
 	return d != nil && (d.LeftHandSideExpression.hasSingleLineComment() || d.AssignmentPattern.hasSingleLineComment())
 }
@@ -759,10 +715,6 @@ func (a *AssignmentElement) from(ae *AssignmentExpression) error {
 	a.Tokens = ae.Tokens
 
 	return nil
-}
-
-func (a *AssignmentElement) hasFirstComment() bool {
-	return a.DestructuringAssignmentTarget.hasFirstComment()
 }
 
 func (a *AssignmentElement) hasSingleLineComment() bool {
@@ -832,10 +784,6 @@ func (a *ArrayAssignmentPattern) from(al *ArrayLiteral) error {
 	a.Tokens = al.Tokens
 
 	return nil
-}
-
-func (a *ArrayAssignmentPattern) hasFirstComment() bool {
-	return len(a.AssignmentElements) > 0 && a.AssignmentElements[0].hasFirstComment() || a.AssignmentRestElement != nil && a.AssignmentRestElement.hasFirstComment()
 }
 
 func (a *ArrayAssignmentPattern) hasSingleLineComment() bool {
@@ -909,10 +857,6 @@ func (oe *OptionalExpression) hasFirstComment() bool {
 	}
 
 	return false
-}
-
-func (oe *OptionalExpression) hasLastComment() bool {
-	return oe.OptionalChain.hasLastComment()
 }
 
 func (oe *OptionalExpression) hasSingleLineComment() bool {
@@ -1135,10 +1079,6 @@ func (oc *OptionalChain) parse(j *jsParser, yield, await bool) error {
 	return nil
 }
 
-func (oc *OptionalChain) hasLastComment() bool {
-	return len(oc.Comments[3]) > 0
-}
-
 // Expression as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-Expression
 //
@@ -1245,10 +1185,6 @@ func (ne *NewExpression) hasFirstComment() bool {
 	}
 
 	return len(ne.News[0]) > 0
-}
-
-func (ne *NewExpression) hasLastComment() bool {
-	return ne.MemberExpression.hasLastComment()
 }
 
 func (ne *NewExpression) hasSingleLineComment() bool {
@@ -1561,10 +1497,6 @@ func (me *MemberExpression) hasFirstComment() bool {
 	return len(me.Comments[0]) > 0
 }
 
-func (me *MemberExpression) hasLastComment() bool {
-	return len(me.Comments[4]) > 0
-}
-
 func (me *MemberExpression) hasSingleLineComment() bool {
 	return me != nil && (hasSingleLineComment(me.Comments[:]) || me.MemberExpression.hasSingleLineComment())
 }
@@ -1823,14 +1755,6 @@ func (a *Argument) parse(j *jsParser, yield, await bool) error {
 	a.Tokens = j.ToTokens()
 
 	return nil
-}
-
-func (a *Argument) hasFirstComment() bool {
-	if a.Spread {
-		return len(a.Comments) > 0
-	}
-
-	return a.AssignmentExpression.hasFirstComment()
 }
 
 func (a Argument) hasSingleLineComment() bool {
@@ -2094,10 +2018,6 @@ func (ce *CallExpression) hasFirstComment() bool {
 	}
 
 	return false
-}
-
-func (ce *CallExpression) hasLastComment() bool {
-	return len(ce.Comments[4]) > 0
 }
 
 func (ce *CallExpression) hasSingleLineComment() bool {

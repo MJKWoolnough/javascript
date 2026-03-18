@@ -89,22 +89,6 @@ func (ce *ConditionalExpression) hasFirstComment() bool {
 	return false
 }
 
-func (ce *ConditionalExpression) hasLastComment() bool {
-	if ce.False != nil {
-		return ce.False.hasLastComment()
-	}
-
-	if ce.LogicalORExpression != nil {
-		return ce.LogicalORExpression.hasLastComment()
-	}
-
-	if ce.CoalesceExpression != nil {
-		return ce.CoalesceExpression.hasLastComment()
-	}
-
-	return false
-}
-
 func (ce *ConditionalExpression) hasSingleLineComment() bool {
 	return ce != nil && (ce.LogicalORExpression.hasSingleLineComment() || ce.True.hasSingleLineComment() || ce.False.hasSingleLineComment() || ce.CoalesceExpression.hasSingleLineComment())
 }
@@ -156,10 +140,6 @@ func (ce *CoalesceExpression) hasFirstComment() bool {
 	return ce.BitwiseORExpression.hasFirstComment()
 }
 
-func (ce *CoalesceExpression) hasLastComment() bool {
-	return ce.BitwiseORExpression.hasLastComment()
-}
-
 func (ce *CoalesceExpression) hasSingleLineComment() bool {
 	return ce != nil && (ce.CoalesceExpressionHead.hasSingleLineComment() || ce.BitwiseORExpression.hasSingleLineComment())
 }
@@ -207,10 +187,6 @@ func (lo *LogicalORExpression) hasFirstComment() bool {
 	}
 
 	return lo.LogicalANDExpression.hasFirstComment()
-}
-
-func (lo *LogicalORExpression) hasLastComment() bool {
-	return lo.LogicalANDExpression.hasLastComment()
 }
 
 func (lo *LogicalORExpression) hasSingleLineComment() bool {
@@ -262,10 +238,6 @@ func (la *LogicalANDExpression) hasFirstComment() bool {
 	return la.BitwiseORExpression.hasFirstComment()
 }
 
-func (la *LogicalANDExpression) hasLastComment() bool {
-	return la.BitwiseORExpression.hasLastComment()
-}
-
 func (la *LogicalANDExpression) hasSingleLineComment() bool {
 	return la != nil && (la.LogicalANDExpression.hasSingleLineComment() || la.BitwiseORExpression.hasSingleLineComment())
 }
@@ -313,10 +285,6 @@ func (bo *BitwiseORExpression) hasFirstComment() bool {
 	}
 
 	return bo.BitwiseXORExpression.hasFirstComment()
-}
-
-func (bo *BitwiseORExpression) hasLastComment() bool {
-	return bo.BitwiseXORExpression.hasLastComment()
 }
 
 func (bo *BitwiseORExpression) hasSingleLineComment() bool {
@@ -368,10 +336,6 @@ func (bx *BitwiseXORExpression) hasFirstComment() bool {
 	return bx.BitwiseANDExpression.hasFirstComment()
 }
 
-func (bx *BitwiseXORExpression) hasLastComment() bool {
-	return bx.BitwiseANDExpression.hasLastComment()
-}
-
 func (bx *BitwiseXORExpression) hasSingleLineComment() bool {
 	return bx != nil && (bx.BitwiseXORExpression.hasSingleLineComment() || bx.BitwiseANDExpression.hasSingleLineComment())
 }
@@ -419,10 +383,6 @@ func (ba *BitwiseANDExpression) hasFirstComment() bool {
 	}
 
 	return ba.EqualityExpression.hasFirstComment()
-}
-
-func (ba *BitwiseANDExpression) hasLastComment() bool {
-	return ba.EqualityExpression.hasLastComment()
 }
 
 func (ba *BitwiseANDExpression) hasSingleLineComment() bool {
@@ -499,10 +459,6 @@ func (ee *EqualityExpression) hasFirstComment() bool {
 	}
 
 	return ee.RelationalExpression.hasFirstComment()
-}
-
-func (ee *EqualityExpression) hasLastComment() bool {
-	return ee.RelationalExpression.hasLastComment()
 }
 
 func (ee *EqualityExpression) hasSingleLineComment() bool {
@@ -635,10 +591,6 @@ func (re *RelationalExpression) hasFirstComment() bool {
 	return re.ShiftExpression.hasFirstComment()
 }
 
-func (re *RelationalExpression) hasLastComment() bool {
-	return re.ShiftExpression.hasLastComment()
-}
-
 func (re *RelationalExpression) hasSingleLineComment() bool {
 	return re != nil && (hasSingleLineComment(re.Comments[:]) || re.RelationalExpression.hasSingleLineComment() || re.ShiftExpression.hasSingleLineComment())
 }
@@ -717,10 +669,6 @@ func (se *ShiftExpression) hasFirstComment() bool {
 	return se.AdditiveExpression.hasFirstComment()
 }
 
-func (se *ShiftExpression) hasLastComment() bool {
-	return se.AdditiveExpression.hasLastComment()
-}
-
 func (se *ShiftExpression) hasSingleLineComment() bool {
 	return se != nil && (se.ShiftExpression.hasSingleLineComment() || se.AdditiveExpression.hasSingleLineComment())
 }
@@ -790,10 +738,6 @@ func (ae *AdditiveExpression) hasFirstComment() bool {
 	}
 
 	return ae.MultiplicativeExpression.hasFirstComment()
-}
-
-func (ae *AdditiveExpression) hasLastComment() bool {
-	return ae.MultiplicativeExpression.hasLastComment()
 }
 
 func (ae *AdditiveExpression) hasSingleLineComment() bool {
@@ -870,10 +814,6 @@ func (me *MultiplicativeExpression) hasFirstComment() bool {
 	return me.ExponentiationExpression.hasFirstComment()
 }
 
-func (me *MultiplicativeExpression) hasLastComment() bool {
-	return me.ExponentiationExpression.hasLastComment()
-}
-
 func (me *MultiplicativeExpression) hasSingleLineComment() bool {
 	return me != nil && (me.MultiplicativeExpression.hasSingleLineComment() || me.ExponentiationExpression.hasSingleLineComment())
 }
@@ -926,10 +866,6 @@ func (ee *ExponentiationExpression) hasFirstComment() bool {
 	}
 
 	return ee.UnaryExpression.hasFirstComment()
-}
-
-func (ee *ExponentiationExpression) hasLastComment() bool {
-	return ee.UnaryExpression.hasLastComment()
 }
 
 func (ee *ExponentiationExpression) hasSingleLineComment() bool {
@@ -1025,10 +961,6 @@ Loop:
 
 func (ue *UnaryExpression) hasFirstComment() bool {
 	return ue.UpdateExpression.hasFirstComment()
-}
-
-func (ue *UnaryExpression) hasLastComment() bool {
-	return ue.UpdateExpression.hasLastComment()
 }
 
 func (ue *UnaryExpression) hasSingleLineComment() bool {
@@ -1137,14 +1069,6 @@ func (ue *UpdateExpression) hasFirstComment() bool {
 	}
 
 	return ue.UnaryExpression.hasFirstComment()
-}
-
-func (ue *UpdateExpression) hasLastComment() bool {
-	if ue.UpdateOperator == UpdatePostIncrement || ue.UpdateOperator == UpdatePostDecrement {
-		return len(ue.Comments) > 0
-	}
-
-	return ue.LeftHandSideExpression != nil && ue.LeftHandSideExpression.hasLastComment()
 }
 
 func (ue *UpdateExpression) hasSingleLineComment() bool {
