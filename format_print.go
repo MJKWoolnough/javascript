@@ -2219,28 +2219,36 @@ func (a ArrayElement) printSource(w writer, v bool) {
 func (a ArrayLiteral) printSource(w writer, v bool) {
 	w.WriteString("[")
 
-	ip := w.Indent()
+	ip := w
+	sep := ", "
 
 	if v {
-		a.Comments[0].printSource(w, false, true)
+		if hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.ElementList) {
+			ip = w.Indent()
+			sep = ",\n"
+
+			a.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			a.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(a.ElementList) > 0 {
-		if v && a.ElementList[0].hasFirstComment() {
-			ip.WriteString("\n")
-		}
-
 		a.ElementList[0].printSource(ip, v)
 
 		for _, ae := range a.ElementList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			ae.printSource(ip, v)
 		}
 	}
 
-	if v && len(a.Comments[1]) > 0 {
-		w.WriteString("\n")
-		a.Comments[1].printSource(w, false, false)
+	if v {
+		if len(a.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		a.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("]")

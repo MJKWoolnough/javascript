@@ -622,6 +622,10 @@ func (ae *ArrayElement) hasFirstComment() bool {
 	return ae.AssignmentExpression.hasFirstComment()
 }
 
+func (ae *ArrayElement) hasSingleLineComment() bool {
+	return ae != nil && (ae.Comments.hasSingleLineComment() || ae.AssignmentExpression.hasSingleLineComment())
+}
+
 // ArrayLiteral as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ArrayLiteral
 type ArrayLiteral struct {

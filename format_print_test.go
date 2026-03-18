@@ -1757,7 +1757,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 347
 			"[ // A\n// B\n\n// C\na // D\n\n// E\n, // F\n\n// G\nb // H\n// I\n\n// J\n]",
 			"[a, b];",
-			"[ // A\n  // B\n\n\t// C\n\ta // D\n\n\t// E\n\t, // F\n\n\t// G\n\tb // H\n\t  // I\n\n// J\n];",
+			"[ // A\n  // B\n\n\t// C\n\ta // D\n\n\t// E\n\t,\n\t// F\n\n\t// G\n\tb // H\n\t  // I\n\n// J\n];",
 		},
 		{ // 348
 			"var a = {[ // A\n\n// B\nb // C\n\n// D\n]:c}",
