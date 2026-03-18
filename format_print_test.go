@@ -2912,7 +2912,7 @@ func TestPrintingModule(t *testing.T) {
 		{ // 38
 			"import { // A\n\n/* B */ a /* C */\n\n// D\n, // E\nb // F\n\n/* G */} from './c';",
 			"import {a, b} from './c';",
-			"import { // A\n\n\t/* B */ a as a /* C */\n\t// D\n\t, // E\n\tb as b // F\n\n/* G */} from './c';",
+			"import { // A\n\n\t/* B */ a as a /* C */\n\t// D\n\t,\n\t// E\n\tb as b // F\n\n/* G */\n} from './c';",
 		},
 		{ // 39
 			"import // A\na /* B */ from './b';",
@@ -3057,7 +3057,7 @@ func TestPrintingModule(t *testing.T) {
 		{ // 67
 			"import {a // A\nas b} from 'c'",
 			"import {a as b} from 'c';",
-			"import {a // A\n\tas b} from 'c';",
+			"import {\n\ta // A\n\tas b\n} from 'c';",
 		},
 		{ // 68
 			"import {a /* A */ as b} from 'c'",

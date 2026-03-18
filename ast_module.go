@@ -613,6 +613,10 @@ func (is *ImportSpecifier) parse(j *jsParser) error {
 	return nil
 }
 
+func (is *ImportSpecifier) hasSingleLineComment() bool {
+	return is != nil && hasSingleLineComment(is.Comments[:])
+}
+
 // ExportDeclaration as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ExportDeclaration
 //

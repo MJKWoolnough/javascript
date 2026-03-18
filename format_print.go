@@ -2970,28 +2970,36 @@ func (e ExportClause) printSource(w writer, v bool) {
 func (n NamedImports) printSource(w writer, v bool) {
 	w.WriteString("{")
 
-	if v && len(n.Comments[0]) > 0 {
-		n.Comments[0].printSource(w, false, true)
+	ip := w
+	sep := ", "
+
+	if v {
+		if hasSingleLineComment(n.Comments[:]) || hasSingleLineComment(n.ImportList) {
+			ip = w.Indent()
+			sep = ",\n"
+
+			n.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			n.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(n.ImportList) > 0 {
-		ip := w.Indent()
-
-		if v && len(n.ImportList[0].Comments[0]) > 0 {
-			ip.WriteString("\n")
-		}
-
 		n.ImportList[0].printSource(ip, v)
 
 		for _, is := range n.ImportList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			is.printSource(ip, v)
 		}
 	}
 
-	if v && len(n.Comments[1]) > 0 {
-		w.WriteString("\n")
-		n.Comments[1].printSource(w, false, false)
+	if v {
+		if len(n.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		n.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("}")
