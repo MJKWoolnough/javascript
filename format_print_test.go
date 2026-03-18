@@ -1922,22 +1922,22 @@ func TestPrintingScript(t *testing.T) {
 		{ // 380
 			"({\n// A\nget // B\na // C\n( // D\n\n// E\n) // F\n{} // G\n})",
 			"({get a() {}});",
-			"({\n\t// A\n\tget // B\n\ta // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n\n});",
+			"({\n\t// A\n\tget // B\n\ta // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n});",
 		},
 		{ // 381
 			"({\n// A\nset // B\na // C\n( // D\n\n// E\nb // F\n\n// G\n) // H\n{} // I\n})",
 			"({set a(b) {}});",
-			"({\n\t// A\n\tset // B\n\ta // C\n\t( // D\n\n\t\t// E\n\t\tb // F\n\n\t// G\n\t) // H\n\t{} // I\n\n});",
+			"({\n\t// A\n\tset // B\n\ta // C\n\t( // D\n\n\t\t// E\n\t\tb // F\n\n\t// G\n\t) // H\n\t{} // I\n});",
 		},
 		{ // 382
 			"({\n// A\na // B\n( // C\n\n// D\nb // E\n\n// F\n) // G\n{} // H\n})",
 			"({a(b) {}});",
-			"({\n\t// A\n\ta // B\n\t( // C\n\n\t\t// D\n\t\tb // E\n\n\t// F\n\t) // G\n\t{} // H\n\n});",
+			"({\n\t// A\n\ta // B\n\t( // C\n\n\t\t// D\n\t\tb // E\n\n\t// F\n\t) // G\n\t{} // H\n});",
 		},
 		{ // 383
 			"({\n// A\nasync /* B */ a // C\n( // D\n\n// E\n) // F\n{} // G\n})",
 			"({async a() {}});",
-			"({\n\t// A\n\tasync /* B */ a // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n\n});",
+			"({\n\t// A\n\tasync /* B */ a // C\n\t( // D\n\n\t// E\n\t) // F\n\t{} // G\n});",
 		},
 		{ // 384
 			"({\n// A\n* // B\na // C\n() {}})",
@@ -1962,7 +1962,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 388
 			"({\n// A\n... // B\na // C\n})",
 			"({...a});",
-			"({\n\t// A\n\t... // B\n\ta // C\n\n});",
+			"({\n\t// A\n\t... // B\n\ta // C\n});",
 		},
 		{ // 389
 			"({\n// A\na // B\n,})",
@@ -1972,32 +1972,32 @@ func TestPrintingScript(t *testing.T) {
 		{ // 390
 			"({\n// A\na // B\n= // C\nb // D\n})",
 			"({a = b});",
-			"({\n\t// A\n\ta // B\n\t= // C\n\tb // D\n\n});",
+			"({\n\t// A\n\ta // B\n\t= // C\n\tb // D\n});",
 		},
 		{ // 391
 			"({\n// A\na // B\n: // C\nb // D\n})",
 			"({a: b});",
-			"({\n\t// A\n\ta // B\n\t: // C\n\tb // D\n\n});",
+			"({\n\t// A\n\ta // B\n\t: // C\n\tb // D\n});",
 		},
 		{ // 392
 			"({\n// A\n[ // B\na\n// C\n] // D\n: // E\nb // F\n})",
 			"({[a]: b});",
-			"({\n\t// A\n\t[ // B\n\n\t\ta\n\t// C\n\t] // D\n\t: // E\n\tb // F\n\n});",
+			"({\n\t// A\n\t[ // B\n\n\t\ta\n\t// C\n\t] // D\n\t: // E\n\tb // F\n});",
 		},
 		{ // 393
 			"({ // A\n// B\n\n// C\n})",
 			"({});",
-			"({ // A\n   // B\n\n// C\n});",
+			"({ // A\n   // B\n\n\n// C\n});",
 		},
 		{ // 394
 			"({ // A\n// B\n\n// C\na // D\n// E\n\n// F\n})",
 			"({a});",
-			"({ // A\n   // B\n\n\t// C\n\ta // D\n\t  // E\n\t: a\n\n// F\n});",
+			"({ // A\n   // B\n\n\t// C\n\ta // D\n\t  // E\n\t: a\n// F\n});",
 		},
 		{ // 395
 			"({ // A\n\n// B\na // C\n, // D\nb // E\n\n// F\n})",
 			"({a, b});",
-			"({ // A\n\n\t// B\n\ta // C\n\t: a,\n\t// D\n\tb // E\n\t: b\n\n// F\n});",
+			"({ // A\n\n\t// B\n\ta // C\n\t: a,\n\t// D\n\tb // E\n\t: b\n// F\n});",
 		},
 		{ // 396
 			"function // A\na // B\n()// C\n{}",

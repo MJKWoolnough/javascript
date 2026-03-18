@@ -2257,35 +2257,37 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 func (o ObjectLiteral) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		o.Comments[0].printSource(w, false, true)
+		if hasSingleLineComment(o.Comments[:]) || hasSingleLineComment(o.PropertyDefinitionList) {
+			ip = w.Indent()
+			sep = ",\n"
+
+			o.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			o.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(o.PropertyDefinitionList) > 0 {
-		x := w
-		sep := ", "
 
-		if v && o.hasSingleLineComment() {
-			sep = ",\n"
-			x = w.Indent()
-			x.WriteString("\n")
-		}
-
-		o.PropertyDefinitionList[0].printSource(x, v)
+		o.PropertyDefinitionList[0].printSource(ip, v)
 
 		for _, pd := range o.PropertyDefinitionList[1:] {
-			x.WriteString(sep)
-			pd.printSource(x, v)
-		}
-
-		if x != w {
-			w.WriteString("\n")
+			ip.WriteString(sep)
+			pd.printSource(ip, v)
 		}
 	}
 
-	if v && len(o.Comments[1]) > 0 {
-		w.WriteString("\n")
-		o.Comments[1].printSource(w, false, false)
+	if v {
+		if len(o.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		o.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("}")
