@@ -2802,28 +2802,36 @@ func (wc WithClause) printSource(w writer, v bool) {
 
 	w.WriteString("{")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		wc.Comments[2].printSource(w, false, true)
+		if hasSingleLineComment(wc.Comments[2:4]) || hasSingleLineComment(wc.WithEntries) {
+			ip = w.Indent()
+			sep = ",\n"
+
+			wc.Comments[2].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			wc.Comments[2].printSource(w, true, false)
+		}
 	}
 
 	if len(wc.WithEntries) > 0 {
-		ip := w.Indent()
-
-		if v && len(wc.WithEntries[0].Comments[0]) > 0 {
-			ip.WriteString("\n")
-		}
-
 		wc.WithEntries[0].printSource(ip, v)
 
 		for _, we := range wc.WithEntries[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			we.printSource(ip, v)
 		}
 	}
 
-	if v && len(wc.Comments[3]) > 0 {
-		w.WriteString("\n")
-		wc.Comments[3].printSource(w, false, false)
+	if v {
+		if len(wc.Comments[3]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		wc.Comments[3].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("}")

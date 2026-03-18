@@ -334,6 +334,10 @@ func (w *WithEntry) parse(j *jsParser) error {
 	return nil
 }
 
+func (w *WithEntry) hasSingleLineComment() bool {
+	return w != nil && hasSingleLineComment(w.Comments[:])
+}
+
 // ImportClause as defined in ECMA-262
 // https://262.ecma-international.org/11.0/#prod-ImportClause
 //
