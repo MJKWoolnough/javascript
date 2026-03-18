@@ -3106,20 +3106,21 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		if v {
 			if oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
 				ip = w.Indent()
-			}
 
-			oe.Comments[1].printSource(w, true, false)
-
-			if w != ip {
+				oe.Comments[1].printSource(w, false, true)
 				ip.WriteString("\n")
+			} else {
+				oe.Comments[1].printSource(w, true, false)
 			}
 		}
 
 		oe.Expression.printSource(ip, v)
+		if v {
+			if len(oe.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
+				w.WriteString("\n")
+			}
 
-		if v && w != ip {
-			w.WriteString("\n")
-			oe.Comments[2].printSource(w, false, false)
+			oe.Comments[2].printSource(w, false, w != ip)
 		}
 
 		w.WriteString("]")
