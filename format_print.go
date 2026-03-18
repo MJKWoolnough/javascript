@@ -2932,28 +2932,36 @@ func (f FromClause) printSource(w writer, v bool) {
 func (e ExportClause) printSource(w writer, v bool) {
 	w.WriteString("{")
 
+	ip := w
+	sep := ", "
+
 	if v {
-		e.Comments[0].printSource(w, false, true)
+		if hasSingleLineComment(e.Comments[:]) || hasSingleLineComment(e.ExportList) {
+			ip = w.Indent()
+			sep = ",\n"
+
+			e.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		} else {
+			e.Comments[0].printSource(w, true, false)
+		}
 	}
 
 	if len(e.ExportList) > 0 {
-		ip := w.Indent()
-
-		if v && len(e.ExportList[0].Comments[0]) > 0 {
-			ip.WriteString("\n")
-		}
-
 		e.ExportList[0].printSource(ip, v)
 
 		for _, es := range e.ExportList[1:] {
-			ip.WriteString(", ")
+			ip.WriteString(sep)
 			es.printSource(ip, v)
 		}
 	}
 
-	if v && len(e.Comments[1]) > 0 {
-		w.WriteString("\n")
-		e.Comments[1].printSource(w, false, false)
+	if v {
+		if len(e.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
+			w.WriteString("\n")
+		}
+
+		e.Comments[1].printSource(w, false, w != ip)
 	}
 
 	w.WriteString("}")

@@ -921,3 +921,7 @@ func (es *ExportSpecifier) parse(j *jsParser) error {
 
 	return nil
 }
+
+func (es *ExportSpecifier) hasSingleLineComment() bool {
+	return es != nil && hasSingleLineComment(es.Comments[:])
+}

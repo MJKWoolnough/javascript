@@ -2962,17 +2962,17 @@ func TestPrintingModule(t *testing.T) {
 		{ // 48
 			"export {\n// A\na /* B */ as /* C */ b // D\n\n// E\n, // F\nc // G\n\n};",
 			"export {a as b, c};",
-			"export {\n\t// A\n\ta /* B */ as /* C */ b // D\n\n\t// E\n\t, // F\n\tc as c // G\n};",
+			"export {\n\t// A\n\ta /* B */ as /* C */ b // D\n\n\t// E\n\t,\n\t// F\n\tc as c // G\n};",
 		},
 		{ // 49
 			"export { // A\n\n// B\na /* C */ as /* D */ b // E\n\n// F\n, // G\nc // H\n\n// I\n};",
 			"export {a as b, c};",
-			"export { // A\n\n\t// B\n\ta /* C */ as /* D */ b // E\n\n\t// F\n\t, // G\n\tc as c // H\n\n// I\n};",
+			"export { // A\n\n\t// B\n\ta /* C */ as /* D */ b // E\n\n\t// F\n\t,\n\t// G\n\tc as c // H\n\n// I\n};",
 		},
 		{ // 50
 			"// A\n\n// B\nexport/* C */{ // D\n\n// E\na // F\n\n// G\n, // H\nb // I\n\n// J\n}/* K */from/* L */''/* M */;",
 			"export {a, b} from '';",
-			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t, // H\n\tb as b // I\n\n// J\n} /* K */ from /* L */ '' /* M */;",
+			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t,\n\t// H\n\tb as b // I\n\n// J\n} /* K */ from /* L */ '' /* M */;",
 		},
 		{ // 51
 			"// A\n\n// B\nexport/* C */*/* D */as/* E */a/* F */from /* G */''/* H */",
@@ -2982,7 +2982,7 @@ func TestPrintingModule(t *testing.T) {
 		{ // 52
 			"// A\n\n// B\nexport/* C */{ // D\n\n// E\na // F\n\n// G\n, // H\nb // I\n\n// J\n}/* K */;",
 			"export {a, b};",
-			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t, // H\n\tb as b // I\n\n// J\n} /* K */;",
+			"// A\n\n// B\nexport /* C */ { // D\n\n\t// E\n\ta as a // F\n\n\t// G\n\t,\n\t// H\n\tb as b // I\n\n// J\n} /* K */;",
 		},
 		{ // 53
 			"// A\n\n// B\nexport/* C */var a;",
@@ -3052,7 +3052,7 @@ func TestPrintingModule(t *testing.T) {
 		{ // 66
 			"export {a // A\nas // B\nb}",
 			"export {a as b};",
-			"export {a // A\n\tas // B\n\tb};",
+			"export {\n\ta // A\n\tas // B\n\tb\n};",
 		},
 		{ // 67
 			"import {a // A\nas b} from 'c'",
