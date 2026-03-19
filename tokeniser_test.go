@@ -973,6 +973,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: "."},
 				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 115
@@ -981,6 +982,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: "?."},
 				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 116
@@ -989,6 +991,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: "??"},
 				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 117
@@ -1022,6 +1025,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenPunctuator, Data: "("},
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: ")"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 122
@@ -1067,12 +1071,14 @@ func TestTokeniser(t *testing.T) {
 			"/a/g",
 			[]parser.Token{
 				{Type: TokenRegularExpressionLiteral, Data: "/a/g"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 129
 			"/a/\\u000A",
 			[]parser.Token{
 				{Type: TokenRegularExpressionLiteral, Data: "/a/"},
+				{Type: parser.TokenError, Data: "invalid unicode escape sequence: \\u000A"},
 			},
 		},
 		{ // 130
@@ -1082,12 +1088,14 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenTemplateHead, Data: "`b${"},
 				{Type: TokenIdentifier, Data: "f"},
 				{Type: TokenTemplateTail, Data: "}c`"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 131
 			"#a",
 			[]parser.Token{
 				{Type: TokenPrivateIdentifier, Data: "#a"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 132
@@ -1096,6 +1104,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenIdentifier, Data: "a"},
 				{Type: TokenPunctuator, Data: "."},
 				{Type: TokenPrivateIdentifier, Data: "#b"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 133
@@ -1134,6 +1143,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenNumericLiteral, Data: "10000"},
 				{Type: TokenPunctuator, Data: ";"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 136
@@ -1146,12 +1156,14 @@ func TestTokeniser(t *testing.T) {
 			".123_456",
 			[]parser.Token{
 				{Type: TokenNumericLiteral, Data: ".123_456"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 138
 			"`a\\`b`",
 			[]parser.Token{
 				{Type: TokenNoSubstitutionTemplate, Data: "`a\\`b`"},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 	} {
