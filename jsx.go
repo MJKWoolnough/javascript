@@ -31,3 +31,15 @@ func AsJSX(t Tokeniser) Tokeniser {
 func (j *jsParser) IsJSX() bool {
 	return strings.HasSuffix((*j)[:cap(*j)][cap(*j)-1].Data, jsxMarker)
 }
+
+type JSXElement struct{}
+
+func (je *JSXElement) parse(j *jsParser) error {
+	return nil
+}
+
+type JSXFragment struct{}
+
+func (jf *JSXFragment) parse(j *jsParser) error {
+	return nil
+}

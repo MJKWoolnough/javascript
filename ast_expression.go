@@ -1516,6 +1516,8 @@ type PrimaryExpression struct {
 	ClassExpression         *ClassDeclaration
 	TemplateLiteral         *TemplateLiteral
 	ParenthesizedExpression *ParenthesizedExpression
+	JSXElement              *JSXElement
+	JSXFragment             *JSXFragment
 	Tokens                  Tokens
 }
 
@@ -1578,6 +1580,31 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
+	} else if j.IsJSX() && t == (parser.Token{Type: TokenPunctuator, Data: "<"}) {
+		g := j.NewGoal()
+
+		g.Skip()
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+			g = j.NewGoal()
+			pe.JSXFragment = new(JSXFragment)
+
+			if err := pe.JSXFragment.parse(&g); err != nil {
+				return j.Error("PrimaryExpression", err)
+			}
+
+			j.Score(g)
+		} else {
+			g = j.NewGoal()
+			pe.JSXElement = new(JSXElement)
+
+			if err := pe.JSXElement.parse(&g); err != nil {
+				return j.Error("PrimaryExpression", err)
+			}
+
+			j.Score(g)
+		}
 	} else {
 		g := j.NewGoal()
 
