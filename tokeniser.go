@@ -265,7 +265,13 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 
 				return t.Return(TokenNumericLiteral, j.inputElement)
 			}
-		case '<', '*':
+		case '<':
+			if !j.divisionAllowed {
+				j.divisionAllowed = true
+			}
+
+			fallthrough
+		case '*':
 			if !t.Accept("=") { // <=, *=
 				if t.Peek() == c { // <<, **
 					t.Next()
