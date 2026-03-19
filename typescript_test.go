@@ -4704,7 +4704,7 @@ export default function() {}`, func(t *test, tk Tokens) { // 108
 		}},
 	}, func(t *test) (Type, error) {
 		if t.Typescript {
-			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = marker
+			t.Tokens[:cap(t.Tokens)][cap(t.Tokens)-1].Data = tsMarker
 		}
 
 		var m Module
@@ -5341,7 +5341,7 @@ func TestTypescriptTypes(t *testing.T) {
 		if j, err := newJSParser(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
-			j[:cap(j)][cap(j)-1].Data = marker
+			j[:cap(j)][cap(j)-1].Data = tsMarker
 			g := j
 
 			if !test.Fn(&j) {

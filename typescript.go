@@ -6,7 +6,7 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-const marker = "TS"
+const tsMarker = "TS"
 
 type typescript struct {
 	Tokeniser
@@ -15,7 +15,7 @@ type typescript struct {
 func (t *typescript) Iter(fn func(parser.Token) bool) {
 	for tk := range t.Tokeniser.Iter {
 		if tk.Type == parser.TokenDone {
-			tk.Data = marker
+			tk.Data = tsMarker + tk.Data
 		}
 
 		if !fn(tk) {
@@ -37,7 +37,7 @@ func AsTypescript(t Tokeniser) Tokeniser {
 }
 
 func (j *jsParser) IsTypescript() bool {
-	return (*j)[:cap(*j)][cap(*j)-1].Data == marker
+	return strings.HasPrefix((*j)[:cap(*j)][cap(*j)-1].Data, tsMarker)
 }
 
 func (j *jsParser) ReadTypeParameters() bool {
