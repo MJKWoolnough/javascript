@@ -169,19 +169,20 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			tk, tf := j.identifier(t)
 
 			if tk.Type == TokenIdentifier {
-				if tk.Data == "true" || tk.Data == "false" {
+				switch tk.Data {
+				case "true", "false":
 					j.divisionAllowed = true
 					tk.Type = TokenBooleanLiteral
-				} else if tk.Data == "null" {
+				case "null":
 					j.divisionAllowed = true
 					tk.Type = TokenNullLiteral
-				} else if tk.Data == "enum" {
+				case "enum":
 					j.divisionAllowed = true
 					tk.Type = TokenFutureReservedWord
-				} else if tk.Data == "Infinity" {
+				case "Infinity":
 					j.divisionAllowed = true
 					tk.Type = TokenNumericLiteral
-				} else {
+				default:
 					for _, kw := range keywords {
 						if kw == tk.Data {
 							tk.Type = TokenKeyword
