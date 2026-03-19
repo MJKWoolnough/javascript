@@ -883,8 +883,7 @@ func walkArguments(t *javascript.Arguments, fn Handler) error {
 }
 
 func walkArgument(t *javascript.Argument, fn Handler) error {
-	fn.Handle(&t.AssignmentExpression)
-	return nil
+	return fn.Handle(&t.AssignmentExpression)
 }
 
 func walkCallExpression(t *javascript.CallExpression, fn Handler) error {
