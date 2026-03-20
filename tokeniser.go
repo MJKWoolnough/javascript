@@ -99,19 +99,9 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		}
 
 		if t.Accept("*") {
-			for {
-				t.ExceptRun("*")
-				t.Accept("*")
+			j.divisionAllowed = allowDivision
 
-				if t.Accept("/") {
-					j.divisionAllowed = allowDivision
-
-					return t.Return(TokenMultiLineComment, j.inputElement)
-				}
-				if t.Peek() == -1 {
-					return t.ReturnError(io.ErrUnexpectedEOF)
-				}
-			}
+			return j.multiLineComment(t)
 		}
 
 		if allowDivision {
@@ -274,7 +264,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '<':
 			if !j.divisionAllowed && j.isJSX {
 				if !j.isTypescript || j.checkForJSX(t.SubTokeniser()) {
-					return t.Return(TokenJSXElementStart, j.jsxIdentifier)
+					return t.Return(TokenJSXElementStart, j.jsxIdentifierOrClose)
 				}
 			}
 
@@ -313,6 +303,21 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		}
 
 		return t.Return(TokenPunctuator, j.inputElement)
+	}
+}
+
+func (j *jsTokeniser) multiLineComment(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	for {
+		t.ExceptRun("*")
+		t.Accept("*")
+
+		if t.Accept("/") {
+			return t.Return(TokenMultiLineComment, j.inputElement)
+		}
+
+		if t.Peek() == -1 {
+			return t.ReturnError(io.ErrUnexpectedEOF)
+		}
 	}
 }
 
@@ -693,6 +698,43 @@ func (j *jsTokeniser) checkForJSX(_ *parser.Tokeniser) bool {
 	return false
 }
 
+func (j *jsTokeniser) jsxIdentifierOrClose(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	if t.Accept(whitespace) {
+		t.AcceptRun(whitespace)
+
+		return t.Return(TokenWhitespace, j.jsxIdentifierOrClose)
+	} else if t.Accept("/") {
+		if t.Accept("/") {
+			t.ExceptRun("\n")
+
+			return t.Return(TokenSingleLineComment, j.jsxIdentifierOrClose)
+		} else if t.Accept("*") {
+			return j.multiLineComment(t)
+		}
+
+		return t.ReturnError(ErrInvalidCharacter)
+	} else if t.Accept(">") {
+		j.state = append(j.state, 'X')
+
+		return t.Return(TokenJSXElementEnd, j.jsxChildren)
+	} else if !internal.IsIDStart(t.Peek()) {
+		return t.ReturnError(ErrInvalidCharacter)
+	}
+
+	t.Next()
+
+	for internal.IsIDContinue(t.Peek()) {
+		t.Next()
+		t.AcceptRun("-")
+	}
+
+	return t.Return(TokenJSXIdentifier, j.jsxIdentifier)
+}
+
 func (j *jsTokeniser) jsxIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	return t.Error()
+}
+
+func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	return t.Error()
 }
