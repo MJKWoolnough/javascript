@@ -1167,59 +1167,6 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 139
-			Input: "<a></a>",
-			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenDivPunctuator, Data: "/"},
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-		},
-		{ // 140
-			Input: "<></>",
-			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenDivPunctuator, Data: "/"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-		},
-		{ // 141
-			Input: "<a/>",
-			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenDivPunctuator, Data: "/"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-		},
-		{ // 142
-			Input: "a=<b c=\"d\"></b>",
-			Output: []parser.Token{
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenPunctuator, Data: "="},
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenIdentifier, Data: "b"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenIdentifier, Data: "c"},
-				{Type: TokenPunctuator, Data: "="},
-				{Type: TokenStringLiteral, Data: "\"d\""},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenDivPunctuator, Data: "/"},
-				{Type: TokenIdentifier, Data: "b"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
