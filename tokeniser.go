@@ -264,7 +264,9 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '<':
 			if !j.divisionAllowed && j.isJSX {
 				if !j.isTypescript || j.checkForJSX(t.SubTokeniser()) {
-					return t.Return(TokenJSXElementStart, j.jsxIdentifierOrClose)
+					j.state = append(j.state, 'j', 'X')
+
+					return t.Return(TokenJSXElementStart, j.jsxElement)
 				}
 			}
 
@@ -698,27 +700,49 @@ func (j *jsTokeniser) checkForJSX(_ *parser.Tokeniser) bool {
 	return false
 }
 
-func (j *jsTokeniser) jsxIdentifierOrClose(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(whitespace) {
 		t.AcceptRun(whitespace)
 
-		return t.Return(TokenWhitespace, j.jsxIdentifierOrClose)
+		return t.Return(TokenWhitespace, j.jsxElement)
+	} else if t.Accept(lineTerminators) {
+		t.AcceptRun(lineTerminators)
+
+		return t.Return(TokenLineTerminator, j.jsxElement)
 	} else if t.Accept("/") {
 		if t.Accept("/") {
 			t.ExceptRun("\n")
 
-			return t.Return(TokenSingleLineComment, j.jsxIdentifierOrClose)
+			return t.Return(TokenSingleLineComment, j.jsxElement)
 		} else if t.Accept("*") {
 			return j.multiLineComment(t)
 		}
 
-		return t.ReturnError(ErrInvalidCharacter)
-	} else if t.Accept(">") {
-		j.state = append(j.state, 'X')
+		if j.lastState() == 'X' {
+			j.state = j.state[:len(j.state)-1]
+		}
 
-		return t.Return(TokenJSXElementEnd, j.jsxChildren)
-	} else if !internal.IsIDStart(t.Peek()) {
+		return t.Return(TokenPunctuator, j.jsxElement)
+	} else if t.Accept("=:.") {
+		return t.Return(TokenPunctuator, j.jsxElement)
+	} else if t.Accept("'\"") {
+		return j.jsxString(t)
+	} else if t.Accept(">") {
+		if j.inJSX() {
+			return t.Return(TokenJSXElementEnd, j.jsxChildren)
+		}
+
+		return t.Return(TokenJSXElementEnd, j.inputElement)
+	} else if !readJSXIdentifier(t) {
 		return t.ReturnError(ErrInvalidCharacter)
+	}
+
+	return t.Return(TokenJSXIdentifier, j.jsxElement)
+}
+
+func readJSXIdentifier(t *parser.Tokeniser) bool {
+	if !internal.IsIDStart(t.Peek()) {
+		return false
 	}
 
 	t.Next()
@@ -728,10 +752,20 @@ func (j *jsTokeniser) jsxIdentifierOrClose(t *parser.Tokeniser) (parser.Token, p
 		t.AcceptRun("-")
 	}
 
-	return t.Return(TokenJSXIdentifier, j.jsxIdentifier)
+	return true
 }
 
-func (j *jsTokeniser) jsxIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (j *jsTokeniser) inJSX() bool {
+	if j.lastState() == 'X' {
+		return true
+	}
+
+	j.state = j.state[:len(j.state)-1]
+
+	return j.lastState() == 'X'
+}
+
+func (j *jsTokeniser) jsxString(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	return t.Error()
 }
 
