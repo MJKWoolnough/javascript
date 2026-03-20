@@ -124,6 +124,10 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			switch j.lastState() {
 			case 'X', 'j':
 				return t.Return(TokenRightBracePunctuator, j.jsxElement)
+			case 'J':
+				j.state = j.state[:len(j.state)-1]
+
+				return t.Return(TokenRightBracePunctuator, j.jsxChildren)
 			}
 
 			return t.Return(TokenRightBracePunctuator, j.inputElement)
@@ -797,5 +801,24 @@ func (j *jsTokeniser) jsxString(t *parser.Tokeniser) (parser.Token, parser.Token
 }
 
 func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return t.Error()
+	c := t.ExceptRun("{<>}")
+
+	if t.Len() > 0 {
+		return t.Return(TokenJSXText, j.jsxChildren)
+	}
+
+	switch c {
+	case '{':
+		j.state = append(j.state, 'J', '{')
+
+		return t.Return(TokenPunctuator, j.inputElement)
+	case '<':
+		j.state = append(j.state, 'j', 'X')
+
+		return t.Return(TokenPunctuator, j.jsxElement)
+	case -1:
+		return t.ReturnError(io.ErrUnexpectedEOF)
+	default:
+		return t.ReturnError(ErrInvalidCharacter)
+	}
 }
