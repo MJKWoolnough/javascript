@@ -747,6 +747,8 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 		}
 
 		return t.Return(TokenJSXElementEnd, j.inputElement)
+	} else if t.Peek() == -1 {
+		return t.ReturnError(io.ErrUnexpectedEOF)
 	} else if !readJSXIdentifier(t) {
 		return t.ReturnError(ErrInvalidCharacter)
 	}
