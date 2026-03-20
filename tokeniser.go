@@ -121,6 +121,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 		case '{':
 			j.state = j.state[:len(j.state)-1]
 
+			switch j.lastState() {
+			case 'X', 'j':
+				return t.Return(TokenRightBracePunctuator, j.jsxElement)
+			}
+
 			return t.Return(TokenRightBracePunctuator, j.inputElement)
 		case '$':
 			j.state = j.state[:len(j.state)-1]
@@ -728,6 +733,10 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 		return t.Return(TokenPunctuator, j.jsxElement)
 	} else if t.Accept("'\"") {
 		return j.jsxString(t)
+	} else if t.Accept("{") {
+		j.state = append(j.state, '{')
+
+		return t.Return(TokenPunctuator, j.inputElement)
 	} else if t.Accept(">") {
 		if j.inJSX() {
 			return t.Return(TokenJSXElementEnd, j.jsxChildren)
