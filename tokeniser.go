@@ -45,6 +45,10 @@ const (
 	TokenRegularExpressionLiteral
 	TokenNullLiteral
 	TokenFutureReservedWord
+	TokenJSXElementStart
+	TokenJSXElementEnd
+	TokenJSXIdentifier
+	TokenJSXText
 
 	tokenTypescript = 0x20
 )
@@ -268,8 +272,10 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 				return t.Return(TokenNumericLiteral, j.inputElement)
 			}
 		case '<':
-			if !j.divisionAllowed {
-				j.divisionAllowed = true
+			if !j.divisionAllowed && j.isJSX {
+				if !j.isTypescript || j.checkForJSX(t.SubTokeniser()) {
+					return t.Return(TokenJSXElementStart, j.jsxIdentifier)
+				}
 			}
 
 			fallthrough
@@ -681,4 +687,12 @@ Loop:
 		Type: typ,
 		Data: v,
 	}, j.inputElement
+}
+
+func (j *jsTokeniser) checkForJSX(_ *parser.Tokeniser) bool {
+	return false
+}
+
+func (j *jsTokeniser) jsxIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	return t.Error()
 }
