@@ -48,6 +48,7 @@ const (
 	TokenJSXElementStart
 	TokenJSXElementEnd
 	TokenJSXIdentifier
+	TokenJSXString
 	TokenJSXText
 
 	tokenTypescript = 0x20
@@ -766,7 +767,24 @@ func (j *jsTokeniser) inJSX() bool {
 }
 
 func (j *jsTokeniser) jsxString(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return t.Error()
+	t.Reset()
+
+	chars := "'"
+
+	if t.Next() == '"' {
+		chars = "\""
+	}
+
+	for {
+		switch t.ExceptRun(chars) {
+		case '"', '\'':
+			t.Next()
+
+			return t.Return(TokenJSXString, j.jsxElement)
+		case -1:
+			return t.ReturnError(io.ErrUnexpectedEOF)
+		}
+	}
 }
 
 func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
