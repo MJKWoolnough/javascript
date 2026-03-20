@@ -67,6 +67,7 @@ type jsParser Tokens
 type Tokeniser interface {
 	TokeniserState(parser.TokenFunc)
 	Iter(func(parser.Token) bool)
+	GetToken() (parser.Token, error)
 	GetError() error
 }
 
