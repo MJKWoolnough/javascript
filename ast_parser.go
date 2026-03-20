@@ -53,6 +53,14 @@ func hasSingleLineComment[T any, PT interface {
 	return false
 }
 
+func tokeniserFlags(t Tokeniser) (bool, bool) {
+	if hf, ok := t.(interface{ hasFlags() (bool, bool) }); ok {
+		return hf.hasFlags()
+	}
+
+	return false, false
+}
+
 type jsParser Tokens
 
 // Tokeniser is an interface representing a tokeniser.
@@ -63,7 +71,11 @@ type Tokeniser interface {
 }
 
 func newJSParser(t Tokeniser) (jsParser, error) {
-	t.TokeniserState(new(jsTokeniser).inputElement)
+	ts, jsx := tokeniserFlags(t)
+
+	if !ts && !jsx {
+		t.TokeniserState(new(jsTokeniser).inputElement)
+	}
 
 	var (
 		tokens             jsParser

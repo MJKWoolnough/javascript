@@ -24,8 +24,19 @@ func (j *jsx) Iter(fn func(parser.Token) bool) {
 	}
 }
 
+func (j *jsx) hasFlags() (bool, bool) {
+	t, _ := tokeniserFlags(j.Tokeniser)
+
+	return t, true
+}
+
 func AsJSX(t Tokeniser) Tokeniser {
-	return &jsx{Tokeniser: t}
+	ts, _ := tokeniserFlags(t)
+	jsx := &typescript{Tokeniser: t}
+
+	jsx.TokeniserState((&jsTokeniser{isTypescript: ts, isJSX: true}).inputElement)
+
+	return jsx
 }
 
 func (j *jsParser) IsJSX() bool {

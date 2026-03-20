@@ -24,6 +24,12 @@ func (t *typescript) Iter(fn func(parser.Token) bool) {
 	}
 }
 
+func (t *typescript) hasFlags() (bool, bool) {
+	_, j := tokeniserFlags(t.Tokeniser)
+
+	return true, j
+}
+
 // AsTypescript converts the tokeniser to one that reads Typescript.
 //
 // When used with ParseScript or ParseModule, will produce JavaScript AST from
@@ -33,7 +39,12 @@ func (t *typescript) Iter(fn func(parser.Token) bool) {
 // lookahead/lookback, such as the Typescript 'private' modifier, or the 'enum'
 // and 'namespace' declarations.
 func AsTypescript(t Tokeniser) Tokeniser {
-	return &typescript{Tokeniser: t}
+	_, jsx := tokeniserFlags(t)
+	ts := &typescript{Tokeniser: t}
+
+	ts.TokeniserState((&jsTokeniser{isTypescript: true, isJSX: jsx}).inputElement)
+
+	return ts
 }
 
 func (j *jsParser) IsTypescript() bool {

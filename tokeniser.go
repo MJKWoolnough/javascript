@@ -50,8 +50,9 @@ const (
 )
 
 type jsTokeniser struct {
-	state           []byte
-	divisionAllowed bool
+	state               []byte
+	divisionAllowed     bool
+	isTypescript, isJSX bool
 }
 
 // SetTokeniser provides JavaScript parsing functions to a Tokeniser
