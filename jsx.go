@@ -32,7 +32,7 @@ func (j *jsx) hasFlags() (bool, bool) {
 
 func AsJSX(t Tokeniser) Tokeniser {
 	ts, _ := tokeniserFlags(t)
-	jsx := &typescript{Tokeniser: t}
+	jsx := &jsx{Tokeniser: t}
 
 	jsx.TokeniserState((&jsTokeniser{isTypescript: ts, isJSX: true}).inputElement)
 
