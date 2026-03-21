@@ -811,13 +811,17 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 
 	switch c {
 	case '{':
+		t.Next()
+
 		j.state = append(j.state, 'J', '{')
 
 		return t.Return(TokenPunctuator, j.inputElement)
 	case '<':
+		t.Next()
+
 		j.state = append(j.state, 'j', 'X')
 
-		return t.Return(TokenPunctuator, j.jsxElement)
+		return t.Return(TokenJSXElementStart, j.jsxElement)
 	case -1:
 		return t.ReturnError(io.ErrUnexpectedEOF)
 	default:
