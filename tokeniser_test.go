@@ -1224,6 +1224,21 @@ func TestTokeniser(t *testing.T) {
 			},
 			JSX: true,
 		},
+		{ // 143
+			Input: "<a/> / b",
+			Output: []parser.Token{
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDivPunctuator, Data: "/"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
