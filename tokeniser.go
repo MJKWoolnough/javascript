@@ -720,14 +720,6 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 
 		return t.Return(TokenLineTerminator, j.jsxElement)
 	} else if t.Accept("/") {
-		if t.Accept("/") {
-			t.ExceptRun("\n")
-
-			return t.Return(TokenSingleLineComment, j.jsxElement)
-		} else if t.Accept("*") {
-			return j.multiLineComment(t)
-		}
-
 		if j.lastState() == 'X' {
 			j.state = j.state[:len(j.state)-1]
 		}
