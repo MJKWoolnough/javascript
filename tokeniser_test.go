@@ -1167,6 +1167,63 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 139
+			Input: "<a></a>",
+			Output: []parser.Token{
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "a"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "a"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
+		{ // 140
+			Input: "<></>",
+			Output: []parser.Token{
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
+		{ // 141
+			Input: "<a/>",
+			Output: []parser.Token{
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
+		{ // 142
+			Input: "a=<b c=\"d\"></b>",
+			Output: []parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: "="},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "b"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenJSXIdentifier, Data: "c"},
+				{Type: TokenPunctuator, Data: "="},
+				{Type: TokenJSXString, Data: "\"d\""},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "b"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
