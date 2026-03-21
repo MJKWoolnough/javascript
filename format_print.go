@@ -940,9 +940,10 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 		return
 	}
 
-	if l.LetOrConst == Let {
+	switch l.LetOrConst {
+	case Let:
 		w.WriteString("let ")
-	} else if l.LetOrConst == Const {
+	case Const:
 		w.WriteString("const ")
 	}
 
