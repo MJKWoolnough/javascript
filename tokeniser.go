@@ -819,7 +819,9 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 	case '<':
 		t.Next()
 
-		j.state = append(j.state, 'j', 'X')
+		if t.Peek() != '/' {
+			j.state = append(j.state, 'j', 'X')
+		}
 
 		return t.Return(TokenJSXElementStart, j.jsxElement)
 	case -1:
