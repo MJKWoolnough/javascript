@@ -739,12 +739,15 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 		return j.jsxString(t)
 	} else if t.Accept("{") {
 		j.state = append(j.state, '{')
+		j.divisionAllowed = false
 
 		return t.Return(TokenPunctuator, j.inputElement)
 	} else if t.Accept(">") {
 		if j.inJSX() {
 			return t.Return(TokenJSXElementEnd, j.jsxChildren)
 		}
+
+		j.divisionAllowed = true
 
 		return t.Return(TokenJSXElementEnd, j.inputElement)
 	} else if t.Peek() == -1 {
@@ -814,6 +817,7 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 		t.Next()
 
 		j.state = append(j.state, 'J', '{')
+		j.divisionAllowed = false
 
 		return t.Return(TokenPunctuator, j.inputElement)
 	case '<':
