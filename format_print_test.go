@@ -2699,7 +2699,7 @@ func TestPrintingScript(t *testing.T) {
 
 			st.Verbose = false
 
-			st.Buffer.Reset()
+			st.Reset()
 			s.Format(&st, 's')
 
 			if str := st.String(); str != test.SimpleOutput {
@@ -2708,10 +2708,10 @@ func TestPrintingScript(t *testing.T) {
 
 			st.Verbose = true
 
-			st.Buffer.Reset()
+			st.Reset()
 			s.Format(&st, 's')
 
-			if str := st.Buffer.String(); str != test.VerboseOutput {
+			if str := st.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
 		}
@@ -3075,19 +3075,19 @@ func TestPrintingModule(t *testing.T) {
 
 			st.Verbose = false
 
-			st.Buffer.Reset()
+			st.Reset()
 			s.Format(&st, 's')
 
-			if str := st.Buffer.String(); str != test.SimpleOutput {
+			if str := st.String(); str != test.SimpleOutput {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 
 			st.Verbose = true
 
-			st.Buffer.Reset()
+			st.Reset()
 			s.Format(&st, 's')
 
-			if str := st.Buffer.String(); str != test.VerboseOutput {
+			if str := st.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
 		}
