@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	whitespace      = "\t\v\f \u00a0\ufeff" // Tab, Vertical Tab, Form Feed, Space, No-break space, ZeroWidth No-Break Space, https://262.ecma-international.org/11.0/#table-32
-	lineTerminators = "\n\r\u2028\u2029"    // Line Feed, Carriage Return, Line Separator, Paragraph Separator, https://262.ecma-international.org/11.0/#table-33
+	whitespace         = "\t\v\f \u00a0\ufeff" // Tab, Vertical Tab, Form Feed, Space, No-break space, ZeroWidth No-Break Space, https://262.ecma-international.org/11.0/#table-32
+	lineTerminators    = "\n\r\u2028\u2029"    // Line Feed, Carriage Return, Line Separator, Paragraph Separator, https://262.ecma-international.org/11.0/#table-33
+	combinedWhitespace = whitespace + lineTerminators
 
 	singleEscapeChar = "'\"\\bfnrtv"
 	binaryDigit      = "01"
@@ -273,7 +274,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			}
 		case '<':
 			if !j.divisionAllowed && j.isJSX {
-				if !j.isTypescript || j.checkForJSX(t.SubTokeniser()) {
+				if !j.isTypescript || checkForJSX(t) {
 					j.state = append(j.state, 'j', 'X')
 
 					return t.Return(TokenJSXElementStart, j.jsxElement)
@@ -706,10 +707,6 @@ Loop:
 	}, j.inputElement
 }
 
-func (j *jsTokeniser) checkForJSX(_ *parser.Tokeniser) bool {
-	return false
-}
-
 func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(whitespace) {
 		t.AcceptRun(whitespace)
@@ -824,5 +821,81 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 		return t.ReturnError(io.ErrUnexpectedEOF)
 	default:
 		return t.ReturnError(ErrInvalidCharacter)
+	}
+}
+
+func checkForJSX(t *parser.Tokeniser) bool {
+	startState := t.State()
+	defer startState.Reset()
+
+	if t.Accept(combinedWhitespace) || t.Accept("/") {
+		return false
+	}
+
+	if t.Accept(">") {
+		return true
+	}
+
+	state := t.State()
+
+	if t.AcceptString("const ", false) == 6 {
+		if t.AcceptRun(combinedWhitespace) == '>' {
+			return true
+		}
+
+		if t.AcceptRun(combinedWhitespace) == '/' {
+			t.Next()
+
+			return !t.Accept("/*")
+		}
+	} else {
+		state.Reset()
+	}
+
+	if !internal.IsIDStart(t.Next()) {
+		return false
+	}
+
+	for internal.IsIDContinue(t.Peek()) {
+		t.Next()
+	}
+
+	if t.Accept(":.-") {
+		return true
+	}
+
+	if t.AcceptRun(combinedWhitespace) == '/' {
+		t.Next()
+
+		return !t.Accept("/*")
+	}
+
+	if t.AcceptString("extends ", false) == 8 || t.Accept("=,") {
+		return false
+	}
+
+	if !t.Accept(">") {
+		return true
+	}
+
+	switch t.AcceptRun(combinedWhitespace) {
+	case '(':
+		return false // Assume ArrowFunc
+	case '/':
+		t.Next()
+
+		var c rune
+
+		if t.Accept("/") {
+			c = t.ExceptRun(lineTerminators + "{<")
+		} else if !t.Accept("*") {
+			return true
+		} else {
+			c = t.ExceptRun("*" + "{<")
+		}
+
+		return c == '{' || c == '<' // Assume JSX
+	default:
+		return true
 	}
 }
