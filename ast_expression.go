@@ -1580,13 +1580,13 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-	} else if j.IsJSX() && t == (parser.Token{Type: TokenPunctuator, Data: "<"}) {
+	} else if j.IsJSX() && t.Type == TokenJSXElementStart {
 		g := j.NewGoal()
 
 		g.Skip()
 		g.AcceptRunWhitespace()
 
-		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+		if g.Accept(TokenJSXElementEnd) {
 			g = j.NewGoal()
 			pe.JSXFragment = new(JSXFragment)
 

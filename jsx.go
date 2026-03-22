@@ -67,7 +67,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 			je.SelfClosing = true
 
 			break
-		} else if j.Peek() == (parser.Token{Type: TokenPunctuator, Data: ">"}) {
+		} else if j.Peek().Type == TokenJSXElementEnd {
 			break
 		}
 
@@ -86,7 +86,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 	j.AcceptRunWhitespace()
 
-	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+	if !j.Accept(TokenJSXElementEnd) {
 		return j.Error("JSXElement", ErrMissingTagClose)
 	}
 
