@@ -731,14 +731,28 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 		j.divisionAllowed = false
 
 		return t.Return(TokenPunctuator, j.inputElement)
-	} else if t.Accept(">") {
-		if j.inJSX() {
-			return t.Return(TokenJSXElementEnd, j.jsxChildren)
-		}
+	} else if t.Accept("<") {
+		j.state = append(j.state, 'e', 'X')
 
+		return t.Return(TokenJSXElementStart, j.jsxElement)
+	} else if t.Accept(">") {
 		j.divisionAllowed = true
 
-		return t.Return(TokenJSXElementEnd, j.inputElement)
+		switch j.lastState() {
+		case 'J', 'j':
+			j.state = j.state[:len(j.state)-1]
+		}
+
+		switch j.lastState() {
+		case 'X':
+			return t.Return(TokenJSXElementEnd, j.jsxChildren)
+		case 'e':
+			j.state = j.state[:len(j.state)-1]
+
+			return t.Return(TokenJSXElementEnd, j.jsxElement)
+		default:
+			return t.Return(TokenJSXElementEnd, j.inputElement)
+		}
 	} else if t.Peek() == -1 {
 		return t.ReturnError(io.ErrUnexpectedEOF)
 	} else if !readJSXIdentifier(t) {
@@ -761,16 +775,6 @@ func readJSXIdentifier(t *parser.Tokeniser) bool {
 	}
 
 	return true
-}
-
-func (j *jsTokeniser) inJSX() bool {
-	if j.lastState() == 'X' {
-		return true
-	}
-
-	j.state = j.state[:len(j.state)-1]
-
-	return j.lastState() == 'X'
 }
 
 func (j *jsTokeniser) jsxString(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
