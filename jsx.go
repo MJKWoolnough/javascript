@@ -184,11 +184,7 @@ func (jn *JSXElementName) equal(cn *JSXElementName) bool {
 
 func (t *Token) equal(s *Token) bool {
 	if t == nil {
-		if s == nil {
-			return true
-		}
-
-		return false
+		return s == nil
 	} else if s == nil {
 		return false
 	}
