@@ -131,9 +131,40 @@ func (je *JSXElement) parse(j *jsParser) error {
 	return nil
 }
 
-type JSXElementName struct{}
+type JSXElementName struct {
+	Namespace        *Token
+	MemberExpression []*Token
+	Identifier       *Token
+	Tokens           Tokens
+}
 
 func (jn *JSXElementName) parse(j *jsParser) error {
+	if !j.Accept(TokenJSXIdentifier) {
+		return j.Error("JSXElementName", ErrMissingIdentifier)
+	}
+
+	jn.Identifier = j.GetLastToken()
+
+	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+		if !j.Accept(TokenJSXIdentifier) {
+			return j.Error("JSXElementName", ErrMissingIdentifier)
+		}
+
+		jn.Namespace = jn.Identifier
+		jn.Identifier = j.GetLastToken()
+	} else {
+		for j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			if !j.Accept(TokenJSXIdentifier) {
+				return j.Error("JSXElementName", ErrMissingIdentifier)
+			}
+
+			jn.MemberExpression = append(jn.MemberExpression, jn.Identifier)
+			jn.Identifier = j.GetLastToken()
+		}
+	}
+
+	jn.Tokens = j.ToTokens()
+
 	return nil
 }
 
