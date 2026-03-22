@@ -169,7 +169,31 @@ func (jn *JSXElementName) parse(j *jsParser) error {
 }
 
 func (jn *JSXElementName) equal(cn *JSXElementName) bool {
+	if !jn.Identifier.equal(cn.Identifier) || !jn.Namespace.equal(cn.Namespace) || len(jn.MemberExpression) != len(cn.MemberExpression) {
+		return false
+	}
+
+	for n := range jn.MemberExpression {
+		if !jn.MemberExpression[n].equal(cn.MemberExpression[n]) {
+			return false
+		}
+	}
+
 	return true
+}
+
+func (t *Token) equal(s *Token) bool {
+	if t == nil {
+		if s == nil {
+			return true
+		}
+
+		return false
+	} else if s == nil {
+		return false
+	}
+
+	return t.Data == s.Data
 }
 
 type JSXAttribute struct{}
