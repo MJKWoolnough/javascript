@@ -533,6 +533,66 @@ func (f IterationStatementWhile) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f JSXAttribute) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = JSXAttribute
+		type JSXAttribute X
+
+		fmt.Fprintf(s, "%#v", JSXAttribute(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f JSXChild) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = JSXChild
+		type JSXChild X
+
+		fmt.Fprintf(s, "%#v", JSXChild(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f JSXElement) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = JSXElement
+		type JSXElement X
+
+		fmt.Fprintf(s, "%#v", JSXElement(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f JSXElementName) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = JSXElementName
+		type JSXElementName X
+
+		fmt.Fprintf(s, "%#v", JSXElementName(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f JSXFragment) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = JSXFragment
+		type JSXFragment X
+
+		fmt.Fprintf(s, "%#v", JSXFragment(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f LeftHandSideExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = LeftHandSideExpression

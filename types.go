@@ -102,6 +102,16 @@ func (IterationStatementFor) javascriptType() {}
 
 func (IterationStatementWhile) javascriptType() {}
 
+func (JSXAttribute) javascriptType() {}
+
+func (JSXChild) javascriptType() {}
+
+func (JSXElement) javascriptType() {}
+
+func (JSXElementName) javascriptType() {}
+
+func (JSXFragment) javascriptType() {}
+
 func (LeftHandSideExpression) javascriptType() {}
 
 func (LexicalBinding) javascriptType() {}

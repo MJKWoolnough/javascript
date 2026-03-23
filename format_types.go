@@ -1709,6 +1709,231 @@ func (f *IterationStatementWhile) printType(w writer, v bool) {
 	w.WriteString("\n}")
 }
 
+func (f *JSXAttribute) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("JSXAttribute {")
+
+	if f.Namespace != nil {
+		pp.WriteString("\nNamespace: ")
+		f.Namespace.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nNamespace: nil")
+	}
+
+	if f.Identifier != nil {
+		pp.WriteString("\nIdentifier: ")
+		f.Identifier.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nIdentifier: nil")
+	}
+
+	if f.JSXString != nil {
+		pp.WriteString("\nJSXString: ")
+		f.JSXString.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXString: nil")
+	}
+
+	if f.JSXFragment != nil {
+		pp.WriteString("\nJSXFragment: ")
+		f.JSXFragment.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXFragment: nil")
+	}
+
+	if f.JSXElement != nil {
+		pp.WriteString("\nJSXElement: ")
+		f.JSXElement.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXElement: nil")
+	}
+
+	if f.AssignmentExpression != nil {
+		pp.WriteString("\nAssignmentExpression: ")
+		f.AssignmentExpression.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nAssignmentExpression: nil")
+	}
+
+	if f.Spread != nil {
+		pp.WriteString("\nSpread: ")
+		f.Spread.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nSpread: nil")
+	}
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
+func (f *JSXChild) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("JSXChild {")
+
+	if f.JSXText != nil {
+		pp.WriteString("\nJSXText: ")
+		f.JSXText.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXText: nil")
+	}
+
+	if f.JSXElement != nil {
+		pp.WriteString("\nJSXElement: ")
+		f.JSXElement.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXElement: nil")
+	}
+
+	if f.JSXFragment != nil {
+		pp.WriteString("\nJSXFragment: ")
+		f.JSXFragment.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXFragment: nil")
+	}
+
+	if f.Spread || v {
+		pp.Printf("\nSpread: %v", f.Spread)
+	}
+
+	if f.JSXChildExpression != nil {
+		pp.WriteString("\nJSXChildExpression: ")
+		f.JSXChildExpression.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXChildExpression: nil")
+	}
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
+func (f *JSXElement) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("JSXElement {")
+
+	pp.WriteString("\nElementName: ")
+	f.ElementName.printType(pp, v)
+
+	if f.Attributes == nil {
+		pp.WriteString("\nAttributes: nil")
+	} else if len(f.Attributes) > 0 {
+		pp.WriteString("\nAttributes: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.Attributes {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nAttributes: []")
+	}
+
+	if f.SelfClosing || v {
+		pp.Printf("\nSelfClosing: %v", f.SelfClosing)
+	}
+
+	if f.Children == nil {
+		pp.WriteString("\nChildren: nil")
+	} else if len(f.Children) > 0 {
+		pp.WriteString("\nChildren: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.Children {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nChildren: []")
+	}
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
+func (f *JSXElementName) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("JSXElementName {")
+
+	if f.Namespace != nil {
+		pp.WriteString("\nNamespace: ")
+		f.Namespace.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nNamespace: nil")
+	}
+
+	if f.MemberExpression == nil {
+		pp.WriteString("\nMemberExpression: nil")
+	} else if len(f.MemberExpression) > 0 {
+		pp.WriteString("\nMemberExpression: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.MemberExpression {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nMemberExpression: []")
+	}
+
+	if f.Identifier != nil {
+		pp.WriteString("\nIdentifier: ")
+		f.Identifier.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nIdentifier: nil")
+	}
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
+func (f *JSXFragment) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("JSXFragment {")
+
+	if f.Children == nil {
+		pp.WriteString("\nChildren: nil")
+	} else if len(f.Children) > 0 {
+		pp.WriteString("\nChildren: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.Children {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nChildren: []")
+	}
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
 func (f *LeftHandSideExpression) printType(w writer, v bool) {
 	pp := w.Indent()
 
@@ -2484,6 +2709,20 @@ func (f *PrimaryExpression) printType(w writer, v bool) {
 		f.ParenthesizedExpression.printType(pp, v)
 	} else if v {
 		pp.WriteString("\nParenthesizedExpression: nil")
+	}
+
+	if f.JSXElement != nil {
+		pp.WriteString("\nJSXElement: ")
+		f.JSXElement.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXElement: nil")
+	}
+
+	if f.JSXFragment != nil {
+		pp.WriteString("\nJSXFragment: ")
+		f.JSXFragment.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nJSXFragment: nil")
 	}
 
 	pp.WriteString("\nTokens: ")
