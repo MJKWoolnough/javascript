@@ -1584,9 +1584,8 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		g := j.NewGoal()
 
 		g.Skip()
-		g.AcceptRunWhitespace()
 
-		if g.Accept(TokenJSXElementEnd) {
+		if g.AcceptRunWhitespace() == TokenJSXElementEnd {
 			g = j.NewGoal()
 			pe.JSXFragment = new(JSXFragment)
 
