@@ -47,7 +47,7 @@ type JSXElement struct {
 	ElementName JSXElementName
 	Attributes  []JSXAttribute
 	SelfClosing bool
-	Children    *JSXChildren
+	Children    []JSXChild
 	Tokens      Tokens
 }
 
@@ -91,18 +91,29 @@ func (je *JSXElement) parse(j *jsParser) error {
 	}
 
 	if !je.SelfClosing {
-		g = j.NewGoal()
-		je.Children = new(JSXChildren)
+		for {
+			g = j.NewGoal()
 
-		if err := je.Children.parse(&g); err != nil {
-			return j.Error("JSXElement", err)
+			if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+				break
+			}
+
+			g = j.NewGoal()
+
+			var child JSXChild
+
+			if err := child.parse(&g); err != nil {
+				return j.Error("JSXElement", err)
+			}
+
+			je.Children = append(je.Children, child)
+
+			j.Score(g)
+			j.AcceptRunWhitespace()
 		}
 
-		j.Score(g)
-		j.AcceptRunWhitespace()
-		j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "<"})
-		j.AcceptRunWhitespace()
-		j.Accept(TokenDivPunctuator)
+		j.Skip()
+		j.Skip()
 		j.AcceptRunWhitespace()
 
 		g = j.NewGoal()
@@ -290,9 +301,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 	return nil
 }
 
-type JSXChildren struct{}
+type JSXChild struct{}
 
-func (jc *JSXChildren) parse(j *jsParser) error {
+func (jc *JSXChild) parse(j *jsParser) error {
 	return nil
 }
 
