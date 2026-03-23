@@ -301,9 +301,66 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 	return nil
 }
 
-type JSXChild struct{}
+type JSXChild struct {
+	JSXText            *Token
+	JSXElement         *JSXElement
+	JSXFragment        *JSXFragment
+	Spread             bool
+	JSXChildExpression *AssignmentExpression
+	Tokens             Tokens
+}
 
 func (jc *JSXChild) parse(j *jsParser) error {
+	if j.Accept(TokenJSXText) {
+		jc.JSXText = j.GetLastToken()
+	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		j.AcceptRunWhitespace()
+
+		if jc.Spread = j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
+			j.AcceptRunWhitespace()
+		}
+
+		g := j.NewGoal()
+		jc.JSXChildExpression = new(AssignmentExpression)
+
+		if err := jc.JSXChildExpression.parse(&g, false, false, false); err != nil {
+			return j.Error("JSXChild", err)
+		}
+
+		j.Score(g)
+		j.AcceptRunWhitespace()
+
+		if !j.Accept(TokenRightBracePunctuator) {
+			return j.Error("JSXChild", ErrMissingClosingBrace)
+		}
+	} else {
+		g := j.NewGoal()
+
+		g.Skip()
+
+		if g.AcceptRunWhitespace() == TokenJSXElementEnd {
+			g = j.NewGoal()
+			jc.JSXFragment = new(JSXFragment)
+
+			if err := jc.JSXFragment.parse(&g); err != nil {
+				return j.Error("JSXChild", err)
+			}
+
+			j.Score(g)
+		} else {
+			g = j.NewGoal()
+			jc.JSXElement = new(JSXElement)
+
+			if err := jc.JSXElement.parse(&g); err != nil {
+				return j.Error("JSXChild", err)
+			}
+
+			j.Score(g)
+		}
+	}
+
+	jc.Tokens = j.ToTokens()
+
 	return nil
 }
 
