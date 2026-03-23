@@ -86,10 +86,6 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 	j.AcceptRunWhitespace()
 
-	if !j.Accept(TokenJSXElementEnd) {
-		return j.Error("JSXElement", ErrMissingTagClose)
-	}
-
 	if !je.SelfClosing {
 		for {
 			g = j.NewGoal()
@@ -131,10 +127,10 @@ func (je *JSXElement) parse(j *jsParser) error {
 		}
 
 		j.AcceptRunWhitespace()
+	}
 
-		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
-			return j.Error("JSXElement", ErrMissingTagClose)
-		}
+	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
+		return j.Error("JSXElement", ErrMissingTagClose)
 	}
 
 	je.Tokens = j.ToTokens()
