@@ -206,7 +206,7 @@ func (t *Token) equal(s *Token) bool {
 type JSXAttribute struct {
 	Namespace            *Token
 	Identifier           *Token
-	String               *Token
+	JSXString            *Token
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
@@ -256,7 +256,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 
 		if j.Accept(TokenJSXString) {
-			ja.String = j.GetLastToken()
+			ja.JSXString = j.GetLastToken()
 		} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 			j.AcceptRunWhitespace()
 
