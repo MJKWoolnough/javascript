@@ -363,8 +363,46 @@ func (jc *JSXChild) parse(j *jsParser) error {
 	return nil
 }
 
-type JSXFragment struct{}
+type JSXFragment struct {
+	Children []JSXChild
+	Tokens   Tokens
+}
 
 func (jf *JSXFragment) parse(j *jsParser) error {
+	j.Skip()
+	j.AcceptRunWhitespace()
+	j.Skip()
+
+	for {
+		g := j.NewGoal()
+
+		if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+			break
+		}
+
+		g = j.NewGoal()
+
+		var child JSXChild
+
+		if err := child.parse(&g); err != nil {
+			return j.Error("JSXFragment", err)
+		}
+
+		jf.Children = append(jf.Children, child)
+
+		j.Score(g)
+		j.AcceptRunWhitespace()
+	}
+
+	j.Skip()
+	j.Skip()
+	j.AcceptRunWhitespace()
+
+	if !j.Accept(TokenJSXElementEnd) {
+		return j.Error("JSXFragment", ErrMissingTagClose)
+	}
+
+	jf.Tokens = j.ToTokens()
+
 	return nil
 }
