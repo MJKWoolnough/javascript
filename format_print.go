@@ -3167,3 +3167,9 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 
 	ce.BitwiseORExpression.printSource(w, v)
 }
+
+func (ja *JSXAttribute) printSource(w writer, v bool)   {}
+func (ja *JSXChild) printSource(w writer, v bool)       {}
+func (ja *JSXElement) printSource(w writer, v bool)     {}
+func (ja *JSXElementName) printSource(w writer, v bool) {}
+func (ja *JSXFragment) printSource(w writer, v bool)    {}
