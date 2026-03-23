@@ -272,9 +272,8 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 			g := j.NewGoal()
 
 			g.Skip()
-			g.AcceptRunWhitespace()
 
-			if g.Accept(TokenJSXElementEnd) {
+			if g.AcceptRunWhitespace() == TokenJSXElementEnd {
 				g = j.NewGoal()
 				ja.JSXFragment = new(JSXFragment)
 
