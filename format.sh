@@ -119,7 +119,7 @@ package javascript
 
 import "fmt"
 
-// Type is an interface satisfied by all javascript structural types.
+// Type is an interface satisfied by all JavaScript structural types.
 type Type interface {
 	fmt.Formatter
 	javascriptType()
