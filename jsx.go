@@ -266,6 +266,8 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 
 				j.Score(g)
 			}
+		} else {
+			return j.Error("JSXAttribute", ErrMissingAttribute)
 		}
 	}
 
