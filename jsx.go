@@ -186,7 +186,6 @@ type JSXAttribute struct {
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
-	Spread               *AssignmentExpression
 	Tokens               Tokens
 }
 
@@ -199,9 +198,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 
 		g := j.NewGoal()
-		ja.Spread = new(AssignmentExpression)
+		ja.AssignmentExpression = new(AssignmentExpression)
 
-		if err := ja.Spread.parse(&g, false, false, false); err != nil {
+		if err := ja.AssignmentExpression.parse(&g, false, false, false); err != nil {
 			return j.Error("JSXAttribute", err)
 		}
 
