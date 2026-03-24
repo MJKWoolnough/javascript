@@ -50,6 +50,7 @@ var (
 	ErrInvalidWithStatement                 = errors.New("invalid with statement")
 	ErrLabelledFunction                     = errors.New("LabelledItemFunction not allowed here")
 	ErrMissingArrow                         = errors.New("missing arrow")
+	ErrMissingAttribute                     = errors.New("missing attribute")
 	ErrMissingAttributeKey                  = errors.New("missing attribute key")
 	ErrMissingCaseClause                    = errors.New("missing case clause")
 	ErrMissingCatchFinally                  = errors.New("missing catch/finally block")
