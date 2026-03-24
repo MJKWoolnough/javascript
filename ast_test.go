@@ -24,7 +24,7 @@ func makeTokeniser(tk parser.Tokeniser) *parser.Tokeniser {
 	return &tk
 }
 
-func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
+func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error), isJSX ...bool) {
 	t.Helper()
 
 	var err error
@@ -32,7 +32,13 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 	for n, tt := range tests {
 		var ts test
 
-		if ts.Tokens, err = newJSParser(makeTokeniser(parser.NewStringTokeniser(tt.Source))); err != nil {
+		var tk Tokeniser = makeTokeniser(parser.NewStringTokeniser(tt.Source))
+
+		if len(isJSX) > 0 {
+			tk = AsJSX(tk)
+		}
+
+		if ts.Tokens, err = newJSParser(tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 
 			continue
