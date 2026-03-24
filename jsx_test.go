@@ -2,6 +2,8 @@ package javascript
 
 import (
 	"testing"
+
+	"vimagination.zapto.org/parser"
 )
 
 func TestJSXElementName(t *testing.T) {
@@ -75,4 +77,68 @@ func TestJSXElementName(t *testing.T) {
 
 		return jn, err
 	}, true)
+}
+
+func TestJSXElementNameEqual(t *testing.T) {
+	for n, test := range [...]struct {
+		A, B  JSXElementName
+		Match bool
+	}{
+		{ // 1
+			A:     JSXElementName{},
+			B:     JSXElementName{},
+			Match: true,
+		},
+		{ // 2
+			A:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{},
+			Match: false,
+		},
+		{ // 3
+			A:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "B"}}},
+			Match: false,
+		},
+		{ // 4
+			A:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: true,
+		},
+		{ // 5
+			A:     JSXElementName{Namespace: &Token{Token: parser.Token{Data: "B"}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "B"}}},
+			Match: false,
+		},
+		{ // 6
+			A:     JSXElementName{Namespace: &Token{Token: parser.Token{Data: "B"}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{Namespace: &Token{Token: parser.Token{Data: "B"}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: true,
+		},
+		{ // 7
+			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: false,
+		},
+		{ // 8
+			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: true,
+		},
+		{ // 9
+			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "D"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: false,
+		},
+		{ // 10
+			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			Match: true,
+		},
+	} {
+		if test.A.equal(&test.B) != test.Match {
+			t.Errorf("test %d.1: expected match = %v, got %v", n+1, test.Match, !test.Match)
+		} else if test.B.equal(&test.A) != test.Match {
+			t.Errorf("test %d.2: expected match = %v, got %v", n+1, test.Match, !test.Match)
+		}
+	}
 }
