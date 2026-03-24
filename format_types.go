@@ -1756,13 +1756,6 @@ func (f *JSXAttribute) printType(w writer, v bool) {
 		pp.WriteString("\nAssignmentExpression: nil")
 	}
 
-	if f.Spread != nil {
-		pp.WriteString("\nSpread: ")
-		f.Spread.printType(pp, v)
-	} else if v {
-		pp.WriteString("\nSpread: nil")
-	}
-
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
