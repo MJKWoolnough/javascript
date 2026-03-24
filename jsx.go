@@ -242,6 +242,12 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 			}
 
 			j.Score(g)
+
+			j.AcceptRunWhitespace()
+
+			if !j.Accept(TokenRightBracePunctuator) {
+				return j.Error("JSXAttribute", ErrMissingClosingBrace)
+			}
 		} else if tk := j.Peek(); tk.Type == TokenJSXElementStart {
 			g := j.NewGoal()
 
