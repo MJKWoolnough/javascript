@@ -1580,7 +1580,7 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 		}
 
 		j.Score(g)
-	} else if j.IsJSX() && t.Type == TokenJSXElementStart {
+	} else if t.Type == TokenJSXElementStart {
 		g := j.NewGoal()
 
 		g.Skip()
