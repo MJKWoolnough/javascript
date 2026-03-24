@@ -41,11 +41,17 @@ func (je *JSXElement) parse(j *jsParser) error {
 	j.Score(g)
 
 	for {
-		if j.AcceptRunWhitespace() == TokenDivPunctuator {
+		j.AcceptRunWhitespace()
+
+		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
 			je.SelfClosing = true
 
+			if !j.AcceptToken(parser.Token{Type: TokenJSXElementEnd, Data: ">"}) {
+				return j.Error("JSXElement", ErrMissingTagClose)
+			}
+
 			break
-		} else if j.Peek().Type == TokenJSXElementEnd {
+		} else if j.Accept(TokenJSXElementEnd) {
 			break
 		}
 
@@ -66,9 +72,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 	if !je.SelfClosing {
 		for {
-			g = j.NewGoal()
-
-			if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+			if j.Accept(TokenJSXElementStart) && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
 				break
 			}
 
@@ -86,8 +90,6 @@ func (je *JSXElement) parse(j *jsParser) error {
 			j.AcceptRunWhitespace()
 		}
 
-		j.Skip()
-		j.Skip()
 		j.AcceptRunWhitespace()
 
 		g = j.NewGoal()
@@ -105,10 +107,10 @@ func (je *JSXElement) parse(j *jsParser) error {
 		}
 
 		j.AcceptRunWhitespace()
-	}
 
-	if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ">"}) {
-		return j.Error("JSXElement", ErrMissingTagClose)
+		if !j.AcceptToken(parser.Token{Type: TokenJSXElementEnd, Data: ">"}) {
+			return j.Error("JSXElement", ErrMissingTagClose)
+		}
 	}
 
 	je.Tokens = j.ToTokens()
