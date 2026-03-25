@@ -447,3 +447,195 @@ func TestJSXChild(t *testing.T) {
 		return jc, err
 	}, true)
 }
+
+func TestJSXElement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"<''/>", func(t *test, tk Tokens) { // 1
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "JSXElementName",
+					Token:   tk[1],
+				},
+				Parsing: "JSXElement",
+				Token:   tk[1],
+			}
+		}},
+		{"<a/>", func(t *test, tk Tokens) { // 2
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				SelfClosing: true,
+				Tokens:      tk[:4],
+			}
+		}},
+		{"<a/b>", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingTagClose,
+				Parsing: "JSXElement",
+				Token:   tk[3],
+			}
+		}},
+		{"<a></>", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "JSXElementName",
+					Token:   tk[5],
+				},
+				Parsing: "JSXElement",
+				Token:   tk[5],
+			}
+		}},
+		{"<a></a>", func(t *test, tk Tokens) { // 5
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{"<a></a b>", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingTagClose,
+				Parsing: "JSXElement",
+				Token:   tk[7],
+			}
+		}},
+		{"<a b/>", func(t *test, tk Tokens) { // 7
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Attributes: []JSXAttribute{
+					{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					},
+				},
+				SelfClosing: true,
+				Tokens:      tk[:6],
+			}
+		}},
+		{"<a b''/>", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingEquals,
+					Parsing: "JSXAttribute",
+					Token:   tk[4],
+				},
+				Parsing: "JSXElement",
+				Token:   tk[3],
+			}
+		}},
+		{"<a b='c' d />", func(t *test, tk Tokens) { // 9
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Attributes: []JSXAttribute{
+					{
+						Identifier: &tk[3],
+						JSXString:  &tk[5],
+						Tokens:     tk[3:6],
+					},
+					{
+						Identifier: &tk[7],
+						Tokens:     tk[7:8],
+					},
+				},
+				SelfClosing: true,
+				Tokens:      tk[:11],
+			}
+		}},
+		{"<a>b</a>", func(t *test, tk Tokens) { // 10
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Children: []JSXChild{
+					{
+						JSXText: &tk[3],
+						Tokens:  tk[3:4],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"<a><b/></a>", func(t *test, tk Tokens) { // 11
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Children: []JSXChild{
+					{
+						JSXElement: &JSXElement{
+							ElementName: JSXElementName{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							},
+							SelfClosing: true,
+							Tokens:      tk[3:7],
+						},
+						Tokens: tk[3:7],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"<a>\nb\n<c/> </a>", func(t *test, tk Tokens) { // 12
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Children: []JSXChild{
+					{
+						JSXText: &tk[4],
+						Tokens:  tk[4:5],
+					},
+					{
+						JSXElement: &JSXElement{
+							ElementName: JSXElementName{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							},
+							SelfClosing: true,
+							Tokens:      tk[6:10],
+						},
+						Tokens: tk[6:10],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"<a><b/c></a>", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingTagClose,
+						Parsing: "JSXElement",
+						Token:   tk[6],
+					},
+					Parsing: "JSXChild",
+					Token:   tk[3],
+				},
+				Parsing: "JSXElement",
+				Token:   tk[3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var je JSXElement
+
+		err := je.parse(&t.Tokens)
+
+		return je, err
+	}, true)
+}
