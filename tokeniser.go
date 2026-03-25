@@ -799,7 +799,17 @@ func (j *jsTokeniser) jsxString(t *parser.Tokeniser) (parser.Token, parser.Token
 }
 
 func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	c := t.ExceptRun("{<>}")
+	if t.Accept(whitespace) {
+		t.AcceptRun(whitespace)
+
+		return t.Return(TokenWhitespace, j.jsxChildren)
+	} else if t.Accept(lineTerminators) {
+		t.AcceptRun(lineTerminators)
+
+		return t.Return(TokenLineTerminator, j.jsxChildren)
+	}
+
+	c := t.ExceptRun("{<>}\n")
 
 	if t.Len() > 0 {
 		return t.Return(TokenJSXText, j.jsxChildren)
