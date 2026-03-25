@@ -52,6 +52,8 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 			break
 		} else if j.Accept(TokenJSXElementEnd) {
+			j.AcceptRunWhitespace()
+
 			break
 		}
 
@@ -68,13 +70,13 @@ func (je *JSXElement) parse(j *jsParser) error {
 		je.Attributes = append(je.Attributes, a)
 	}
 
-	j.AcceptRunWhitespace()
-
 	if !je.SelfClosing {
 		for {
-			j.AcceptRunWhitespace()
+			g = j.NewGoal()
 
-			if j.Accept(TokenJSXElementStart) && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+			if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+				j.Score(g)
+
 				break
 			}
 
