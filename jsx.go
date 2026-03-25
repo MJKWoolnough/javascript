@@ -72,6 +72,8 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 	if !je.SelfClosing {
 		for {
+			j.AcceptRunWhitespace()
+
 			if j.Accept(TokenJSXElementStart) && j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
 				break
 			}
@@ -357,6 +359,8 @@ func (jf *JSXFragment) parse(j *jsParser) error {
 	j.Skip()
 
 	for {
+		j.AcceptRunWhitespace()
+
 		g := j.NewGoal()
 
 		if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
