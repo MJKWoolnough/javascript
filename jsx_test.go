@@ -159,28 +159,46 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"<a=/>", func(t *test, tk Tokens) { // 3
+		{"<a />", func(t *test, tk Tokens) { // 3
+			t.Output = JSXAttribute{
+				Identifier: &tk[1],
+				Tokens:     tk[1:2],
+			}
+		}},
+		{"<a/>", func(t *test, tk Tokens) { // 4
+			t.Output = JSXAttribute{
+				Identifier: &tk[1],
+				Tokens:     tk[1:2],
+			}
+		}},
+		{"<a\n/>", func(t *test, tk Tokens) { // 5
+			t.Output = JSXAttribute{
+				Identifier: &tk[1],
+				Tokens:     tk[1:2],
+			}
+		}},
+		{"<a=/>", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingAttribute,
 				Parsing: "JSXAttribute",
 				Token:   tk[3],
 			}
 		}},
-		{"<a=''/>", func(t *test, tk Tokens) { // 4
+		{"<a=''/>", func(t *test, tk Tokens) { // 7
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXString:  &tk[3],
 				Tokens:     tk[1:4],
 			}
 		}},
-		{"<a:=''/>", func(t *test, tk Tokens) { // 5
+		{"<a:=''/>", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "JSXAttribute",
 				Token:   tk[3],
 			}
 		}},
-		{"<a:b=''/>", func(t *test, tk Tokens) { // 6
+		{"<a:b=''/>", func(t *test, tk Tokens) { // 9
 			t.Output = JSXAttribute{
 				Namespace:  &tk[1],
 				Identifier: &tk[3],
@@ -188,7 +206,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens:     tk[1:6],
 			}
 		}},
-		{"<a={b}/>", func(t *test, tk Tokens) { // 7
+		{"<a={b}/>", func(t *test, tk Tokens) { // 10
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				AssignmentExpression: &AssignmentExpression{
@@ -201,21 +219,21 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:6],
 			}
 		}},
-		{"<a={b c}/>", func(t *test, tk Tokens) { // 8
+		{"<a={b c}/>", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "JSXAttribute",
 				Token:   tk[6],
 			}
 		}},
-		{"<a={,}/>", func(t *test, tk Tokens) { // 9
+		{"<a={,}/>", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     assignmentCustomError(tk[4], ErrMissingIdentifier),
 				Parsing: "JSXAttribute",
 				Token:   tk[4],
 			}
 		}},
-		{"<a=<></>/>", func(t *test, tk Tokens) { // 10
+		{"<a=<></>/>", func(t *test, tk Tokens) { // 13
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXFragment: &JSXFragment{
@@ -224,7 +242,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:8],
 			}
 		}},
-		{"<a=<></b>/>", func(t *test, tk Tokens) { // 11
+		{"<a=<></b>/>", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingTagClose,
@@ -235,7 +253,7 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"<a=<b/>/>", func(t *test, tk Tokens) { // 12
+		{"<a=<b/>/>", func(t *test, tk Tokens) { // 15
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXElement: &JSXElement{
@@ -249,7 +267,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:7],
 			}
 		}},
-		{"<a=<b></c>/>", func(t *test, tk Tokens) { // 13
+		{"<a=<b></c>/>", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrInvalidClosingTag,
@@ -260,21 +278,21 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"<{}/>", func(t *test, tk Tokens) { // 14
+		{"<{}/>", func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMissingSpread,
 				Parsing: "JSXAttribute",
 				Token:   tk[2],
 			}
 		}},
-		{"<{...,}/>", func(t *test, tk Tokens) { // 15
+		{"<{...,}/>", func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     assignmentCustomError(tk[3], ErrMissingIdentifier),
 				Parsing: "JSXAttribute",
 				Token:   tk[3],
 			}
 		}},
-		{"<{...a}/>", func(t *test, tk Tokens) { // 16
+		{"<{...a}/>", func(t *test, tk Tokens) { // 19
 			t.Output = JSXAttribute{
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
@@ -286,7 +304,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:5],
 			}
 		}},
-		{"<{...a b}/>", func(t *test, tk Tokens) { // 17
+		{"<{...a b}/>", func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "JSXAttribute",
