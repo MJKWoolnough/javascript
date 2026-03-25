@@ -226,55 +226,55 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 			ja.Identifier = j.GetLastToken()
 		}
 
-		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
-			return j.Error("JSXAttribute", ErrMissingEquals)
-		}
+		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+			if j.Accept(TokenJSXString) {
+				ja.JSXString = j.GetLastToken()
+			} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+				j.AcceptRunWhitespace()
 
-		if j.Accept(TokenJSXString) {
-			ja.JSXString = j.GetLastToken()
-		} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-			j.AcceptRunWhitespace()
+				g := j.NewGoal()
+				ja.AssignmentExpression = new(AssignmentExpression)
 
-			g := j.NewGoal()
-			ja.AssignmentExpression = new(AssignmentExpression)
-
-			if err := ja.AssignmentExpression.parse(&g, false, false, false); err != nil {
-				return j.Error("JSXAttribute", err)
-			}
-
-			j.Score(g)
-
-			j.AcceptRunWhitespace()
-
-			if !j.Accept(TokenRightBracePunctuator) {
-				return j.Error("JSXAttribute", ErrMissingClosingBrace)
-			}
-		} else if tk := j.Peek(); tk.Type == TokenJSXElementStart {
-			g := j.NewGoal()
-
-			g.Skip()
-
-			if g.AcceptRunWhitespace() == TokenJSXElementEnd {
-				g = j.NewGoal()
-				ja.JSXFragment = new(JSXFragment)
-
-				if err := ja.JSXFragment.parse(&g); err != nil {
+				if err := ja.AssignmentExpression.parse(&g, false, false, false); err != nil {
 					return j.Error("JSXAttribute", err)
 				}
 
 				j.Score(g)
+
+				j.AcceptRunWhitespace()
+
+				if !j.Accept(TokenRightBracePunctuator) {
+					return j.Error("JSXAttribute", ErrMissingClosingBrace)
+				}
+			} else if tk := j.Peek(); tk.Type == TokenJSXElementStart {
+				g := j.NewGoal()
+
+				g.Skip()
+
+				if g.AcceptRunWhitespace() == TokenJSXElementEnd {
+					g = j.NewGoal()
+					ja.JSXFragment = new(JSXFragment)
+
+					if err := ja.JSXFragment.parse(&g); err != nil {
+						return j.Error("JSXAttribute", err)
+					}
+
+					j.Score(g)
+				} else {
+					g = j.NewGoal()
+					ja.JSXElement = new(JSXElement)
+
+					if err := ja.JSXElement.parse(&g); err != nil {
+						return j.Error("JSXAttribute", err)
+					}
+
+					j.Score(g)
+				}
 			} else {
-				g = j.NewGoal()
-				ja.JSXElement = new(JSXElement)
-
-				if err := ja.JSXElement.parse(&g); err != nil {
-					return j.Error("JSXAttribute", err)
-				}
-
-				j.Score(g)
+				return j.Error("JSXAttribute", ErrMissingAttribute)
 			}
-		} else {
-			return j.Error("JSXAttribute", ErrMissingAttribute)
+		} else if tk := j.Peek(); tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator && tk.Type != TokenJSXElementEnd && tk != (parser.Token{Type: TokenPunctuator, Data: "/"}) {
+			return j.Error("JSXAttribute", ErrMissingEquals)
 		}
 	}
 
