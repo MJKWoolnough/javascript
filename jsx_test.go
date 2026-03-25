@@ -639,3 +639,92 @@ func TestJSXElement(t *testing.T) {
 		return je, err
 	}, true)
 }
+
+func TestJSXFragment(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"<></>", func(t *test, tk Tokens) { // 1
+			t.Output = JSXFragment{
+				Tokens: tk[:5],
+			}
+		}},
+		{"<></a>", func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrMissingTagClose,
+				Parsing: "JSXFragment",
+				Token:   tk[4],
+			}
+		}},
+		{"<>b</>", func(t *test, tk Tokens) { // 3
+			t.Output = JSXFragment{
+				Children: []JSXChild{
+					{
+						JSXText: &tk[2],
+						Tokens:  tk[2:3],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"<><b/></>", func(t *test, tk Tokens) { // 4
+			t.Output = JSXFragment{
+				Children: []JSXChild{
+					{
+						JSXElement: &JSXElement{
+							ElementName: JSXElementName{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							},
+							SelfClosing: true,
+							Tokens:      tk[2:6],
+						},
+						Tokens: tk[2:6],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"<>\nb\n<c/> </>", func(t *test, tk Tokens) { // 5
+			t.Output = JSXFragment{
+				Children: []JSXChild{
+					{
+						JSXText: &tk[3],
+						Tokens:  tk[3:4],
+					},
+					{
+						JSXElement: &JSXElement{
+							ElementName: JSXElementName{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							},
+							SelfClosing: true,
+							Tokens:      tk[5:9],
+						},
+						Tokens: tk[5:9],
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"<><b/c></>", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingTagClose,
+						Parsing: "JSXElement",
+						Token:   tk[5],
+					},
+					Parsing: "JSXChild",
+					Token:   tk[2],
+				},
+				Parsing: "JSXFragment",
+				Token:   tk[2],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var jf JSXFragment
+
+		err := jf.parse(&t.Tokens)
+
+		return jf, err
+	}, true)
+}
