@@ -152,7 +152,7 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{"<a/>", func(t *test, tk Tokens) { // 2
+		{"<a''/>", func(t *test, tk Tokens) { // 2
 			t.Err = Error{
 				Err:     ErrMissingEquals,
 				Parsing: "JSXAttribute",
