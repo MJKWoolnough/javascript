@@ -321,3 +321,129 @@ func TestJSXAttribute(t *testing.T) {
 		return ja, err
 	}, true)
 }
+
+func TestJSXChild(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"<>a</>", func(t *test, tk Tokens) { // 1
+			t.Output = JSXChild{
+				JSXText: &tk[2],
+				Tokens:  tk[2:3],
+			}
+		}},
+		{"<>{a}</>", func(t *test, tk Tokens) { // 2
+			t.Output = JSXChild{
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[3],
+						Tokens:              tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Tokens: tk[2:5],
+			}
+		}},
+		{"<>{,}</>", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     assignmentCustomError(tk[3], ErrMissingIdentifier),
+				Parsing: "JSXChild",
+				Token:   tk[3],
+			}
+		}},
+		{"<>{ a }</>", func(t *test, tk Tokens) { // 4
+			t.Output = JSXChild{
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[4],
+						Tokens:              tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[2:7],
+			}
+		}},
+		{"<>{a b}</>", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingClosingBrace,
+				Parsing: "JSXChild",
+				Token:   tk[5],
+			}
+		}},
+		{"<>{...a}</>", func(t *test, tk Tokens) { // 6
+			t.Output = JSXChild{
+				Spread: true,
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[4],
+						Tokens:              tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[2:6],
+			}
+		}},
+		{"<>{ ... a }</>", func(t *test, tk Tokens) { // 7
+			t.Output = JSXChild{
+				Spread: true,
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						IdentifierReference: &tk[6],
+						Tokens:              tk[6:7],
+					}),
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[2:9],
+			}
+		}},
+		{"<><a/></>", func(t *test, tk Tokens) { // 8
+			t.Output = JSXChild{
+				JSXElement: &JSXElement{
+					ElementName: JSXElementName{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					},
+					SelfClosing: true,
+					Tokens:      tk[2:6],
+				},
+				Tokens: tk[2:6],
+			}
+		}},
+		{"<><></></>", func(t *test, tk Tokens) { // 9
+			t.Output = JSXChild{
+				JSXFragment: &JSXFragment{
+					Tokens: tk[2:7],
+				},
+				Tokens: tk[2:7],
+			}
+		}},
+		{"<><></b></>", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingTagClose,
+					Parsing: "JSXFragment",
+					Token:   tk[6],
+				},
+				Parsing: "JSXChild",
+				Token:   tk[2],
+			}
+		}},
+		{"<><b></c></>", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidClosingTag,
+					Parsing: "JSXElement",
+					Token:   tk[8],
+				},
+				Parsing: "JSXChild",
+				Token:   tk[2],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var jc JSXChild
+
+		t.Tokens = t.Tokens[2:2]
+
+		err := jc.parse(&t.Tokens)
+
+		return jc, err
+	}, true)
+}
