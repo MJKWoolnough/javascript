@@ -3093,3 +3093,61 @@ func TestPrintingModule(t *testing.T) {
 		}
 	}
 }
+
+func TestPrintingJSX(t *testing.T) {
+	var st state
+
+	for n, test := range [...]struct {
+		Input, SimpleOutput, VerboseOutput string
+	}{
+		{ // 1
+			"<a/>",
+			"<a />;",
+			"<a />;",
+		},
+		{ // 2
+			"<a.b/>",
+			"<a.b />;",
+			"<a.b />;",
+		},
+		{ // 3
+			"<a.b.c/>",
+			"<a.b.c />;",
+			"<a.b.c />;",
+		},
+		{ // 4
+			"<a:b/>",
+			"<a:b />;",
+			"<a:b />;",
+		},
+	} {
+		for m, in := range [2]string{test.Input, test.VerboseOutput} {
+			tk := parser.NewStringTokeniser(in)
+
+			s, err := ParseModule(AsJSX(&tk))
+			if err != nil {
+				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
+
+				continue
+			}
+
+			st.Verbose = false
+
+			st.Reset()
+			s.Format(&st, 's')
+
+			if str := st.String(); str != test.SimpleOutput {
+				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
+			}
+
+			st.Verbose = true
+
+			st.Reset()
+			s.Format(&st, 's')
+
+			if str := st.String(); str != test.VerboseOutput {
+				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
+			}
+		}
+	}
+}
