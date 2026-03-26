@@ -2188,6 +2188,10 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 		p.TemplateLiteral.printSource(w, v)
 	} else if p.ParenthesizedExpression != nil {
 		p.ParenthesizedExpression.printSource(w, v)
+	} else if p.JSXElement != nil {
+		p.JSXElement.printSource(w, v)
+	} else if p.JSXFragment != nil {
+		p.JSXFragment.printSource(w, v)
 	}
 }
 
