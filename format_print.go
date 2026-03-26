@@ -3205,6 +3205,20 @@ func (je *JSXElement) printSource(w writer, v bool) {
 	}
 }
 
-func (jn *JSXElementName) printSource(w writer, v bool) {}
+func (jn *JSXElementName) printSource(w writer, v bool) {
+	if jn.Identifier != nil {
+		if jn.Namespace != nil {
+			w.WriteString(jn.Namespace.Data)
+			w.WriteString(":")
+		} else {
+			for _, m := range jn.MemberExpression {
+				w.WriteString(m.Data)
+				w.WriteString(".")
+			}
+		}
+
+		w.WriteString(jn.Identifier.Data)
+	}
+}
 
 func (jf *JSXFragment) printSource(w writer, v bool) {}
