@@ -3155,6 +3155,41 @@ func TestPrintingJSX(t *testing.T) {
 			"<a>\n\tb\n\t{...c}\n\t<d />\n</a>;",
 			"<a>\n\tb\n\t{...c}\n\t<d />\n</a>;",
 		},
+		{ // 12
+			"<a b/>",
+			"<a b />;",
+			"<a b />;",
+		},
+		{ // 13
+			"<a b:c/>",
+			"<a b:c />;",
+			"<a b:c />;",
+		},
+		{ // 14
+			"<a b:c='d'/>",
+			"<a b:c='d' />;",
+			"<a b:c='d' />;",
+		},
+		{ // 15
+			"<a b=<c/>/>",
+			"<a b=<c /> />;",
+			"<a b=<c /> />;",
+		},
+		{ // 16
+			"<a b=<></>/>",
+			"<a b=<></> />;",
+			"<a b=<></> />;",
+		},
+		{ // 17
+			"<a b={c}/>",
+			"<a b={c} />;",
+			"<a b={c} />;",
+		},
+		{ // 18
+			"<a {...b}/>",
+			"<a {...b} />;",
+			"<a {...b} />;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			tk := parser.NewStringTokeniser(in)
