@@ -3168,8 +3168,43 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 	ce.BitwiseORExpression.printSource(w, v)
 }
 
-func (ja *JSXAttribute) printSource(w writer, v bool)   {}
-func (ja *JSXChild) printSource(w writer, v bool)       {}
-func (ja *JSXElement) printSource(w writer, v bool)     {}
-func (ja *JSXElementName) printSource(w writer, v bool) {}
-func (ja *JSXFragment) printSource(w writer, v bool)    {}
+func (ja *JSXAttribute) printSource(w writer, v bool) {}
+
+func (jc *JSXChild) printSource(w writer, v bool) {}
+
+func (je *JSXElement) printSource(w writer, v bool) {
+	w.WriteString("<")
+	je.ElementName.printSource(w, v)
+
+	for _, attr := range je.Attributes {
+		w.WriteString(" ")
+		attr.printSource(w, v)
+	}
+
+	if je.SelfClosing {
+		w.WriteString(" />")
+	} else {
+		w.WriteString(">")
+
+		if len(je.Children) > 1 {
+			ip := w.Indent()
+
+			for _, child := range je.Children[1:] {
+				ip.WriteString("\n")
+				child.printSource(w, v)
+			}
+
+			w.WriteString("\n")
+		} else if len(je.Children) == 1 {
+			je.Children[0].printSource(w, v)
+		}
+
+		w.WriteString("<")
+		je.ElementName.printSource(w, v)
+		w.WriteString("/>")
+	}
+}
+
+func (jn *JSXElementName) printSource(w writer, v bool) {}
+
+func (jf *JSXFragment) printSource(w writer, v bool) {}
