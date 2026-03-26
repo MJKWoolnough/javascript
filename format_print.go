@@ -3245,4 +3245,21 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 	}
 }
 
-func (jf *JSXFragment) printSource(w writer, v bool) {}
+func (jf *JSXFragment) printSource(w writer, v bool) {
+	w.WriteString("<>")
+
+	if len(jf.Children) > 1 {
+		ip := w.Indent()
+
+		for _, child := range jf.Children[1:] {
+			ip.WriteString("\n")
+			child.printSource(w, v)
+		}
+
+		w.WriteString("\n")
+	} else if len(jf.Children) == 1 {
+		jf.Children[0].printSource(w, v)
+	}
+
+	w.WriteString("</>")
+}
