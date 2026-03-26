@@ -3213,9 +3213,9 @@ func (je *JSXElement) printSource(w writer, v bool) {
 		if len(je.Children) > 1 {
 			ip := w.Indent()
 
-			for _, child := range je.Children[1:] {
+			for _, child := range je.Children {
 				ip.WriteString("\n")
-				child.printSource(w, v)
+				child.printSource(ip, v)
 			}
 
 			w.WriteString("\n")
@@ -3223,9 +3223,9 @@ func (je *JSXElement) printSource(w writer, v bool) {
 			je.Children[0].printSource(w, v)
 		}
 
-		w.WriteString("<")
+		w.WriteString("</")
 		je.ElementName.printSource(w, v)
-		w.WriteString("/>")
+		w.WriteString(">")
 	}
 }
 
