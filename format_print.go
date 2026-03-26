@@ -3174,7 +3174,35 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 	ce.BitwiseORExpression.printSource(w, v)
 }
 
-func (ja *JSXAttribute) printSource(w writer, v bool) {}
+func (ja *JSXAttribute) printSource(w writer, v bool) {
+	if ja.Identifier != nil {
+		if ja.Namespace != nil {
+			w.WriteString(ja.Namespace.Data)
+			w.WriteString(":")
+		}
+
+		w.WriteString(ja.Identifier.Data)
+
+		if ja.JSXString != nil {
+			w.WriteString("=")
+			w.WriteString(ja.JSXString.Data)
+		} else if ja.JSXElement != nil {
+			w.WriteString("=")
+			ja.JSXElement.printSource(w, v)
+		} else if ja.JSXFragment != nil {
+			w.WriteString("=")
+			ja.JSXFragment.printSource(w, v)
+		} else if ja.AssignmentExpression != nil {
+			w.WriteString("={")
+			ja.AssignmentExpression.printSource(w, v)
+			w.WriteString("}")
+		}
+	} else if ja.AssignmentExpression != nil {
+		w.WriteString("{...")
+		ja.AssignmentExpression.printSource(w, v)
+		w.WriteString("}")
+	}
+}
 
 func (jc *JSXChild) printSource(w writer, v bool) {
 	if jc.JSXText != nil {
