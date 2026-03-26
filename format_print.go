@@ -1,5 +1,7 @@
 package javascript
 
+import "strings"
+
 func (s Script) printSource(w writer, v bool) {
 	if v && len(s.Comments[0]) > 0 {
 		s.Comments[0].printSource(w, true, true)
@@ -3174,7 +3176,25 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 
 func (ja *JSXAttribute) printSource(w writer, v bool) {}
 
-func (jc *JSXChild) printSource(w writer, v bool) {}
+func (jc *JSXChild) printSource(w writer, v bool) {
+	if jc.JSXText != nil {
+		w.WriteString(strings.TrimSpace(jc.JSXText.Data))
+	} else if jc.JSXElement != nil {
+		jc.JSXElement.printSource(w, v)
+	} else if jc.JSXFragment != nil {
+		jc.JSXFragment.printSource(w, v)
+	} else if jc.JSXChildExpression != nil {
+		if jc.Spread {
+			w.WriteString("{...")
+		} else {
+			w.WriteString("{")
+		}
+
+		jc.JSXChildExpression.printSource(w, v)
+
+		w.WriteString("}")
+	}
+}
 
 func (je *JSXElement) printSource(w writer, v bool) {
 	w.WriteString("<")
