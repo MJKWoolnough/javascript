@@ -190,16 +190,22 @@ type JSXAttribute struct {
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 
 func (ja *JSXAttribute) parse(j *jsParser) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
+		ja.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+		ja.Comments[1] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}) {
 			return j.Error("JSXAttribute", ErrMissingSpread)
 		}
+
+		j.AcceptRunWhitespaceNoComment()
 
 		g := j.NewGoal()
 		ja.AssignmentExpression = new(AssignmentExpression)
@@ -209,6 +215,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
+
+		ja.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.Accept(TokenRightBracePunctuator) {
@@ -234,7 +243,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 			if j.Accept(TokenJSXString) {
 				ja.JSXString = j.GetLastToken()
 			} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-				j.AcceptRunWhitespace()
+				ja.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
+
+				j.AcceptRunWhitespaceNoComment()
 
 				g := j.NewGoal()
 				ja.AssignmentExpression = new(AssignmentExpression)
@@ -244,6 +255,8 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 				}
 
 				j.Score(g)
+
+				ja.Comments[2] = j.AcceptRunWhitespaceComments()
 
 				j.AcceptRunWhitespace()
 
