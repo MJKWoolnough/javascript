@@ -311,6 +311,41 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[5],
 			}
 		}},
+		{"<a={ // A\n\n// B\nb // C\n\n// D\n}/>", func(t *test, tk Tokens) { // 21
+			t.Output = JSXAttribute{
+				Identifier: &tk[1],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[9],
+							Tokens:              tk[9:10],
+						},
+						Comments: [5]Comments{{&tk[7]}, nil, nil, nil, {&tk[11]}},
+						Tokens:   tk[7:12],
+					}),
+					Tokens: tk[7:12],
+				},
+				Comments: [3]Comments{{&tk[5]}, nil, {&tk[13]}},
+				Tokens:   tk[1:16],
+			}
+		}},
+		{"<{ // A\n\n// B\n... // C\na // D\n\n// E\n}/>", func(t *test, tk Tokens) { // 22
+			t.Output = JSXAttribute{
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[11],
+							Tokens:              tk[11:12],
+						},
+						Comments: [5]Comments{{&tk[9]}, nil, nil, nil, {&tk[13]}},
+						Tokens:   tk[9:14],
+					}),
+					Tokens: tk[9:14],
+				},
+				Comments: [3]Comments{{&tk[3]}, {&tk[5]}, {&tk[15]}},
+				Tokens:   tk[1:18],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ja JSXAttribute
 
