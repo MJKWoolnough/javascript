@@ -3279,9 +3279,9 @@ func (jf *JSXFragment) printSource(w writer, v bool) {
 	if len(jf.Children) > 1 {
 		ip := w.Indent()
 
-		for _, child := range jf.Children[1:] {
+		for _, child := range jf.Children {
 			ip.WriteString("\n")
-			child.printSource(w, v)
+			child.printSource(ip, v)
 		}
 
 		w.WriteString("\n")
