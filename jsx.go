@@ -293,6 +293,7 @@ type JSXChild struct {
 	JSXFragment        *JSXFragment
 	Spread             bool
 	JSXChildExpression *AssignmentExpression
+	Comments           [3]Comments
 	Tokens             Tokens
 }
 
@@ -300,13 +301,22 @@ func (jc *JSXChild) parse(j *jsParser) error {
 	if j.Accept(TokenJSXText) {
 		jc.JSXText = j.GetLastToken()
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		j.AcceptRunWhitespace()
-
-		if jc.Spread = j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
-			j.AcceptRunWhitespace()
-		}
+		jc.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
 
 		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if jc.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
+			jc.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+		}
+
+		j.AcceptRunWhitespaceNoComment()
+
+		g = j.NewGoal()
 		jc.JSXChildExpression = new(AssignmentExpression)
 
 		if err := jc.JSXChildExpression.parse(&g, false, false, false); err != nil {
@@ -314,6 +324,9 @@ func (jc *JSXChild) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
+
+		jc.Comments[2] = j.AcceptRunWhitespaceComments()
+
 		j.AcceptRunWhitespace()
 
 		if !j.Accept(TokenRightBracePunctuator) {
