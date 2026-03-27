@@ -3212,13 +3212,34 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 	} else if jc.JSXFragment != nil {
 		jc.JSXFragment.printSource(w, v)
 	} else if jc.JSXChildExpression != nil {
-		if jc.Spread {
-			w.WriteString("{...")
-		} else {
-			w.WriteString("{")
+		ip := w
+
+		w.WriteString("{")
+
+		if v && (hasSingleLineComment(jc.Comments[:]) || jc.JSXChildExpression.hasSingleLineComment()) {
+			ip = w.Indent()
+
+			jc.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
 		}
 
-		jc.JSXChildExpression.printSource(w, v)
+		if jc.Spread {
+			if v {
+				jc.Comments[1].printSource(ip, true, false)
+			}
+
+			ip.WriteString("...")
+		}
+
+		jc.JSXChildExpression.printSource(ip, v)
+
+		if v {
+			if w != ip {
+				w.WriteString("\n")
+			}
+
+			jc.Comments[2].printSource(w, false, w != ip)
+		}
 
 		w.WriteString("}")
 	}
