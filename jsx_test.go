@@ -437,6 +437,41 @@ func TestJSXChild(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"<>{ // A\n\n// B\na // C\n\n// D\n}</>", func(t *test, tk Tokens) { // 12
+			t.Output = JSXChild{
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[8],
+							Tokens:              tk[8:9],
+						},
+						Comments: [5]Comments{{&tk[6]}, nil, nil, nil, {&tk[10]}},
+						Tokens:   tk[6:11],
+					}),
+					Tokens: tk[6:11],
+				},
+				Comments: [3]Comments{{&tk[4]}, nil, {&tk[12]}},
+				Tokens:   tk[2:15],
+			}
+		}},
+		{"<>{ // A\n\n// B\n... // C\na // D\n\n// E\n}</>", func(t *test, tk Tokens) { // 13
+			t.Output = JSXChild{
+				Spread: true,
+				JSXChildExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&MemberExpression{
+						PrimaryExpression: &PrimaryExpression{
+							IdentifierReference: &tk[12],
+							Tokens:              tk[12:13],
+						},
+						Comments: [5]Comments{{&tk[10]}, nil, nil, nil, {&tk[14]}},
+						Tokens:   tk[10:15],
+					}),
+					Tokens: tk[10:15],
+				},
+				Comments: [3]Comments{{&tk[4]}, {&tk[6]}, {&tk[16]}},
+				Tokens:   tk[2:19],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var jc JSXChild
 
