@@ -2102,11 +2102,17 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:1],
 		},
-		&PrimaryExpression{ // 7
+		&JSXElement{ // 7
+			Tokens: tks[:1],
+		},
+		&JSXFragment{ // 8
+			Tokens: tks[:1],
+		},
+		&PrimaryExpression{ // 9
 			IdentifierReference: identA,
 			Tokens:              tks[:1],
 		},
-		&MemberExpression{ // 8
+		&MemberExpression{ // 10
 			MemberExpression: &MemberExpression{
 				PrimaryExpression: &PrimaryExpression{
 					IdentifierReference: identA,
@@ -2116,7 +2122,7 @@ func TestUnwrapConditional(t *testing.T) {
 			IdentifierName: identB,
 			Tokens:         tks,
 		},
-		&NewExpression{ // 9
+		&NewExpression{ // 11
 			News: []Comments{nil},
 			MemberExpression: MemberExpression{
 				PrimaryExpression: &PrimaryExpression{
@@ -2127,7 +2133,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:1],
 		},
-		&CallExpression{ // 10
+		&CallExpression{ // 12
 			CallExpression: &CallExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -2154,7 +2160,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&OptionalExpression{ // 11
+		&OptionalExpression{ // 13
 			OptionalExpression: &OptionalExpression{
 				MemberExpression: &MemberExpression{
 					PrimaryExpression: &PrimaryExpression{
@@ -2170,7 +2176,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&UpdateExpression{ // 12
+		&UpdateExpression{ // 14
 			UpdateOperator: UpdatePostIncrement,
 			UnaryExpression: &UnaryExpression{
 				UpdateExpression: UpdateExpression{
@@ -2193,7 +2199,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:1],
 		},
-		&UnaryExpression{ // 13
+		&UnaryExpression{ // 15
 			UnaryOperators: []UnaryOperatorComments{{UnaryOperator: UnaryVoid}},
 			UpdateExpression: UpdateExpression{
 				LeftHandSideExpression: &LeftHandSideExpression{
@@ -2213,7 +2219,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:1],
 		},
-		&ExponentiationExpression{ // 14
+		&ExponentiationExpression{ // 16
 			ExponentiationExpression: &ExponentiationExpression{
 				UnaryExpression: UnaryExpression{
 					UpdateExpression: UpdateExpression{
@@ -2257,7 +2263,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&MultiplicativeExpression{ // 15
+		&MultiplicativeExpression{ // 17
 			MultiplicativeExpression: &MultiplicativeExpression{
 				ExponentiationExpression: ExponentiationExpression{
 					UnaryExpression: UnaryExpression{
@@ -2307,7 +2313,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&AdditiveExpression{ // 16
+		&AdditiveExpression{ // 18
 			AdditiveExpression: &AdditiveExpression{
 				MultiplicativeExpression: MultiplicativeExpression{
 					ExponentiationExpression: ExponentiationExpression{
@@ -2363,7 +2369,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&ShiftExpression{ // 17
+		&ShiftExpression{ // 19
 			ShiftExpression: &ShiftExpression{
 				AdditiveExpression: AdditiveExpression{
 					MultiplicativeExpression: MultiplicativeExpression{
@@ -2425,7 +2431,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&RelationalExpression{ // 18
+		&RelationalExpression{ // 20
 			RelationalExpression: &RelationalExpression{
 				ShiftExpression: ShiftExpression{
 					AdditiveExpression: AdditiveExpression{
@@ -2493,7 +2499,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&EqualityExpression{ // 19
+		&EqualityExpression{ // 21
 			EqualityExpression: &EqualityExpression{
 				RelationalExpression: RelationalExpression{
 					ShiftExpression: ShiftExpression{
@@ -2567,7 +2573,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&BitwiseANDExpression{ // 20
+		&BitwiseANDExpression{ // 22
 			BitwiseANDExpression: &BitwiseANDExpression{
 				EqualityExpression: EqualityExpression{
 					RelationalExpression: RelationalExpression{
@@ -2647,7 +2653,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&BitwiseXORExpression{ // 21
+		&BitwiseXORExpression{ // 23
 			BitwiseXORExpression: &BitwiseXORExpression{
 				BitwiseANDExpression: BitwiseANDExpression{
 					EqualityExpression: EqualityExpression{
@@ -2733,7 +2739,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&BitwiseORExpression{ // 22
+		&BitwiseORExpression{ // 24
 			BitwiseORExpression: &BitwiseORExpression{
 				BitwiseXORExpression: BitwiseXORExpression{
 					BitwiseANDExpression: BitwiseANDExpression{
@@ -2825,7 +2831,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&LogicalANDExpression{ // 23
+		&LogicalANDExpression{ // 25
 			LogicalANDExpression: &LogicalANDExpression{
 				BitwiseORExpression: BitwiseORExpression{
 					BitwiseXORExpression: BitwiseXORExpression{
@@ -2923,7 +2929,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&LogicalORExpression{ // 24
+		&LogicalORExpression{ // 26
 			LogicalORExpression: &LogicalORExpression{
 				LogicalANDExpression: LogicalANDExpression{
 					BitwiseORExpression: BitwiseORExpression{
@@ -3027,7 +3033,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&ConditionalExpression{ // 25
+		&ConditionalExpression{ // 27
 			CoalesceExpression: &CoalesceExpression{
 				CoalesceExpressionHead: &CoalesceExpression{
 					BitwiseORExpression: BitwiseORExpression{
