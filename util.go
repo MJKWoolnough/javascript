@@ -298,6 +298,8 @@ func QuoteTemplate(t string, templateType TemplateType) string {
 //	ClassDeclaration (ClassExpression)
 //	TemplateLiteral
 //	ParenthesizedExpression
+//	JSXElement
+//	JSXFragment
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -526,6 +528,18 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 			pe.Tokens = p.Tokens
 		case ParenthesizedExpression:
 			pe.ParenthesizedExpression = &p
+			pe.Tokens = p.Tokens
+		case JSXElement:
+			pe.JSXElement = &p
+			pe.Tokens = p.Tokens
+		case *JSXElement:
+			pe.JSXElement = p
+			pe.Tokens = p.Tokens
+		case JSXFragment:
+			pe.JSXFragment = &p
+			pe.Tokens = p.Tokens
+		case *JSXFragment:
+			pe.JSXFragment = p
 			pe.Tokens = p.Tokens
 		}
 
