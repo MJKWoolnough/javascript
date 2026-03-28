@@ -4414,13 +4414,60 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens:              tk[:1],
 			}
 		}},
+		{"</>", func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "JSXElementName",
+						Token:   tk[1],
+					},
+					Parsing: "JSXElement",
+					Token:   tk[1],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"<a/>", func(t *test, tk Tokens) { // 25
+			t.Output = PrimaryExpression{
+				JSXElement: &JSXElement{
+					ElementName: JSXElementName{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					SelfClosing: true,
+					Tokens:      tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"<></a>", func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingTagClose,
+					Parsing: "JSXFragment",
+					Token:   tk[4],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{"<></>", func(t *test, tk Tokens) { // 27
+			t.Output = PrimaryExpression{
+				JSXFragment: &JSXFragment{
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
 		err := pe.parse(&t.Tokens, t.Yield, t.Await)
 
 		return pe, err
-	})
+	}, true)
 }
 
 func TestParenthesizedExpression(t *testing.T) {
