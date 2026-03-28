@@ -328,7 +328,9 @@ func Walk(t javascript.Type, fn Handler) error {
 	case *javascript.VariableStatement:
 		return walkVariableStatement(t, fn)
 	case javascript.JSXElement:
+		return walkJSXElement(&t, fn)
 	case *javascript.JSXElement:
+		return walkJSXElement(t, fn)
 	case javascript.JSXFragment:
 	case *javascript.JSXFragment:
 	case javascript.JSXElementName:
@@ -1595,6 +1597,26 @@ func walkTryStatement(t *javascript.TryStatement, fn Handler) error {
 func walkVariableStatement(t *javascript.VariableStatement, fn Handler) error {
 	for n := range t.VariableDeclarationList {
 		if err := fn.Handle(&t.VariableDeclarationList[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func walkJSXElement(t *javascript.JSXElement, fn Handler) error {
+	if err := fn.Handle(&t.ElementName); err != nil {
+		return err
+	}
+
+	for n := range t.Attributes {
+		if err := fn.Handle(&t.Attributes[n]); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.Children {
+		if err := fn.Handle(&t.Children[n]); err != nil {
 			return err
 		}
 	}
