@@ -327,6 +327,16 @@ func Walk(t javascript.Type, fn Handler) error {
 		return walkVariableStatement(&t, fn)
 	case *javascript.VariableStatement:
 		return walkVariableStatement(t, fn)
+	case javascript.JSXElement:
+	case *javascript.JSXElement:
+	case javascript.JSXFragment:
+	case *javascript.JSXFragment:
+	case javascript.JSXElementName:
+	case *javascript.JSXElementName:
+	case javascript.JSXAttribute:
+	case *javascript.JSXAttribute:
+	case javascript.JSXChild:
+	case *javascript.JSXChild:
 	}
 
 	return nil
@@ -855,6 +865,18 @@ func walkPrimaryExpression(t *javascript.PrimaryExpression, fn Handler) error {
 
 	if t.ParenthesizedExpression != nil {
 		if err := fn.Handle(t.ParenthesizedExpression); err != nil {
+			return err
+		}
+	}
+
+	if t.JSXElement != nil {
+		if err := fn.Handle(t.JSXElement); err != nil {
+			return err
+		}
+	}
+
+	if t.JSXFragment != nil {
+		if err := fn.Handle(t.JSXFragment); err != nil {
 			return err
 		}
 	}
