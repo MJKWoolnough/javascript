@@ -602,6 +602,8 @@ logicalORExpression:
 //	*ClassDeclaration (ClassExpression)
 //	*TemplateLiteral
 //	*ParenthesizedExpression
+//	*JSXElement
+//	*JSXFragment
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c == nil {
 		return nil
@@ -656,6 +658,10 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 			return pe.TemplateLiteral
 		} else if pe.ParenthesizedExpression != nil {
 			return pe.ParenthesizedExpression
+		} else if pe.JSXElement != nil {
+			return pe.JSXElement
+		} else if pe.JSXFragment != nil {
+			return pe.JSXFragment
 		}
 
 		return pe
