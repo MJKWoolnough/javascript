@@ -3194,12 +3194,56 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 			ja.JSXFragment.printSource(w, v)
 		} else if ja.AssignmentExpression != nil {
 			w.WriteString("={")
-			ja.AssignmentExpression.printSource(w, v)
+
+			ip := w
+
+			if v && (ja.Comments[0].hasSingleLineComment() || ja.Comments[1].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+				ip = w.Indent()
+
+				ja.Comments[0].printSource(w, false, true)
+				ip.WriteString("\n")
+			}
+
+			ja.AssignmentExpression.printSource(ip, v)
+
+			if v {
+				if w != ip {
+					w.WriteString("\n")
+				}
+
+				ja.Comments[2].printSource(w, false, w != ip)
+			}
+
 			w.WriteString("}")
 		}
 	} else if ja.AssignmentExpression != nil {
-		w.WriteString("{...")
-		ja.AssignmentExpression.printSource(w, v)
+		w.WriteString("{")
+
+		ip := w
+
+		if v && (hasSingleLineComment(ja.Comments[:]) || ja.AssignmentExpression.hasSingleLineComment()) {
+			ip = w.Indent()
+
+			ja.Comments[0].printSource(w, false, true)
+			ip.WriteString("\n")
+		}
+
+		if v {
+			ja.Comments[1].printSource(ip, true, false)
+		}
+
+		ip.WriteString("...")
+
+		ja.AssignmentExpression.printSource(ip, v)
+
+		if v {
+			if w != ip {
+				w.WriteString("\n")
+			}
+
+			ja.Comments[2].printSource(w, false, w != ip)
+		}
+
 		w.WriteString("}")
 	}
 }
