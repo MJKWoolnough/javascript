@@ -59,3 +59,7 @@ func (ClassDeclaration) conditionalWrapabble() {}
 func (TemplateLiteral) conditionalWrapabble() {}
 
 func (ParenthesizedExpression) conditionalWrapabble() {}
+
+func (JSXElement) conditionalWrapabble() {}
+
+func (JSXFragment) conditionalWrapabble() {}
