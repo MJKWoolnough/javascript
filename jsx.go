@@ -12,6 +12,10 @@ func (j *jsx) hasFlags() (bool, bool) {
 	return t, true
 }
 
+// AsJSX converts the tokeniser to one that handles the JSX extentions to
+// JavaScript.
+//
+// Can be combined with AsTSX to read TSX.
 func AsJSX(t Tokeniser) Tokeniser {
 	ts, _ := tokeniserFlags(t)
 	jsx := &jsx{Tokeniser: t}
@@ -21,6 +25,8 @@ func AsJSX(t Tokeniser) Tokeniser {
 	return jsx
 }
 
+// JSXElement as defined in:
+// https://facebook.github.io/jsx/#prod-JSXElement
 type JSXElement struct {
 	ElementName JSXElementName
 	Attributes  []JSXAttribute
@@ -122,6 +128,11 @@ func (je *JSXElement) parse(j *jsParser) error {
 	return nil
 }
 
+// JSXElementName as defined in:
+// https://facebook.github.io/jsx/#prod-JSXElementName
+//
+// Identifier must be defined, and only one of Namespace and MemberExpression
+// can be non-nil.
 type JSXElementName struct {
 	Namespace        *Token
 	MemberExpression []*Token
@@ -183,6 +194,13 @@ func (t *Token) equal(s *Token) bool {
 	return t.Data == s.Data
 }
 
+// JSXAttribute as defined in:
+// https://facebook.github.io/jsx/#prod-JSXAttributes
+//
+// Namespace can only be non-nil if Identifier is non-nil.
+//
+// One, and only one of JSXString, JSXFragment, JSXElement, and
+// AssignmentExpression must be non-nil.
 type JSXAttribute struct {
 	Namespace            *Token
 	Identifier           *Token
@@ -300,6 +318,13 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 	return nil
 }
 
+// JSXChild as defined in:
+// https://facebook.github.io/jsx/#prod-JSXChild
+//
+// One, and only one of JSXText, JSXElement, JSXFragment, and JSXChildExpression
+// must be non-nil.
+//
+// Spread can only be true if JSXChildExpression is non-nil.
 type JSXChild struct {
 	JSXText            *Token
 	JSXElement         *JSXElement
@@ -376,6 +401,8 @@ func (jc *JSXChild) parse(j *jsParser) error {
 	return nil
 }
 
+// JSXFragment as defined in:
+// https://facebook.github.io/jsx/#prod-JSXFragment
 type JSXFragment struct {
 	Children []JSXChild
 	Tokens   Tokens
