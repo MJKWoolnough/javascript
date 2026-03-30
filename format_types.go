@@ -1891,6 +1891,13 @@ func (f *JSXElementName) printType(w writer, v bool) {
 		pp.WriteString("\nNamespace: nil")
 	}
 
+	if f.Identifier != nil {
+		pp.WriteString("\nIdentifier: ")
+		f.Identifier.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nIdentifier: nil")
+	}
+
 	if f.MemberExpression == nil {
 		pp.WriteString("\nMemberExpression: nil")
 	} else if len(f.MemberExpression) > 0 {
@@ -1906,13 +1913,6 @@ func (f *JSXElementName) printType(w writer, v bool) {
 		pp.WriteString("\n]")
 	} else if v {
 		pp.WriteString("\nMemberExpression: []")
-	}
-
-	if f.Identifier != nil {
-		pp.WriteString("\nIdentifier: ")
-		f.Identifier.printType(pp, v)
-	} else if v {
-		pp.WriteString("\nIdentifier: nil")
 	}
 
 	pp.WriteString("\nTokens: ")
