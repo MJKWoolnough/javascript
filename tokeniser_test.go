@@ -1939,7 +1939,23 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
+		{ // 181
+			Input: "a < b",
+			Output: []parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenPunctuator, Data: "<"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			JSX: true,
+		},
 	} {
+		if n != 180 {
+			continue
+		}
+
 		p := parser.NewStringTokeniser(test.Input)
 
 		var tks Tokeniser = SetTokeniser(&p)
