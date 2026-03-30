@@ -44,11 +44,11 @@ func TestJSXElementName(t *testing.T) {
 		}},
 		{"<a.b />", func(t *test, tk Tokens) { // 6
 			t.Output = JSXElementName{
+				Identifier: &tk[1],
 				MemberExpression: []*Token{
-					&tk[1],
+					&tk[3],
 				},
-				Identifier: &tk[3],
-				Tokens:     tk[1:4],
+				Tokens: tk[1:4],
 			}
 		}},
 		{"<a.b. />", func(t *test, tk Tokens) { // 7
@@ -60,12 +60,12 @@ func TestJSXElementName(t *testing.T) {
 		}},
 		{"<a.b.c />", func(t *test, tk Tokens) { // 8
 			t.Output = JSXElementName{
+				Identifier: &tk[1],
 				MemberExpression: []*Token{
-					&tk[1],
 					&tk[3],
+					&tk[5],
 				},
-				Identifier: &tk[5],
-				Tokens:     tk[1:6],
+				Tokens: tk[1:6],
 			}
 		}},
 	}, func(t *test) (Type, error) {

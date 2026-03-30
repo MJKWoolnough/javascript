@@ -3327,14 +3327,15 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 		if jn.Namespace != nil {
 			w.WriteString(jn.Namespace.Data)
 			w.WriteString(":")
+			w.WriteString(jn.Identifier.Data)
 		} else {
+			w.WriteString(jn.Identifier.Data)
+
 			for _, m := range jn.MemberExpression {
-				w.WriteString(m.Data)
 				w.WriteString(".")
+				w.WriteString(m.Data)
 			}
 		}
-
-		w.WriteString(jn.Identifier.Data)
 	}
 }
 

@@ -135,8 +135,8 @@ func (je *JSXElement) parse(j *jsParser) error {
 // can be non-nil.
 type JSXElementName struct {
 	Namespace        *Token
-	MemberExpression []*Token
 	Identifier       *Token
+	MemberExpression []*Token
 	Tokens           Tokens
 }
 
@@ -160,8 +160,7 @@ func (jn *JSXElementName) parse(j *jsParser) error {
 				return j.Error("JSXElementName", ErrMissingIdentifier)
 			}
 
-			jn.MemberExpression = append(jn.MemberExpression, jn.Identifier)
-			jn.Identifier = j.GetLastToken()
+			jn.MemberExpression = append(jn.MemberExpression, j.GetLastToken())
 		}
 	}
 
