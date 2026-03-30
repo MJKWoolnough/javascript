@@ -344,7 +344,9 @@ func Walk(t javascript.Type, fn Handler) error {
 	case *javascript.JSXAttribute:
 		return walkJSXAttribute(t, fn)
 	case javascript.JSXChild:
+		return walkJSXChild(&t, fn)
 	case *javascript.JSXChild:
+		return walkJSXChild(t, fn)
 	}
 
 	return nil
@@ -1647,6 +1649,18 @@ func walkJSXElementName(_ *javascript.JSXElementName, _ Handler) error {
 func walkJSXAttribute(t *javascript.JSXAttribute, fn Handler) error {
 	if t.AssignmentExpression != nil {
 		return fn.Handle(t.AssignmentExpression)
+	} else if t.JSXElement != nil {
+		return fn.Handle(t.JSXElement)
+	} else if t.JSXFragment != nil {
+		return fn.Handle(t.JSXFragment)
+	}
+
+	return nil
+}
+
+func walkJSXChild(t *javascript.JSXChild, fn Handler) error {
+	if t.JSXChildExpression != nil {
+		return fn.Handle(t.JSXChildExpression)
 	} else if t.JSXElement != nil {
 		return fn.Handle(t.JSXElement)
 	} else if t.JSXFragment != nil {
