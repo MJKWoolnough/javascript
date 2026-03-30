@@ -332,7 +332,9 @@ func Walk(t javascript.Type, fn Handler) error {
 	case *javascript.JSXElement:
 		return walkJSXElement(t, fn)
 	case javascript.JSXFragment:
+		return walkJSXFragment(&t, fn)
 	case *javascript.JSXFragment:
+		return walkJSXFragment(t, fn)
 	case javascript.JSXElementName:
 	case *javascript.JSXElementName:
 	case javascript.JSXAttribute:
@@ -1615,6 +1617,16 @@ func walkJSXElement(t *javascript.JSXElement, fn Handler) error {
 		}
 	}
 
+	for n := range t.Children {
+		if err := fn.Handle(&t.Children[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func walkJSXFragment(t *javascript.JSXFragment, fn Handler) error {
 	for n := range t.Children {
 		if err := fn.Handle(&t.Children[n]); err != nil {
 			return err
