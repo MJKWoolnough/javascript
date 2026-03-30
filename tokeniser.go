@@ -273,7 +273,7 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 				return t.Return(TokenNumericLiteral, j.inputElement)
 			}
 		case '<':
-			if !j.divisionAllowed && j.isJSX {
+			if !allowDivision && j.isJSX {
 				if !j.isTypescript || checkForJSX(t) {
 					j.state = append(j.state, 'j', 'X')
 
