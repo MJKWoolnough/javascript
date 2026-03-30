@@ -336,7 +336,9 @@ func Walk(t javascript.Type, fn Handler) error {
 	case *javascript.JSXFragment:
 		return walkJSXFragment(t, fn)
 	case javascript.JSXElementName:
+		return walkJSXElementName(&t, fn)
 	case *javascript.JSXElementName:
+		return walkJSXElementName(t, fn)
 	case javascript.JSXAttribute:
 	case *javascript.JSXAttribute:
 	case javascript.JSXChild:
@@ -1633,5 +1635,9 @@ func walkJSXFragment(t *javascript.JSXFragment, fn Handler) error {
 		}
 	}
 
+	return nil
+}
+
+func walkJSXElementName(_ *javascript.JSXElementName, _ Handler) error {
 	return nil
 }
