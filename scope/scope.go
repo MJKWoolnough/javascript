@@ -1504,6 +1504,14 @@ func processJSXAttribute(a *javascript.JSXAttribute, scope *Scope, set bool) err
 }
 
 func processJSXChild(c *javascript.JSXChild, scope *Scope, set bool) error {
+	if c.JSXElement != nil {
+		return processJSXElement(c.JSXElement, scope, set)
+	} else if c.JSXFragment != nil {
+		return processJSXFragment(c.JSXFragment, scope, set)
+	} else if c.JSXChildExpression != nil {
+		return processAssignmentExpression(c.JSXChildExpression, scope, set)
+	}
+
 	return nil
 }
 
