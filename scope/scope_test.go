@@ -3050,6 +3050,75 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 83
+			`const a = <b><c /></b>`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).ElementName.Identifier,
+						},
+					},
+					"c": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).Children[0].JSXElement.ElementName.Identifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 84
+			`const a = <b>{c}{...d}</b>`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).ElementName.Identifier,
+						},
+					},
+					"c": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).Children[0].JSXChildExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"d": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).Children[1].JSXChildExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
