@@ -1,4 +1,4 @@
-// Package scope parses out a scope tree for a javascript module or script.
+// Package scope parses out a scope tree for a JavaScript module or script.
 package scope // import "vimagination.zapto.org/javascript/scope"
 
 import (
