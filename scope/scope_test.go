@@ -15,7 +15,7 @@ type indentPrinter struct {
 	io.Writer
 }
 
-var indent = []byte{'	'}
+var indent = []byte{'\t'}
 
 func (i *indentPrinter) Write(p []byte) (int, error) {
 	var (
@@ -50,11 +50,11 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 	return total, nil
 }
 
-func (i *indentPrinter) Print(args ...interface{}) {
+func (i *indentPrinter) Print(args ...any) {
 	fmt.Fprint(i, args...)
 }
 
-func (i *indentPrinter) Printf(format string, args ...interface{}) {
+func (i *indentPrinter) Printf(format string, args ...any) {
 	fmt.Fprintf(i, format, args...)
 }
 
@@ -2916,10 +2916,82 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 78
+			`const a = <b />`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).ElementName.Identifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 79
+			`const a = <b:c />`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+					"c": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).ElementName.Identifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 80
+			`const a = <b.c />`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingLexicalConst,
+							Scope:       scope,
+							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.JSXElement).ElementName.Identifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
-		source, err := javascript.ParseScript(&tk)
+		source, err := javascript.ParseScript(javascript.AsJSX(&tk))
 		if err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
