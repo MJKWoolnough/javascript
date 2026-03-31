@@ -1496,6 +1496,10 @@ func processJSXElement(e *javascript.JSXElement, scope *Scope, set bool) error {
 }
 
 func processJSXAttribute(a *javascript.JSXAttribute, scope *Scope, set bool) error {
+	if a.AssignmentExpression != nil {
+		return processAssignmentExpression(a.AssignmentExpression, scope, set)
+	}
+
 	return nil
 }
 
