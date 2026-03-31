@@ -1516,5 +1516,11 @@ func processJSXChild(c *javascript.JSXChild, scope *Scope, set bool) error {
 }
 
 func processJSXFragment(f *javascript.JSXFragment, scope *Scope, set bool) error {
+	for n := range f.Children {
+		if err := processJSXChild(&f.Children[n], scope, set); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
