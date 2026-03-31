@@ -1276,6 +1276,14 @@ func processPrimaryExpression(p *javascript.PrimaryExpression, scope *Scope, set
 		if err := processParenthesizedExpression(p.ParenthesizedExpression, scope, set); err != nil {
 			return err
 		}
+	} else if p.JSXElement != nil {
+		if err := processJSXElement(p.JSXElement, scope, set); err != nil {
+			return err
+		}
+	} else if p.JSXFragment != nil {
+		if err := processJSXFragment(p.JSXFragment, scope, set); err != nil {
+			return err
+		}
 	} else if p.This != nil && !set {
 		scope.addBinding(p.This, BindingRef)
 	} else if p.IdentifierReference != nil && !set {
@@ -1464,5 +1472,37 @@ func processUpdateExpression(u *javascript.UpdateExpression, scope *Scope, set b
 		}
 	}
 
+	return nil
+}
+
+func processJSXElement(e *javascript.JSXElement, scope *Scope, set bool) error {
+	if !set {
+		scope.addBinding(e.ElementName.Identifier, BindingRef)
+	}
+
+	for n := range e.Attributes {
+		if err := processJSXAttribute(&e.Attributes[n], scope, set); err != nil {
+			return err
+		}
+	}
+
+	for n := range e.Children {
+		if err := processJSXChild(&e.Children[n], scope, set); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func processJSXAttribute(a *javascript.JSXAttribute, scope *Scope, set bool) error {
+	return nil
+}
+
+func processJSXChild(c *javascript.JSXChild, scope *Scope, set bool) error {
+	return nil
+}
+
+func processJSXFragment(f *javascript.JSXFragment, scope *Scope, set bool) error {
 	return nil
 }
