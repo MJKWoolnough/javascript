@@ -683,6 +683,8 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	}
 }
 
+// EscapeJSXString performs the minimal amount of replacement required to
+// transform the given string to a valid JSXString.
 func EscapeJSXString(str string) string {
 	var sb strings.Builder
 
@@ -713,6 +715,8 @@ Loop:
 	return sb.String()
 }
 
+// EscapeJSXText performs the minimal amount of replacement required to
+// transform the given string to a valid JSXText.
 func EscapeJSXText(str string) string {
 	var sb strings.Builder
 
@@ -745,6 +749,10 @@ Loop:
 	return sb.String()
 }
 
+// UnescapeJSXString removes surrounding quotes/speech-marks and replaces all
+// HTML entities with their referenced characters.
+//
+// It uses `html.UnescapeString` to perform the replacements.
 func UnescapeJSXString(str string) (string, error) {
 	if len(str) < 2 || str[0] != '\'' && str[0] != '"' || str[len(str)-1] != str[0] || strings.ContainsRune(str[1:len(str)-1], rune(str[0])) {
 		return "", ErrInvalidQuoted
@@ -753,6 +761,8 @@ func UnescapeJSXString(str string) (string, error) {
 	return html.UnescapeString(str[1 : len(str)-1]), nil
 }
 
+// UnescapeJSXText is a convenience function that calls `html.UnescapeString`
+// on the passed string.
 func UnescapeJSXText(str string) string {
 	return html.UnescapeString(str)
 }
