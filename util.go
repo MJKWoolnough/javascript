@@ -752,3 +752,7 @@ func UnescapeJSXString(str string) (string, error) {
 
 	return html.UnescapeString(str[1 : len(str)-1]), nil
 }
+
+func UnescapeJSXText(str string) string {
+	return html.UnescapeString(str)
+}
