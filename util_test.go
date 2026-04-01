@@ -3177,3 +3177,93 @@ func TestEscapeJSXText(t *testing.T) {
 		}
 	}
 }
+
+func TestUnescapeJSXString(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+		Error         error
+	}{
+		{
+			Input:  "\"A\"",
+			Output: "A",
+		},
+		{
+			Input:  "'ABC'",
+			Output: "ABC",
+		},
+		{
+			Input: "A",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "\"A",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "\"A'",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "'A",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "'A\"",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "'",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "\"",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "'''",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input: "\"\"\"",
+			Error: ErrInvalidQuoted,
+		},
+		{
+			Input:  "'\"'",
+			Output: `"`,
+		},
+		{
+			Input:  "\"'\"",
+			Output: `'`,
+		},
+		{
+			Input:  "'&quot;'",
+			Output: `"`,
+		},
+		{
+			Input:  "'ABC&quot;DEF'",
+			Output: `ABC"DEF`,
+		},
+		{
+			Input:  "'&#34;'",
+			Output: `"`,
+		},
+		{
+			Input:  "'&#x20;'",
+			Output: ` `,
+		},
+		{
+			Input:  "'&#x80;'",
+			Output: "\u20ac",
+		},
+		{
+			Input:  "'&#x0;'",
+			Output: "\ufffd",
+		},
+	} {
+		if out, err := UnescapeJSXString(test.Input); !errors.Is(err, test.Error) {
+			t.Errorf("test %d: expecting error %v, got %v", n+1, test.Error, err)
+		} else if out != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
+		}
+	}
+}
