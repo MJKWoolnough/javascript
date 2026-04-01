@@ -3154,7 +3154,7 @@ func TestEscapeJSXString(t *testing.T) {
 		{`A`, `"A"`},                       // 1
 		{`ABC`, `"ABC"`},                   // 2
 		{`"string"`, `"&#34;string&#34;"`}, // 3
-		{`&#34;`, `"&#38;#34;"`},           // 4
+		{`&#34;`, `"&amp;#34;"`},           // 4
 	} {
 		if out := EscapeJSXString(test.Input); out != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
@@ -3170,7 +3170,7 @@ func TestEscapeJSXText(t *testing.T) {
 		{`ABC`, `ABC`},               // 2
 		{`A<B />C`, `A&lt;B /&gt;C`}, // 3
 		{`a{b}c`, `a&#123;b&#125;c`}, // 4
-		{`&#34;`, `&#38;#34;`},       // 5
+		{`&#34;`, `&amp;#34;`},       // 5
 	} {
 		if out := EscapeJSXText(test.Input); out != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
