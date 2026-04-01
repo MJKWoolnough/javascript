@@ -3161,3 +3161,19 @@ func TestEscapeJSXString(t *testing.T) {
 		}
 	}
 }
+
+func TestEscapeJSXText(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{`A`, `A`},
+		{`ABC`, `ABC`},
+		{`A<B />C`, `A&lt;B /&gt;C`},
+		{`a{b}c`, `a&#123;b&#125;c`},
+		{`&#34;`, `&#38;#34;`},
+	} {
+		if out := EscapeJSXText(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
+		}
+	}
+}
