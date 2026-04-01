@@ -702,7 +702,7 @@ Loop:
 		case '"':
 			sb.WriteString("&#34;")
 		case '&':
-			sb.WriteString("&#38;")
+			sb.WriteString("&amp;")
 		case -1:
 			break Loop
 		}
@@ -728,7 +728,7 @@ Loop:
 
 		switch c {
 		case '&':
-			sb.WriteString("&#38;")
+			sb.WriteString("&amp;")
 		case '<':
 			sb.WriteString("&lt;")
 		case '>':
