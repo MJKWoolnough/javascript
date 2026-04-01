@@ -711,3 +711,35 @@ Loop:
 
 	return sb.String()
 }
+
+func EscapeJSXText(str string) string {
+	var sb strings.Builder
+
+	s := parser.NewStringTokeniser(str)
+
+Loop:
+	for {
+		c := s.ExceptRun(`&{}<>`)
+
+		sb.WriteString(s.Get())
+		s.Next()
+		s.Get()
+
+		switch c {
+		case '&':
+			sb.WriteString("&#38;")
+		case '<':
+			sb.WriteString("&lt;")
+		case '>':
+			sb.WriteString("&gt;")
+		case '{':
+			sb.WriteString("&#123;")
+		case '}':
+			sb.WriteString("&#125;")
+		case -1:
+			break Loop
+		}
+	}
+
+	return sb.String()
+}
