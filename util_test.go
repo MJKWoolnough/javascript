@@ -3151,10 +3151,10 @@ func TestEscapeJSXString(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
 	}{
-		{`A`, `"A"`},
-		{`ABC`, `"ABC"`},
-		{`"string"`, `"&#34;string&#34;"`},
-		{`&#34;`, `"&#38;#34;"`},
+		{`A`, `"A"`},                       // 1
+		{`ABC`, `"ABC"`},                   // 2
+		{`"string"`, `"&#34;string&#34;"`}, // 3
+		{`&#34;`, `"&#38;#34;"`},           // 4
 	} {
 		if out := EscapeJSXString(test.Input); out != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
@@ -3166,11 +3166,11 @@ func TestEscapeJSXText(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
 	}{
-		{`A`, `A`},
-		{`ABC`, `ABC`},
-		{`A<B />C`, `A&lt;B /&gt;C`},
-		{`a{b}c`, `a&#123;b&#125;c`},
-		{`&#34;`, `&#38;#34;`},
+		{`A`, `A`},                   // 1
+		{`ABC`, `ABC`},               // 2
+		{`A<B />C`, `A&lt;B /&gt;C`}, // 3
+		{`a{b}c`, `a&#123;b&#125;c`}, // 4
+		{`&#34;`, `&#38;#34;`},       // 5
 	} {
 		if out := EscapeJSXText(test.Input); out != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
@@ -3183,79 +3183,79 @@ func TestUnescapeJSXString(t *testing.T) {
 		Input, Output string
 		Error         error
 	}{
-		{
+		{ // 1
 			Input:  "\"A\"",
 			Output: "A",
 		},
-		{
+		{ // 2
 			Input:  "'ABC'",
 			Output: "ABC",
 		},
-		{
+		{ // 3
 			Input: "A",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 4
 			Input: "\"A",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 5
 			Input: "\"A'",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 6
 			Input: "'A",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 7
 			Input: "'A\"",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 8
 			Input: "'",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 9
 			Input: "\"",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 10
 			Input: "'''",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 11
 			Input: "\"\"\"",
 			Error: ErrInvalidQuoted,
 		},
-		{
+		{ // 12
 			Input:  "'\"'",
 			Output: `"`,
 		},
-		{
+		{ // 13
 			Input:  "\"'\"",
 			Output: `'`,
 		},
-		{
+		{ // 14
 			Input:  "'&quot;'",
 			Output: `"`,
 		},
-		{
+		{ // 15
 			Input:  "'ABC&quot;DEF'",
 			Output: `ABC"DEF`,
 		},
-		{
+		{ // 16
 			Input:  "'&#34;'",
 			Output: `"`,
 		},
-		{
+		{ // 17
 			Input:  "'&#x20;'",
 			Output: ` `,
 		},
-		{
+		{ // 18
 			Input:  "'&#x80;'",
 			Output: "\u20ac",
 		},
-		{
+		{ // 19
 			Input:  "'&#x0;'",
 			Output: "\ufffd",
 		},
