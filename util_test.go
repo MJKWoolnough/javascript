@@ -3146,3 +3146,18 @@ func TestUnwrapConditionalExtra(t *testing.T) {
 		t.Errorf("expecting nil got: %v", output)
 	}
 }
+
+func TestEscapeJSXString(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{`A`, `"A"`},
+		{`ABC`, `"ABC"`},
+		{`"string"`, `"&#34;string&#34;"`},
+		{`&#34;`, `"&#38;#34;"`},
+	} {
+		if out := EscapeJSXString(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
+		}
+	}
+}
