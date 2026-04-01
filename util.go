@@ -1,6 +1,7 @@
 package javascript
 
 import (
+	"html"
 	"strconv"
 	"strings"
 
@@ -742,4 +743,12 @@ Loop:
 	}
 
 	return sb.String()
+}
+
+func UnescapeJSXString(str string) (string, error) {
+	if len(str) < 2 || str[0] != '\'' && str[0] != '"' || str[len(str)-1] != str[0] || strings.ContainsRune(str[1:len(str)-1], rune(str[0])) {
+		return "", ErrInvalidQuoted
+	}
+
+	return html.UnescapeString(str[1 : len(str)-1]), nil
 }
