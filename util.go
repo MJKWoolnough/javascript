@@ -681,3 +681,33 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		return pe
 	}
 }
+
+func EscapeJSXString(str string) string {
+	var sb strings.Builder
+
+	sb.WriteByte('"')
+
+	s := parser.NewStringTokeniser(str)
+
+Loop:
+	for {
+		c := s.ExceptRun(`&"`)
+
+		sb.WriteString(s.Get())
+		s.Next()
+		s.Get()
+
+		switch c {
+		case '"':
+			sb.WriteString("&#34;")
+		case '&':
+			sb.WriteString("&#38;")
+		case -1:
+			break Loop
+		}
+	}
+
+	sb.WriteByte('"')
+
+	return sb.String()
+}
