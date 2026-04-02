@@ -3306,6 +3306,30 @@ func TestModuleScope(t *testing.T) {
 			},
 		},
 		{ // 3
+			`import a from './lib.js';export {a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[javascript.Type]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingImport,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       m.ModuleListItems[1].ExportDeclaration.ExportClause.ExportList[0].IdentifierName,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 4
 			`export {default as a} from './lib.js';`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3324,7 +3348,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 4
+		{ // 5
 			`export default class MyClass {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3343,7 +3367,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 5
+		{ // 6
 			`export default class MyClass {static INSTANCE = new MyClass()}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3367,7 +3391,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 6
+		{ // 7
 			`export default function MyFunc() {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3395,7 +3419,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 7
+		{ // 8
 			`export default function MyFunc() {MyFunc()}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3428,7 +3452,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 8
+		{ // 9
 			`globalThis.console;window;let a = 1;{a;window}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3478,7 +3502,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 9
+		{ // 10
 			`{a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3504,7 +3528,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 10
+		{ // 11
 			`function b() {a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3539,7 +3563,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 11
+		{ // 12
 			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3588,7 +3612,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 12
+		{ // 13
 			"const aFunc = function b() {}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3616,7 +3640,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 13
+		{ // 14
 			"const aClass = class b {}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
