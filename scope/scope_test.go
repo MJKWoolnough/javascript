@@ -3683,6 +3683,58 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 15
+			`export class MyClass {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[javascript.Type]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyClass": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.Declaration.ClassDeclaration.BindingIdentifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 16
+			`export function MyFunc() {MyFunc()}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[javascript.Type]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[0].ExportDeclaration.Declaration.FunctionDeclaration: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"MyFunc": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].ExportDeclaration.Declaration.FunctionDeclaration.BindingIdentifier,
+						},
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].ExportDeclaration.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
