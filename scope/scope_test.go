@@ -3143,6 +3143,88 @@ func TestScriptScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 86
+			`try{}catch(a){var a}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				tscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         make(map[javascript.Type]*Scope),
+				}
+				tscope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingCatch,
+							Scope:       tscope,
+							Token:       s.StatementList[0].Statement.TryStatement.CatchParameterBindingIdentifier,
+						},
+						{
+							BindingType: BindingVar,
+							Scope:       tscope,
+							Token:       s.StatementList[0].Statement.TryStatement.CatchBlock.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+						},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					&s.StatementList[0].Statement.TryStatement.TryBlock: {
+						IsLexicalScope: true,
+						Parent:         scope,
+						Scopes:         make(map[javascript.Type]*Scope),
+						Bindings:       make(map[string][]Binding),
+					},
+					s.StatementList[0].Statement.TryStatement.CatchBlock: tscope,
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 87
+			`try{}catch(a){{var a}}`,
+			func(s *javascript.Script) (*Scope, error) {
+				scope := NewScope()
+				tscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+				}
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Scopes:         make(map[javascript.Type]*Scope),
+					Parent:         tscope,
+				}
+				tscope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingCatch,
+							Scope:       tscope,
+							Token:       s.StatementList[0].Statement.TryStatement.CatchParameterBindingIdentifier,
+						},
+						{
+							BindingType: BindingVar,
+							Scope:       bscope,
+							Token:       s.StatementList[0].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+						},
+					},
+				}
+				bscope.Bindings = map[string][]Binding{
+					"a": {tscope.Bindings["a"][1]},
+				}
+				tscope.Scopes = map[javascript.Type]*Scope{
+					s.StatementList[0].Statement.TryStatement.CatchBlock.StatementList[0].Statement.BlockStatement: bscope,
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					&s.StatementList[0].Statement.TryStatement.TryBlock: {
+						IsLexicalScope: true,
+						Parent:         scope,
+						Scopes:         make(map[javascript.Type]*Scope),
+						Bindings:       make(map[string][]Binding),
+					},
+					s.StatementList[0].Statement.TryStatement.CatchBlock: tscope,
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
