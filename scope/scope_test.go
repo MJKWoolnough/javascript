@@ -3305,7 +3305,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 2
+		{ // 3
 			`import a from './lib.js';export {a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3329,7 +3329,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 3
+		{ // 4
 			`export {default as a} from './lib.js';`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3348,7 +3348,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 4
+		{ // 5
 			`export default class MyClass {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3367,7 +3367,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 5
+		{ // 6
 			`export default class MyClass {static INSTANCE = new MyClass()}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3391,7 +3391,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 6
+		{ // 7
 			`export default function MyFunc() {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3419,7 +3419,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 7
+		{ // 8
 			`export default function MyFunc() {MyFunc()}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3452,7 +3452,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 8
+		{ // 9
 			`globalThis.console;window;let a = 1;{a;window}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3502,7 +3502,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 9
+		{ // 10
 			`{a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3528,7 +3528,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 10
+		{ // 11
 			`function b() {a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3563,7 +3563,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 11
+		{ // 12
 			"let aValue = 1;{let bValue = 2;{aValue = 3}}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3612,7 +3612,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 12
+		{ // 13
 			"const aFunc = function b() {}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3640,7 +3640,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 13
+		{ // 14
 			"const aClass = class b {}",
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3659,7 +3659,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 14
+		{ // 15
 			`export var a;a`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3683,7 +3683,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 15
+		{ // 16
 			`export class MyClass {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := &Scope{
@@ -3702,7 +3702,7 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
-		{ // 16
+		{ // 17
 			`export function MyFunc() {MyFunc()}`,
 			func(m *javascript.Module) (*Scope, error) {
 				scope := new(Scope)
@@ -3728,6 +3728,25 @@ func TestModuleScope(t *testing.T) {
 							BindingType: BindingRef,
 							Scope:       fscope,
 							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].ExportDeclaration.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 18
+			`export default a`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := &Scope{
+					Scopes: make(map[javascript.Type]*Scope),
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingRef,
+							Scope:       scope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].ExportDeclaration.DefaultAssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 					},
 				}
