@@ -3255,7 +3255,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 		jc.JSXElement.printSource(w, v)
 	} else if jc.JSXFragment != nil {
 		jc.JSXFragment.printSource(w, v)
-	} else if jc.JSXChildExpression != nil {
+	} else {
 		ip := w
 
 		w.WriteString("{")
@@ -3267,15 +3267,17 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 			ip.WriteString("\n")
 		}
 
-		if jc.Spread {
-			if v {
-				jc.Comments[1].printSource(ip, true, false)
+		if jc.JSXChildExpression != nil {
+			if jc.Spread {
+				if v {
+					jc.Comments[1].printSource(ip, true, false)
+				}
+
+				ip.WriteString("...")
 			}
 
-			ip.WriteString("...")
+			jc.JSXChildExpression.printSource(ip, v)
 		}
-
-		jc.JSXChildExpression.printSource(ip, v)
 
 		if v {
 			if w != ip {
