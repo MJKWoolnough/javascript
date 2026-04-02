@@ -365,6 +365,11 @@ func TestJSXChild(t *testing.T) {
 				Tokens:  tk[2:3],
 			}
 		}},
+		{"<>{}</>", func(t *test, tk Tokens) { // 2
+			t.Output = JSXChild{
+				Tokens: tk[2:4],
+			}
+		}},
 		{"<>{a}</>", func(t *test, tk Tokens) { // 2
 			t.Output = JSXChild{
 				JSXChildExpression: &AssignmentExpression{
@@ -505,6 +510,12 @@ func TestJSXChild(t *testing.T) {
 				},
 				Comments: [3]Comments{{&tk[4]}, {&tk[6]}, {&tk[16]}},
 				Tokens:   tk[2:19],
+			}
+		}},
+		{"<>{ // A\n\n// B\n\n// C\n}</>", func(t *test, tk Tokens) { // 15
+			t.Output = JSXChild{
+				Comments: [3]Comments{{&tk[4]}, nil, {&tk[6], &tk[8]}},
+				Tokens:   tk[2:11],
 			}
 		}},
 	}, func(t *test) (Type, error) {
