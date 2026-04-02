@@ -344,23 +344,25 @@ func (jc *JSXChild) parse(j *jsParser) error {
 
 		g.AcceptRunWhitespace()
 
-		if jc.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
-			jc.Comments[1] = j.AcceptRunWhitespaceComments()
+		if !g.Accept(TokenRightBracePunctuator) {
+			if jc.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
+				jc.Comments[1] = j.AcceptRunWhitespaceComments()
 
-			j.AcceptRunWhitespace()
-			j.Skip()
+				j.AcceptRunWhitespace()
+				j.Skip()
+			}
+
+			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
+			jc.JSXChildExpression = new(AssignmentExpression)
+
+			if err := jc.JSXChildExpression.parse(&g, false, false, false); err != nil {
+				return j.Error("JSXChild", err)
+			}
+
+			j.Score(g)
 		}
-
-		j.AcceptRunWhitespaceNoComment()
-
-		g = j.NewGoal()
-		jc.JSXChildExpression = new(AssignmentExpression)
-
-		if err := jc.JSXChildExpression.parse(&g, false, false, false); err != nil {
-			return j.Error("JSXChild", err)
-		}
-
-		j.Score(g)
 
 		jc.Comments[2] = j.AcceptRunWhitespaceComments()
 
