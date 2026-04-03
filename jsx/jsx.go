@@ -101,7 +101,18 @@ func (j *jsxWalker) Handle(t javascript.Type) error {
 }
 
 func childrenToArray(children []javascript.JSXChild) *javascript.ArrayLiteral {
-	return nil
+	al := &javascript.ArrayLiteral{
+		ElementList: make([]javascript.ArrayElement, 0, len(children)),
+	}
+
+	for _, child := range children {
+		al.ElementList = append(al.ElementList, javascript.ArrayElement{
+			Spread:               child.Spread,
+			AssignmentExpression: *child.JSXChildExpression,
+		})
+	}
+
+	return al
 }
 
 func (j *jsxWalker) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
