@@ -312,7 +312,30 @@ func (j *jsxWalker) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
 }
 
 func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
-	return nil
+	ol := &javascript.ObjectLiteral{
+		PropertyDefinitionList: make([]javascript.PropertyDefinition, 0, len(attrs)),
+	}
+
+	for _, attr := range attrs {
+		if attr.Identifier == nil {
+			if attr.AssignmentExpression == nil {
+				return nil
+			}
+
+			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
+				AssignmentExpression: attr.AssignmentExpression,
+			})
+		} else {
+			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
+				PropertyName: &javascript.PropertyName{
+					LiteralPropertyName: attr.Identifier,
+				},
+				AssignmentExpression: attr.AssignmentExpression,
+			})
+		}
+	}
+
+	return ol
 }
 
 func Process(m *javascript.Module, tmpl *template.Template) error {
