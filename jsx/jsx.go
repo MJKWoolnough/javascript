@@ -161,11 +161,47 @@ func (j *jsxWalker) transform(e *javascript.JSXElement) (*javascript.PrimaryExpr
 }
 
 func (j *jsxWalker) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
-	return nil, nil
+	replaceTagName(m, e.ElementName.Identifier.Data)
+
+	s, err := scope.ModuleScope(m, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	delete(s.Bindings, "PARAMS")
+	delete(s.Bindings, "CHILDREN")
+
+	replaceParamsAndChildren(m, e)
+	j.gatherIdentifiers(m, s)
+
+	var expression *javascript.Expression
+
+	for _, mi := range m.ModuleListItems {
+		if mi.ImportDeclaration != nil {
+			continue
+		} else if expression != nil {
+			return nil, ErrTooManyStatements
+		} else if mi.StatementListItem != nil && mi.StatementListItem.Statement != nil && mi.StatementListItem.Statement.ExpressionStatement != nil {
+			expression = mi.StatementListItem.Statement.ExpressionStatement
+		} else {
+			return nil, ErrInvalidTransformation
+		}
+	}
+
+	return &javascript.PrimaryExpression{
+		ParenthesizedExpression: &javascript.ParenthesizedExpression{
+			Expressions: expression.Expressions,
+		},
+	}, nil
 }
 
-func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
-	return nil
+func replaceTagName(m *javascript.Module, name string) {
+}
+
+func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
+}
+
+func (j *jsxWalker) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
 }
 
 func Process(m *javascript.Module, tmpl *template.Template) error {
