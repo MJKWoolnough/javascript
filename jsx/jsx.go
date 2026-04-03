@@ -199,6 +199,29 @@ func replaceTagName(m *javascript.Module, name string) {
 }
 
 func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
+	var h walk.Handler
+
+	h = walk.HandlerFunc(func(t javascript.Type) error {
+		walk.Walk(t, h)
+
+		switch t := t.(type) {
+		case *javascript.PrimaryExpression:
+			if t.IdentifierReference != nil {
+				switch t.IdentifierReference.Data {
+				case "PARAMS":
+					t.IdentifierReference = nil
+					t.ObjectLiteral = paramsToObject(e.Attributes)
+				case "CHILDREN":
+					t.IdentifierReference = nil
+					t.ArrayLiteral = childrenToArray(e.Children)
+				}
+			}
+		}
+
+		return nil
+	})
+
+	walk.Walk(m, h)
 }
 
 type importIdent struct {
