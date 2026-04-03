@@ -2,7 +2,9 @@ package jsx
 
 import (
 	"errors"
+	"slices"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"vimagination.zapto.org/javascript"
@@ -115,7 +117,50 @@ func childrenToArray(children []javascript.JSXChild) *javascript.ArrayLiteral {
 	return al
 }
 
+var (
+	htmlElements = [...]string{"a", "abbr", "address", "area", "article", "aside", "audio", "b", "base", "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption", "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "label", "legend", "li", "link", "main", "map", "mark", "menu", "meta", "meter", "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "search", "section", "select", "slot", "small", "source", "span", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"}
+	svgElements  = [...]string{"a", "animate", "animateMotion", "animateTransform", "circle", "clipPath", "defs", "desc", "ellipse", "feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feDropShadow", "feFlood", "feFuncA", "feFuncB", "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset", "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence", "filter", "foreignObject", "g", "image", "line", "linearGradient", "marker", "mask", "metadata", "mpath", "path", "pattern", "polygon", "polyline", "radialGradient", "rect", "script", "set", "stop", "style", "svg", "switch", "symbol", "text", "textPath", "title", "tspan", "use", "view"}
+)
+
+type templateVars struct {
+	Namespace     string
+	InHTML, InSVG bool
+}
+
 func (j *jsxWalker) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
+	name := e.ElementName.Identifier
+	if name == nil {
+		return nil, javascript.ErrInvalidAssignment
+	}
+
+	inHTML, inSVG := slices.Contains(htmlElements[:], name.Data), slices.Contains(svgElements[:], name.Data)
+	if inHTML && !inSVG {
+		j.namespace = "html"
+	} else if inSVG && !inHTML {
+		j.namespace = "svg"
+	}
+
+	var sb strings.Builder
+
+	if err := j.tmpl.Execute(&sb, templateVars{
+		Namespace: j.namespace,
+		InHTML:    inHTML,
+		InSVG:     inSVG,
+	}); err != nil {
+		return nil, err
+	}
+
+	tk := parser.NewStringTokeniser(sb.String())
+
+	m, err := javascript.ParseModule(&tk)
+	if err != nil {
+		return nil, err
+	}
+
+	return j.process(e, m)
+}
+
+func (j *jsxWalker) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
 	return nil, nil
 }
 
