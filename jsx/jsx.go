@@ -196,6 +196,36 @@ func (j *jsxWalker) process(e *javascript.JSXElement, m *javascript.Module) (*ja
 }
 
 func replaceTagName(m *javascript.Module, name string) {
+	var h walk.Handler
+
+	h = walk.HandlerFunc(func(t javascript.Type) error {
+		walk.Walk(t, h)
+
+		switch t := t.(type) {
+		case *javascript.PrimaryExpression:
+			if t.Literal != nil && t.Literal.Type == javascript.TokenStringLiteral {
+				if str, _ := javascript.Unquote(t.Literal.Data); str == "TAG_NAME" {
+					t.Literal.Data = strconv.Quote(name)
+				}
+			} else if t.IdentifierReference != nil && t.IdentifierReference.Data == "TAG_NAME" {
+				t.IdentifierReference.Data = name
+			}
+		case *javascript.ImportClause:
+			if t.ImportedDefaultBinding != nil && t.ImportedDefaultBinding.Data == "TAG_NAME" {
+				t.ImportedDefaultBinding.Data = name
+			} else if t.NameSpaceImport != nil && t.NameSpaceImport.Data == "TAG_NAME" {
+				t.NameSpaceImport.Data = name
+			}
+		case *javascript.ImportSpecifier:
+			if t.IdentifierName != nil && t.IdentifierName.Data == "TAG_NAME" {
+				t.IdentifierName.Data = name
+			}
+		}
+
+		return nil
+	})
+
+	walk.Walk(m, h)
 }
 
 func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
