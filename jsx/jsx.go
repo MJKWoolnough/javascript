@@ -201,7 +201,65 @@ func replaceTagName(m *javascript.Module, name string) {
 func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
 }
 
+type importIdent struct {
+	tk       *javascript.Token
+	contains bool
+}
+
+func (i *importIdent) Handle(t javascript.Type) error {
+	switch t := t.(type) {
+	case *javascript.ImportClause:
+		if t.ImportedDefaultBinding == i.tk || t.NameSpaceImport == i.tk {
+			i.contains = true
+		}
+	case *javascript.ImportSpecifier:
+		if t.IdentifierName == i.tk {
+			i.contains = true
+		}
+	default:
+		walk.Walk(t, i)
+	}
+
+	return nil
+}
+
 func (j *jsxWalker) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
+	imports := make(map[*javascript.Token]string)
+
+	for _, b := range s.Bindings {
+		if b[0].BindingType == scope.BindingImport {
+			for _, mi := range m.ModuleListItems {
+				if mi.ImportDeclaration != nil {
+					ii := importIdent{tk: b[0].Token}
+
+					walk.Walk(mi, &ii)
+
+					if ii.contains {
+						imports[b[0].Token] = mi.ImportDeclaration.FromClause.ModuleSpecifier.Data
+
+						break
+					}
+				}
+			}
+		}
+	}
+
+	for _, b := range s.Bindings {
+		is := imports[b[0].Token]
+		ident := b[0].Token.Data
+
+		imp, ok := j.identifiers[ident]
+		if !ok {
+			imp = make(map[string][]scope.Binding)
+			j.identifiers[ident] = imp
+		}
+
+		imp[is] = append(imp[is], b[1:]...)
+	}
+}
+
+func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
+	return nil
 }
 
 func Process(m *javascript.Module, tmpl *template.Template) error {
