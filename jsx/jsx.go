@@ -13,6 +13,12 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+const (
+	tagName  = "TAG_NAME"
+	children = "CHILDREN"
+	params   = "PARAMS"
+)
+
 type jsxWalker struct {
 	identifiers map[string]map[string][]scope.Binding
 	tmpl        *template.Template
@@ -168,8 +174,8 @@ func (j *jsxWalker) process(e *javascript.JSXElement, m *javascript.Module) (*ja
 		return nil, err
 	}
 
-	delete(s.Bindings, "PARAMS")
-	delete(s.Bindings, "CHILDREN")
+	delete(s.Bindings, params)
+	delete(s.Bindings, children)
 
 	replaceParamsAndChildren(m, e)
 	j.gatherIdentifiers(m, s)
@@ -204,20 +210,20 @@ func replaceTagName(m *javascript.Module, name string) {
 		switch t := t.(type) {
 		case *javascript.PrimaryExpression:
 			if t.Literal != nil && t.Literal.Type == javascript.TokenStringLiteral {
-				if str, _ := javascript.Unquote(t.Literal.Data); str == "TAG_NAME" {
+				if str, _ := javascript.Unquote(t.Literal.Data); str == tagName {
 					t.Literal.Data = strconv.Quote(name)
 				}
-			} else if t.IdentifierReference != nil && t.IdentifierReference.Data == "TAG_NAME" {
+			} else if t.IdentifierReference != nil && t.IdentifierReference.Data == tagName {
 				t.IdentifierReference.Data = name
 			}
 		case *javascript.ImportClause:
-			if t.ImportedDefaultBinding != nil && t.ImportedDefaultBinding.Data == "TAG_NAME" {
+			if t.ImportedDefaultBinding != nil && t.ImportedDefaultBinding.Data == tagName {
 				t.ImportedDefaultBinding.Data = name
-			} else if t.NameSpaceImport != nil && t.NameSpaceImport.Data == "TAG_NAME" {
+			} else if t.NameSpaceImport != nil && t.NameSpaceImport.Data == tagName {
 				t.NameSpaceImport.Data = name
 			}
 		case *javascript.ImportSpecifier:
-			if t.IdentifierName != nil && t.IdentifierName.Data == "TAG_NAME" {
+			if t.IdentifierName != nil && t.IdentifierName.Data == tagName {
 				t.IdentifierName.Data = name
 			}
 		}
