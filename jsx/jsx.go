@@ -19,13 +19,13 @@ const (
 	params   = "PARAMS"
 )
 
-type jsxWalker struct {
+type jsxTransformer struct {
 	identifiers map[string]map[string][]scope.Binding
 	tmpl        *template.Template
 	namespace   string
 }
 
-func (j *jsxWalker) Handle(t javascript.Type) error {
+func (j *jsxTransformer) Handle(t javascript.Type) error {
 	ns := j.namespace
 
 	if err := walk.Walk(t, j); err != nil {
@@ -133,7 +133,7 @@ type templateVars struct {
 	InHTML, InSVG bool
 }
 
-func (j *jsxWalker) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
+func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
 	name := e.ElementName.Identifier
 	if name == nil {
 		return nil, javascript.ErrInvalidAssignment
@@ -166,7 +166,7 @@ func (j *jsxWalker) transform(e *javascript.JSXElement) (*javascript.PrimaryExpr
 	return j.process(e, m)
 }
 
-func (j *jsxWalker) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
+func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
 	replaceTagName(m, e.ElementName.Identifier.Data)
 
 	s, err := scope.ModuleScope(m, nil)
@@ -282,7 +282,7 @@ func (i *importIdent) Handle(t javascript.Type) error {
 	return nil
 }
 
-func (j *jsxWalker) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
+func (j *jsxTransformer) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
 	imports := make(map[*javascript.Token]string)
 
 	for _, b := range s.Bindings {
@@ -345,7 +345,7 @@ func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
 }
 
 func Process(m *javascript.Module, tmpl *template.Template) error {
-	j := &jsxWalker{
+	j := &jsxTransformer{
 		identifiers: make(map[string]map[string][]scope.Binding),
 		tmpl:        tmpl,
 	}
