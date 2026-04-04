@@ -219,3 +219,13 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 
 	return global, nil
 }
+
+func (s *Scope) FindIdentifier(name string) *Scope {
+	if s == nil {
+		return nil
+	} else if _, ok := s.Bindings[name]; !ok {
+		return s.Parent.FindIdentifier(name)
+	}
+
+	return s
+}
