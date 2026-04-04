@@ -3869,3 +3869,90 @@ func TestRename(t *testing.T) {
 		}
 	}
 }
+
+func TestIdentifierInUse(t *testing.T) {
+	for n, test := range [...]struct {
+		Input      string
+		Identifier string
+		Scope      func(*javascript.Module, *Scope) *Scope
+		InUse      bool
+	}{
+		{
+			Input:      `const a = 1;`,
+			Identifier: "a",
+			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
+			InUse:      true,
+		},
+		{
+			Input:      `const a = 1;`,
+			Identifier: "b",
+			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
+			InUse:      false,
+		},
+		{
+			Input:      `const a = 1;{b}`,
+			Identifier: "a",
+			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
+			InUse:      true,
+		},
+		{
+			Input:      `const a = 1;{b}`,
+			Identifier: "a",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement]
+			},
+			InUse: false,
+		},
+		{
+			Input:      `const a = 1;{a}`,
+			Identifier: "a",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement]
+			},
+			InUse: true,
+		},
+		{
+			Input:      `const a = 1;{let b;{a}}`,
+			Identifier: "a",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement]
+			},
+			InUse: true,
+		},
+		{
+			Input:      `const a = 1;{let b;{a}}`,
+			Identifier: "b",
+			Scope: func(_ *javascript.Module, s *Scope) *Scope {
+				return s
+			},
+			InUse: false,
+		},
+		{
+			Input:      `const a = 1;{let b;{a}}`,
+			Identifier: "b",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement]
+			},
+			InUse: true,
+		},
+		{
+			Input:      `const a = 1;{let b;{a}}`,
+			Identifier: "b",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement].Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement.StatementList[1].Statement.BlockStatement]
+			},
+			InUse: false,
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+
+		m, err := javascript.ParseModule(&tk)
+		if err != nil {
+			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
+		} else if scope, err := ModuleScope(m, nil); err != nil {
+			t.Errorf("test %d: unexpected error determining scope: %s", n+1, err)
+		} else if inUse := test.Scope(m, scope).IdentifierInUse(test.Identifier); inUse != test.InUse {
+			t.Errorf("test %d: expecting inUse = %v, got %v", n+1, test.InUse, inUse)
+		}
+	}
+}
