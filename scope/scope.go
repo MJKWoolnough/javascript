@@ -229,3 +229,18 @@ func (s *Scope) FindIdentifier(name string) *Scope {
 
 	return s
 }
+
+func (s *Scope) Rename(from, to string) bool {
+	if b, ok := s.Bindings[to]; ok && b[0].BindingType != BindingBare {
+		return false
+	}
+
+	for _, b := range s.Bindings[from] {
+		b.Data = to
+	}
+
+	s.Bindings[to] = append(s.Bindings[to], s.Bindings[from]...)
+	delete(s.Bindings, from)
+
+	return true
+}
