@@ -220,6 +220,11 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	return global, nil
 }
 
+// FindIdentifier look up the Scope chain to find the first that contains the
+// specified identifier.
+//
+// If the current scope, and no parent, contains the identifier, nil is
+// returned.
 func (s *Scope) FindIdentifier(name string) *Scope {
 	if s == nil {
 		return nil
@@ -230,6 +235,14 @@ func (s *Scope) FindIdentifier(name string) *Scope {
 	return s
 }
 
+// Rename will rename an identifier in the current scope, returning true on a
+// success.
+//
+// If the new identifier is already declared within the scope, this function
+// will do nothing and return false.
+//
+// It is recommended to check whether renaming the identifier will break child
+// scopes by using IdentifierInUse.
 func (s *Scope) Rename(from, to string) bool {
 	if b, ok := s.Bindings[to]; ok && b[0].BindingType != BindingBare {
 		return false
@@ -245,6 +258,11 @@ func (s *Scope) Rename(from, to string) bool {
 	return true
 }
 
+// IdentifierInUse returns true if the given identifier is declared in this, or
+// a parent scope, and is used in this or a child scope.
+//
+// Can be used to determine whether renaming, or adding an identifier
+// declaration will break a child scope.
 func (s *Scope) IdentifierInUse(identifier string) bool {
 	for t := s; t != nil; t = t.Parent {
 		for _, binding := range t.Bindings[identifier] {
