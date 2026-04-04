@@ -244,3 +244,17 @@ func (s *Scope) Rename(from, to string) bool {
 
 	return true
 }
+
+func (s *Scope) IdentifierInUse(identifier string) bool {
+	for t := s; t != nil; t = t.Parent {
+		for _, binding := range t.Bindings[identifier] {
+			for p := binding.Scope; p != nil; p = p.Parent {
+				if p == s {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
