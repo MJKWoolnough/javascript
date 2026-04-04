@@ -3778,3 +3778,22 @@ func TestModuleScope(t *testing.T) {
 		}
 	}
 }
+
+func TestFindIdentifier(t *testing.T) {
+	tk := parser.NewStringTokeniser(`const a; {let b}`)
+
+	source, err := javascript.ParseModule(&tk)
+	if err != nil {
+		t.Errorf("unexpected error parsing script: %s", err)
+	} else if scope, err := ModuleScope(source, nil); err != nil {
+		t.Errorf("unexpected error determining scope: %s", err)
+	} else if scope.FindIdentifier("a") != scope {
+		t.Errorf("test 1: didn't get expected scope")
+	} else if scope.FindIdentifier("b") != nil {
+		t.Errorf("test 2: didn't get expected scope")
+	} else if inner := scope.Scopes[source.ModuleListItems[1].StatementListItem.Statement.BlockStatement]; inner.FindIdentifier("a") != scope {
+		t.Errorf("test 3: didn't get expected scope")
+	} else if inner.FindIdentifier("b") != inner {
+		t.Errorf("test 4: didn't get expected scope")
+	}
+}
