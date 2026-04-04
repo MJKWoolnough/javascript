@@ -3804,7 +3804,7 @@ func TestRename(t *testing.T) {
 		Scope         func(*javascript.Module, *Scope) *Scope
 		Renamed       bool
 	}{
-		{
+		{ // 1
 			Input:   `const a = 1;`,
 			Output:  `const a = 1;`,
 			From:    "a",
@@ -3812,7 +3812,7 @@ func TestRename(t *testing.T) {
 			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
 			Renamed: false,
 		},
-		{
+		{ // 2
 			Input:   `const a = 1, b = 2;`,
 			Output:  `const a = 1, b = 2;`,
 			From:    "a",
@@ -3820,7 +3820,7 @@ func TestRename(t *testing.T) {
 			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
 			Renamed: false,
 		},
-		{
+		{ // 3
 			Input:   `const a = 1;`,
 			Output:  `const b = 1;`,
 			From:    "a",
@@ -3828,7 +3828,7 @@ func TestRename(t *testing.T) {
 			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
 			Renamed: true,
 		},
-		{
+		{ // 4
 			Input:   `const a = 1;{a}`,
 			Output:  "const b = 1;\n\n{\n\tb;\n}",
 			From:    "a",
@@ -3836,7 +3836,7 @@ func TestRename(t *testing.T) {
 			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
 			Renamed: true,
 		},
-		{
+		{ // 5
 			Input:   `const a = 1;{let a; a = 2}`,
 			Output:  "const b = 1;\n\n{\n\tlet a;\n\ta = 2;\n}",
 			From:    "a",
@@ -3844,7 +3844,7 @@ func TestRename(t *testing.T) {
 			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
 			Renamed: true,
 		},
-		{
+		{ // 6
 			Input:  `const a = 1;{let a; a = 2}`,
 			Output: "const a = 1;\n\n{\n\tlet b;\n\tb = 2;\n}",
 			From:   "a",
@@ -3877,25 +3877,25 @@ func TestIdentifierInUse(t *testing.T) {
 		Scope      func(*javascript.Module, *Scope) *Scope
 		InUse      bool
 	}{
-		{
+		{ // 1
 			Input:      `const a = 1;`,
 			Identifier: "a",
 			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
 			InUse:      true,
 		},
-		{
+		{ // 2
 			Input:      `const a = 1;`,
 			Identifier: "b",
 			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
 			InUse:      false,
 		},
-		{
+		{ // 3
 			Input:      `const a = 1;{b}`,
 			Identifier: "a",
 			Scope:      func(_ *javascript.Module, s *Scope) *Scope { return s },
 			InUse:      true,
 		},
-		{
+		{ // 4
 			Input:      `const a = 1;{b}`,
 			Identifier: "a",
 			Scope: func(m *javascript.Module, s *Scope) *Scope {
@@ -3903,7 +3903,7 @@ func TestIdentifierInUse(t *testing.T) {
 			},
 			InUse: false,
 		},
-		{
+		{ // 5
 			Input:      `const a = 1;{a}`,
 			Identifier: "a",
 			Scope: func(m *javascript.Module, s *Scope) *Scope {
@@ -3911,7 +3911,7 @@ func TestIdentifierInUse(t *testing.T) {
 			},
 			InUse: true,
 		},
-		{
+		{ // 6
 			Input:      `const a = 1;{let b;{a}}`,
 			Identifier: "a",
 			Scope: func(m *javascript.Module, s *Scope) *Scope {
@@ -3919,7 +3919,7 @@ func TestIdentifierInUse(t *testing.T) {
 			},
 			InUse: true,
 		},
-		{
+		{ // 7
 			Input:      `const a = 1;{let b;{a}}`,
 			Identifier: "b",
 			Scope: func(_ *javascript.Module, s *Scope) *Scope {
@@ -3927,7 +3927,7 @@ func TestIdentifierInUse(t *testing.T) {
 			},
 			InUse: false,
 		},
-		{
+		{ // 8
 			Input:      `const a = 1;{let b;{a}}`,
 			Identifier: "b",
 			Scope: func(m *javascript.Module, s *Scope) *Scope {
@@ -3935,7 +3935,7 @@ func TestIdentifierInUse(t *testing.T) {
 			},
 			InUse: true,
 		},
-		{
+		{ // 9
 			Input:      `const a = 1;{let b;{a}}`,
 			Identifier: "b",
 			Scope: func(m *javascript.Module, s *Scope) *Scope {
