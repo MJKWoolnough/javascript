@@ -3782,8 +3782,7 @@ func TestModuleScope(t *testing.T) {
 func TestFindIdentifier(t *testing.T) {
 	tk := parser.NewStringTokeniser(`const a; {let b}`)
 
-	source, err := javascript.ParseModule(&tk)
-	if err != nil {
+	if source, err := javascript.ParseModule(&tk); err != nil {
 		t.Errorf("unexpected error parsing script: %s", err)
 	} else if scope, err := ModuleScope(source, nil); err != nil {
 		t.Errorf("unexpected error determining scope: %s", err)
@@ -3795,5 +3794,78 @@ func TestFindIdentifier(t *testing.T) {
 		t.Errorf("test 3: didn't get expected scope")
 	} else if inner.FindIdentifier("b") != inner {
 		t.Errorf("test 4: didn't get expected scope")
+	}
+}
+
+func TestRename(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+		From, To      string
+		Scope         func(*javascript.Module, *Scope) *Scope
+		Renamed       bool
+	}{
+		{
+			Input:   `const a = 1;`,
+			Output:  `const a = 1;`,
+			From:    "a",
+			To:      "a",
+			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
+			Renamed: false,
+		},
+		{
+			Input:   `const a = 1, b = 2;`,
+			Output:  `const a = 1, b = 2;`,
+			From:    "a",
+			To:      "b",
+			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
+			Renamed: false,
+		},
+		{
+			Input:   `const a = 1;`,
+			Output:  `const b = 1;`,
+			From:    "a",
+			To:      "b",
+			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
+			Renamed: true,
+		},
+		{
+			Input:   `const a = 1;{a}`,
+			Output:  "const b = 1;\n\n{\n\tb;\n}",
+			From:    "a",
+			To:      "b",
+			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
+			Renamed: true,
+		},
+		{
+			Input:   `const a = 1;{let a; a = 2}`,
+			Output:  "const b = 1;\n\n{\n\tlet a;\n\ta = 2;\n}",
+			From:    "a",
+			To:      "b",
+			Scope:   func(_ *javascript.Module, s *Scope) *Scope { return s },
+			Renamed: true,
+		},
+		{
+			Input:  `const a = 1;{let a; a = 2}`,
+			Output: "const a = 1;\n\n{\n\tlet b;\n\tb = 2;\n}",
+			From:   "a",
+			To:     "b",
+			Scope: func(m *javascript.Module, s *Scope) *Scope {
+				return s.Scopes[m.ModuleListItems[1].StatementListItem.Statement.BlockStatement]
+			},
+			Renamed: true,
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+
+		m, err := javascript.ParseModule(&tk)
+		if err != nil {
+			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
+		} else if scope, err := ModuleScope(m, nil); err != nil {
+			t.Errorf("test %d: unexpected error determining scope: %s", n+1, err)
+		} else if renamed := test.Scope(m, scope).Rename(test.From, test.To); renamed != test.Renamed {
+			t.Errorf("test %d: expecting renamed = %v, got %v", n+1, test.Renamed, renamed)
+		} else if output := fmt.Sprintf("%s", m); output != test.Output {
+			t.Errorf("test %d: expecting output = %q, got %q", n+1, test.Output, output)
+		}
 	}
 }
