@@ -4106,6 +4106,81 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 41
+			`let a = 1, b = 2;if (a) a = 2; else {let b = a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				bscope := NewScope()
+				bscope.Parent = scope
+				bscope.IsLexicalScope = true
+				scope.Scopes[m.ModuleListItems[1].StatementListItem.Statement.IfStatement.ElseStatement.BlockStatement] = bscope
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.IfStatement.Expression.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+					{
+						BindingType: BindingBare,
+						Scope:       scope,
+						Token:       m.ModuleListItems[1].StatementListItem.Statement.IfStatement.Statement.ExpressionStatement.Expressions[0].LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       bscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.IfStatement.ElseStatement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+					},
+				}
+				bscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       bscope,
+						Token:       m.ModuleListItems[1].StatementListItem.Statement.IfStatement.ElseStatement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 42
+			`if (1) {let a, a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IfStatement.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IfStatement.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 42
+			`if (1) {} else {let a, a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IfStatement.ElseStatement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IfStatement.ElseStatement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 43
+			`if((() => {let a, a})()) a`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.IfStatement.Expression.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.IfStatement.Expression.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
