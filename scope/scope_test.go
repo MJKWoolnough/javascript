@@ -3763,6 +3763,78 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 20
+			`import a from './b';import a from './c';`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ImportDeclaration.ImportedDefaultBinding,
+				}
+			},
+		},
+		{ // 21
+			`import a from './b';import * as a from './c';`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ImportDeclaration.NameSpaceImport,
+				}
+			},
+		},
+		{ // 22
+			`import a from './b';import {a} from './c';`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ImportDeclaration.NamedImports.ImportList[0].ImportedBinding,
+				}
+			},
+		},
+		{ // 23
+			`import a from './b';export var a;`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ExportDeclaration.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+				}
+			},
+		},
+		{ // 24
+			`import a from './b';export let a;`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ExportDeclaration.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+				}
+			},
+		},
+		{ // 25
+			`import a from './b';export default function a(){};`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ExportDeclaration.DefaultFunction.BindingIdentifier,
+				}
+			},
+		},
+		{ // 26
+			`import a from './b';export default class a{};`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
+					Duplicate:   m.ModuleListItems[1].ExportDeclaration.DefaultClass.BindingIdentifier,
+				}
+			},
+		},
+		{ // 27
+			`export default () => {const a, a};`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].ExportDeclaration.DefaultAssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].ExportDeclaration.DefaultAssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
