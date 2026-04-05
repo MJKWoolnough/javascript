@@ -4181,6 +4181,15 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 44
+			`function a(b, b) {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[1].SingleNameBinding,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
