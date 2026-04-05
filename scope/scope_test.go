@@ -3893,6 +3893,64 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 31
+			`let a = () => b = false, b = true; while(b) a()`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				ascope := NewScope()
+				ascope.Parent = scope
+				scope.Scopes[m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction] = ascope
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.IterationStatementWhile.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+					},
+					{
+						BindingType: BindingBare,
+						Scope:       ascope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.IterationStatementWhile.Expression.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 32
+			`while (1) {let a, a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 33
+			`while((() => {let a, a})()) a`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile.Expression.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile.Expression.Expressions[0].ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
