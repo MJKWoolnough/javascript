@@ -83,31 +83,49 @@ func (s *Scope) printScope(w *indentPrinter) {
 		pp.Printf("%p", s.Parent)
 	}
 
-	pp.WriteString("\nScopes: [")
+	pp.Printf("\nIsLexicalScope: %v", s.IsLexicalScope)
 
-	for t, scope := range s.Scopes {
-		qq.WriteString("\n")
-		qq.Printf("%p", t)
-		qq.WriteString(": ")
-		scope.printScope(qq)
+	if s.Scopes == nil {
+		pp.WriteString("\nScopes: nil")
+	} else if len(s.Scopes) == 0 {
+		pp.WriteString("\nScopes: []")
+	} else {
+		pp.WriteString("\nScopes: [")
+
+		for t, scope := range s.Scopes {
+			qq.WriteString("\n")
+			qq.Printf("%p", t)
+			qq.WriteString(": ")
+			scope.printScope(qq)
+		}
+
+		pp.WriteString("\n]")
 	}
 
-	pp.WriteString("\n]\nBindings: [")
+	if s.Bindings == nil {
+		pp.WriteString("\nBindings: nil")
+	} else if len(s.Bindings) == 0 {
+		pp.WriteString("\nBindings: []")
+	} else {
 
-	for ref, bindings := range s.Bindings {
-		qq.WriteString("\n")
-		qq.WriteString(ref)
-		qq.WriteString(": [")
+		pp.WriteString("\nBindings: [")
 
-		for _, binding := range bindings {
-			rr.WriteString("\n[")
-			rr.WriteString("\n	BindingType: ")
-			rr.Print(binding.BindingType)
-			rr.WriteString("\n	Scope: ")
-			rr.Printf("%p", binding.Scope)
-			rr.WriteString("\n	Token: ")
-			rr.Print(binding.Token)
-			rr.WriteString("\n]")
+		for ref, bindings := range s.Bindings {
+			qq.WriteString("\n")
+			qq.WriteString(ref)
+			qq.WriteString(": [")
+
+			for _, binding := range bindings {
+				rr.WriteString("\n[")
+				rr.WriteString("\n	BindingType: ")
+				rr.Print(binding.BindingType)
+				rr.WriteString("\n	Scope: ")
+				rr.Printf("%p", binding.Scope)
+				rr.WriteString("\n	Token: ")
+				rr.Printf("%+s", binding.Token)
+				rr.WriteString("\n]")
+			}
+
 		}
 
 		qq.WriteString("\n]")
