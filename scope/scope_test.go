@@ -4009,6 +4009,67 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 37
+			`c: function b() {a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				fscope := &Scope{
+					Parent: scope,
+					Scopes: map[javascript.Type]*Scope{},
+					Bindings: map[string][]Binding{
+						"this":      {},
+						"arguments": {},
+					},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[0].StatementListItem.Statement.LabelledItemFunction: fscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"a": {
+						{
+							BindingType: BindingRef,
+							Scope:       fscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.LabelledItemFunction.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+					"b": {
+						{
+							BindingType: BindingHoistable,
+							Scope:       scope,
+							Token:       m.ModuleListItems[0].StatementListItem.Statement.LabelledItemFunction.BindingIdentifier,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 38
+			`a: {b}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := new(Scope)
+				bscope := &Scope{
+					IsLexicalScope: true,
+					Parent:         scope,
+					Scopes:         map[javascript.Type]*Scope{},
+					Bindings:       map[string][]Binding{},
+				}
+				scope.Scopes = map[javascript.Type]*Scope{
+					m.ModuleListItems[0].StatementListItem.Statement.LabelledItemStatement.BlockStatement: bscope,
+				}
+				scope.Bindings = map[string][]Binding{
+					"b": {
+						{
+							BindingType: BindingRef,
+							Scope:       bscope,
+							Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.LabelledItemStatement.BlockStatement.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+						},
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
