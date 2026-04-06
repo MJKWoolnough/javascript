@@ -4434,6 +4434,59 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 68
+			`class a{b = () => {let c, c}}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.Initializer.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.Initializer.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 69
+			`let a;class b{static {let c = a}}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				sscope := scope.newLexicalScope(m.ModuleListItems[1].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       sscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[1].StatementListItem.Declaration.ClassDeclaration.BindingIdentifier,
+					},
+				}
+				sscope.Bindings["c"] = []Binding{
+					{
+						BindingType: BindingLexicalLet,
+						Scope:       sscope,
+						Token:       m.ModuleListItems[1].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 70
+			`class a{static {let b, b}}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
