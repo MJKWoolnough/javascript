@@ -4354,6 +4354,86 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 62
+			`try{let a, a}finally{}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.TryStatement.TryBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.TryStatement.TryBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 63
+			`try{}catch([a]){a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				scope.newLexicalScope(&m.ModuleListItems[0].StatementListItem.Statement.TryStatement.TryBlock)
+				lscope := scope.newLexicalScope(m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchBlock)
+				lscope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingCatch,
+						Scope:       lscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       lscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchBlock.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 64
+			`try{}catch({a}){a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				scope.newLexicalScope(&m.ModuleListItems[0].StatementListItem.Statement.TryStatement.TryBlock)
+				lscope := scope.newLexicalScope(m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchBlock)
+				lscope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingCatch,
+						Scope:       lscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       lscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchBlock.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 65
+			`try{}catch([a, a]){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterArrayBindingPattern.BindingElementList[1].SingleNameBinding,
+				}
+			},
+		},
+		{ // 66
+			`try{}catch({a, a}){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
+				}
+			},
+		},
+		{ // 67
+			`try{}finally{let a, a}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.TryStatement.FinallyBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.TryStatement.FinallyBlock.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
