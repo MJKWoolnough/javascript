@@ -4327,6 +4327,33 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 59
+			`switch(() => {const a, a}){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 60
+			`switch(a) {case () => {const a, a}:}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0].Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0].Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 61
+			`switch(a) {default:case () => {const a, a}:}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.PostDefaultCaseClauses[0].Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.PostDefaultCaseClauses[0].Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
