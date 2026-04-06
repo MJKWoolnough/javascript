@@ -4487,12 +4487,45 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 70
+		{ // 71
 			`class a{[() => {let b, b}]}`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
 					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.ClassElementName.PropertyName.ComputedPropertyName.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
 					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.ClassElementName.PropertyName.ComputedPropertyName.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 72
+			`var {a} = {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingVar,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 73
+			`let a;var [a] = {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[1].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+				}
+			},
+		},
+		{ // 74
+			`let a;var {a} = {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[1].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 				}
 			},
 		},
