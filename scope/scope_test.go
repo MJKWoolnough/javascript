@@ -4163,7 +4163,7 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 42
+		{ // 43
 			`if (1) {} else {let a, a}`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -4172,7 +4172,7 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 43
+		{ // 44
 			`if((() => {let a, a})()) a`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
@@ -4181,12 +4181,149 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
-		{ // 44
+		{ // 45
 			`function a(b, b) {}`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
 					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
 					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[1].SingleNameBinding,
+				}
+			},
+		},
+		{ // 46
+			`for (var a = () => {const b, b};;){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitVar[0].Initializer.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitVar[0].Initializer.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 47
+			`for (let a, a;;){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitLexical.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitLexical.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 48
+			`for (a = () => {const b, b};;){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitExpression.Expressions[0].AssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitExpression.Expressions[0].AssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 49
+			`for ((()=>{let a,a}) of b){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.ParenthesizedExpression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 50
+			`const a = [];for (b of a){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				lscope := scope.newLexicalScope(m.ModuleListItems[1].StatementListItem.Statement.IterationStatementFor)
+				lscope.newLexicalScope(m.ModuleListItems[1].StatementListItem.Statement.IterationStatementFor.Statement.BlockStatement)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingLexicalConst,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       lscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.IterationStatementFor.Of.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       lscope,
+						Token:       m.ModuleListItems[1].StatementListItem.Statement.IterationStatementFor.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 51
+			`for (const {a, a} of b){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternObject.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternObject.BindingPropertyList[1].BindingElement.SingleNameBinding,
+				}
+			},
+		},
+		{ // 52
+			`for (const [a, a] of b){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternArray.BindingElementList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternArray.BindingElementList[1].SingleNameBinding,
+				}
+			},
+		},
+		{ // 53
+			`let a;for (var a of b){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[1].StatementListItem.Statement.IterationStatementFor.ForBindingIdentifier,
+				}
+			},
+		},
+		{ // 54
+			`for (; () => {const a, a};){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Conditional.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Conditional.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 55
+			`for (;;() => {const a, a}){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Afterthought.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Afterthought.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 56
+			`for (a in () => {const b, b}){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.In.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.In.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 57
+			`for (a of () => {const b, b}){}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Of.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Of.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 58
+			`for (a of b){let c, c}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Statement.BlockStatement.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
 				}
 			},
 		},
