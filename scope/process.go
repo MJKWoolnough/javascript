@@ -371,9 +371,7 @@ func processTryStatement(t *javascript.TryStatement, scope *Scope, set bool) err
 				return err
 			}
 		} else if t.CatchParameterBindingIdentifier != nil && set {
-			if err := scope.setBinding(t.CatchParameterBindingIdentifier, BindingCatch); err != nil {
-				return err
-			}
+			scope.setBinding(t.CatchParameterBindingIdentifier, BindingCatch)
 		}
 
 		if err := processBlockStatement(t.CatchBlock, scope, set); err != nil {
