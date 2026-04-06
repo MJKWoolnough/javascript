@@ -240,9 +240,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 				return err
 			}
 		} else if f.ForBindingIdentifier != nil {
-			if bindingType == BindingBare && !set {
-				scope.addBinding(f.ForBindingIdentifier, BindingBare)
-			} else if bindingType != BindingBare && set {
+			if bindingType != BindingBare && set {
 				if err := scope.setBinding(f.ForBindingIdentifier, bindingType); err != nil {
 					return err
 				}
