@@ -638,13 +638,9 @@ func processObjectBindingPattern(o *javascript.ObjectBindingPattern, scope *Scop
 		}
 	}
 
-	if o.BindingRestProperty != nil {
-		if bindingType == BindingBare && !set {
-			scope.addBinding(o.BindingRestProperty, BindingBare)
-		} else if bindingType != BindingBare && set {
-			if err := scope.setBinding(o.BindingRestProperty, bindingType); err != nil {
-				return err
-			}
+	if o.BindingRestProperty != nil && set {
+		if err := scope.setBinding(o.BindingRestProperty, bindingType); err != nil {
+			return err
 		}
 	}
 
