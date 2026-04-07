@@ -572,9 +572,9 @@ func processObjectAssignmentPattern(o *javascript.ObjectAssignmentPattern, scope
 }
 
 func processAssignmentProperty(a *javascript.AssignmentProperty, scope *Scope, set bool) error {
-	if err := processPropertyName(&a.PropertyName, scope, set); err != nil {
-		return err
-	} else if a.DestructuringAssignmentTarget != nil {
+	processPropertyName(&a.PropertyName, scope, set)
+
+	if a.DestructuringAssignmentTarget != nil {
 		if err := processDestructuringAssignmentTarget(a.DestructuringAssignmentTarget, scope, set); err != nil {
 			return err
 		}
