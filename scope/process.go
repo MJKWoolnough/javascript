@@ -220,7 +220,7 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			}
 		}
 	default:
-		bindingType := BindingBare
+		var bindingType BindingType
 
 		switch f.Type {
 		case javascript.ForInLet, javascript.ForOfLet, javascript.ForAwaitOfLet:
@@ -239,11 +239,9 @@ func processIterationStatementFor(f *javascript.IterationStatementFor, scope *Sc
 			if err := processArrayBindingPattern(f.ForBindingPatternArray, scope, set, bindingType); err != nil {
 				return err
 			}
-		} else if f.ForBindingIdentifier != nil {
-			if bindingType != BindingBare && set {
-				if err := scope.setBinding(f.ForBindingIdentifier, bindingType); err != nil {
-					return err
-				}
+		} else if f.ForBindingIdentifier != nil && set {
+			if err := scope.setBinding(f.ForBindingIdentifier, bindingType); err != nil {
+				return err
 			}
 		}
 	}
