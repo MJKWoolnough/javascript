@@ -4972,6 +4972,24 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 104
+			`let a = (b, b) => {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.FormalParameters.FormalParameterList[1].SingleNameBinding,
+				}
+			},
+		},
+		{ // 104
+			`let a = () => () => {let b,b}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
