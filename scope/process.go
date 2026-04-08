@@ -761,9 +761,7 @@ func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) e
 			return err
 		}
 	} else if a.BindingIdentifier != nil && set {
-		if err := scope.setBinding(a.BindingIdentifier, BindingFunctionParam); err != nil {
-			return err
-		}
+		scope.setBinding(a.BindingIdentifier, BindingFunctionParam)
 	}
 
 	if a.AssignmentExpression != nil {
