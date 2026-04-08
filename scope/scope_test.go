@@ -4746,6 +4746,127 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 91
+			`function a(b, ...[c, d]) {return b, c}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				fscope.Bindings["c"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				fscope.Bindings["d"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ArrayBindingPattern.BindingElementList[1].SingleNameBinding,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 92
+			`function a(b, ...{c, d}) {return b, c}`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				fscope.Bindings["c"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[1].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				fscope.Bindings["d"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 93
+			`function a(b, ...[c, c]) {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ArrayBindingPattern.BindingElementList[1].SingleNameBinding,
+				}
+			},
+		},
+		{ // 94
+			`function a(b, ...{c, c}) {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
+				}
+			},
+		},
+		{ // 95
+			`function a(b, ...b) {}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
