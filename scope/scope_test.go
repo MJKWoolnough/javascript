@@ -4737,6 +4737,15 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 90
+			`const [a, ...a] = []`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingElementList[0].SingleNameBinding,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].ArrayBindingPattern.BindingRestElement.SingleNameBinding,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
