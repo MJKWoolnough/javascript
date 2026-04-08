@@ -4894,6 +4894,84 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 99
+			`a ?? b`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.CoalesceExpressionHead.BitwiseORExpression)).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.BitwiseORExpression)).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 100
+			`a ?? (() => {let b, b})`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.BitwiseORExpression)).(*javascript.ParenthesizedExpression).Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.BitwiseORExpression)).(*javascript.ParenthesizedExpression).Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 101
+			`a ? b : c`,
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(javascript.WrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.LogicalORExpression)).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.True.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				scope.Bindings["c"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.False.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 102
+			`a ? () => {let b, b}: c`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.True.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.True.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 103
+			`a ? b: () => {let b, b}`,
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.False.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.False.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
