@@ -755,6 +755,7 @@ func processConditionalExpression(c *javascript.ConditionalExpression, scope *Sc
 
 func processArrowFunction(a *javascript.ArrowFunction, scope *Scope, set bool) error {
 	scope = scope.newArrowFunctionScope(a)
+
 	if a.FormalParameters != nil {
 		if err := processFormalParameters(a.FormalParameters, scope, set); err != nil {
 			return err
