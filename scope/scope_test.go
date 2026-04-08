@@ -5092,6 +5092,15 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 113
+			"let {[() => {let a, a}]: b} = c",
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].PropertyName.ComputedPropertyName.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].PropertyName.ComputedPropertyName.ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
