@@ -5252,6 +5252,15 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 125
+			"(() => {let a,a}) ?? b",
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.CoalesceExpressionHead.BitwiseORExpression)).(*javascript.ParenthesizedExpression).Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(javascript.WrapConditional(&m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.CoalesceExpression.CoalesceExpressionHead.BitwiseORExpression)).(*javascript.ParenthesizedExpression).Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
