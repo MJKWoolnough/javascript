@@ -499,11 +499,7 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 			return err
 		}
 	} else if a.LeftHandSideExpression != nil {
-		if a.LeftHandSideExpression.NewExpression != nil && len(a.LeftHandSideExpression.NewExpression.News) == 0 && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil {
-			if !set {
-				scope.addBinding(a.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference, BindingBare)
-			}
-		} else if err := processLeftHandSideExpression(a.LeftHandSideExpression, scope, set); err != nil {
+		if err := processLeftHandSideExpressionAsAssignment(a.LeftHandSideExpression, scope, set); err != nil {
 			return err
 		}
 	} else if a.AssignmentPattern != nil {
@@ -516,6 +512,18 @@ func processAssignmentExpression(a *javascript.AssignmentExpression, scope *Scop
 		if err := processAssignmentExpression(a.AssignmentExpression, scope, set); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func processLeftHandSideExpressionAsAssignment(l *javascript.LeftHandSideExpression, scope *Scope, set bool) error {
+	if l.NewExpression != nil && len(l.NewExpression.News) == 0 && l.NewExpression.MemberExpression.PrimaryExpression != nil && l.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil {
+		if !set {
+			scope.addBinding(l.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference, BindingBare)
+		}
+	} else if err := processLeftHandSideExpression(l, scope, set); err != nil {
+		return err
 	}
 
 	return nil
