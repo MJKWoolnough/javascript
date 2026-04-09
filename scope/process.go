@@ -859,9 +859,7 @@ func processBindingProperty(b *javascript.BindingProperty, scope *Scope, set boo
 
 func processBindingElement(b *javascript.BindingElement, scope *Scope, set bool, bindingType BindingType) error {
 	if b.SingleNameBinding != nil {
-		if bindingType == BindingBare && !set {
-			scope.addBinding(b.SingleNameBinding, BindingBare)
-		} else if bindingType != BindingBare && set {
+		if set {
 			if err := scope.setBinding(b.SingleNameBinding, bindingType); err != nil {
 				return err
 			}
