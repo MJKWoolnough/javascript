@@ -1059,7 +1059,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -1093,7 +1093,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.ArrayLiteral).ElementList[1].AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       fscope,
 							Token:       s.StatementList[0].Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -1262,7 +1262,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       scope,
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -1274,7 +1274,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       scope,
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -1298,7 +1298,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement.SingleNameBinding,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       scope,
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -1310,7 +1310,7 @@ func TestScriptScope(t *testing.T) {
 							Token:       s.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].ObjectBindingPattern.BindingPropertyList[1].BindingElement.SingleNameBinding,
 						},
 						{
-							BindingType: BindingRef,
+							BindingType: BindingBare,
 							Scope:       scope,
 							Token:       javascript.UnwrapConditional(s.StatementList[1].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[1].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 						},
@@ -4591,14 +4591,14 @@ func TestModuleScope(t *testing.T) {
 				scope := NewScope()
 				scope.Bindings["a"] = []Binding{
 					{
-						BindingType: BindingRef,
+						BindingType: BindingBare,
 						Scope:       scope,
 						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentPropertyList[0].PropertyName.LiteralPropertyName,
 					},
 				}
 				scope.Bindings["b"] = []Binding{
 					{
-						BindingType: BindingRef,
+						BindingType: BindingBare,
 						Scope:       scope,
 						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].AssignmentPattern.ObjectAssignmentPattern.AssignmentRestElement.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 					},
@@ -4643,7 +4643,7 @@ func TestModuleScope(t *testing.T) {
 				scope := NewScope()
 				scope.Bindings["a"] = []Binding{
 					{
-						BindingType: BindingRef,
+						BindingType: BindingBare,
 						Scope:       scope,
 						Token:       m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 					},
@@ -4679,7 +4679,7 @@ func TestModuleScope(t *testing.T) {
 				scope := NewScope()
 				scope.Bindings["a"] = []Binding{
 					{
-						BindingType: BindingRef,
+						BindingType: BindingBare,
 						Scope:       scope,
 						Token:       m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference,
 					},

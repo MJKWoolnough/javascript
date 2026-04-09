@@ -569,7 +569,7 @@ func processObjectAssignmentPattern(o *javascript.ObjectAssignmentPattern, scope
 	}
 
 	if o.AssignmentRestElement != nil {
-		if err := processLeftHandSideExpression(o.AssignmentRestElement, scope, set); err != nil {
+		if err := processLeftHandSideExpressionAsAssignment(o.AssignmentRestElement, scope, set); err != nil {
 			return err
 		}
 	}
@@ -597,7 +597,7 @@ func processAssignmentProperty(a *javascript.AssignmentProperty, scope *Scope, s
 
 func processDestructuringAssignmentTarget(d *javascript.DestructuringAssignmentTarget, scope *Scope, set bool) error {
 	if d.LeftHandSideExpression != nil {
-		if err := processLeftHandSideExpression(d.LeftHandSideExpression, scope, set); err != nil {
+		if err := processLeftHandSideExpressionAsAssignment(d.LeftHandSideExpression, scope, set); err != nil {
 			return err
 		}
 	}
