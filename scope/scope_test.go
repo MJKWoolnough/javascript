@@ -5583,6 +5583,40 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 149
+			"({[a[() => {let b, b}]]: c})",
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].PropertyName.ComputedPropertyName.ConditionalExpression).(*javascript.MemberExpression).Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].PropertyName.ComputedPropertyName.ConditionalExpression).(*javascript.MemberExpression).Expression.Expressions[0].ArrowFunction.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
+		{ // 150
+			"({a(){b}})",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				mscope := scope.newFunctionScope(javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].MethodDefinition)
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingRef,
+						Scope:       mscope,
+						Token:       javascript.UnwrapConditional(javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].MethodDefinition.FunctionBody.StatementList[0].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 151
+			"({a(){let b,b}})",
+			func(m *javascript.Module) (*Scope, error) {
+				return nil, ErrDuplicateDeclaration{
+					Declaration: javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].MethodDefinition.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[0].BindingIdentifier,
+					Duplicate:   javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].MethodDefinition.FunctionBody.StatementList[0].Declaration.LexicalDeclaration.BindingList[1].BindingIdentifier,
+				}
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
