@@ -1,93 +1,64 @@
-# scope
+# javascript
+
+[![CI](https://github.com/MJKWoolnough/javascript/actions/workflows/go-checks.yml/badge.svg)](https://github.com/MJKWoolnough/javascript/actions)
+[![Go Reference](https://pkg.go.dev/badge/vimagination.zapto.org/javascript.svg)](https://pkg.go.dev/vimagination.zapto.org/javascript/scope)
+[![Go Report Card](https://goreportcard.com/badge/vimagination.zapto.org/javascript)](https://goreportcard.com/report/vimagination.zapto.org/javascript)
+
 --
     import "vimagination.zapto.org/javascript/scope"
 
-Package scope parses out a scope tree for a javascript module or script.
+Package scope parses out a scope tree for a JavaScript module or script.
+
+## Highlights
+
+ - Process a JavaScript AST into a scope tree, resolving identifiers to their matching declaration.
+ - Easily rename identifiers.
 
 ## Usage
 
-#### type Binding
-
 ```go
-type Binding struct {
-	BindingType
-	*Scope
-	*javascript.Token
-}
-```
+package main
 
-Binding represents a single instance of a bound name.
+import (
+	"fmt"
 
-#### type BindingType
-
-```go
-type BindingType uint8
-```
-
-BindingType indicates where the binding came from.
-
-```go
-const (
-	BindingRef BindingType = iota
-	BindingBare
-	BindingVar
-	BindingHoistable
-	BindingLexicalLet
-	BindingLexicalConst
-	BindingImport
-	BindingFunctionParam
-	BindingCatch
+	"vimagination.zapto.org/javascript"
+	"vimagination.zapto.org/javascript/scope"
+	"vimagination.zapto.org/parser"
 )
-```
-Binding Types.
 
-#### type ErrDuplicateDeclaration
+func main() {
+	src := `let a = 1; console.log(a)`
 
-```go
-type ErrDuplicateDeclaration struct {
-	Declaration, Duplicate *javascript.Token
+	tk := parser.NewStringTokeniser(src)
+
+	ast, err := javascript.ParseModule(&tk)
+	if err != nil {
+		fmt.Println(err)
+
+		return
+	}
+
+	s, err := scope.ModuleScope(ast, nil)
+	if err != nil {
+		fmt.Println(err)
+
+		return
+	}
+
+	s.Rename("a", "b")
+
+	fmt.Printf("%s", ast)
+
+	// Output:
+	// let b = 1;
+	//
+	// console.log(b);
 }
 ```
 
-ErrDuplicateDeclaration is an error when a binding is declared more than once
-with a scope.
+## Documentation
 
-#### func (ErrDuplicateDeclaration) Error
+Full API docs can be found at:
 
-```go
-func (ErrDuplicateDeclaration) Error() string
-```
-
-#### type Scope
-
-```go
-type Scope struct {
-	IsLexicalScope bool
-	Parent         *Scope
-	Scopes         map[javascript.Type]*Scope
-	Bindings       map[string][]Binding
-}
-```
-
-Scope represents a single level of variable scope.
-
-#### func  ModuleScope
-
-```go
-func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error)
-```
-ModuleScope parses out the scope tree for a javascript Module
-
-#### func  NewScope
-
-```go
-func NewScope() *Scope
-```
-NewScope returns a init'd Scope type.
-
-#### func  ScriptScope
-
-```go
-func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error)
-```
-ScriptScope parses out the scope tree for a javascript script
+https://pkg.go.dev/vimagination.zapto.org/javascript/scope
