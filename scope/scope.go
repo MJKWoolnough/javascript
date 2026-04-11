@@ -3,6 +3,7 @@ package scope // import "vimagination.zapto.org/javascript/scope"
 
 import (
 	"vimagination.zapto.org/javascript"
+	"vimagination.zapto.org/javascript/walk"
 )
 
 // ErrDuplicateDeclaration is an error when a binding is declared more than once with a scope.
@@ -192,11 +193,14 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 		global = NewScope()
 	}
 
-	if err := processModule(m, global, true); err != nil {
+	if err := walk.Walk(m, &scoper{
+		scope: global,
+		set:   true,
+	}); err != nil {
 		return nil, err
 	}
 
-	_ = processModule(m, global, false)
+	walk.Walk(m, &scoper{scope: global})
 
 	return global, nil
 }
@@ -207,15 +211,14 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 		global = NewScope()
 	}
 
-	for n := range s.StatementList {
-		if err := processStatementListItem(&s.StatementList[n], global, true); err != nil {
-			return nil, err
-		}
+	if err := walk.Walk(s, &scoper{
+		scope: global,
+		set:   true,
+	}); err != nil {
+		return nil, err
 	}
 
-	for n := range s.StatementList {
-		_ = processStatementListItem(&s.StatementList[n], global, false)
-	}
+	walk.Walk(s, &scoper{scope: global})
 
 	return global, nil
 }
