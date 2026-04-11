@@ -435,7 +435,7 @@ func walkConditionalExpression(t *javascript.ConditionalExpression, h Handler) e
 
 	if t.CoalesceExpression != nil {
 		if err := h.Handle(t.CoalesceExpression); err != nil {
-			return nil
+			return err
 		}
 	}
 
