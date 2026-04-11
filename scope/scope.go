@@ -223,7 +223,7 @@ func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	return global, nil
 }
 
-// FindIdentifier look up the Scope chain to find the first that contains the
+// FindIdentifier looks up the Scope chain to find the first that contains the
 // specified identifier.
 //
 // If the current scope, and no parent, contains the identifier, nil is
