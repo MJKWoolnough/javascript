@@ -187,7 +187,7 @@ func (s *Scope) newLexicalScope(js javascript.Type) *Scope {
 	return ns
 }
 
-// ModuleScope parses out the scope tree for a JavaScript Module
+// ModuleScope parses out the scope tree for a JavaScript Module.
 func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
@@ -205,7 +205,7 @@ func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	return global, nil
 }
 
-// ScriptScope parses out the scope tree for a JavaScript script
+// ScriptScope parses out the scope tree for a JavaScript script.
 func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
