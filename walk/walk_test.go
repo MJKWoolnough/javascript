@@ -36,7 +36,18 @@ func TestWalk(t *testing.T) {
 		Input string
 		End   func(m *javascript.Module) javascript.Type
 		Level []string
-	}{} {
+	}{
+		{
+			"",
+			func(m *javascript.Module) javascript.Type { return nil },
+			nil,
+		},
+		{
+			"import a from './b';",
+			func(m *javascript.Module) javascript.Type { return &m.ModuleListItems[0] },
+			[]string{"Module", "ModuleItem"},
+		},
+	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
 		m, err := javascript.ParseModule(&tk)
