@@ -239,9 +239,7 @@ func (s *scoper) processTryStatement(t *javascript.TryStatement) error {
 	}
 
 	if t.FinallyBlock != nil {
-		if err := walk.Walk(t.FinallyBlock, s.newLexicalScope(t.FinallyBlock)); err != nil {
-			return err
-		}
+		return walk.Walk(t.FinallyBlock, s.newLexicalScope(t.FinallyBlock))
 	}
 
 	return nil
@@ -342,12 +340,8 @@ func (s *scoper) processDestructuringAssignmentTarget(t *javascript.Destructurin
 func (s *scoper) processObjectBindingPattern(t *javascript.ObjectBindingPattern) error {
 	if err := walk.Walk(t, s); err != nil {
 		return err
-	}
-
-	if s.set && t.BindingRestProperty != nil {
-		if err := s.scope.setBinding(t.BindingRestProperty, s.bt); err != nil {
-			return err
-		}
+	} else if s.set && t.BindingRestProperty != nil {
+		return s.scope.setBinding(t.BindingRestProperty, s.bt)
 	}
 
 	return nil
@@ -356,12 +350,8 @@ func (s *scoper) processObjectBindingPattern(t *javascript.ObjectBindingPattern)
 func (s *scoper) processFormalParameters(t *javascript.FormalParameters) error {
 	if err := walk.Walk(t, s.setBindingType(BindingFunctionParam)); err != nil {
 		return err
-	}
-
-	if s.set && t.BindingIdentifier != nil {
-		if err := s.scope.setBinding(t.BindingIdentifier, BindingFunctionParam); err != nil {
-			return err
-		}
+	} else if s.set && t.BindingIdentifier != nil {
+		return s.scope.setBinding(t.BindingIdentifier, BindingFunctionParam)
 	}
 
 	return nil
