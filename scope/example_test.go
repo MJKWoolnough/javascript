@@ -20,7 +20,7 @@ func Example() {
 		return
 	}
 
-	s, err := scope.ModuleScope(ast, nil)
+	s, err := scope.Build(ast, nil)
 	if err != nil {
 		fmt.Println(err)
 
