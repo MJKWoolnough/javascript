@@ -3315,8 +3315,7 @@ func TestScriptScope(t *testing.T) {
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
-		source, err := javascript.ParseScript(javascript.AsJSX(&tk))
-		if err != nil {
+		if source, err := javascript.ParseScript(javascript.AsJSX(&tk)); err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
 			tscope, terr := test.Output(source)
@@ -5881,8 +5880,7 @@ func TestModuleScope(t *testing.T) {
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
-		source, err := javascript.ParseModule(&tk)
-		if err != nil {
+		if source, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else {
 			tscope, terr := test.Output(source)
@@ -5981,8 +5979,7 @@ func TestRename(t *testing.T) {
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
-		m, err := javascript.ParseModule(&tk)
-		if err != nil {
+		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else if scope, err := ModuleScope(m, nil); err != nil {
 			t.Errorf("test %d: unexpected error determining scope: %s", n+1, err)
@@ -6070,8 +6067,7 @@ func TestIdentifierInUse(t *testing.T) {
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
-		m, err := javascript.ParseModule(&tk)
-		if err != nil {
+		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
 		} else if scope, err := ModuleScope(m, nil); err != nil {
 			t.Errorf("test %d: unexpected error determining scope: %s", n+1, err)
