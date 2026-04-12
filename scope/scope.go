@@ -189,38 +189,29 @@ func (s *Scope) newLexicalScope(js javascript.Type) *Scope {
 
 // ModuleScope parses out the scope tree for a JavaScript Module.
 func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
+	return Build(m, global)
+}
+
+func Build(t javascript.Type, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
 	}
 
-	if err := walk.Walk(m, &scoper{
+	if err := walk.Walk(t, &scoper{
 		scope: global,
 		set:   true,
 	}); err != nil {
 		return nil, err
 	}
 
-	walk.Walk(m, &scoper{scope: global})
+	walk.Walk(t, &scoper{scope: global})
 
 	return global, nil
 }
 
 // ScriptScope parses out the scope tree for a JavaScript script.
 func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
-	if global == nil {
-		global = NewScope()
-	}
-
-	if err := walk.Walk(s, &scoper{
-		scope: global,
-		set:   true,
-	}); err != nil {
-		return nil, err
-	}
-
-	walk.Walk(s, &scoper{scope: global})
-
-	return global, nil
+	return Build(s, global)
 }
 
 // FindIdentifier looks up the Scope chain to find the first that contains the
