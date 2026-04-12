@@ -188,10 +188,16 @@ func (s *Scope) newLexicalScope(js javascript.Type) *Scope {
 }
 
 // ModuleScope parses out the scope tree for a JavaScript Module.
+//
+// Deprecated: Use the Build function instead.
 func ModuleScope(m *javascript.Module, global *Scope) (*Scope, error) {
 	return Build(m, global)
 }
 
+// Build generates a scope tree for the give JavaScript tree.
+//
+// The given scope will be used as the top level; if nil is provided, a new
+// scope will be created.
 func Build(t javascript.Type, global *Scope) (*Scope, error) {
 	if global == nil {
 		global = NewScope()
@@ -210,6 +216,8 @@ func Build(t javascript.Type, global *Scope) (*Scope, error) {
 }
 
 // ScriptScope parses out the scope tree for a JavaScript script.
+//
+// Deprecated: Use the Build function instead.
 func ScriptScope(s *javascript.Script, global *Scope) (*Scope, error) {
 	return Build(s, global)
 }
