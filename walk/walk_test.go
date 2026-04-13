@@ -153,6 +153,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "ExportDeclaration", "AssignmentExpression"},
 		},
+		{
+			"export {a, b}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].ExportDeclaration.ExportClause.ExportList[0]
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "ExportClause", "ExportSpecifier"},
+		},
+		{
+			"export {a, b}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].ExportDeclaration.ExportClause.ExportList[1]
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "ExportClause", "ExportSpecifier"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
