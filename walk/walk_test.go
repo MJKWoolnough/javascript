@@ -47,6 +47,31 @@ func TestWalk(t *testing.T) {
 			func(m *javascript.Module) javascript.Type { return &m.ModuleListItems[0] },
 			[]string{"Module", "ModuleItem"},
 		},
+		{
+			"import a from './b';",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ImportDeclaration },
+			[]string{"Module", "ModuleItem", "ImportDeclaration"},
+		},
+		{
+			"import a from './b';",
+			func(m *javascript.Module) javascript.Type { return nil },
+			nil,
+		},
+		{
+			"import a from './b';",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ImportDeclaration.ImportClause },
+			[]string{"Module", "ModuleItem", "ImportDeclaration", "ImportClause"},
+		},
+		{
+			"import a from './b';",
+			func(m *javascript.Module) javascript.Type { return &m.ModuleListItems[0].ImportDeclaration.FromClause },
+			[]string{"Module", "ModuleItem", "ImportDeclaration", "FromClause"},
+		},
+		{
+			"import a from './b' with {};",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ImportDeclaration.WithClause },
+			[]string{"Module", "ModuleItem", "ImportDeclaration", "WithClause"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
