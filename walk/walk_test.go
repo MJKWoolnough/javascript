@@ -72,6 +72,13 @@ func TestWalk(t *testing.T) {
 			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ImportDeclaration.WithClause },
 			[]string{"Module", "ModuleItem", "ImportDeclaration", "WithClause"},
 		},
+		{
+			"import {a} from './b';",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ImportDeclaration.ImportClause.NamedImports
+			},
+			[]string{"Module", "ModuleItem", "ImportDeclaration", "ImportClause", "NamedImports"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
