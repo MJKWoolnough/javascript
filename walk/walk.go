@@ -1087,7 +1087,15 @@ func walkImportDeclaration(t *javascript.ImportDeclaration, h Handler) error {
 		}
 	}
 
-	return h.Handle(&t.FromClause)
+	if err := h.Handle(&t.FromClause); err != nil {
+		return err
+	}
+
+	if t.WithClause != nil {
+		return h.Handle(t.WithClause)
+	}
+
+	return nil
 }
 
 func walkImportClause(t *javascript.ImportClause, h Handler) error {
