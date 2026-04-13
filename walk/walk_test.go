@@ -98,6 +98,61 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "ImportDeclaration", "ImportClause", "NamedImports", "ImportSpecifier"},
 		},
+		{
+			"export {};",
+			func(m *javascript.Module) javascript.Type { return nil },
+			nil,
+		},
+		{
+			"export default a;",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ExportDeclaration },
+			[]string{"Module", "ModuleItem", "ExportDeclaration"},
+		},
+		{
+			"export {a};",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ExportDeclaration.ExportClause },
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "ExportClause"},
+		},
+		{
+			"export {a} from './b';",
+			func(m *javascript.Module) javascript.Type { return m.ModuleListItems[0].ExportDeclaration.FromClause },
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "FromClause"},
+		},
+		{
+			"export var a;",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ExportDeclaration.VariableStatement
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "VariableStatement"},
+		},
+		{
+			"export let a;",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ExportDeclaration.Declaration
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "Declaration"},
+		},
+		{
+			"export default function a(){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ExportDeclaration.DefaultFunction
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "FunctionDeclaration"},
+		},
+		{
+			"export default class a{}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ExportDeclaration.DefaultClass
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "ClassDeclaration"},
+		},
+		{
+			"export default () => {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].ExportDeclaration.DefaultAssignmentExpression
+			},
+			[]string{"Module", "ModuleItem", "ExportDeclaration", "AssignmentExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
