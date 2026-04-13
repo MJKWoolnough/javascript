@@ -188,6 +188,90 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration"},
 		},
+		{
+			"{}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.BlockStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Block"},
+		},
+		{
+			"var a",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.VariableStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement"},
+		},
+		{
+			"a",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression"},
+		},
+		{
+			"if (a) {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IfStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IfStatement"},
+		},
+		{
+			"do; while (a)",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementDo
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementDo"},
+		},
+		{
+			"while (a){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementWhile"},
+		},
+		{
+			"for (;;) {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor"},
+		},
+		{
+			"switch (a){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement"},
+		},
+		{
+			"with (a){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.WithStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "WithStatement"},
+		},
+		{
+			"a: function b (){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.LabelledItemFunction
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "FunctionDeclaration"},
+		},
+		{
+			"a: b",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.LabelledItemStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Statement"},
+		},
+		{
+			"try {} finally{}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.TryStatement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
