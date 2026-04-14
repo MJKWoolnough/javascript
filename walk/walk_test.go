@@ -17,6 +17,10 @@ type walker struct {
 }
 
 func (w *walker) Handle(t javascript.Type) error {
+	if reflect.ValueOf(t).IsNil() {
+		return errors.New("nil received")
+	}
+
 	if t == w.end {
 		w.level = append(w.level, reflect.TypeOf(t).Elem().Name())
 
