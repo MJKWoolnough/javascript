@@ -405,6 +405,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ObjectBindingPattern", "BindingProperty"},
 		},
+		{ // 57
+			"var {a: b} = []",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ObjectBindingPattern.BindingPropertyList[0].PropertyName
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ObjectBindingPattern", "BindingProperty", "PropertyName"},
+		},
+		{ // 58
+			"var {a: b} = []",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ObjectBindingPattern.BindingPropertyList[0].BindingElement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ObjectBindingPattern", "BindingProperty", "BindingElement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
