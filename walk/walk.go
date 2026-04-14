@@ -973,10 +973,6 @@ func walkObjectBindingPattern(t *javascript.ObjectBindingPattern, h Handler) err
 		}
 	}
 
-	if t.BindingRestProperty != nil {
-		return h.Handle(t.BindingRestProperty)
-	}
-
 	return nil
 }
 
