@@ -9,7 +9,11 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-var sentinel = errors.New("")
+var (
+	sentinel = errors.New("")
+	nilErr   = errors.New("nil received")
+	nilRet   = func(_ *javascript.Module) javascript.Type { return nil }
+)
 
 type walker struct {
 	end   javascript.Type
@@ -18,7 +22,7 @@ type walker struct {
 
 func (w *walker) Handle(t javascript.Type) error {
 	if reflect.ValueOf(t).IsNil() {
-		return errors.New("nil received")
+		return nilErr
 	}
 
 	if t == w.end {
@@ -43,7 +47,7 @@ func TestWalk(t *testing.T) {
 	}{
 		{ // 1
 			"",
-			func(m *javascript.Module) javascript.Type { return nil },
+			nilRet,
 			nil,
 		},
 		{ // 2
@@ -58,7 +62,7 @@ func TestWalk(t *testing.T) {
 		},
 		{ // 4
 			"import a from './b';",
-			func(m *javascript.Module) javascript.Type { return nil },
+			nilRet,
 			nil,
 		},
 		{ // 5
@@ -85,7 +89,7 @@ func TestWalk(t *testing.T) {
 		},
 		{ // 9
 			"import {} from './b';",
-			func(m *javascript.Module) javascript.Type { return nil },
+			nilRet,
 			nil,
 		},
 		{ // 10
@@ -104,7 +108,7 @@ func TestWalk(t *testing.T) {
 		},
 		{ // 12
 			"export {};",
-			func(m *javascript.Module) javascript.Type { return nil },
+			nilRet,
 			nil,
 		},
 		{ // 13
@@ -278,7 +282,7 @@ func TestWalk(t *testing.T) {
 		},
 		{ // 38
 			"{}",
-			func(m *javascript.Module) javascript.Type { return nil },
+			nilRet,
 			nil,
 		},
 		{ // 39
@@ -297,9 +301,7 @@ func TestWalk(t *testing.T) {
 		},
 		{ // 41
 			"var a",
-			func(m *javascript.Module) javascript.Type {
-				return nil
-			},
+			nilRet,
 			nil,
 		},
 		{ // 42
