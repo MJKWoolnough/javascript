@@ -339,6 +339,32 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "AssignmentExpression"},
 		},
+		{ // 47
+			"var [] = []",
+			nilRet,
+			nil,
+		},
+		{ // 48
+			"var [a, b, ...c] = []",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ArrayBindingPattern.BindingElementList[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ArrayBindingPattern", "BindingElement"},
+		},
+		{ // 49
+			"var [a, b, ...c] = []",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ArrayBindingPattern.BindingElementList[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ArrayBindingPattern", "BindingElement"},
+		},
+		{ // 50
+			"var [a, b, ...c] = []",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].ArrayBindingPattern.BindingRestElement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "VariableStatement", "LexicalBinding", "ArrayBindingPattern", "BindingElement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
