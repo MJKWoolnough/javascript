@@ -496,6 +496,27 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseANDExpression", "EqualityExpression", "RelationalExpression", "ShiftExpression", "AdditiveExpression", "MultiplicativeExpression", "ExponentiationExpression", "UnaryExpression", "UpdateExpression", "LeftHandSideExpression", "NewExpression", "MemberExpression", "PrimaryExpression", "ParenthesizedExpression", "AssignmentExpression", "AssignmentPattern", "ObjectAssignmentPattern"},
 		},
+		{ // 70
+			"[a, b, ...c] = d",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "AssignmentElement"},
+		},
+		{ // 71
+			"[a, b, ...c] = d",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "AssignmentElement"},
+		},
+		{ // 72
+			"[a, b, ...c] = d",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentRestElement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "LeftHandSideExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
