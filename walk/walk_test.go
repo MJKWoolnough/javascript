@@ -531,6 +531,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "AssignmentElement", "AssignmentExpression"},
 		},
+		{ // 75
+			"[a = b] = c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.LeftHandSideExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "AssignmentElement", "DestructuringAssignmentTarget", "LeftHandSideExpression"},
+		},
+		{ // 76
+			"[[a] = b] = c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].AssignmentPattern.ArrayAssignmentPattern.AssignmentElements[0].DestructuringAssignmentTarget.AssignmentPattern
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "AssignmentPattern", "ArrayAssignmentPattern", "AssignmentElement", "DestructuringAssignmentTarget", "AssignmentPattern"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
