@@ -581,32 +581,26 @@ func walkUpdateExpression(t *javascript.UpdateExpression, h Handler) error {
 }
 
 func walkAssignmentExpression(t *javascript.AssignmentExpression, h Handler) error {
-	if t.ConditionalExpression != nil {
-		if err := h.Handle(t.ConditionalExpression); err != nil {
-			return err
-		}
-	}
-
-	if t.ArrowFunction != nil {
-		if err := h.Handle(t.ArrowFunction); err != nil {
-			return err
-		}
-	}
-
 	if t.LeftHandSideExpression != nil {
 		if err := h.Handle(t.LeftHandSideExpression); err != nil {
 			return err
 		}
-	}
 
-	if t.AssignmentPattern != nil {
+		if t.AssignmentExpression != nil {
+			return h.Handle(t.AssignmentExpression)
+		}
+	} else if t.AssignmentPattern != nil {
 		if err := h.Handle(t.AssignmentPattern); err != nil {
 			return err
 		}
-	}
 
-	if t.AssignmentExpression != nil {
-		return h.Handle(t.AssignmentExpression)
+		if t.AssignmentExpression != nil {
+			return h.Handle(t.AssignmentExpression)
+		}
+	} else if t.ConditionalExpression != nil {
+		return h.Handle(t.ConditionalExpression)
+	} else if t.ArrowFunction != nil {
+		return h.Handle(t.ArrowFunction)
 	}
 
 	return nil
