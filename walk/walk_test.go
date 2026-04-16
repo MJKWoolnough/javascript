@@ -685,6 +685,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression"},
 		},
+		{ // 97
+			"a ^ b",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseXORExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseXORExpression"},
+		},
+		{ // 98
+			"a ^ b",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseANDExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
