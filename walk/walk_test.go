@@ -769,6 +769,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseANDExpression", "EqualityExpression", "RelationalExpression", "ShiftExpression", "AdditiveExpression", "MultiplicativeExpression"},
 		},
+		{ // 109
+			"a * b",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.MultiplicativeExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseANDExpression", "EqualityExpression", "RelationalExpression", "ShiftExpression", "AdditiveExpression", "MultiplicativeExpression", "MultiplicativeExpression"},
+		},
+		{ // 110
+			"a * b",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression.LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression.ExponentiationExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ConditionalExpression", "LogicalORExpression", "LogicalANDExpression", "BitwiseORExpression", "BitwiseXORExpression", "BitwiseANDExpression", "EqualityExpression", "RelationalExpression", "ShiftExpression", "AdditiveExpression", "MultiplicativeExpression", "ExponentiationExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
