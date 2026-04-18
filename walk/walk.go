@@ -1011,9 +1011,7 @@ func walkPropertyDefinition(t *javascript.PropertyDefinition, h Handler) error {
 		if err := h.Handle(t.AssignmentExpression); err != nil {
 			return err
 		}
-	}
-
-	if t.MethodDefinition != nil {
+	} else if t.MethodDefinition != nil {
 		return h.Handle(t.MethodDefinition)
 	}
 
