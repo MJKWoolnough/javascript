@@ -819,15 +819,9 @@ func walkCallExpression(t *javascript.CallExpression, h Handler) error {
 		if err := h.Handle(t.MemberExpression); err != nil {
 			return err
 		}
-	}
-
-	if t.ImportCall != nil {
-		if err := h.Handle(t.ImportCall); err != nil {
-			return err
-		}
-	}
-
-	if t.CallExpression != nil {
+	} else if t.ImportCall != nil {
+		return h.Handle(t.ImportCall)
+	} else if t.CallExpression != nil {
 		if err := h.Handle(t.CallExpression); err != nil {
 			return err
 		}
@@ -837,15 +831,11 @@ func walkCallExpression(t *javascript.CallExpression, h Handler) error {
 		if err := h.Handle(t.Arguments); err != nil {
 			return err
 		}
-	}
-
-	if t.Expression != nil {
+	} else if t.Expression != nil {
 		if err := h.Handle(t.Expression); err != nil {
 			return err
 		}
-	}
-
-	if t.TemplateLiteral != nil {
+	} else if t.TemplateLiteral != nil {
 		return h.Handle(t.TemplateLiteral)
 	}
 
