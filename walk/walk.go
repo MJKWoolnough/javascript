@@ -699,15 +699,11 @@ func walkOptionalExpression(t *javascript.OptionalExpression, h Handler) error {
 		if err := h.Handle(t.MemberExpression); err != nil {
 			return err
 		}
-	}
-
-	if t.CallExpression != nil {
+	} else if t.CallExpression != nil {
 		if err := h.Handle(t.CallExpression); err != nil {
 			return err
 		}
-	}
-
-	if t.OptionalExpression != nil {
+	} else if t.OptionalExpression != nil {
 		if err := h.Handle(t.OptionalExpression); err != nil {
 			return err
 		}
