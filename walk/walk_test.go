@@ -1572,6 +1572,27 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "Block"},
 		},
+		{ // 228
+			"class a{}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration"},
+		},
+		{ // 229
+			"function a(){}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration"},
+		},
+		{ // 230
+			"let a;",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.LexicalDeclaration
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "LexicalDeclaration"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
