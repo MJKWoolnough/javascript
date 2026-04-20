@@ -1532,6 +1532,46 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "WithStatement", "Statement"},
 		},
+		{ // 222
+			"try {} catch (a) {}",
+			nilRet,
+			nil,
+		},
+		{ // 223
+			"try {} catch (a) {} finally {}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.TryStatement.TryBlock
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "Block"},
+		},
+		{ // 224
+			"try {} catch ({a}) {} finally {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterObjectBindingPattern
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "ObjectBindingPattern"},
+		},
+		{ // 225
+			"try {} catch ([a]) {} finally {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchParameterArrayBindingPattern
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "ArrayBindingPattern"},
+		},
+		{ // 226
+			"try {} catch (a) {} finally {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.TryStatement.CatchBlock
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "Block"},
+		},
+		{ // 227
+			"try {} catch (a) {} finally {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.TryStatement.FinallyBlock
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "TryStatement", "Block"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
