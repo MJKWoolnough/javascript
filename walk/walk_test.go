@@ -1325,7 +1325,7 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementDo", "Expression"},
 		},
-		{ // 192
+		{ // 191
 			"while (a) b",
 			nilRet,
 			nil,
@@ -1343,6 +1343,95 @@ func TestWalk(t *testing.T) {
 				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementWhile.Statement
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementWhile", "Statement"},
+		},
+		{ // 194
+			"for(;;) {}",
+			nilRet,
+			nil,
+		},
+		{ // 195
+			"for (a; b; c) d",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "Expression"},
+		},
+		{ // 196
+			"for (a; b; c) d",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Conditional
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "Expression"},
+		},
+		{ // 197
+			"for (a; b; c) d",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Afterthought
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "Expression"},
+		},
+		{ // 198
+			"for (a; b; c) d",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Statement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "Statement"},
+		},
+		{ // 199
+			"for (var a, b;;) c",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitVar[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "LexicalBinding"},
+		},
+		{ // 200
+			"for (var a, b;;) c",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitVar[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "LexicalBinding"},
+		},
+		{ // 201
+			"for (let a, b;;) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.InitLexical
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "LexicalDeclaration"},
+		},
+		{ // 202
+			"for (a of b) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.LeftHandSideExpression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "LeftHandSideExpression"},
+		},
+		{ // 203
+			"for (let {a} of b) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternObject
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "ObjectBindingPattern"},
+		},
+		{ // 204
+			"for (const [a] of b) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.ForBindingPatternArray
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "ArrayBindingPattern"},
+		},
+		{ // 205
+			"for (a in b) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.In
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "Expression"},
+		},
+		{ // 206
+			"for (a of b) c",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Statement.IterationStatementFor.Of
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "AssignmentExpression"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
