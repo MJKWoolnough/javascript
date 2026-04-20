@@ -1357,9 +1357,7 @@ func walkTryStatement(t *javascript.TryStatement, h Handler) error {
 		if err := h.Handle(t.CatchParameterObjectBindingPattern); err != nil {
 			return err
 		}
-	}
-
-	if t.CatchParameterArrayBindingPattern != nil {
+	} else if t.CatchParameterArrayBindingPattern != nil {
 		if err := h.Handle(t.CatchParameterArrayBindingPattern); err != nil {
 			return err
 		}
