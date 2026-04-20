@@ -1513,6 +1513,25 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause", "StatementListItem"},
 		},
+		{ // 219
+			"with (a) b",
+			nilRet,
+			nil,
+		},
+		{ // 220
+			"with (a) b",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.WithStatement.Expression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "WithStatement", "Expression"},
+		},
+		{ // 221
+			"with (a) b",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.WithStatement.Statement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "WithStatement", "Statement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
