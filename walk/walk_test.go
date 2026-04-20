@@ -1433,6 +1433,60 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementFor", "AssignmentExpression"},
 		},
+		{ // 207
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			nilRet,
+			nil,
+		},
+		{ // 208
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.Expression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "Expression"},
+		},
+		{ // 209
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause"},
+		},
+		{ // 210
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause"},
+		},
+		{ // 211
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.DefaultClause[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "StatementListItem"},
+		},
+		{ // 212
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.DefaultClause[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "StatementListItem"},
+		},
+		{ // 213
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.PostDefaultCaseClauses[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause"},
+		},
+		{ // 214
+			"switch(a){case b:case c:default:d;e;case d:case e:}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.PostDefaultCaseClauses[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
