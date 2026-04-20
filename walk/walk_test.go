@@ -1487,6 +1487,32 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause"},
 		},
+		{ // 215
+			"switch(1){case a:b;c;}",
+			nilRet,
+			nil,
+		},
+		{ // 216
+			"switch(1){case a:b;c;}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0].Expression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause", "Expression"},
+		},
+		{ // 217
+			"switch(1){case a:b;c;}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0].StatementList[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause", "StatementListItem"},
+		},
+		{ // 218
+			"switch(1){case a:b;c;}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.SwitchStatement.CaseClauses[0].StatementList[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "SwitchStatement", "CaseClause", "StatementListItem"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
