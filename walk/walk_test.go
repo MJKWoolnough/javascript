@@ -1281,7 +1281,7 @@ func TestWalk(t *testing.T) {
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "Expression", "AssignmentExpression", "ArrowFunction", "Block"},
 		},
 		{ // 184
-			"if (a) b; else c",
+			"if (a) b",
 			nilRet,
 			nil,
 		},
@@ -1305,6 +1305,25 @@ func TestWalk(t *testing.T) {
 				return m.ModuleListItems[0].StatementListItem.Statement.IfStatement.ElseStatement
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IfStatement", "Statement"},
+		},
+		{ // 188
+			"do a; while(b)",
+			nilRet,
+			nil,
+		},
+		{ // 189
+			"do a; while(b)",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementDo.Statement
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementDo", "Statement"},
+		},
+		{ // 190
+			"do a; while(b)",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Statement.IterationStatementDo.Expression
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Statement", "IterationStatementDo", "Expression"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
