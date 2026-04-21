@@ -405,7 +405,7 @@ func walkMethodDefinition(t *javascript.MethodDefinition, h Handler) error {
 		return err
 	}
 
-	return h.Handle(t.FunctionBody)
+	return h.Handle(&t.FunctionBody)
 }
 
 func walkPropertyName(t *javascript.PropertyName, h Handler) error {
