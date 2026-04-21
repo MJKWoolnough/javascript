@@ -1593,6 +1593,32 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "LexicalDeclaration"},
 		},
+		{ // 231
+			"class a {c(){} d(){}}",
+			nilRet,
+			nil,
+		},
+		{ // 232
+			"class a extends b {c(){} d(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassHeritage
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "LeftHandSideExpression"},
+		},
+		{ // 233
+			"class a extends b {c(){} d(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement"},
+		},
+		{ // 234
+			"class a extends b {c(){} d(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
