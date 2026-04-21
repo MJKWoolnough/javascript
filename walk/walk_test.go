@@ -1594,7 +1594,7 @@ func TestWalk(t *testing.T) {
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "LexicalDeclaration"},
 		},
 		{ // 231
-			"class a {c(){} d(){}}",
+			"class a extends b {c(){} d(){}}",
 			nilRet,
 			nil,
 		},
@@ -1618,6 +1618,27 @@ func TestWalk(t *testing.T) {
 				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[1]
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement"},
+		},
+		{ // 235
+			"class a  {static{} b = 1; c(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "Block"},
+		},
+		{ // 236
+			"class a  {static{} b = 1; c(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[1].FieldDefinition
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "FieldDefinition"},
+		},
+		{ // 237
+			"class a  {static{} b = 1; c(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[2].MethodDefinition
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "MethodDefinition"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
