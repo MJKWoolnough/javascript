@@ -1766,3 +1766,54 @@ func TestWalk(t *testing.T) {
 		}
 	}
 }
+
+func TestWalkScript(t *testing.T) {
+	for n, test := range [...]struct {
+		Input string
+		End   func(m *javascript.Script) javascript.Type
+		Level []string
+	}{
+		{ // 1
+			"a;b",
+			func(s *javascript.Script) javascript.Type { return nil },
+			nil,
+		},
+		{ // 2
+			"a;b",
+			func(s *javascript.Script) javascript.Type {
+				return &s.StatementList[0]
+			},
+			[]string{"Script", "StatementListItem"},
+		},
+		{ // 3
+			"a;b",
+			func(s *javascript.Script) javascript.Type {
+				return &s.StatementList[1]
+			},
+			[]string{"Script", "StatementListItem"},
+		},
+	} {
+		tk := parser.NewStringTokeniser(test.Input)
+
+		m, err := javascript.ParseScript(&tk)
+		if err != nil {
+			t.Errorf("test %d: unexpected error parsing script: %s", n+1, err)
+		} else {
+			w := walker{end: test.End(m)}
+
+			if err := w.Handle(m); err == nil && test.Level != nil {
+				t.Errorf("test %d: expected to recieve sentinel error, but didn't", n+1)
+			} else if err != nil && test.Level == nil {
+				t.Errorf("test %d: expected no error, but recieved %v", n+1, err)
+			} else if len(w.level) != len(test.Level) {
+				t.Errorf("test %d: expected to have %d levels, got %d", n+1, len(test.Level), len(w.level))
+			} else {
+				for m, l := range w.level {
+					if e := test.Level[len(test.Level)-m-1]; e != l {
+						t.Errorf("test %d.%d: expected to read level %s, got %s", n+1, m+1, e, l)
+					}
+				}
+			}
+		}
+	}
+}
