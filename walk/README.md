@@ -1,40 +1,68 @@
 # walk
+
+[![CI](https://github.com/MJKWoolnough/javascript/actions/workflows/go-checks.yml/badge.svg)](https://github.com/MJKWoolnough/javascript/actions)
+[![Go Reference](https://pkg.go.dev/badge/vimagination.zapto.org/javascript.svg)](https://pkg.go.dev/vimagination.zapto.org/javascript/walk)
+[![Go Report Card](https://goreportcard.com/badge/vimagination.zapto.org/javascript/walk)](https://goreportcard.com/report/vimagination.zapto.org/javascript/walk)
+
 --
     import "vimagination.zapto.org/javascript/walk"
 
-Package walk provides a javascript type walker
+Package walk provides a JavaScript type walker.
+
+## Highlights
+
+ - Simple interface to allow control over walking through parsed JavaScript.
+ - Allows modification to the tree as it's being walked.
 
 ## Usage
 
-#### func  Walk
-
 ```go
-func Walk(t javascript.Type, fn Handler) error
-```
-Walk calls the Handle function on the given interface for each non-nil,
-non-Token field of the given javascript type.
+package main
 
-#### type Handler
+import (
+	"fmt"
 
-```go
-type Handler interface {
-	Handle(javascript.Type) error
+	"vimagination.zapto.org/javascript"
+	"vimagination.zapto.org/javascript/walk"
+	"vimagination.zapto.org/parser"
+)
+
+func main() {
+	src := "const a = 'b' - `c`"
+	tk := parser.NewStringTokeniser(src)
+
+	m, _ := javascript.ParseModule(&tk)
+
+	var walkFn walk.Handler
+
+	walkFn = walk.HandlerFunc(func(t javascript.Type) error {
+		switch t := t.(type) {
+		case *javascript.AdditiveExpression:
+			if t.AdditiveOperator == javascript.AdditiveMinus {
+				t.AdditiveOperator = javascript.AdditiveAdd
+			}
+		case *javascript.PrimaryExpression:
+			if t.Literal != nil {
+				t.Literal.Data = "'Hello'"
+			}
+		case *javascript.TemplateLiteral:
+			t.NoSubstitutionTemplate.Data = "`, world`"
+		}
+
+		return walk.Walk(t, walkFn)
+	})
+
+	walk.Walk(m, walkFn)
+
+	fmt.Printf("%s", m)
+
+	// Output:
+	// const a = 'Hello' + `, world`;
 }
 ```
 
-Handler is used to process javascript types.
+## Documentation
 
-#### type HandlerFunc
+Full API docs can be found at:
 
-```go
-type HandlerFunc func(javascript.Type) error
-```
-
-HandlerFunc wraps a func to implement Handler interface.
-
-#### func (HandlerFunc) Handle
-
-```go
-func (h HandlerFunc) Handle(t javascript.Type) error
-```
-Handle implements the Handler interface.
+https://pkg.go.dev/vimagination.zapto.org/javascript/walk
