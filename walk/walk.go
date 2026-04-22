@@ -1,4 +1,4 @@
-// Package walk provides a javascript type walker
+// Package walk provides a JavaScript type walker.
 package walk
 
 import "vimagination.zapto.org/javascript"
