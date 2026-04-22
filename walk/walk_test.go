@@ -1694,6 +1694,34 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration", "Block"},
 		},
+		{ // 246
+			"function a(b, c, ...[d]) {}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration", "FormalParameters", "BindingElement"},
+		},
+		{ // 247
+			"function a(b, c, ...[d]) {}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[1]
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration", "FormalParameters", "BindingElement"},
+		},
+		{ // 248
+			"function a(b, c, ...[d]) {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ArrayBindingPattern
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration", "FormalParameters", "ArrayBindingPattern"},
+		},
+		{ // 249
+			"function a(b, c, ...{d}) {}",
+			func(m *javascript.Module) javascript.Type {
+				return m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.ObjectBindingPattern
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "FunctionDeclaration", "FormalParameters", "ObjectBindingPattern"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
