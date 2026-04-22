@@ -1620,44 +1620,65 @@ func TestWalk(t *testing.T) {
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement"},
 		},
 		{ // 235
-			"class a  {static{} b = 1; c(){}}",
+			"class a {static{} b = 1; c(){}}",
 			func(m *javascript.Module) javascript.Type {
 				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].ClassStaticBlock
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "Block"},
 		},
 		{ // 236
-			"class a  {static{} b = 1; c(){}}",
+			"class a {static{} b = 1; c(){}}",
 			func(m *javascript.Module) javascript.Type {
 				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[1].FieldDefinition
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "FieldDefinition"},
 		},
 		{ // 237
-			"class a  {static{} b = 1; c(){}}",
+			"class a {static{} b = 1; c(){}}",
 			func(m *javascript.Module) javascript.Type {
 				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[2].MethodDefinition
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "MethodDefinition"},
 		},
 		{ // 238
-			"class a  {b}",
+			"class a {#b}",
 			nilRet,
 			nil,
 		},
 		{ // 239
-			"class a  {b = c}",
+			"class a {b = c}",
 			func(m *javascript.Module) javascript.Type {
 				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.ClassElementName
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "FieldDefinition", "ClassElementName"},
 		},
 		{ // 240
-			"class a  {b = c}",
+			"class a {b = c}",
 			func(m *javascript.Module) javascript.Type {
 				return m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].FieldDefinition.Initializer
 			},
 			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "FieldDefinition", "AssignmentExpression"},
+		},
+		{ // 241
+			"class a {b(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.ClassElementName
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "MethodDefinition", "ClassElementName"},
+		},
+		{ // 242
+			"class a {b(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.Params
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "MethodDefinition", "FormalParameters"},
+		},
+		{ // 243
+			"class a {b(){}}",
+			func(m *javascript.Module) javascript.Type {
+				return &m.ModuleListItems[0].StatementListItem.Declaration.ClassDeclaration.ClassBody[0].MethodDefinition.FunctionBody
+			},
+			[]string{"Module", "ModuleItem", "StatementListItem", "Declaration", "ClassDeclaration", "ClassElement", "MethodDefinition", "Block"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
