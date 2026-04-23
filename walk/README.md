@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/MJKWoolnough/javascript/actions/workflows/go-checks.yml/badge.svg)](https://github.com/MJKWoolnough/javascript/actions)
 [![Go Reference](https://pkg.go.dev/badge/vimagination.zapto.org/javascript.svg)](https://pkg.go.dev/vimagination.zapto.org/javascript/walk)
-[![Go Report Card](https://goreportcard.com/badge/vimagination.zapto.org/javascript/walk)](https://goreportcard.com/report/vimagination.zapto.org/javascript/walk)
+[![Go Report Card](https://goreportcard.com/badge/vimagination.zapto.org/javascript)](https://goreportcard.com/report/vimagination.zapto.org/javascript)
 
 --
     import "vimagination.zapto.org/javascript/walk"
