@@ -176,8 +176,8 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	delete(s.Bindings, params)
 	delete(s.Bindings, children)
 
-	replaceParamsAndChildren(m, e)
 	j.handleImports(m, s)
+	replaceParamsAndChildren(m, e)
 
 	var expression *javascript.Expression
 
@@ -224,6 +224,10 @@ func replaceTagName(m *javascript.Module, name string) {
 		case *javascript.ImportSpecifier:
 			if t.IdentifierName != nil && t.IdentifierName.Data == tagName {
 				t.IdentifierName.Data = name
+			}
+
+			if t.ImportedBinding != nil && t.ImportedBinding.Data == tagName {
+				t.ImportedBinding.Data = name
 			}
 		}
 
@@ -287,7 +291,12 @@ func (i *importIdent) Handle(t javascript.Type) error {
 }
 
 func (j *jsxTransformer) handleImports(m *javascript.Module, s *scope.Scope) {
-	for binding, bs := range s.Bindings {
+	old := s.Bindings
+	s.Bindings = make(map[string][]scope.Binding, len(s.Bindings))
+
+	for binding, bs := range old {
+		s.Bindings[binding] = bs
+
 		if len(bs) < 2 || bs[0].BindingType != scope.BindingImport {
 			continue
 		}
@@ -321,7 +330,7 @@ func getImportID(m *javascript.Module, tk *javascript.Token) string {
 
 func hasIdentifier(ni *javascript.NamedImports, tk *javascript.Token) string {
 	for _, i := range ni.ImportList {
-		if i.IdentifierName == tk {
+		if i.IdentifierName.Data == tk.Data {
 			return i.ImportedBinding.Data
 		}
 	}
