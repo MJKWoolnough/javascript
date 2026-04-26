@@ -379,8 +379,24 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		return err
 	}
 
+	imports, err := existingImports(m)
+	if err != nil {
+		return err
+	}
+
+	s, err := scope.Build(m, nil)
+	if err != nil {
+		return err
+	}
+
+	rename := newIdentsToRename(m, s, imports)
+	renameNewBindings(s, rename)
+
+	return nil
+}
+
+func existingImports(m *javascript.Module) (map[string]*importData, error) {
 	imports := make(map[string]*importData)
-	rename := []string{}
 
 	for _, mi := range m.ModuleListItems {
 		if mi.ImportDeclaration == nil {
@@ -389,7 +405,7 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 
 		from, err := javascript.Unquote(mi.ImportDeclaration.FromClause.ModuleSpecifier.Data)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		id := &importData{
@@ -414,12 +430,13 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		imports[from] = id
 	}
 
-	s, err := scope.Build(m, nil)
-	if err != nil {
-		return err
-	}
+	return imports, nil
+}
 
+func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]*importData) []string {
 	b := make(map[string][]scope.Binding, len(s.Bindings))
+
+	var rename []string
 
 	for binding, bs := range s.Bindings {
 		if !strings.HasPrefix(binding, "\x00") {
@@ -506,6 +523,10 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 
 	s.Bindings = b
 
+	return rename
+}
+
+func renameNewBindings(s *scope.Scope, rename []string) {
 	for _, name := range rename {
 		s.Rename(name, "\x00")
 
@@ -523,8 +544,6 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 
 		s.Rename("\x00", newName)
 	}
-
-	return nil
 }
 
 var (
