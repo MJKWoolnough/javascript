@@ -479,14 +479,17 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 				}
 
 				imp.NamedImports.ImportList = append(imp.NamedImports.ImportList, javascript.ImportSpecifier{
-					IdentifierName: tk,
-					ImportedBinding: &javascript.Token{
+					IdentifierName: &javascript.Token{
 						Token: parser.Token{
 							Data: ident,
 						},
 					},
+					ImportedBinding: tk,
 				})
 
+				slices.SortFunc(imp.NamedImports.ImportList, func(a, b javascript.ImportSpecifier) int {
+					return strings.Compare(a.ImportedBinding.Data, b.ImportedBinding.Data)
+				})
 			}
 
 			ni = binding
