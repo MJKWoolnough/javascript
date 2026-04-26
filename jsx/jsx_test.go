@@ -28,6 +28,16 @@ func TestProcess(t *testing.T) {
 			`import * as tag from '@tag'; tag.T('TAG_NAME')`,
 			"import * as ns from \"@tag\";\n\nconst a = (ns.T(\"b\"));",
 		},
+		{ // 4
+			"const a = <b c='1'/>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {c: \"1\"}));",
+		},
+		{ // 5
+			"const a = <b><c d=<e />/></b>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {}, [(tag(\"c\", {d: (tag(\"e\", {}, []))}, []))]));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
