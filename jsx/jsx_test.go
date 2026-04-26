@@ -38,6 +38,11 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS, CHILDREN)`,
 			"const a = (tag(\"b\", {}, [(tag(\"c\", {d: (tag(\"e\", {}, []))}, []))]));",
 		},
+		{ // 6
+			"const a = <b><c d=<a />/></b>",
+			`{{ if .InHTML }}import {TAG_NAME} from '@html';TAG_NAME(PARAMS, CHILDREN){{else}}tag('TAG_NAME', PARAMS, CHILDREN){{end}}`,
+			"import {a as a_1, b} from \"@html\";\n\nconst a = (b({}, [(tag(\"c\", {d: (a_1({}, []))}, []))]));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
