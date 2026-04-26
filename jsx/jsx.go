@@ -20,9 +20,8 @@ const (
 )
 
 type jsxTransformer struct {
-	identifiers map[string]map[string][]scope.Binding
-	tmpl        *template.Template
-	namespace   string
+	tmpl      *template.Template
+	namespace string
 }
 
 func (j *jsxTransformer) Handle(t javascript.Type) error {
@@ -178,7 +177,7 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	delete(s.Bindings, children)
 
 	replaceParamsAndChildren(m, e)
-	j.gatherIdentifiers(m, s)
+	j.handleImports(m, s)
 
 	var expression *javascript.Expression
 
@@ -261,6 +260,7 @@ func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
 }
 
 type importIdent struct {
+	ident    string
 	tk       *javascript.Token
 	contains bool
 }
@@ -268,11 +268,15 @@ type importIdent struct {
 func (i *importIdent) Handle(t javascript.Type) error {
 	switch t := t.(type) {
 	case *javascript.ImportClause:
-		if t.ImportedDefaultBinding == i.tk || t.NameSpaceImport == i.tk {
+		if t.ImportedDefaultBinding == i.tk {
+			i.contains = true
+		} else if t.NameSpaceImport == i.tk {
+			i.ident = "*"
 			i.contains = true
 		}
 	case *javascript.ImportSpecifier:
-		if t.IdentifierName == i.tk {
+		if t.ImportedBinding == i.tk {
+			i.ident = t.IdentifierName.Data
 			i.contains = true
 		}
 	default:
@@ -282,39 +286,47 @@ func (i *importIdent) Handle(t javascript.Type) error {
 	return nil
 }
 
-func (j *jsxTransformer) gatherIdentifiers(m *javascript.Module, s *scope.Scope) {
-	imports := make(map[*javascript.Token]string)
+func (j *jsxTransformer) handleImports(m *javascript.Module, s *scope.Scope) {
+	for binding, bs := range s.Bindings {
+		if len(bs) < 2 || bs[0].BindingType != scope.BindingImport {
+			continue
+		}
 
-	for _, b := range s.Bindings {
-		if b[0].BindingType == scope.BindingImport {
-			for _, mi := range m.ModuleListItems {
-				if mi.ImportDeclaration != nil {
-					ii := importIdent{tk: b[0].Token}
+		s.Rename(binding, getImportID(m, bs[0].Token))
+	}
+}
 
-					walk.Walk(mi, &ii)
+func getImportID(m *javascript.Module, tk *javascript.Token) string {
+	for _, mli := range m.ModuleListItems {
+		if mli.ImportDeclaration == nil {
+			continue
+		}
 
-					if ii.contains {
-						imports[b[0].Token] = mi.ImportDeclaration.FromClause.ModuleSpecifier.Data
+		from, err := javascript.Unquote(mli.ImportDeclaration.FromClause.ModuleSpecifier.Data)
+		if err != nil {
+			continue
+		}
 
-						break
-					}
-				}
-			}
+		if mli.ImportDeclaration.ImportedDefaultBinding == tk {
+			return "\x00\x00" + from
+		} else if mli.ImportDeclaration.NameSpaceImport == tk {
+			return "\x00*\x00" + from
+		} else if bi := hasIdentifier(mli.ImportDeclaration.NamedImports, tk); bi != "" {
+			return "\x00" + bi + "\x00" + from
 		}
 	}
 
-	for _, b := range s.Bindings {
-		is := imports[b[0].Token]
-		ident := b[0].Token.Data
+	return ""
+}
 
-		imp, ok := j.identifiers[ident]
-		if !ok {
-			imp = make(map[string][]scope.Binding)
-			j.identifiers[ident] = imp
+func hasIdentifier(ni *javascript.NamedImports, tk *javascript.Token) string {
+	for _, i := range ni.ImportList {
+		if i.IdentifierName == tk {
+			return i.ImportedBinding.Data
 		}
-
-		imp[is] = append(imp[is], b[1:]...)
 	}
+
+	return ""
 }
 
 func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
@@ -344,14 +356,158 @@ func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
 	return ol
 }
 
+type importData struct {
+	*javascript.ImportDeclaration
+	bindings map[string]string
+}
+
 func Process(m *javascript.Module, tmpl *template.Template) error {
 	j := &jsxTransformer{
-		identifiers: make(map[string]map[string][]scope.Binding),
-		tmpl:        tmpl,
+		tmpl: tmpl,
 	}
 
 	if err := walk.Walk(m, j); err != nil {
 		return err
+	}
+
+	imports := make(map[string]*importData)
+	rename := []string{}
+
+	for _, mi := range m.ModuleListItems {
+		if mi.ImportDeclaration == nil {
+			continue
+		}
+
+		from, err := javascript.Unquote(mi.ImportDeclaration.FromClause.ModuleSpecifier.Data)
+		if err != nil {
+			return err
+		}
+
+		id := &importData{
+			ImportDeclaration: mi.ImportDeclaration,
+			bindings:          make(map[string]string),
+		}
+
+		if id.ImportedDefaultBinding != nil {
+			id.bindings[""] = id.ImportedDefaultBinding.Data
+		}
+
+		if id.NameSpaceImport != nil {
+			id.bindings["*"] = id.NameSpaceImport.Data
+		}
+
+		if id.NamedImports != nil {
+			for _, ni := range id.NamedImports.ImportList {
+				id.bindings[ni.ImportedBinding.Data] = ni.IdentifierName.Data
+			}
+		}
+
+		imports[from] = id
+	}
+
+	s, err := scope.ModuleScope(m, nil)
+	if err != nil {
+		return err
+	}
+
+	b := make(map[string][]scope.Binding, len(s.Bindings))
+
+	for binding, bs := range s.Bindings {
+		if !strings.HasPrefix(binding, "\x00") {
+			b[binding] = bs
+
+			continue
+		}
+
+		ident, from, _ := strings.Cut(binding[1:], "\x00")
+
+		imp, ok := imports[from]
+		if !ok {
+			id := &javascript.ImportDeclaration{
+				FromClause: javascript.FromClause{
+					ModuleSpecifier: &javascript.Token{
+						Token: parser.Token{
+							Data: strconv.Quote(from),
+						},
+					},
+				},
+			}
+
+			m.ModuleListItems = slices.Insert(m.ModuleListItems, 0, javascript.ModuleItem{
+				ImportDeclaration: id,
+			})
+
+			imp = &importData{
+				ImportDeclaration: id,
+				bindings:          make(map[string]string),
+			}
+			imports[from] = imp
+		}
+
+		if imp.ImportClause == nil {
+			imp.ImportClause = new(javascript.ImportClause)
+		}
+
+		ni, ok := imp.bindings[ident]
+		if !ok {
+			tk := &javascript.Token{
+				Token: parser.Token{
+					Data: ident,
+				},
+			}
+			imp.bindings[ident] = tk.Data
+
+			switch ident {
+			case "":
+				binding = "\x00def\x00" + from
+				imp.ImportedDefaultBinding = tk
+			case "*":
+				binding = "\x00ns\x00" + from
+				imp.NameSpaceImport = tk
+			default:
+				if imp.NamedImports == nil {
+					imp.NamedImports = new(javascript.NamedImports)
+				}
+
+				imp.NamedImports.ImportList = append(imp.NamedImports.ImportList, javascript.ImportSpecifier{
+					IdentifierName: tk,
+					ImportedBinding: &javascript.Token{
+						Token: parser.Token{
+							Data: ident,
+						},
+					},
+				})
+
+			}
+
+			ni = binding
+			b[ni] = append(b[ni], scope.Binding{
+				BindingType: scope.BindingImport,
+				Scope:       s,
+				Token:       tk,
+			})
+		}
+
+		b[ni] = append(b[ni], bs...)
+
+		rename = append(rename, ni)
+	}
+
+	s.Bindings = b
+
+	for _, name := range rename {
+		s.Rename(name, "\x00")
+
+		name, _, _ = strings.Cut(name[1:], "\x00")
+		num := 0
+		newName := name
+
+		for s.IdentifierInUse(newName) {
+			num++
+			newName = name + "_" + strconv.Itoa(num)
+		}
+
+		s.Rename("\x00", newName)
 	}
 
 	return nil
