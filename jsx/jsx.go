@@ -168,7 +168,7 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
 	replaceTagName(m, e.ElementName.Identifier.Data)
 
-	s, err := scope.ModuleScope(m, nil)
+	s, err := scope.Build(m, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -405,7 +405,7 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		imports[from] = id
 	}
 
-	s, err := scope.ModuleScope(m, nil)
+	s, err := scope.Build(m, nil)
 	if err != nil {
 		return err
 	}
