@@ -407,7 +407,7 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 
 		if id.NamedImports != nil {
 			for _, ni := range id.NamedImports.ImportList {
-				id.bindings[ni.ImportedBinding.Data] = ni.IdentifierName.Data
+				id.bindings[ni.IdentifierName.Data] = ni.ImportedBinding.Data
 			}
 		}
 
@@ -501,7 +501,6 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		}
 
 		b[ni] = append(b[ni], bs...)
-
 		rename = append(rename, ni)
 	}
 
@@ -510,7 +509,10 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 	for _, name := range rename {
 		s.Rename(name, "\x00")
 
-		name, _, _ = strings.Cut(name[1:], "\x00")
+		if strings.HasPrefix(name, "\x00") {
+			name, _, _ = strings.Cut(name[1:], "\x00")
+		}
+
 		num := 0
 		newName := name
 
