@@ -263,33 +263,6 @@ func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
 	walk.Walk(m, h)
 }
 
-type importIdent struct {
-	ident    string
-	tk       *javascript.Token
-	contains bool
-}
-
-func (i *importIdent) Handle(t javascript.Type) error {
-	switch t := t.(type) {
-	case *javascript.ImportClause:
-		if t.ImportedDefaultBinding == i.tk {
-			i.contains = true
-		} else if t.NameSpaceImport == i.tk {
-			i.ident = "*"
-			i.contains = true
-		}
-	case *javascript.ImportSpecifier:
-		if t.ImportedBinding == i.tk {
-			i.ident = t.IdentifierName.Data
-			i.contains = true
-		}
-	default:
-		walk.Walk(t, i)
-	}
-
-	return nil
-}
-
 func (j *jsxTransformer) handleImports(m *javascript.Module, s *scope.Scope) {
 	old := s.Bindings
 	s.Bindings = make(map[string][]scope.Binding, len(s.Bindings))
