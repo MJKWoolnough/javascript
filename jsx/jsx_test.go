@@ -48,6 +48,11 @@ func TestProcess(t *testing.T) {
 			`{{ if .InHTML }}import {TAG_NAME} from '@html';TAG_NAME(PARAMS, CHILDREN){{else}}tag('TAG_NAME', PARAMS, CHILDREN){{end}}`,
 			"import {a as a_1, b as z} from '@html';\n\nconst a = (z({}, [(tag(\"c\", {d: (a_1({}, []))}, []))]));",
 		},
+		{ // 8
+			"const a = <b />",
+			`import '@OTHER';tag('TAG_NAME')`,
+			"import \"@OTHER\";\n\nconst a = (tag(\"b\"));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
