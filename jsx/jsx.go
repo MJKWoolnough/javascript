@@ -435,19 +435,19 @@ func existingImports(m *javascript.Module) (map[string]*importData, error) {
 func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]*importData) {
 	b := make(map[string][]scope.Binding, len(s.Bindings))
 
-	var rename []string
+	var rename, bindings []string
 
 	for binding, bs := range s.Bindings {
-		if !strings.HasPrefix(binding, "\x00") {
+		if strings.HasPrefix(binding, "\x00") {
+			bindings = append(bindings, binding)
+		} else {
 			b[binding] = bs
 		}
 	}
 
-	for binding, bs := range s.Bindings {
-		if !strings.HasPrefix(binding, "\x00") {
-			continue
-		}
+	slices.Sort(bindings)
 
+	for _, binding := range bindings {
 		ident, from, _ := strings.Cut(binding[1:], "\x00")
 
 		imp, ok := imports[from]
@@ -488,10 +488,8 @@ func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]
 
 			switch ident {
 			case "":
-				binding = "\x00def\x00" + from
 				imp.ImportedDefaultBinding = tk
 			case "*":
-				binding = "\x00ns\x00" + from
 				imp.NameSpaceImport = tk
 			default:
 				if imp.NamedImports == nil {
@@ -520,7 +518,7 @@ func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]
 			})
 		}
 
-		b[ni] = append(b[ni], bs...)
+		b[ni] = append(b[ni], s.Bindings[binding]...)
 		rename = append(rename, ni)
 	}
 
@@ -535,6 +533,13 @@ func renameNewBindings(s *scope.Scope, rename []string) {
 
 		if strings.HasPrefix(name, "\x00") {
 			name, _, _ = strings.Cut(name[1:], "\x00")
+		}
+
+		switch name {
+		case "":
+			name = "def"
+		case "*":
+			name = "ns"
 		}
 
 		num := 0
