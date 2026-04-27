@@ -294,14 +294,7 @@ func getImportID(m *javascript.Module, tk *javascript.Token) string {
 	for _, mli := range m.ModuleListItems {
 		if mli.ImportDeclaration == nil {
 			continue
-		}
-
-		from, err := javascript.Unquote(mli.ImportDeclaration.FromClause.ModuleSpecifier.Data)
-		if err != nil {
-			continue
-		}
-
-		if mli.ImportDeclaration.ImportedDefaultBinding == tk {
+		} else if from, _ := javascript.Unquote(mli.ImportDeclaration.FromClause.ModuleSpecifier.Data); mli.ImportDeclaration.ImportedDefaultBinding == tk {
 			return "\x00\x00" + from
 		} else if mli.ImportDeclaration.NameSpaceImport == tk {
 			return "\x00*\x00" + from
