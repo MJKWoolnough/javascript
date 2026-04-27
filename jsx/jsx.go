@@ -389,8 +389,7 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		return err
 	}
 
-	rename := newIdentsToRename(m, s, imports)
-	renameNewBindings(s, rename)
+	newIdentsToRename(m, s, imports)
 
 	return nil
 }
@@ -433,7 +432,7 @@ func existingImports(m *javascript.Module) (map[string]*importData, error) {
 	return imports, nil
 }
 
-func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]*importData) []string {
+func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]*importData) {
 	b := make(map[string][]scope.Binding, len(s.Bindings))
 
 	var rename []string
@@ -441,7 +440,11 @@ func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]
 	for binding, bs := range s.Bindings {
 		if !strings.HasPrefix(binding, "\x00") {
 			b[binding] = bs
+		}
+	}
 
+	for binding, bs := range s.Bindings {
+		if !strings.HasPrefix(binding, "\x00") {
 			continue
 		}
 
@@ -523,7 +526,7 @@ func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]
 
 	s.Bindings = b
 
-	return rename
+	renameNewBindings(s, rename)
 }
 
 func renameNewBindings(s *scope.Scope, rename []string) {
