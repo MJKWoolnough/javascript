@@ -2,6 +2,7 @@ package jsx
 
 import (
 	"errors"
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ const (
 type jsxTransformer struct {
 	tmpl      *template.Template
 	namespace string
+	imports   map[string]struct{}
 }
 
 func (j *jsxTransformer) Handle(t javascript.Type) error {
@@ -267,6 +269,16 @@ func (j *jsxTransformer) handleImports(m *javascript.Module, s *scope.Scope) {
 	old := s.Bindings
 	s.Bindings = make(map[string][]scope.Binding, len(s.Bindings))
 
+	for _, mli := range m.ModuleListItems {
+		if mli.ImportDeclaration == nil {
+			continue
+		}
+
+		from, _ := javascript.Unquote(mli.ImportDeclaration.FromClause.ModuleSpecifier.Data)
+
+		j.imports[from] = struct{}{}
+	}
+
 	for binding, bs := range old {
 		s.Bindings[binding] = bs
 
@@ -345,7 +357,8 @@ type importData struct {
 
 func Process(m *javascript.Module, tmpl *template.Template) error {
 	j := &jsxTransformer{
-		tmpl: tmpl,
+		tmpl:    tmpl,
+		imports: make(map[string]struct{}),
 	}
 
 	if err := walk.Walk(m, j); err != nil {
@@ -357,14 +370,47 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 		return err
 	}
 
+	addImports(m, imports, j.imports)
+
 	s, err := scope.Build(m, nil)
 	if err != nil {
 		return err
 	}
 
-	newIdentsToRename(m, s, imports)
+	newIdentsToRename(s, imports)
 
 	return nil
+}
+
+func addImports(m *javascript.Module, existing map[string]*importData, imports map[string]struct{}) {
+	imps := slices.Collect(maps.Keys(imports))
+
+	for _, from := range imps {
+		imp, ok := existing[from]
+		if ok {
+			continue
+		}
+
+		id := &javascript.ImportDeclaration{
+			FromClause: javascript.FromClause{
+				ModuleSpecifier: &javascript.Token{
+					Token: parser.Token{
+						Data: strconv.Quote(from),
+					},
+				},
+			},
+		}
+
+		m.ModuleListItems = slices.Insert(m.ModuleListItems, 0, javascript.ModuleItem{
+			ImportDeclaration: id,
+		})
+
+		imp = &importData{
+			ImportDeclaration: id,
+			bindings:          make(map[string]string),
+		}
+		existing[from] = imp
+	}
 }
 
 func existingImports(m *javascript.Module) (map[string]*importData, error) {
@@ -405,7 +451,7 @@ func existingImports(m *javascript.Module) (map[string]*importData, error) {
 	return imports, nil
 }
 
-func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]*importData) {
+func newIdentsToRename(s *scope.Scope, imports map[string]*importData) {
 	b := make(map[string][]scope.Binding, len(s.Bindings))
 
 	var rename, bindings []string
@@ -422,29 +468,7 @@ func newIdentsToRename(m *javascript.Module, s *scope.Scope, imports map[string]
 
 	for _, binding := range bindings {
 		ident, from, _ := strings.Cut(binding[1:], "\x00")
-
-		imp, ok := imports[from]
-		if !ok {
-			id := &javascript.ImportDeclaration{
-				FromClause: javascript.FromClause{
-					ModuleSpecifier: &javascript.Token{
-						Token: parser.Token{
-							Data: strconv.Quote(from),
-						},
-					},
-				},
-			}
-
-			m.ModuleListItems = slices.Insert(m.ModuleListItems, 0, javascript.ModuleItem{
-				ImportDeclaration: id,
-			})
-
-			imp = &importData{
-				ImportDeclaration: id,
-				bindings:          make(map[string]string),
-			}
-			imports[from] = imp
-		}
+		imp := imports[from]
 
 		if imp.ImportClause == nil {
 			imp.ImportClause = new(javascript.ImportClause)
