@@ -156,7 +156,7 @@ type templateVars struct {
 func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
 	name := e.ElementName.Identifier
 	if name == nil {
-		return nil, javascript.ErrInvalidAssignment
+		return nil, javascript.ErrMissingIdentifier
 	}
 
 	inHTML, inSVG, inMathML := slices.Contains(htmlElements[:], name.Data), slices.Contains(svgElements[:], name.Data), slices.Contains(mathMLElement[:], name.Data)
