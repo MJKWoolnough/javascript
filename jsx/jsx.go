@@ -2,6 +2,7 @@ package jsx
 
 import (
 	"errors"
+	"fmt"
 	"maps"
 	"slices"
 	"strconv"
@@ -176,14 +177,14 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 		InSVG:     inSVG,
 		InMathML:  inMathML,
 	}); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error while executing JSX template: %w", err)
 	}
 
 	tk := parser.NewStringTokeniser(sb.String())
 
 	m, err := javascript.ParseModule(&tk)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error while parsing transformed code: %w", err)
 	}
 
 	return j.process(e, m)
@@ -194,7 +195,7 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 
 	s, err := scope.Build(m, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error building scope: %w", err)
 	}
 
 	delete(s.Bindings, params)
