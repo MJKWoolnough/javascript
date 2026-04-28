@@ -489,46 +489,7 @@ func newIdentsToRename(s *scope.Scope, imports map[string]*importData) {
 			imp.ImportClause = new(javascript.ImportClause)
 		}
 
-		ni, ok := imp.bindings[ident]
-		if !ok {
-			tk := &javascript.Token{
-				Token: parser.Token{
-					Data: ident,
-				},
-			}
-			imp.bindings[ident] = tk.Data
-
-			switch ident {
-			case "":
-				imp.ImportedDefaultBinding = tk
-			case "*":
-				imp.NameSpaceImport = tk
-			default:
-				if imp.NamedImports == nil {
-					imp.NamedImports = new(javascript.NamedImports)
-				}
-
-				imp.NamedImports.ImportList = append(imp.NamedImports.ImportList, javascript.ImportSpecifier{
-					IdentifierName: &javascript.Token{
-						Token: parser.Token{
-							Data: ident,
-						},
-					},
-					ImportedBinding: tk,
-				})
-
-				slices.SortFunc(imp.NamedImports.ImportList, func(a, b javascript.ImportSpecifier) int {
-					return strings.Compare(a.ImportedBinding.Data, b.ImportedBinding.Data)
-				})
-			}
-
-			ni = binding
-			b[ni] = append(b[ni], scope.Binding{
-				BindingType: scope.BindingImport,
-				Scope:       s,
-				Token:       tk,
-			})
-		}
+		ni := imp.getExistingBindingOrMake(s, b, binding, ident)
 
 		b[ni] = append(b[ni], s.Bindings[binding]...)
 		rename = append(rename, ni)
@@ -537,6 +498,51 @@ func newIdentsToRename(s *scope.Scope, imports map[string]*importData) {
 	s.Bindings = b
 
 	renameNewBindings(s, rename)
+}
+
+func (imp *importData) getExistingBindingOrMake(s *scope.Scope, b map[string][]scope.Binding, binding, ident string) string {
+	ni, ok := imp.bindings[ident]
+	if !ok {
+		tk := &javascript.Token{
+			Token: parser.Token{
+				Data: ident,
+			},
+		}
+		imp.bindings[ident] = tk.Data
+
+		switch ident {
+		case "":
+			imp.ImportedDefaultBinding = tk
+		case "*":
+			imp.NameSpaceImport = tk
+		default:
+			if imp.NamedImports == nil {
+				imp.NamedImports = new(javascript.NamedImports)
+			}
+
+			imp.NamedImports.ImportList = append(imp.NamedImports.ImportList, javascript.ImportSpecifier{
+				IdentifierName: &javascript.Token{
+					Token: parser.Token{
+						Data: ident,
+					},
+				},
+				ImportedBinding: tk,
+			})
+
+			slices.SortFunc(imp.NamedImports.ImportList, func(a, b javascript.ImportSpecifier) int {
+				return strings.Compare(a.ImportedBinding.Data, b.ImportedBinding.Data)
+			})
+		}
+
+		ni = binding
+		b[ni] = append(b[ni], scope.Binding{
+			BindingType: scope.BindingImport,
+			Scope:       s,
+			Token:       tk,
+		})
+	}
+
+	return ni
 }
 
 func renameNewBindings(s *scope.Scope, rename []string) {
