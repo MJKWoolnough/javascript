@@ -53,6 +53,16 @@ func TestProcess(t *testing.T) {
 			`import '@OTHER';tag('TAG_NAME')`,
 			"import \"@OTHER\";\n\nconst a = (tag(\"b\"));",
 		},
+		{ // 9
+			"import ns from '@MODULE';\n\nconst a = <b />;",
+			`import ns from '@MODULE';ns.tag('TAG_NAME')`,
+			"import ns from '@MODULE';\n\nconst a = (ns.tag(\"b\"));",
+		},
+		{ // 10
+			"import * as ns from '@MODULE';\n\nconst a = <b />;",
+			`import * as ns from '@MODULE';ns.tag('TAG_NAME')`,
+			"import * as ns from '@MODULE';\n\nconst a = (ns.tag(\"b\"));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
