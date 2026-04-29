@@ -1,3 +1,4 @@
+// Package jsx allows for the transforming of JSX within a JavaScript AST.
 package jsx
 
 import (
@@ -371,6 +372,20 @@ type importData struct {
 	bindings map[string]string
 }
 
+// Process transforms any JSX within the given parsed Module using the template
+// to generate the required JavaScript.
+//
+// Within the template, you can use the TAG_NAME placehold in place of the
+// element name. It can be represented as an identifier or as a string literal.
+//
+// The PARAMS placeholder will be replaced with an object containing the
+// parameters.
+//
+// The CHILDREN placeholder will be replaced with an array of the child
+// elements.
+//
+// Any import statement will be added to the Module, with import bindings being
+// potentially renamed on a clash.
 func Process(m *javascript.Module, tmpl *template.Template) error {
 	j := &jsxTransformer{
 		tmpl:    tmpl,
