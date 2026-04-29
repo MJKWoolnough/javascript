@@ -63,6 +63,11 @@ func TestProcess(t *testing.T) {
 			`import * as ns from '@MODULE';ns.tag('TAG_NAME')`,
 			"import * as ns from '@MODULE';\n\nconst a = (ns.tag(\"b\"));",
 		},
+		{ // 11
+			"const a = <b {...d}/>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {...d}));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
