@@ -108,6 +108,18 @@ func (j *jsxTransformer) handleJSXChild(t *javascript.JSXChild) error {
 			ConditionalExpression: javascript.WrapConditional(childrenToArray(t.JSXFragment.Children)),
 		}
 		t.JSXFragment = nil
+	} else if t.JSXText != nil {
+		t.JSXChildExpression = &javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+				Literal: &javascript.Token{
+					Token: parser.Token{
+						Data: strconv.Quote(t.JSXText.Data),
+					},
+				},
+			}),
+		}
+	} else if t.JSXChildExpression == nil {
+		return ErrMissingChild
 	}
 
 	return nil
@@ -591,4 +603,5 @@ func renameNewBindings(s *scope.Scope, rename []string) {
 var (
 	ErrInvalidTransformation = errors.New("invalid transformation")
 	ErrTooManyStatements     = errors.New("too many statments")
+	ErrMissingChild          = errors.New("missing JSX child")
 )
