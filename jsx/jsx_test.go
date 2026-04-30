@@ -98,6 +98,21 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS, CHILDREN)`,
 			"const a = (tag(\"b\", {c: []}, []));",
 		},
+		{ // 18
+			"const a = <div></div>",
+			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
+			"import {div} from \"@html\";\n\nconst a = (div({}, []));",
+		},
+		{ // 19
+			"const a = <div><a /></div>",
+			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
+			"import {a as a_1, div} from \"@html\";\n\nconst a = (div({}, [(a_1({}, []))]));",
+		},
+		{ // 20
+			"const a = <div><svg><a /></svg></div>",
+			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
+			"import {div} from \"@html\";\n\nimport {a as a_1, svg} from \"@svg\";\n\nconst a = (div({}, [(svg({}, [(a_1({}, []))]))]));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
