@@ -185,6 +185,8 @@ var (
 type templateVars struct {
 	Namespace               string
 	InHTML, InSVG, InMathML bool
+	HasParams, HasChildren  bool
+	NumParams, NumChildren  int
 }
 
 func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
@@ -200,10 +202,14 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 	var sb strings.Builder
 
 	if err := j.tmpl.Execute(&sb, templateVars{
-		Namespace: j.namespace,
-		InHTML:    inHTML,
-		InSVG:     inSVG,
-		InMathML:  inMathML,
+		Namespace:   j.namespace,
+		InHTML:      inHTML,
+		InSVG:       inSVG,
+		InMathML:    inMathML,
+		HasParams:   len(e.Attributes) > 0,
+		HasChildren: len(e.Children) > 0,
+		NumParams:   len(e.Attributes),
+		NumChildren: len(e.Children),
 	}); err != nil {
 		return nil, fmt.Errorf("error while executing JSX template: %w", err)
 	}
