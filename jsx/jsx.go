@@ -29,13 +29,19 @@ type jsxTransformer struct {
 }
 
 func (j *jsxTransformer) Handle(t javascript.Type) error {
-	ns := j.namespace
+	switch t := t.(type) {
+	case *javascript.JSXElement:
+		name := t.ElementName.Identifier
+		if name == nil {
+			return javascript.ErrMissingIdentifier
+		}
+
+		defer j.setNamespace(name)()
+	}
 
 	if err := walk.Walk(t, j); err != nil {
 		return err
 	}
-
-	j.namespace = ns
 
 	switch t := t.(type) {
 	case *javascript.JSXAttribute:
@@ -47,6 +53,20 @@ func (j *jsxTransformer) Handle(t javascript.Type) error {
 	}
 
 	return nil
+}
+
+func (j *jsxTransformer) setNamespace(name *javascript.Token) func() {
+	ns := j.namespace
+
+	if inHTML, inSVG, inMathML := nsIn(name); inHTML && !inSVG {
+		j.namespace = "html"
+	} else if inSVG && !inHTML {
+		j.namespace = "svg"
+	} else if inMathML {
+		j.namespace = "mathml"
+	}
+
+	return func() { j.namespace = ns }
 }
 
 func (j *jsxTransformer) handleJSXAttribute(t *javascript.JSXAttribute) error {
@@ -173,14 +193,9 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 		return nil, javascript.ErrMissingIdentifier
 	}
 
-	inHTML, inSVG, inMathML := slices.Contains(htmlElements[:], name.Data), slices.Contains(svgElements[:], name.Data), slices.Contains(mathMLElement[:], name.Data)
-	if inHTML && !inSVG {
-		j.namespace = "html"
-	} else if inSVG && !inHTML {
-		j.namespace = "svg"
-	} else if inMathML {
-		j.namespace = "mathml"
-	}
+	defer j.setNamespace(name)()
+
+	inHTML, inSVG, inMathML := nsIn(name)
 
 	var sb strings.Builder
 
@@ -201,6 +216,10 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 	}
 
 	return j.process(e, m)
+}
+
+func nsIn(name *javascript.Token) (bool, bool, bool) {
+	return slices.Contains(htmlElements[:], name.Data), slices.Contains(svgElements[:], name.Data), slices.Contains(mathMLElement[:], name.Data)
 }
 
 func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
