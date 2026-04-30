@@ -44,8 +44,15 @@ func (j *jsxTransformer) Handle(t javascript.Type) error {
 	}
 
 	switch t := t.(type) {
-	case *javascript.PrimaryExpression:
-		return j.handlePrimaryExpression(t)
+	case *javascript.MemberExpression:
+		if t.PrimaryExpression != nil {
+			pe, err := j.handlePrimaryExpression(t.PrimaryExpression)
+			if err != nil {
+				return err
+			}
+
+			t.PrimaryExpression = pe
+		}
 	}
 
 	return nil
@@ -65,25 +72,21 @@ func (j *jsxTransformer) setNamespace(name *javascript.Token) func() {
 	return func() { j.namespace = ns }
 }
 
-func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression) error {
+func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression) (*javascript.PrimaryExpression, error) {
 	if t.JSXElement != nil {
-		pe, err := j.transform(t.JSXElement)
-		if err != nil {
-			return err
-		}
-
-		*t = *pe
+		return j.transform(t.JSXElement)
 	} else if t.JSXFragment != nil {
 		al, err := j.childrenToArray(t.JSXFragment.Children)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		t.ArrayLiteral = al
-		t.JSXFragment = nil
+		return &javascript.PrimaryExpression{
+			ArrayLiteral: al,
+		}, nil
 	}
 
-	return nil
+	return t, nil
 }
 
 func (j *jsxTransformer) childrenToArray(children []javascript.JSXChild) (*javascript.ArrayLiteral, error) {
