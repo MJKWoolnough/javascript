@@ -111,12 +111,12 @@ func TestProcess(t *testing.T) {
 		{ // 20
 			"const a = <div><svg><a /></svg></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
-			"import {div} from \"@html\";\n\nimport {a as a_1, svg} from \"@svg\";\n\nconst a = (div({}, [(svg({}, [(a_1({}, []))]))]));",
+			"import {a as a_1, svg} from \"@svg\";\n\nimport {div} from \"@html\";\n\nconst a = (div({}, [(svg({}, [(a_1({}, []))]))]));",
 		},
 		{ // 21
 			"const a = <div><svg><a /></svg></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME({{ if .HasParams }}PARAMS{{ end }}{{ if .HasChildren}}{{if .HasParams }}, {{ end }}CHILDREN{{ end }})`,
-			"import {div} from \"@html\";\n\nimport {a as a_1, svg} from \"@svg\";\n\nconst a = (div([(svg([(a_1())]))]));",
+			"import {a as a_1, svg} from \"@svg\";\n\nimport {div} from \"@html\";\n\nconst a = (div([(svg([(a_1())]))]));",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)

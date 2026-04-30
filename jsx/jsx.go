@@ -44,10 +44,6 @@ func (j *jsxTransformer) Handle(t javascript.Type) error {
 	}
 
 	switch t := t.(type) {
-	case *javascript.JSXAttribute:
-		return j.handleJSXAttribute(t)
-	case *javascript.JSXChild:
-		return j.handleJSXChild(t)
 	case *javascript.PrimaryExpression:
 		return j.handlePrimaryExpression(t)
 	}
@@ -69,82 +65,6 @@ func (j *jsxTransformer) setNamespace(name *javascript.Token) func() {
 	return func() { j.namespace = ns }
 }
 
-func (j *jsxTransformer) handleJSXAttribute(t *javascript.JSXAttribute) error {
-	if t.JSXElement != nil {
-		pe, err := j.transform(t.JSXElement)
-		if err != nil {
-			return err
-		}
-
-		t.AssignmentExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(pe),
-		}
-		t.JSXElement = nil
-	} else if t.JSXFragment != nil {
-		t.AssignmentExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(childrenToArray(t.JSXFragment.Children)),
-		}
-		t.JSXFragment = nil
-	} else if t.JSXString != nil {
-		str, err := javascript.UnescapeJSXString(t.JSXString.Data)
-		if err != nil {
-			return err
-		}
-
-		t.AssignmentExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-				Literal: &javascript.Token{
-					Token: parser.Token{
-						Data: strconv.Quote(str),
-						Type: javascript.TokenStringLiteral,
-					},
-					Pos:     t.JSXString.Pos,
-					Line:    t.JSXString.Line,
-					LinePos: t.JSXString.LinePos,
-				},
-			}),
-		}
-		t.JSXString = nil
-	} else if t.AssignmentExpression == nil {
-		return javascript.ErrInvalidAssignment
-	}
-
-	return nil
-}
-
-func (j *jsxTransformer) handleJSXChild(t *javascript.JSXChild) error {
-	if t.JSXElement != nil {
-		pe, err := j.transform(t.JSXElement)
-		if err != nil {
-			return err
-		}
-
-		t.JSXChildExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(pe),
-		}
-		t.JSXElement = nil
-	} else if t.JSXFragment != nil {
-		t.JSXChildExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(childrenToArray(t.JSXFragment.Children)),
-		}
-		t.JSXFragment = nil
-	} else if t.JSXText != nil {
-		t.JSXChildExpression = &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-				Literal: &javascript.Token{
-					Token: parser.Token{
-						Data: strconv.Quote(t.JSXText.Data),
-					},
-				},
-			}),
-		}
-	} else if t.JSXChildExpression == nil {
-		return ErrMissingChild
-	}
-
-	return nil
-}
-
 func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression) error {
 	if t.JSXElement != nil {
 		pe, err := j.transform(t.JSXElement)
@@ -154,26 +74,72 @@ func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression
 
 		*t = *pe
 	} else if t.JSXFragment != nil {
-		t.ArrayLiteral = childrenToArray(t.JSXFragment.Children)
+		al, err := j.childrenToArray(t.JSXFragment.Children)
+		if err != nil {
+			return err
+		}
+
+		t.ArrayLiteral = al
 		t.JSXFragment = nil
 	}
 
 	return nil
 }
 
-func childrenToArray(children []javascript.JSXChild) *javascript.ArrayLiteral {
+func (j *jsxTransformer) childrenToArray(children []javascript.JSXChild) (*javascript.ArrayLiteral, error) {
 	al := &javascript.ArrayLiteral{
 		ElementList: make([]javascript.ArrayElement, 0, len(children)),
 	}
 
 	for _, child := range children {
+		ae, err := j.childToAE(child)
+		if err != nil {
+			return nil, err
+		}
+
 		al.ElementList = append(al.ElementList, javascript.ArrayElement{
 			Spread:               child.Spread,
-			AssignmentExpression: *child.JSXChildExpression,
+			AssignmentExpression: ae,
 		})
 	}
 
-	return al
+	return al, nil
+}
+
+func (j *jsxTransformer) childToAE(t javascript.JSXChild) (javascript.AssignmentExpression, error) {
+	if t.JSXElement != nil {
+		pe, err := j.transform(t.JSXElement)
+		if err != nil {
+			return javascript.AssignmentExpression{}, err
+		}
+
+		return javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(pe),
+		}, nil
+	} else if t.JSXFragment != nil {
+		al, err := j.childrenToArray(t.JSXFragment.Children)
+		if err != nil {
+			return javascript.AssignmentExpression{}, err
+		}
+
+		return javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(al),
+		}, nil
+	} else if t.JSXText != nil {
+		return javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+				Literal: &javascript.Token{
+					Token: parser.Token{
+						Data: strconv.Quote(t.JSXText.Data),
+					},
+				},
+			}),
+		}, nil
+	} else if t.JSXChildExpression == nil {
+		return javascript.AssignmentExpression{}, ErrMissingChild
+	}
+
+	return *t.JSXChildExpression, nil
 }
 
 var (
@@ -240,7 +206,10 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	delete(s.Bindings, children)
 
 	j.handleImports(m, s)
-	replaceParamsAndChildren(m, e)
+
+	if err := j.replaceParamsAndChildren(m, e); err != nil {
+		return nil, err
+	}
 
 	var expression *javascript.Expression
 
@@ -300,7 +269,7 @@ func replaceTagName(m *javascript.Module, name string) {
 	walk.Walk(m, h)
 }
 
-func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
+func (j *jsxTransformer) replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) error {
 	var h walk.Handler
 
 	h = walk.HandlerFunc(func(t javascript.Type) error {
@@ -311,11 +280,21 @@ func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
 			if t.IdentifierReference != nil {
 				switch t.IdentifierReference.Data {
 				case "PARAMS":
+					ol, err := j.paramsToObject(e.Attributes)
+					if err != nil {
+						return err
+					}
+
 					t.IdentifierReference = nil
-					t.ObjectLiteral = paramsToObject(e.Attributes)
+					t.ObjectLiteral = ol
 				case "CHILDREN":
+					al, err := j.childrenToArray(e.Children)
+					if err != nil {
+						return err
+					}
+
 					t.IdentifierReference = nil
-					t.ArrayLiteral = childrenToArray(e.Children)
+					t.ArrayLiteral = al
 				}
 			}
 		}
@@ -323,7 +302,7 @@ func replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) {
 		return nil
 	})
 
-	walk.Walk(m, h)
+	return walk.Walk(m, h)
 }
 
 func (j *jsxTransformer) handleImports(m *javascript.Module, s *scope.Scope) {
@@ -377,31 +356,77 @@ func hasIdentifier(ni *javascript.NamedImports, tk *javascript.Token) string {
 	return ""
 }
 
-func paramsToObject(attrs []javascript.JSXAttribute) *javascript.ObjectLiteral {
+func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javascript.ObjectLiteral, error) {
 	ol := &javascript.ObjectLiteral{
 		PropertyDefinitionList: make([]javascript.PropertyDefinition, 0, len(attrs)),
 	}
 
 	for _, attr := range attrs {
-		if attr.Identifier == nil {
-			if attr.AssignmentExpression == nil {
-				return nil
-			}
+		ae, err := j.paramTo(attr)
+		if err != nil {
+			return nil, err
+		}
 
+		if attr.Identifier == nil {
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
-				AssignmentExpression: attr.AssignmentExpression,
+				AssignmentExpression: ae,
 			})
 		} else {
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				PropertyName: &javascript.PropertyName{
 					LiteralPropertyName: attr.Identifier,
 				},
-				AssignmentExpression: attr.AssignmentExpression,
+				AssignmentExpression: ae,
 			})
 		}
 	}
 
-	return ol
+	return ol, nil
+}
+
+func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.AssignmentExpression, error) {
+	if t.JSXElement != nil {
+		pe, err := j.transform(t.JSXElement)
+		if err != nil {
+			return nil, err
+		}
+
+		return &javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(pe),
+		}, nil
+	} else if t.JSXFragment != nil {
+		al, err := j.childrenToArray(t.JSXFragment.Children)
+		if err != nil {
+			return nil, err
+		}
+
+		return &javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(al),
+		}, nil
+	} else if t.JSXString != nil {
+		str, err := javascript.UnescapeJSXString(t.JSXString.Data)
+		if err != nil {
+			return nil, err
+		}
+
+		return &javascript.AssignmentExpression{
+			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+				Literal: &javascript.Token{
+					Token: parser.Token{
+						Data: strconv.Quote(str),
+						Type: javascript.TokenStringLiteral,
+					},
+					Pos:     t.JSXString.Pos,
+					Line:    t.JSXString.Line,
+					LinePos: t.JSXString.LinePos,
+				},
+			}),
+		}, nil
+	} else if t.AssignmentExpression != nil {
+		return t.AssignmentExpression, nil
+	}
+
+	return nil, javascript.ErrInvalidAssignment
 }
 
 type importData struct {
