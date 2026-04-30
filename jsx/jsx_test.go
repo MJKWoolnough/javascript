@@ -78,6 +78,26 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS, CHILDREN)`,
 			"const a = (tag(\"b\", {}, [(tag(\"c\", {}, [])), \"d\", ...e]));",
 		},
+		{ // 14
+			"const a = <></>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = [];",
+		},
+		{ // 15
+			"const a = <><b /></>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = [(tag(\"b\", {}, []))];",
+		},
+		{ // 16
+			"const a = <b><><c /></></b>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {}, [[(tag(\"c\", {}, []))]]));",
+		},
+		{ // 17
+			"const a = <b c=<></> />",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {c: []}, []));",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
