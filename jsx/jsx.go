@@ -481,6 +481,8 @@ func Process(m *javascript.Module, tmpl *template.Template) error {
 func addImports(m *javascript.Module, existing map[string]*importData, imports map[string]struct{}) {
 	imps := slices.Collect(maps.Keys(imports))
 
+	slices.Sort(imps)
+
 	for _, from := range imps {
 		imp, ok := existing[from]
 		if ok {
