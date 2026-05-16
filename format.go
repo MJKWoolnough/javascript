@@ -94,8 +94,22 @@ func (i *indentPrinter) WriteString(s string) {
 	i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
-func (i *indentPrinter) WriteStringWithType(s string, _ parser.TokenType) {
-	i.WriteString(s)
+func (i *indentPrinter) WriteStringWithType(s string, tt parser.TokenType) {
+	var w writer = i
+
+	switch tt {
+	case TokenNoSubstitutionTemplate, TokenTemplateHead:
+		if len(s) > 0 {
+			i.WriteString(s[:1])
+			s = s[1:]
+		}
+
+		fallthrough
+	case TokenTemplateMiddle, TokenTemplateTail:
+		w = i.Underlying()
+	}
+
+	w.WriteString(s)
 }
 
 func (i *indentPrinter) Indent() writer {
