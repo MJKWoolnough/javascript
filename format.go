@@ -392,7 +392,7 @@ func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 			}
 
 			*cp = false
-		} else if !bool(*cp) {
+		} else if !*cp {
 			w.WriteString("/*")
 			*cp = true
 		}
