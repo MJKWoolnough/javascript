@@ -416,6 +416,7 @@ type printFormatting uint8
 const (
 	printSimple printFormatting = iota
 	printVerbose
+	printOriginal
 )
 
 type formatter interface {
@@ -432,6 +433,8 @@ func format(f formatter, s fmt.State, v rune) {
 
 		if s.Flag('+') {
 			pf = printVerbose
+		} else if s.Flag('#') {
+			pf = printOriginal
 		}
 
 		f.printSource(&underlyingWriter{Writer: s}, pf)
