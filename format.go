@@ -691,6 +691,17 @@ func (u UnaryOperator) String() string {
 	}
 }
 
+func (u UnaryOperator) tokenType() parser.TokenType {
+	switch u {
+	case UnaryDelete, UnaryVoid, UnaryTypeOf:
+		return TokenKeyword
+	case UnaryAwait:
+		return TokenIdentifier
+	default:
+		return TokenPunctuator
+	}
+}
+
 func (u UnaryOperator) printType(w writer, _ bool) {
 	w.WriteString(u.String())
 }
