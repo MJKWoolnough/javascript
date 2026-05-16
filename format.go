@@ -594,6 +594,15 @@ func (r RelationshipOperator) String() string {
 	}
 }
 
+func (r RelationshipOperator) tokenType() parser.TokenType {
+	switch r {
+	case RelationshipInstanceOf, RelationshipIn:
+		return TokenKeyword
+	default:
+		return TokenPunctuator
+	}
+}
+
 func (r RelationshipOperator) printType(w writer, _ bool) {
 	w.WriteString(r.String())
 }
