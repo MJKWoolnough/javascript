@@ -2,8 +2,8 @@ package javascript
 
 import "strings"
 
-func (s Script) printSource(w writer, v bool) {
-	if v && len(s.Comments[0]) > 0 {
+func (s Script) printSource(w writer, v printFormatting) {
+	if v == printVerbose && len(s.Comments[0]) > 0 {
 		s.Comments[0].printSource(w, true, true)
 		w.WriteString("\n")
 	}
@@ -17,14 +17,14 @@ func (s Script) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(s.Comments[1]) > 0 {
+	if v == printVerbose && len(s.Comments[1]) > 0 {
 		w.WriteString("\n")
 		s.Comments[1].printSource(w, false, false)
 	}
 }
 
-func (s StatementListItem) printSource(w writer, v bool) {
-	if v {
+func (s StatementListItem) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		s.Comments[0].printSource(w, s.Statement != nil || s.Declaration != nil, false)
 	}
 
@@ -34,12 +34,12 @@ func (s StatementListItem) printSource(w writer, v bool) {
 		s.Declaration.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		s.Comments[1].printSource(w, false, false)
 	}
 }
 
-func (s Statement) printSource(w writer, v bool) {
+func (s Statement) printSource(w writer, v printFormatting) {
 	switch s.Type {
 	case StatementNormal:
 		if s.BlockStatement != nil {
@@ -64,13 +64,13 @@ func (s Statement) printSource(w writer, v bool) {
 		} else if s.LabelIdentifier != nil {
 			w.WriteString(s.LabelIdentifier.Data)
 
-			if v {
+			if v == printVerbose {
 				s.Comments[0].printSource(w, true, false)
 			}
 
 			w.WriteString(": ")
 
-			if v {
+			if v == printVerbose {
 				s.Comments[1].printSource(w, true, false)
 			}
 
@@ -91,7 +91,7 @@ func (s Statement) printSource(w writer, v bool) {
 			w.WriteString("break")
 		}
 
-		if v {
+		if v == printVerbose {
 			s.Comments[0].printSource(w, false, false)
 		}
 
@@ -103,7 +103,7 @@ func (s Statement) printSource(w writer, v bool) {
 			w.WriteString(s.LabelIdentifier.Data)
 		}
 
-		if v {
+		if v == printVerbose {
 			s.Comments[1].printSource(w, false, false)
 		}
 
@@ -112,7 +112,7 @@ func (s Statement) printSource(w writer, v bool) {
 		if s.ExpressionStatement == nil {
 			w.WriteString("return")
 
-			if v {
+			if v == printVerbose {
 				s.Comments[0].printSource(w, false, false)
 			}
 
@@ -131,7 +131,7 @@ func (s Statement) printSource(w writer, v bool) {
 	case StatementDebugger:
 		w.WriteString("debugger")
 
-		if v {
+		if v == printVerbose {
 			s.Comments[0].printSource(w, false, false)
 		}
 
@@ -139,9 +139,9 @@ func (s Statement) printSource(w writer, v bool) {
 	}
 }
 
-func (d Declaration) printSource(w writer, v bool) {
+func (d Declaration) printSource(w writer, v printFormatting) {
 	if d.ClassDeclaration != nil {
-		if v {
+		if v == printVerbose {
 			d.Comments.printSource(w, true, false)
 		}
 
@@ -153,10 +153,10 @@ func (d Declaration) printSource(w writer, v bool) {
 	}
 }
 
-func (b Block) printSource(w writer, v bool) {
+func (b Block) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
-	if v && len(b.Comments[0]) > 0 {
+	if v == printVerbose && len(b.Comments[0]) > 0 {
 		b.Comments[0].printSource(w, false, true)
 	}
 
@@ -169,7 +169,7 @@ func (b Block) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(b.Comments[1]) > 0 {
+	if v == printVerbose && len(b.Comments[1]) > 0 {
 		w.WriteString("\n")
 		b.Comments[1].printSource(w, false, true)
 	} else if len(b.StatementList) > 0 && !w.LastIsWhitespace() {
@@ -179,7 +179,7 @@ func (b Block) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (vs VariableStatement) printSource(w writer, v bool) {
+func (vs VariableStatement) printSource(w writer, v printFormatting) {
 	if len(vs.VariableDeclarationList) == 0 {
 		return
 	}
@@ -188,13 +188,13 @@ func (vs VariableStatement) printSource(w writer, v bool) {
 
 	var lastLine uint64
 
-	if v && len(vs.Tokens) > 0 {
+	if v == printVerbose && len(vs.Tokens) > 0 {
 		lastLine = vs.Tokens[0].Line
 	}
 
 	for n, vd := range vs.VariableDeclarationList {
 		if n > 0 {
-			if v && len(vd.Tokens) > 0 {
+			if v == printVerbose && len(vd.Tokens) > 0 {
 				if ll := vd.Tokens[0].Line; ll > lastLine {
 					lastLine = ll
 
@@ -213,21 +213,21 @@ func (vs VariableStatement) printSource(w writer, v bool) {
 	w.PrintSemiColon()
 }
 
-func (e Expression) printSource(w writer, v bool) {
+func (e Expression) printSource(w writer, v printFormatting) {
 	if len(e.Expressions) == 0 {
 		return
 	}
 
 	var lastLine uint64
 
-	if v && len(e.Tokens) > 0 {
+	if v == printVerbose && len(e.Tokens) > 0 {
 		lastLine = e.Tokens[0].Line
 	}
 
 	e.Expressions[0].printSource(w, v)
 
 	for _, ae := range e.Expressions[1:] {
-		if v && len(ae.Tokens) > 0 {
+		if v == printVerbose && len(ae.Tokens) > 0 {
 			if ll := ae.Tokens[0].Line; ll > lastLine {
 				lastLine = ll
 				w.WriteString(",\n")
@@ -242,10 +242,10 @@ func (e Expression) printSource(w writer, v bool) {
 	}
 }
 
-func (i IfStatement) printSource(w writer, v bool) {
+func (i IfStatement) printSource(w writer, v printFormatting) {
 	w.WriteString("if")
 
-	if v && len(i.Comments[0]) > 0 {
+	if v == printVerbose && len(i.Comments[0]) > 0 {
 		i.Comments[0].printSource(w, true, false)
 	} else {
 		w.WriteString(" ")
@@ -253,7 +253,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 
 	w.WriteString("(")
 
-	if v {
+	if v == printVerbose {
 		ip := w
 
 		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
@@ -265,7 +265,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 			i.Comments[1].printSource(w, true, false)
 		}
 
-		i.Expression.printSource(ip, true)
+		i.Expression.printSource(ip, v)
 
 		if w != ip {
 			w.WriteString("\n")
@@ -273,19 +273,19 @@ func (i IfStatement) printSource(w writer, v bool) {
 
 		i.Comments[2].printSource(w, false, w != ip)
 	} else {
-		i.Expression.printSource(w, false)
+		i.Expression.printSource(w, v)
 	}
 
 	w.WriteString(") ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[3].printSource(w, true, false)
 	}
 
 	i.Statement.printSource(w, v)
 
 	if i.ElseStatement != nil {
-		if v && len(i.Comments[4]) > 0 {
+		if v == printVerbose && len(i.Comments[4]) > 0 {
 			i.Comments[4].printSource(w, true, false)
 		} else {
 			w.WriteString(" ")
@@ -293,7 +293,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 
 		w.WriteString("else ")
 
-		if v {
+		if v == printVerbose {
 			i.Comments[5].printSource(w, true, false)
 		}
 
@@ -301,16 +301,16 @@ func (i IfStatement) printSource(w writer, v bool) {
 	}
 }
 
-func (i IterationStatementDo) printSource(w writer, v bool) {
+func (i IterationStatementDo) printSource(w writer, v printFormatting) {
 	w.WriteString("do ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[0].printSource(w, true, false)
 	}
 
 	i.Statement.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		i.Comments[1].printSource(w, true, false)
 	}
 
@@ -320,13 +320,13 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 
 	w.WriteString("while ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[2].printSource(w, true, false)
 	}
 
 	w.WriteString("(")
 
-	if v {
+	if v == printVerbose {
 		ip := w
 
 		if hasSingleLineComment(i.Comments[3:4]) || i.Expression.hasSingleLineComment() {
@@ -338,7 +338,7 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 			i.Comments[3].printSource(w, true, false)
 		}
 
-		i.Expression.printSource(ip, true)
+		i.Expression.printSource(ip, v)
 
 		if w != ip {
 			w.WriteString("\n")
@@ -346,28 +346,28 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 
 		i.Comments[4].printSource(w, false, w != ip)
 	} else {
-		i.Expression.printSource(w, false)
+		i.Expression.printSource(w, v)
 	}
 
 	w.WriteString(")")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[5].printSource(w, true, false)
 	}
 
 	w.PrintSemiColon()
 }
 
-func (i IterationStatementWhile) printSource(w writer, v bool) {
+func (i IterationStatementWhile) printSource(w writer, v printFormatting) {
 	w.WriteString("while ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[0].printSource(w, true, false)
 	}
 
 	w.WriteString("(")
 
-	if v {
+	if v == printVerbose {
 		ip := w
 
 		if hasSingleLineComment(i.Comments[1:3]) || i.Expression.hasSingleLineComment() {
@@ -379,7 +379,7 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 			i.Comments[1].printSource(w, true, false)
 		}
 
-		i.Expression.printSource(ip, true)
+		i.Expression.printSource(ip, v)
 
 		if w != ip {
 			w.WriteString("\n")
@@ -387,19 +387,19 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 
 		i.Comments[2].printSource(w, false, w != ip)
 	} else {
-		i.Expression.printSource(w, false)
+		i.Expression.printSource(w, v)
 	}
 
 	w.WriteString(") ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[3].printSource(w, true, false)
 	}
 
 	i.Statement.printSource(w, v)
 }
 
-func (i IterationStatementFor) printSource(w writer, v bool) {
+func (i IterationStatementFor) printSource(w writer, v printFormatting) {
 	switch i.Type {
 	case ForNormal:
 		if i.InitVar != nil || i.InitLexical != nil || i.InitExpression != nil {
@@ -442,7 +442,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	w.WriteString("for ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[0].printSource(w, true, false)
 	}
 
@@ -450,7 +450,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	case ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
 		w.WriteString("await ")
 
-		if v {
+		if v == printVerbose {
 			i.Comments[1].printSource(w, true, false)
 		}
 	}
@@ -460,7 +460,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(i.Comments[2:7]) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -508,7 +508,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 			ip.WriteString("const ")
 		}
 
-		if v {
+		if v == printVerbose {
 			i.Comments[4].printSource(ip, true, false)
 		}
 
@@ -523,12 +523,12 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	switch i.Type {
 	case ForNormal, ForNormalVar, ForNormalLexicalDeclaration, ForNormalExpression:
-		if v {
+		if v == printVerbose {
 			i.Comments[4].printSource(ip, true, true)
 		}
 
 		if i.Conditional != nil {
-			if !v || !i.Conditional.hasFirstComment() {
+			if v == printSimple || !i.Conditional.hasFirstComment() {
 				ip.WriteString(" ")
 			}
 
@@ -537,19 +537,19 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 		ip.WriteString(";")
 
-		if v {
+		if v == printVerbose {
 			i.Comments[5].printSource(ip, true, false)
 		}
 
 		if i.Afterthought != nil {
-			if !v || !i.Afterthought.hasFirstComment() {
+			if v == printSimple || !i.Afterthought.hasFirstComment() {
 				ip.WriteString(" ")
 			}
 
 			i.Afterthought.printSource(ip, v)
 		}
 	case ForInLeftHandSide, ForInVar, ForInLet, ForInConst:
-		if v && len(i.Comments[5]) > 0 {
+		if v == printVerbose && len(i.Comments[5]) > 0 {
 			i.Comments[5].printSource(ip, true, false)
 		}
 
@@ -560,7 +560,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		ip.WriteString("in ")
 		i.In.printSource(ip, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
-		if v && len(i.Comments[5]) > 0 {
+		if v == printVerbose && len(i.Comments[5]) > 0 {
 			i.Comments[5].printSource(ip, true, false)
 		} else {
 			ip.WriteString(" ")
@@ -570,7 +570,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 		i.Of.printSource(ip, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		if w != ip && (len(i.Comments[6]) > 0 || !ip.LastIsWhitespace()) {
 			w.WriteString(sep[1:])
 		}
@@ -580,23 +580,23 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 
 	w.WriteString(") ")
 
-	if v {
+	if v == printVerbose {
 		i.Comments[7].printSource(w, true, false)
 	}
 
 	i.Statement.printSource(w, v)
 }
 
-func (s SwitchStatement) printSource(w writer, v bool) {
+func (s SwitchStatement) printSource(w writer, v printFormatting) {
 	w.WriteString("switch ")
 
-	if v {
+	if v == printVerbose {
 		s.Comments[0].printSource(w, true, false)
 	}
 
 	w.WriteString("(")
 
-	if v {
+	if v == printVerbose {
 		ip := w
 
 		if s.Comments[1].hasSingleLineComment() || s.Comments[2].hasSingleLineComment() || s.Expression.hasSingleLineComment() {
@@ -608,7 +608,7 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 			s.Comments[1].printSource(w, true, false)
 		}
 
-		s.Expression.printSource(ip, true)
+		s.Expression.printSource(ip, v)
 
 		if w != ip {
 			w.WriteString("\n")
@@ -616,18 +616,18 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 
 		s.Comments[2].printSource(w, false, w != ip)
 	} else {
-		s.Expression.printSource(w, false)
+		s.Expression.printSource(w, v)
 	}
 
 	w.WriteString(") ")
 
-	if v {
+	if v == printVerbose {
 		s.Comments[3].printSource(w, true, false)
 	}
 
 	w.WriteString("{")
 
-	if v {
+	if v == printVerbose {
 		s.Comments[4].printSource(w, false, true)
 	}
 
@@ -638,19 +638,19 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 
 	if s.DefaultClause != nil {
 		w.WriteString("\n")
-		if v {
+		if v == printVerbose {
 			s.Comments[5].printSource(w, false, true)
 		}
 
 		w.WriteString("default")
 
-		if v {
+		if v == printVerbose {
 			s.Comments[6].printSource(w, false, false)
 		}
 
 		w.WriteString(":")
 
-		if v {
+		if v == printVerbose {
 			s.Comments[7].printSource(w, false, true)
 		}
 
@@ -667,7 +667,7 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 		c.printSource(w, v)
 	}
 
-	if v && len(s.Comments[8]) > 0 {
+	if v == printVerbose && len(s.Comments[8]) > 0 {
 		w.WriteString("\n")
 		s.Comments[8].printSource(w, false, true)
 	}
@@ -679,16 +679,16 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (ws WithStatement) printSource(w writer, v bool) {
+func (ws WithStatement) printSource(w writer, v printFormatting) {
 	w.WriteString("with ")
 
-	if v {
+	if v == printVerbose {
 		ws.Comments[0].printSource(w, true, false)
 	}
 
 	w.WriteString("(")
 
-	if v {
+	if v == printVerbose {
 		ip := w
 
 		if ws.Comments[1].hasSingleLineComment() || ws.Comments[2].hasSingleLineComment() || ws.Expression.hasSingleLineComment() {
@@ -700,7 +700,7 @@ func (ws WithStatement) printSource(w writer, v bool) {
 			ws.Comments[1].printSource(w, true, false)
 		}
 
-		ws.Expression.printSource(ip, true)
+		ws.Expression.printSource(ip, v)
 
 		if w != ip {
 			w.WriteString("\n")
@@ -708,36 +708,36 @@ func (ws WithStatement) printSource(w writer, v bool) {
 
 		ws.Comments[2].printSource(w, false, w != ip)
 	} else {
-		ws.Expression.printSource(w, false)
+		ws.Expression.printSource(w, v)
 	}
 
 	w.WriteString(") ")
 
-	if v {
+	if v == printVerbose {
 		ws.Comments[3].printSource(w, true, false)
 	}
 
 	ws.Statement.printSource(w, v)
 }
 
-func (f FunctionDeclaration) printSource(w writer, v bool) {
+func (f FunctionDeclaration) printSource(w writer, v printFormatting) {
 	switch f.Type {
 	case FunctionNormal:
 		w.WriteString("function ")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(w, true, false)
 		}
 	case FunctionGenerator:
 		w.WriteString("function")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("*")
 
-		if v && len(f.Comments[2]) > 0 {
+		if v == printVerbose && len(f.Comments[2]) > 0 {
 			f.Comments[2].printSource(w, true, false)
 		} else {
 			w.WriteString(" ")
@@ -745,31 +745,31 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 	case FunctionAsync:
 		w.WriteString("async ")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("function ")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(w, true, false)
 		}
 	case FunctionAsyncGenerator:
 		w.WriteString("async ")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("function")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("*")
 
-		if v && len(f.Comments[2]) > 0 {
+		if v == printVerbose && len(f.Comments[2]) > 0 {
 			f.Comments[2].printSource(w, true, false)
 		} else {
 			w.WriteString(" ")
@@ -782,23 +782,23 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 		w.WriteString(f.BindingIdentifier.Data)
 	}
 
-	if v {
+	if v == printVerbose {
 		f.Comments[3].printSource(w, true, false)
 	}
 
 	f.FormalParameters.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		f.Comments[4].printSource(w, true, false)
 	}
 
 	f.FunctionBody.printSource(w, v)
 }
 
-func (t TryStatement) printSource(w writer, v bool) {
+func (t TryStatement) printSource(w writer, v printFormatting) {
 	w.WriteString("try ")
 
-	if v {
+	if v == printVerbose {
 		t.Comments[0].printSource(w, true, false)
 	}
 
@@ -807,13 +807,13 @@ func (t TryStatement) printSource(w writer, v bool) {
 	if t.CatchBlock != nil {
 		w.WriteString(" ")
 
-		if v {
+		if v == printVerbose {
 			t.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("catch ")
 
-		if v {
+		if v == printVerbose {
 			t.Comments[2].printSource(w, true, false)
 		}
 
@@ -822,7 +822,7 @@ func (t TryStatement) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v {
+			if v == printVerbose {
 				if hasSingleLineComment(t.Comments[3:7]) || t.CatchParameterBindingIdentifier.hasSingleLineComment() || t.CatchParameterArrayBindingPattern.hasSingleLineComment() || t.CatchParameterObjectBindingPattern.hasSingleLineComment() {
 					ip = w.Indent()
 
@@ -845,7 +845,7 @@ func (t TryStatement) printSource(w writer, v bool) {
 				t.CatchParameterObjectBindingPattern.printSource(ip, v)
 			}
 
-			if v {
+			if v == printVerbose {
 				t.Comments[5].printSource(ip, false, true)
 
 				if w != ip {
@@ -857,7 +857,7 @@ func (t TryStatement) printSource(w writer, v bool) {
 
 			w.WriteString(") ")
 
-			if v {
+			if v == printVerbose {
 				t.Comments[7].printSource(w, true, false)
 			}
 		}
@@ -870,13 +870,13 @@ func (t TryStatement) printSource(w writer, v bool) {
 			w.WriteString(" ")
 		}
 
-		if v {
+		if v == printVerbose {
 			t.Comments[8].printSource(w, true, false)
 		}
 
 		w.WriteString("finally ")
 
-		if v {
+		if v == printVerbose {
 			t.Comments[9].printSource(w, true, false)
 		}
 
@@ -884,10 +884,10 @@ func (t TryStatement) printSource(w writer, v bool) {
 	}
 }
 
-func (c ClassDeclaration) printSource(w writer, v bool) {
+func (c ClassDeclaration) printSource(w writer, v printFormatting) {
 	w.WriteString("class ")
 
-	if v {
+	if v == printVerbose {
 		c.Comments[0].printSource(w, true, false)
 	}
 
@@ -895,7 +895,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 		w.WriteString(c.BindingIdentifier.Data)
 		w.WriteString(" ")
 
-		if v {
+		if v == printVerbose {
 			c.Comments[1].printSource(w, true, false)
 		}
 	}
@@ -906,7 +906,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 		w.WriteString(" ")
 	}
 
-	if v {
+	if v == printVerbose {
 		c.Comments[2].printSource(w, true, false)
 	}
 
@@ -914,7 +914,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 
 	ip := w.Indent()
 
-	if v {
+	if v == printVerbose {
 		c.Comments[3].printSource(w, false, true)
 	}
 
@@ -929,7 +929,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(c.Comments[4]) > 0 {
+	if v == printVerbose && len(c.Comments[4]) > 0 {
 		w.WriteString("\n")
 		c.Comments[4].printSource(w, false, true)
 	}
@@ -937,7 +937,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (l LexicalDeclaration) printSource(w writer, v bool) {
+func (l LexicalDeclaration) printSource(w writer, v printFormatting) {
 	if len(l.BindingList) == 0 {
 		return
 	}
@@ -952,7 +952,7 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 	l.BindingList[0].printSource(w, v)
 
 	for _, lb := range l.BindingList[1:] {
-		if v {
+		if v == printVerbose {
 			w.WriteString(",\n")
 		} else {
 			w.WriteString(", ")
@@ -964,8 +964,8 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 	w.PrintSemiColon()
 }
 
-func (l LexicalBinding) printSource(w writer, v bool) {
-	if v {
+func (l LexicalBinding) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		l.Comments[0].printSource(w, true, false)
 	}
 
@@ -979,7 +979,7 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 		return
 	}
 
-	if v {
+	if v == printVerbose {
 		l.Comments[1].printSource(w, false, false)
 	}
 
@@ -993,16 +993,16 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 	}
 }
 
-func (a AssignmentExpression) printSource(w writer, v bool) {
+func (a AssignmentExpression) printSource(w writer, v printFormatting) {
 	if a.Yield && a.AssignmentExpression != nil {
-		if v {
+		if v == printVerbose {
 			a.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("yield ")
 
 		if a.Delegate {
-			if v {
+			if v == printVerbose {
 				a.Comments[1].printSource(w, true, false)
 			}
 
@@ -1041,7 +1041,7 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 	}
 }
 
-func (l LeftHandSideExpression) printSource(w writer, v bool) {
+func (l LeftHandSideExpression) printSource(w writer, v printFormatting) {
 	if l.NewExpression != nil {
 		l.NewExpression.printSource(w, v)
 	} else if l.CallExpression != nil {
@@ -1050,13 +1050,13 @@ func (l LeftHandSideExpression) printSource(w writer, v bool) {
 		l.OptionalExpression.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		l.Comments.printSource(w, false, false)
 	}
 }
 
-func (a AssignmentPattern) printSource(w writer, v bool) {
-	if v {
+func (a AssignmentPattern) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		a.Comments[0].printSource(w, true, false)
 	}
 
@@ -1066,18 +1066,18 @@ func (a AssignmentPattern) printSource(w writer, v bool) {
 		a.ObjectAssignmentPattern.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		a.Comments[1].printSource(w, true, false)
 	}
 }
 
-func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
+func (a ArrayAssignmentPattern) printSource(w writer, v printFormatting) {
 	w.WriteString("[")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if a.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
@@ -1103,7 +1103,7 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 			ip.WriteString(sep)
 		}
 
-		if v {
+		if v == printVerbose {
 			a.Comments[1].printSource(ip, true, false)
 		}
 
@@ -1111,7 +1111,7 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 		a.AssignmentRestElement.printSource(ip, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		if w != ip && (len(a.Comments[2]) > 0 || !ip.LastIsWhitespace()) {
 			w.WriteString("\n")
 		}
@@ -1122,13 +1122,13 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("]")
 }
 
-func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
+func (o ObjectAssignmentPattern) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if o.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
@@ -1154,7 +1154,7 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 			ip.WriteString(sep)
 		}
 
-		if v {
+		if v == printVerbose {
 			o.Comments[1].printSource(ip, true, false)
 		}
 
@@ -1162,7 +1162,7 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 		o.AssignmentRestElement.printSource(ip, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		if w != ip && (len(o.Comments[2]) > 0 || !ip.LastIsWhitespace()) {
 			w.WriteString("\n")
 		}
@@ -1173,7 +1173,7 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (a AssignmentElement) printSource(w writer, v bool) {
+func (a AssignmentElement) printSource(w writer, v printFormatting) {
 	a.DestructuringAssignmentTarget.printSource(w, v)
 
 	if a.Initializer != nil {
@@ -1186,19 +1186,19 @@ func (a AssignmentElement) printSource(w writer, v bool) {
 	}
 }
 
-func (a AssignmentProperty) printSource(w writer, v bool) {
-	if v {
+func (a AssignmentProperty) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		a.Comments[0].printSource(w, true, false)
 	}
 
 	a.PropertyName.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		a.Comments[1].printSource(w, true, false)
 	}
 
 	if a.DestructuringAssignmentTarget != nil {
-		if v || a.DestructuringAssignmentTarget.LeftHandSideExpression == nil || a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && len(a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data != a.PropertyName.LiteralPropertyName.Data {
+		if v == printVerbose || a.DestructuringAssignmentTarget.LeftHandSideExpression == nil || a.PropertyName.LiteralPropertyName != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.CallExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.OptionalExpression == nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression != nil && len(a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.News) == 0 && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference != nil && a.DestructuringAssignmentTarget.LeftHandSideExpression.NewExpression.MemberExpression.PrimaryExpression.IdentifierReference.Data != a.PropertyName.LiteralPropertyName.Data {
 			w.WriteString(": ")
 			a.DestructuringAssignmentTarget.printSource(w, v)
 		}
@@ -1214,7 +1214,7 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 	}
 }
 
-func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
+func (d DestructuringAssignmentTarget) printSource(w writer, v printFormatting) {
 	if d.LeftHandSideExpression != nil {
 		d.LeftHandSideExpression.printSource(w, v)
 	} else if d.AssignmentPattern != nil {
@@ -1222,13 +1222,13 @@ func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 	}
 }
 
-func (o ObjectBindingPattern) printSource(w writer, v bool) {
+func (o ObjectBindingPattern) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if o.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
@@ -1253,24 +1253,24 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 			ip.WriteString(sep)
 		}
 
-		if v {
+		if v == printVerbose {
 			o.Comments[1].printSource(ip, true, false)
 		}
 
 		ip.WriteString("...")
 
-		if v {
+		if v == printVerbose {
 			o.Comments[2].printSource(ip, true, false)
 		}
 
 		ip.WriteString(o.BindingRestProperty.Data)
 
-		if v {
+		if v == printVerbose {
 			o.Comments[3].printSource(ip, true, false)
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(o.Comments[4]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -1281,13 +1281,13 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (a ArrayBindingPattern) printSource(w writer, v bool) {
+func (a ArrayBindingPattern) printSource(w writer, v printFormatting) {
 	w.WriteString("[")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if a.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
@@ -1312,7 +1312,7 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 			ip.WriteString(sep)
 		}
 
-		if v {
+		if v == printVerbose {
 			a.Comments[1].printSource(ip, true, false)
 		}
 
@@ -1320,7 +1320,7 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 		a.BindingRestElement.printSource(ip, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(a.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -1331,8 +1331,8 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 	w.WriteString("]")
 }
 
-func (c CaseClause) printSource(w writer, v bool) {
-	if v {
+func (c CaseClause) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		c.Comments[0].printSource(w, false, true)
 	}
 
@@ -1340,7 +1340,7 @@ func (c CaseClause) printSource(w writer, v bool) {
 	c.Expression.printSource(w, v)
 	w.WriteString(":")
 
-	if v {
+	if v == printVerbose {
 		c.Comments[1].printSource(w, false, true)
 	}
 
@@ -1352,13 +1352,13 @@ func (c CaseClause) printSource(w writer, v bool) {
 	}
 }
 
-func (f FormalParameters) printSource(w writer, v bool) {
+func (f FormalParameters) printSource(w writer, v printFormatting) {
 	w.WriteString("(")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if f.hasSingleLineComment() {
 			sep = ",\n"
 			ip = w.Indent()
@@ -1384,56 +1384,56 @@ func (f FormalParameters) printSource(w writer, v bool) {
 	}
 
 	if f.BindingIdentifier != nil {
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(ip, false, true)
 		}
 
 		ip.WriteString("...")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[2].printSource(ip, false, true)
 		}
 
 		ip.WriteString(f.BindingIdentifier.Data)
 
-		if v {
+		if v == printVerbose {
 			f.Comments[3].printSource(ip, false, true)
 		}
 	} else if f.ArrayBindingPattern != nil {
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(ip, false, true)
 		}
 
 		ip.WriteString("...")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[2].printSource(ip, false, true)
 		}
 
 		f.ArrayBindingPattern.printSource(ip, v)
 
-		if v {
+		if v == printVerbose {
 			f.Comments[3].printSource(ip, false, true)
 		}
 	} else if f.ObjectBindingPattern != nil {
-		if v {
+		if v == printVerbose {
 			f.Comments[1].printSource(ip, false, true)
 		}
 
 		ip.WriteString("...")
 
-		if v {
+		if v == printVerbose {
 			f.Comments[2].printSource(ip, false, true)
 		}
 
 		f.ObjectBindingPattern.printSource(ip, v)
 
-		if v {
+		if v == printVerbose {
 			f.Comments[3].printSource(ip, false, true)
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if w != ip && (len(f.FormalParameterList) > 0 || f.BindingIdentifier != nil || f.ArrayBindingPattern != nil || f.ObjectBindingPattern != nil) {
 			w.WriteString("\n")
 		}
@@ -1444,41 +1444,41 @@ func (f FormalParameters) printSource(w writer, v bool) {
 	w.WriteString(") ")
 }
 
-func (m MethodDefinition) printSource(w writer, v bool) {
+func (m MethodDefinition) printSource(w writer, v printFormatting) {
 	switch m.Type {
 	case MethodNormal:
 	case MethodGenerator:
-		if v {
+		if v == printVerbose {
 			m.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("* ")
 	case MethodAsync:
-		if v {
+		if v == printVerbose {
 			m.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("async ")
 	case MethodAsyncGenerator:
-		if v {
+		if v == printVerbose {
 			m.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("async ")
 
-		if v {
+		if v == printVerbose {
 			m.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("* ")
 	case MethodGetter:
-		if v {
+		if v == printVerbose {
 			m.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("get ")
 	case MethodSetter:
-		if v {
+		if v == printVerbose {
 			m.Comments[0].printSource(w, true, false)
 		}
 
@@ -1490,19 +1490,19 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 	m.ClassElementName.printSource(w, v)
 	m.Params.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		m.Comments[2].printSource(w, true, false)
 	}
 
 	m.FunctionBody.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		m.Comments[3].printSource(w, true, false)
 	}
 }
 
-func (ce ClassElement) printSource(w writer, v bool) {
-	if v {
+func (ce ClassElement) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		ce.Comments[0].printSource(w, false, true)
 	}
 
@@ -1510,7 +1510,7 @@ func (ce ClassElement) printSource(w writer, v bool) {
 		w.WriteString("static ")
 	}
 
-	if v {
+	if v == printVerbose {
 		ce.Comments[1].printSource(w, true, false)
 	}
 
@@ -1521,16 +1521,16 @@ func (ce ClassElement) printSource(w writer, v bool) {
 	} else if ce.ClassStaticBlock != nil {
 		ce.ClassStaticBlock.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			ce.Comments[2].printSource(w, false, false)
 		}
 	}
 }
 
-func (fd FieldDefinition) printSource(w writer, v bool) {
+func (fd FieldDefinition) printSource(w writer, v printFormatting) {
 	fd.ClassElementName.printSource(w, v)
 
-	if v {
+	if v == printVerbose {
 		fd.Comments.printSource(w, false, false)
 	}
 
@@ -1546,8 +1546,8 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 	w.PrintSemiColon()
 }
 
-func (cen ClassElementName) printSource(w writer, v bool) {
-	if v {
+func (cen ClassElementName) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		cen.Comments[0].printSource(w, true, false)
 	}
 
@@ -1557,12 +1557,12 @@ func (cen ClassElementName) printSource(w writer, v bool) {
 		w.WriteString(cen.PrivateIdentifier.Data)
 	}
 
-	if v {
+	if v == printVerbose {
 		cen.Comments[1].printSource(w, false, false)
 	}
 }
 
-func (c ConditionalExpression) printSource(w writer, v bool) {
+func (c ConditionalExpression) printSource(w writer, v printFormatting) {
 	if c.LogicalORExpression != nil {
 		c.LogicalORExpression.printSource(w, v)
 	} else if c.CoalesceExpression != nil {
@@ -1586,12 +1586,12 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 	}
 }
 
-func (a ArrowFunction) printSource(w writer, v bool) {
+func (a ArrowFunction) printSource(w writer, v printFormatting) {
 	if a.FunctionBody == nil && a.AssignmentExpression == nil || a.BindingIdentifier == nil && a.FormalParameters == nil {
 		return
 	}
 
-	if v {
+	if v == printVerbose {
 		a.Comments[0].printSource(w, false, true)
 	}
 
@@ -1599,7 +1599,7 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 		w.WriteString("async ")
 	}
 
-	if v {
+	if v == printVerbose {
 		a.Comments[1].printSource(w, true, false)
 	}
 
@@ -1610,13 +1610,13 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 		a.FormalParameters.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		a.Comments[2].printSource(w, true, false)
 	}
 
 	w.WriteString("=> ")
 
-	if v {
+	if v == printVerbose {
 		a.Comments[3].printSource(w, true, false)
 	}
 
@@ -1626,14 +1626,14 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 		a.AssignmentExpression.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		a.Comments[4].printSource(w, false, true)
 	}
 }
 
-func (n NewExpression) printSource(w writer, v bool) {
+func (n NewExpression) printSource(w writer, v printFormatting) {
 	for _, c := range n.News {
-		if v {
+		if v == printVerbose {
 			c.printSource(w, true, false)
 		}
 
@@ -1643,15 +1643,15 @@ func (n NewExpression) printSource(w writer, v bool) {
 	n.MemberExpression.printSource(w, v)
 }
 
-func (c CallExpression) printSource(w writer, v bool) {
-	if v {
+func (c CallExpression) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		c.Comments[0].printSource(w, true, false)
 	}
 
 	if c.SuperCall && c.Arguments != nil {
 		w.WriteString("super")
 
-		if v {
+		if v == printVerbose {
 			c.Comments[1].printSource(w, true, false)
 		}
 
@@ -1659,7 +1659,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 	} else if c.ImportCall != nil {
 		w.WriteString("import")
 
-		if v {
+		if v == printVerbose {
 			c.Comments[1].printSource(w, true, false)
 		}
 
@@ -1667,7 +1667,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v {
+		if v == printVerbose {
 			if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
 				ip = w.Indent()
 
@@ -1680,7 +1680,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 
 		c.ImportCall.printSource(ip, v)
 
-		if v {
+		if v == printVerbose {
 			if w != ip {
 				w.WriteString("\n")
 			}
@@ -1692,7 +1692,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 	} else if c.MemberExpression != nil && c.Arguments != nil {
 		c.MemberExpression.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			c.Comments[1].printSource(w, true, false)
 		}
 
@@ -1707,7 +1707,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v {
+			if v == printVerbose {
 				if c.Comments[2].hasSingleLineComment() || c.Comments[3].hasSingleLineComment() || c.ImportCall.hasSingleLineComment() {
 					ip = w.Indent()
 
@@ -1720,7 +1720,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 
 			c.Expression.printSource(ip, v)
 
-			if v {
+			if v == printVerbose {
 				if w != ip {
 					w.WriteString("\n")
 				}
@@ -1732,13 +1732,13 @@ func (c CallExpression) printSource(w writer, v bool) {
 		} else if c.IdentifierName != nil {
 			c.CallExpression.printSource(w, v)
 
-			if v && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+			if v == printVerbose && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.IdentifierName.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				c.Comments[2].printSource(w, true, false)
 			}
 
@@ -1749,13 +1749,13 @@ func (c CallExpression) printSource(w writer, v bool) {
 		} else if c.PrivateIdentifier != nil {
 			c.CallExpression.printSource(w, v)
 
-			if v && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
+			if v == printVerbose && w.LastChar() != '\n' && len(c.CallExpression.Tokens) > 0 && c.PrivateIdentifier.Line > c.CallExpression.Tokens[len(c.CallExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				c.Comments[2].printSource(w, true, false)
 			}
 
@@ -1763,22 +1763,22 @@ func (c CallExpression) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		c.Comments[4].printSource(w, false, false)
 	}
 }
 
-func (b BindingProperty) printSource(w writer, v bool) {
-	if !v && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
+func (b BindingProperty) printSource(w writer, v printFormatting) {
+	if v == printSimple && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
 		b.BindingElement.printSource(w, v)
 	} else {
-		if v {
+		if v == printVerbose {
 			b.Comments[0].printSource(w, true, false)
 		}
 
 		b.PropertyName.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			b.Comments[1].printSource(w, true, false)
 		}
 
@@ -1787,8 +1787,8 @@ func (b BindingProperty) printSource(w writer, v bool) {
 	}
 }
 
-func (b BindingElement) printSource(w writer, v bool) {
-	if v {
+func (b BindingElement) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		b.Comments[0].printSource(w, true, false)
 	}
 
@@ -1802,7 +1802,7 @@ func (b BindingElement) printSource(w writer, v bool) {
 		return
 	}
 
-	if v && len(b.Comments[1]) > 0 {
+	if v == printVerbose && len(b.Comments[1]) > 0 {
 		b.Comments[1].printSource(w, b.Initializer != nil, false)
 	} else if b.Initializer != nil {
 		w.WriteString(" ")
@@ -1814,7 +1814,7 @@ func (b BindingElement) printSource(w writer, v bool) {
 	}
 }
 
-func (p PropertyName) printSource(w writer, v bool) {
+func (p PropertyName) printSource(w writer, v printFormatting) {
 	if p.LiteralPropertyName != nil {
 		w.WriteString(p.LiteralPropertyName.Data)
 	} else if p.ComputedPropertyName != nil {
@@ -1822,7 +1822,7 @@ func (p PropertyName) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v {
+		if v == printVerbose {
 			if hasSingleLineComment(p.Comments[:]) {
 				ip = w.Indent()
 
@@ -1835,7 +1835,7 @@ func (p PropertyName) printSource(w writer, v bool) {
 
 		p.ComputedPropertyName.printSource(ip, v)
 
-		if v {
+		if v == printVerbose {
 			if len(p.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 				w.WriteString("\n")
 			}
@@ -1847,7 +1847,7 @@ func (p PropertyName) printSource(w writer, v bool) {
 	}
 }
 
-func (l LogicalORExpression) printSource(w writer, v bool) {
+func (l LogicalORExpression) printSource(w writer, v printFormatting) {
 	if l.LogicalORExpression != nil {
 		l.LogicalORExpression.printSource(w, v)
 
@@ -1861,13 +1861,13 @@ func (l LogicalORExpression) printSource(w writer, v bool) {
 	l.LogicalANDExpression.printSource(w, v)
 }
 
-func (c ParenthesizedExpression) printSource(w writer, v bool) {
+func (c ParenthesizedExpression) printSource(w writer, v printFormatting) {
 	w.WriteString("(")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(c.Comments[:]) || hasSingleLineComment(c.Expressions) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -1888,7 +1888,7 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(c.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -1899,8 +1899,8 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 	w.WriteString(")")
 }
 
-func (m MemberExpression) printSource(w writer, v bool) {
-	if v {
+func (m MemberExpression) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		m.Comments[0].printSource(w, true, false)
 	}
 
@@ -1910,11 +1910,11 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			m.MemberExpression.printSource(w, v)
 
-			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+			if v == printVerbose && m.MemberExpression.Comments[4].LastIsMulti() {
 				w.WriteString(" ")
 			}
 
-			if v {
+			if v == printVerbose {
 				m.Comments[2].printSource(w, true, false)
 			}
 
@@ -1922,7 +1922,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		} else if m.Expression != nil {
 			m.MemberExpression.printSource(w, v)
 
-			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+			if v == printVerbose && m.MemberExpression.Comments[4].LastIsMulti() {
 				w.WriteString(" ")
 			}
 
@@ -1930,7 +1930,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v {
+			if v == printVerbose {
 				if hasSingleLineComment(m.Comments[1:3]) || m.Expression.hasSingleLineComment() {
 					ip = w.Indent()
 
@@ -1943,7 +1943,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			m.Expression.printSource(ip, v)
 
-			if v {
+			if v == printVerbose {
 				if len(m.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
 					w.WriteString("\n")
 				}
@@ -1955,17 +1955,17 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		} else if m.IdentifierName != nil {
 			m.MemberExpression.printSource(w, v)
 
-			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+			if v == printVerbose && m.MemberExpression.Comments[4].LastIsMulti() {
 				w.WriteString(" ")
 			}
 
-			if v && len(m.MemberExpression.Tokens) > 0 && m.IdentifierName.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
+			if v == printVerbose && len(m.MemberExpression.Tokens) > 0 && m.IdentifierName.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				m.Comments[1].printSource(w, true, false)
 			}
 
@@ -1973,17 +1973,17 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		} else if m.PrivateIdentifier != nil {
 			m.MemberExpression.printSource(w, v)
 
-			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+			if v == printVerbose && m.MemberExpression.Comments[4].LastIsMulti() {
 				w.WriteString(" ")
 			}
 
-			if v && len(m.MemberExpression.Tokens) > 0 && m.PrivateIdentifier.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
+			if v == printVerbose && len(m.MemberExpression.Tokens) > 0 && m.PrivateIdentifier.Line > m.MemberExpression.Tokens[len(m.MemberExpression.Tokens)-1].Line {
 				w.WriteString("\n")
 			}
 
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				m.Comments[1].printSource(w, true, false)
 			}
 
@@ -1991,7 +1991,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		} else if m.TemplateLiteral != nil {
 			m.MemberExpression.printSource(w, v)
 
-			if v && m.MemberExpression.Comments[4].LastIsMulti() {
+			if v == printVerbose && m.MemberExpression.Comments[4].LastIsMulti() {
 				w.WriteString(" ")
 			}
 
@@ -2003,7 +2003,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		if m.Expression != nil {
 			w.WriteString("super")
 
-			if v {
+			if v == printVerbose {
 				m.Comments[1].printSource(w, true, false)
 			}
 
@@ -2011,7 +2011,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v {
+			if v == printVerbose {
 				if hasSingleLineComment(m.Comments[2:4]) || m.Expression.hasSingleLineComment() {
 					ip = w.Indent()
 
@@ -2024,7 +2024,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 
 			m.Expression.printSource(ip, v)
 
-			if v {
+			if v == printVerbose {
 				if len(m.Comments[3]) > 0 || w != ip && !w.LastIsWhitespace() {
 					w.WriteString("\n")
 				}
@@ -2036,13 +2036,13 @@ func (m MemberExpression) printSource(w writer, v bool) {
 		} else if m.IdentifierName != nil {
 			w.WriteString("super")
 
-			if v {
+			if v == printVerbose {
 				m.Comments[1].printSource(w, true, false)
 			}
 
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				m.Comments[2].printSource(w, true, false)
 			}
 
@@ -2051,13 +2051,13 @@ func (m MemberExpression) printSource(w writer, v bool) {
 	} else if m.NewTarget {
 		w.WriteString("new")
 
-		if v {
+		if v == printVerbose {
 			m.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString(".")
 
-		if v {
+		if v == printVerbose {
 			m.Comments[2].printSource(w, true, false)
 		}
 
@@ -2065,27 +2065,27 @@ func (m MemberExpression) printSource(w writer, v bool) {
 	} else if m.ImportMeta {
 		w.WriteString("import")
 
-		if v {
+		if v == printVerbose {
 			m.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString(".")
 
-		if v {
+		if v == printVerbose {
 			m.Comments[2].printSource(w, true, false)
 		}
 
 		w.WriteString("meta")
 	}
 
-	if v {
+	if v == printVerbose {
 		m.Comments[4].printSource(w, false, false)
 	}
 }
 
-func (a Argument) printSource(w writer, v bool) {
+func (a Argument) printSource(w writer, v printFormatting) {
 	if a.Spread {
-		if v {
+		if v == printVerbose {
 			a.Comments.printSource(w, true, false)
 		}
 
@@ -2095,13 +2095,13 @@ func (a Argument) printSource(w writer, v bool) {
 	a.AssignmentExpression.printSource(w, v)
 }
 
-func (a Arguments) printSource(w writer, v bool) {
+func (a Arguments) printSource(w writer, v printFormatting) {
 	w.WriteString("(")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if a.hasSingleLineComment() {
 			ip = w.Indent()
 			sep = ",\n"
@@ -2122,7 +2122,7 @@ func (a Arguments) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(a.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -2133,7 +2133,7 @@ func (a Arguments) printSource(w writer, v bool) {
 	w.WriteString(")")
 }
 
-func (t TemplateLiteral) printSource(w writer, v bool) {
+func (t TemplateLiteral) printSource(w writer, v printFormatting) {
 	x := w.Underlying()
 
 	if t.NoSubstitutionTemplate != nil {
@@ -2157,7 +2157,7 @@ func (t TemplateLiteral) printSource(w writer, v bool) {
 	}
 }
 
-func (l LogicalANDExpression) printSource(w writer, v bool) {
+func (l LogicalANDExpression) printSource(w writer, v printFormatting) {
 	if l.LogicalANDExpression != nil {
 		l.LogicalANDExpression.printSource(w, v)
 
@@ -2171,7 +2171,7 @@ func (l LogicalANDExpression) printSource(w writer, v bool) {
 	l.BitwiseORExpression.printSource(w, v)
 }
 
-func (p PrimaryExpression) printSource(w writer, v bool) {
+func (p PrimaryExpression) printSource(w writer, v printFormatting) {
 	if p.This != nil {
 		w.WriteString("this")
 	} else if p.IdentifierReference != nil {
@@ -2197,7 +2197,7 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 	}
 }
 
-func (b BitwiseORExpression) printSource(w writer, v bool) {
+func (b BitwiseORExpression) printSource(w writer, v printFormatting) {
 	if b.BitwiseORExpression != nil {
 		b.BitwiseORExpression.printSource(w, v)
 
@@ -2211,8 +2211,8 @@ func (b BitwiseORExpression) printSource(w writer, v bool) {
 	b.BitwiseXORExpression.printSource(w, v)
 }
 
-func (a ArrayElement) printSource(w writer, v bool) {
-	if v {
+func (a ArrayElement) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		a.Comments.printSource(w, true, false)
 	}
 
@@ -2223,13 +2223,13 @@ func (a ArrayElement) printSource(w writer, v bool) {
 	a.AssignmentExpression.printSource(w, v)
 }
 
-func (a ArrayLiteral) printSource(w writer, v bool) {
+func (a ArrayLiteral) printSource(w writer, v printFormatting) {
 	w.WriteString("[")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(a.Comments[:]) || hasSingleLineComment(a.ElementList) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -2250,7 +2250,7 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(a.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -2261,13 +2261,13 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 	w.WriteString("]")
 }
 
-func (o ObjectLiteral) printSource(w writer, v bool) {
+func (o ObjectLiteral) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(o.Comments[:]) || hasSingleLineComment(o.PropertyDefinitionList) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -2289,7 +2289,7 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(o.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -2300,7 +2300,7 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (b BitwiseXORExpression) printSource(w writer, v bool) {
+func (b BitwiseXORExpression) printSource(w writer, v printFormatting) {
 	if b.BitwiseXORExpression != nil {
 		b.BitwiseXORExpression.printSource(w, v)
 
@@ -2314,22 +2314,22 @@ func (b BitwiseXORExpression) printSource(w writer, v bool) {
 	b.BitwiseANDExpression.printSource(w, v)
 }
 
-func (p PropertyDefinition) printSource(w writer, v bool) {
+func (p PropertyDefinition) printSource(w writer, v printFormatting) {
 	if p.AssignmentExpression != nil {
 		if p.PropertyName != nil {
-			if v {
+			if v == printVerbose {
 				p.Comments[0].printSource(w, true, false)
 			}
 
 			p.PropertyName.printSource(w, v)
 
-			if v {
+			if v == printVerbose {
 				p.Comments[1].printSource(w, true, false)
 			}
 
 			done := false
 
-			if !v && !p.IsCoverInitializedName && p.PropertyName.LiteralPropertyName != nil && p.AssignmentExpression.ConditionalExpression != nil {
+			if v == printSimple && !p.IsCoverInitializedName && p.PropertyName.LiteralPropertyName != nil && p.AssignmentExpression.ConditionalExpression != nil {
 				c := UnwrapConditional(p.AssignmentExpression.ConditionalExpression)
 
 				if pe, ok := c.(*PrimaryExpression); ok && pe.IdentifierReference != nil {
@@ -2339,7 +2339,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 
 			if !done {
 				if p.IsCoverInitializedName {
-					if !v || len(p.Comments[1]) == 0 {
+					if v == printSimple || len(p.Comments[1]) == 0 {
 						w.WriteString(" ")
 					}
 
@@ -2351,7 +2351,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 				p.AssignmentExpression.printSource(w, v)
 			}
 		} else {
-			if v {
+			if v == printVerbose {
 				p.Comments[0].printSource(w, true, false)
 			}
 
@@ -2363,7 +2363,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 	}
 }
 
-func (b BitwiseANDExpression) printSource(w writer, v bool) {
+func (b BitwiseANDExpression) printSource(w writer, v printFormatting) {
 	if b.BitwiseANDExpression != nil {
 		b.BitwiseANDExpression.printSource(w, v)
 
@@ -2377,7 +2377,7 @@ func (b BitwiseANDExpression) printSource(w writer, v bool) {
 	b.EqualityExpression.printSource(w, v)
 }
 
-func (e EqualityExpression) printSource(w writer, v bool) {
+func (e EqualityExpression) printSource(w writer, v printFormatting) {
 	if e.EqualityExpression != nil {
 		eo := e.EqualityOperator.String()
 		if eo == "" || eo == unknown {
@@ -2397,15 +2397,15 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 	e.RelationalExpression.printSource(w, v)
 }
 
-func (r RelationalExpression) printSource(w writer, v bool) {
+func (r RelationalExpression) printSource(w writer, v printFormatting) {
 	if r.PrivateIdentifier != nil {
-		if v {
+		if v == printVerbose {
 			r.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString(r.PrivateIdentifier.Data)
 
-		if v && len(r.Comments[1]) > 0 {
+		if v == printVerbose && len(r.Comments[1]) > 0 {
 			r.Comments[1].printSource(w, true, false)
 		} else {
 			w.WriteString(" ")
@@ -2431,7 +2431,7 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 	r.ShiftExpression.printSource(w, v)
 }
 
-func (s ShiftExpression) printSource(w writer, v bool) {
+func (s ShiftExpression) printSource(w writer, v printFormatting) {
 	if s.ShiftExpression != nil {
 		so := s.ShiftOperator.String()
 		if so == "" || so == unknown {
@@ -2451,7 +2451,7 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 	s.AdditiveExpression.printSource(w, v)
 }
 
-func (a AdditiveExpression) printSource(w writer, v bool) {
+func (a AdditiveExpression) printSource(w writer, v printFormatting) {
 	if a.AdditiveExpression != nil {
 		ao := a.AdditiveOperator.String()
 		if ao == "" || ao == unknown {
@@ -2470,7 +2470,7 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 	a.MultiplicativeExpression.printSource(w, v)
 }
 
-func (m MultiplicativeExpression) printSource(w writer, v bool) {
+func (m MultiplicativeExpression) printSource(w writer, v printFormatting) {
 	if m.MultiplicativeExpression != nil {
 		mo := m.MultiplicativeOperator.String()
 		if mo == "" || mo == unknown {
@@ -2490,7 +2490,7 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 	m.ExponentiationExpression.printSource(w, v)
 }
 
-func (e ExponentiationExpression) printSource(w writer, v bool) {
+func (e ExponentiationExpression) printSource(w writer, v printFormatting) {
 	if e.ExponentiationExpression != nil {
 		e.ExponentiationExpression.printSource(w, v)
 
@@ -2504,8 +2504,8 @@ func (e ExponentiationExpression) printSource(w writer, v bool) {
 	e.UnaryExpression.printSource(w, v)
 }
 
-func (u UnaryOperatorComments) printSource(w writer, v bool) {
-	if v {
+func (u UnaryOperatorComments) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		u.Comments.printSource(w, true, false)
 	}
 
@@ -2521,7 +2521,7 @@ func (u UnaryOperatorComments) printSource(w writer, v bool) {
 	}
 }
 
-func (u UnaryExpression) printSource(w writer, v bool) {
+func (u UnaryExpression) printSource(w writer, v printFormatting) {
 	for _, uo := range u.UnaryOperators {
 		uo.printSource(w, v)
 	}
@@ -2529,7 +2529,7 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 	u.UpdateExpression.printSource(w, v)
 }
 
-func (u UpdateExpression) printSource(w writer, v bool) {
+func (u UpdateExpression) printSource(w writer, v printFormatting) {
 	if u.LeftHandSideExpression != nil {
 		var uo string
 
@@ -2549,11 +2549,11 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 			w.WriteString(uo)
 		}
 
-		if v {
+		if v == printVerbose {
 			u.Comments.printSource(w, false, false)
 		}
 	} else if u.UnaryExpression != nil {
-		if v {
+		if v == printVerbose {
 			u.Comments.printSource(w, true, false)
 		}
 
@@ -2570,8 +2570,8 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 	}
 }
 
-func (m Module) printSource(w writer, v bool) {
-	if v && len(m.Comments[0]) > 0 {
+func (m Module) printSource(w writer, v printFormatting) {
+	if v == printVerbose && len(m.Comments[0]) > 0 {
 		m.Comments[0].printSource(w, false, true)
 		w.WriteString("\n")
 	}
@@ -2585,13 +2585,13 @@ func (m Module) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(m.Comments[1]) > 0 {
+	if v == printVerbose && len(m.Comments[1]) > 0 {
 		w.WriteString("\n")
 		m.Comments[1].printSource(w, false, false)
 	}
 }
 
-func (m ModuleItem) printSource(w writer, v bool) {
+func (m ModuleItem) printSource(w writer, v printFormatting) {
 	if m.ImportDeclaration != nil {
 		m.ImportDeclaration.printSource(w, v)
 	} else if m.ExportDeclaration != nil {
@@ -2601,8 +2601,8 @@ func (m ModuleItem) printSource(w writer, v bool) {
 	}
 }
 
-func (i ImportDeclaration) printSource(w writer, v bool) {
-	if v {
+func (i ImportDeclaration) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		i.Comments[0].printSource(w, true, false)
 	}
 
@@ -2616,7 +2616,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		i.ImportClause.printSource(w, v)
 		i.FromClause.printSource(w, v)
 	} else if i.FromClause.ModuleSpecifier != nil {
-		if v {
+		if v == printVerbose {
 			i.Comments[1].printSource(w, true, false)
 		}
 
@@ -2628,26 +2628,26 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 		i.WithClause.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		i.Comments[2].printSource(w, false, false)
 	}
 
 	w.PrintSemiColon()
 
-	if v {
+	if v == printVerbose {
 		i.Comments[3].printSource(w, false, false)
 	}
 }
 
-func (e ExportDeclaration) printSource(w writer, v bool) {
+func (e ExportDeclaration) printSource(w writer, v printFormatting) {
 	if e.FromClause != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
@@ -2656,7 +2656,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 		} else {
 			w.WriteString("*")
 
-			if v && len(e.Comments[2]) > 0 {
+			if v == printVerbose && len(e.Comments[2]) > 0 {
 				w.WriteString(" ")
 				e.Comments[2].printSource(w, false, false)
 			}
@@ -2668,7 +2668,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 
 				w.WriteString("as ")
 
-				if v && len(e.Comments[3]) > 0 {
+				if v == printVerbose && len(e.Comments[3]) > 0 {
 					e.Comments[3].printSource(w, true, false)
 				}
 
@@ -2676,134 +2676,134 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 			}
 		}
 
-		if v {
+		if v == printVerbose {
 			e.Comments[4].printSource(w, false, false)
 		}
 
 		e.FromClause.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			e.Comments[5].printSource(w, false, false)
 		}
 
 		w.PrintSemiColon()
 	} else if e.ExportClause != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		e.ExportClause.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			e.Comments[5].printSource(w, false, false)
 		}
 
 		w.PrintSemiColon()
 	} else if e.VariableStatement != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		e.VariableStatement.printSource(w, v)
 	} else if e.Declaration != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		e.Declaration.printSource(w, v)
 	} else if e.DefaultFunction != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("default ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[2].printSource(w, true, false)
 		}
 
 		e.DefaultFunction.printSource(w, v)
 	} else if e.DefaultClass != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("default ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[2].printSource(w, true, false)
 		}
 
 		e.DefaultClass.printSource(w, v)
 	} else if e.DefaultAssignmentExpression != nil {
-		if v {
+		if v == printVerbose {
 			e.Comments[0].printSource(w, true, false)
 		}
 
 		w.WriteString("export ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, true, false)
 		}
 
 		w.WriteString("default ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[2].printSource(w, true, false)
 		}
 
 		e.DefaultAssignmentExpression.printSource(w, v)
 
-		if v {
+		if v == printVerbose {
 			e.Comments[5].printSource(w, false, false)
 		}
 
 		w.PrintSemiColon()
 	}
 
-	if v {
+	if v == printVerbose {
 		e.Comments[6].printSource(w, false, true)
 	}
 }
 
-func (wc WithClause) printSource(w writer, v bool) {
-	if v {
+func (wc WithClause) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		wc.Comments[0].printSource(w, true, false)
 	}
 
 	w.WriteString("with ")
 
-	if v {
+	if v == printVerbose {
 		wc.Comments[1].printSource(w, true, false)
 	}
 
@@ -2812,7 +2812,7 @@ func (wc WithClause) printSource(w writer, v bool) {
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(wc.Comments[2:4]) || hasSingleLineComment(wc.WithEntries) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -2833,7 +2833,7 @@ func (wc WithClause) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(wc.Comments[3]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -2844,50 +2844,50 @@ func (wc WithClause) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (we WithEntry) printSource(w writer, v bool) {
+func (we WithEntry) printSource(w writer, v printFormatting) {
 	if we.AttributeKey == nil || we.Value == nil {
 		return
 	}
 
-	if v {
+	if v == printVerbose {
 		we.Comments[0].printSource(w, true, false)
 	}
 
 	w.WriteString(we.AttributeKey.Data)
 
-	if v {
+	if v == printVerbose {
 		we.Comments[1].printSource(w, false, false)
 	}
 
 	w.WriteString(": ")
 
-	if v {
+	if v == printVerbose {
 		we.Comments[2].printSource(w, true, false)
 	}
 
 	w.WriteString(we.Value.Data)
 
-	if v {
+	if v == printVerbose {
 		we.Comments[3].printSource(w, false, false)
 	}
 }
 
-func (i ImportClause) printSource(w writer, v bool) {
-	if v {
+func (i ImportClause) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		i.Comments[0].printSource(w, true, false)
 	}
 
 	if i.ImportedDefaultBinding != nil {
 		w.WriteString(i.ImportedDefaultBinding.Data)
 
-		if v {
+		if v == printVerbose {
 			i.Comments[1].printSource(w, true, false)
 		}
 
 		if i.NameSpaceImport != nil || i.NamedImports != nil {
 			w.WriteString(", ")
 
-			if v {
+			if v == printVerbose {
 				i.Comments[2].printSource(w, true, false)
 			}
 		}
@@ -2896,7 +2896,7 @@ func (i ImportClause) printSource(w writer, v bool) {
 	if i.NameSpaceImport != nil {
 		w.WriteString("*")
 
-		if v && len(i.Comments[3]) > 0 {
+		if v == printVerbose && len(i.Comments[3]) > 0 {
 			i.Comments[3].printSource(w, true, false)
 		} else {
 			w.WriteString(" ")
@@ -2904,7 +2904,7 @@ func (i ImportClause) printSource(w writer, v bool) {
 
 		w.WriteString("as ")
 
-		if v {
+		if v == printVerbose {
 			i.Comments[4].printSource(w, true, false)
 		}
 
@@ -2913,12 +2913,12 @@ func (i ImportClause) printSource(w writer, v bool) {
 		i.NamedImports.printSource(w, v)
 	}
 
-	if v {
+	if v == printVerbose {
 		i.Comments[5].printSource(w, false, false)
 	}
 }
 
-func (f FromClause) printSource(w writer, v bool) {
+func (f FromClause) printSource(w writer, v printFormatting) {
 	if f.ModuleSpecifier == nil {
 		return
 	}
@@ -2929,20 +2929,20 @@ func (f FromClause) printSource(w writer, v bool) {
 
 	w.WriteString("from ")
 
-	if v {
+	if v == printVerbose {
 		f.Comments.printSource(w, true, false)
 	}
 
 	w.WriteString(f.ModuleSpecifier.Data)
 }
 
-func (e ExportClause) printSource(w writer, v bool) {
+func (e ExportClause) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(e.Comments[:]) || hasSingleLineComment(e.ExportList) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -2963,7 +2963,7 @@ func (e ExportClause) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(e.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -2974,13 +2974,13 @@ func (e ExportClause) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (n NamedImports) printSource(w writer, v bool) {
+func (n NamedImports) printSource(w writer, v printFormatting) {
 	w.WriteString("{")
 
 	ip := w
 	sep := ", "
 
-	if v {
+	if v == printVerbose {
 		if hasSingleLineComment(n.Comments[:]) || hasSingleLineComment(n.ImportList) {
 			ip = w.Indent()
 			sep = ",\n"
@@ -3001,7 +3001,7 @@ func (n NamedImports) printSource(w writer, v bool) {
 		}
 	}
 
-	if v {
+	if v == printVerbose {
 		if len(n.Comments[1]) > 0 || w != ip && !w.LastIsWhitespace() {
 			w.WriteString("\n")
 		}
@@ -3012,8 +3012,8 @@ func (n NamedImports) printSource(w writer, v bool) {
 	w.WriteString("}")
 }
 
-func (e ExportSpecifier) printSource(w writer, v bool) {
-	if v {
+func (e ExportSpecifier) printSource(w writer, v printFormatting) {
+	if v == printVerbose {
 		e.Comments[0].printSource(w, true, false)
 	}
 
@@ -3023,8 +3023,8 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 
 	w.WriteString(e.IdentifierName.Data)
 
-	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v) {
-		if v {
+	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v == printVerbose) {
+		if v == printVerbose {
 			e.Comments[1].printSource(w, false, false)
 		}
 
@@ -3034,31 +3034,31 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 
 		w.WriteString("as ")
 
-		if v {
+		if v == printVerbose {
 			e.Comments[2].printSource(w, true, false)
 		}
 
 		w.WriteString(e.EIdentifierName.Data)
 	}
 
-	if v {
+	if v == printVerbose {
 		e.Comments[3].printSource(w, false, false)
 	}
 }
 
-func (i ImportSpecifier) printSource(w writer, v bool) {
+func (i ImportSpecifier) printSource(w writer, v printFormatting) {
 	if i.ImportedBinding == nil {
 		return
 	}
 
-	if v && len(i.Comments[0]) > 0 {
+	if v == printVerbose && len(i.Comments[0]) > 0 {
 		i.Comments[0].printSource(w, true, false)
 	}
 
-	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
+	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v == printVerbose) {
 		w.WriteString(i.IdentifierName.Data)
 
-		if v {
+		if v == printVerbose {
 			i.Comments[1].printSource(w, false, false)
 		}
 
@@ -3068,19 +3068,19 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 
 		w.WriteString("as ")
 
-		if v {
+		if v == printVerbose {
 			i.Comments[2].printSource(w, true, false)
 		}
 	}
 
 	w.WriteString(i.ImportedBinding.Data)
 
-	if v {
+	if v == printVerbose {
 		i.Comments[3].printSource(w, false, false)
 	}
 }
 
-func (oe OptionalExpression) printSource(w writer, v bool) {
+func (oe OptionalExpression) printSource(w writer, v printFormatting) {
 	if oe.MemberExpression != nil {
 		oe.MemberExpression.printSource(w, v)
 	} else if oe.CallExpression != nil {
@@ -3092,14 +3092,14 @@ func (oe OptionalExpression) printSource(w writer, v bool) {
 	oe.OptionalChain.printSource(w, v)
 }
 
-func (oe OptionalChain) printSource(w writer, v bool) {
+func (oe OptionalChain) printSource(w writer, v printFormatting) {
 	if oe.OptionalChain != nil {
 		oe.OptionalChain.printSource(w, v)
 	} else {
 		w.WriteString("?.")
 	}
 
-	if v {
+	if v == printVerbose {
 		oe.Comments[0].printSource(w, true, false)
 	}
 
@@ -3110,7 +3110,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v {
+		if v == printVerbose {
 			if oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
 				ip = w.Indent()
 
@@ -3122,7 +3122,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		}
 
 		oe.Expression.printSource(ip, v)
-		if v {
+		if v == printVerbose {
 			if len(oe.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
 				w.WriteString("\n")
 			}
@@ -3135,7 +3135,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		if oe.OptionalChain != nil {
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				oe.Comments[1].printSource(w, true, false)
 			}
 		}
@@ -3147,7 +3147,7 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		if oe.OptionalChain != nil {
 			w.WriteString(".")
 
-			if v {
+			if v == printVerbose {
 				oe.Comments[1].printSource(w, true, false)
 			}
 		}
@@ -3155,12 +3155,12 @@ func (oe OptionalChain) printSource(w writer, v bool) {
 		w.WriteString(oe.PrivateIdentifier.Data)
 	}
 
-	if v {
+	if v == printVerbose {
 		oe.Comments[3].printSource(w, false, false)
 	}
 }
 
-func (ce CoalesceExpression) printSource(w writer, v bool) {
+func (ce CoalesceExpression) printSource(w writer, v printFormatting) {
 	if ce.CoalesceExpressionHead != nil {
 		ce.CoalesceExpressionHead.printSource(w, v)
 
@@ -3174,7 +3174,7 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 	ce.BitwiseORExpression.printSource(w, v)
 }
 
-func (ja *JSXAttribute) printSource(w writer, v bool) {
+func (ja *JSXAttribute) printSource(w writer, v printFormatting) {
 	if ja.Identifier != nil {
 		if ja.Namespace != nil {
 			w.WriteString(ja.Namespace.Data)
@@ -3197,7 +3197,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v && (ja.Comments[0].hasSingleLineComment() || ja.Comments[1].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+			if v == printVerbose && (ja.Comments[0].hasSingleLineComment() || ja.Comments[1].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
 				ip = w.Indent()
 
 				ja.Comments[0].printSource(w, false, true)
@@ -3206,7 +3206,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 			ja.AssignmentExpression.printSource(ip, v)
 
-			if v {
+			if v == printVerbose {
 				if w != ip {
 					w.WriteString("\n")
 				}
@@ -3221,14 +3221,14 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v && (hasSingleLineComment(ja.Comments[:]) || ja.AssignmentExpression.hasSingleLineComment()) {
+		if v == printVerbose && (hasSingleLineComment(ja.Comments[:]) || ja.AssignmentExpression.hasSingleLineComment()) {
 			ip = w.Indent()
 
 			ja.Comments[0].printSource(w, false, true)
 			ip.WriteString("\n")
 		}
 
-		if v {
+		if v == printVerbose {
 			ja.Comments[1].printSource(ip, true, false)
 		}
 
@@ -3236,7 +3236,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 		ja.AssignmentExpression.printSource(ip, v)
 
-		if v {
+		if v == printVerbose {
 			if w != ip {
 				w.WriteString("\n")
 			}
@@ -3248,7 +3248,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 	}
 }
 
-func (jc *JSXChild) printSource(w writer, v bool) {
+func (jc *JSXChild) printSource(w writer, v printFormatting) {
 	if jc.JSXText != nil {
 		w.WriteString(strings.TrimSpace(jc.JSXText.Data))
 	} else if jc.JSXElement != nil {
@@ -3260,7 +3260,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 
 		w.WriteString("{")
 
-		if v && (hasSingleLineComment(jc.Comments[:]) || jc.JSXChildExpression.hasSingleLineComment()) {
+		if v == printVerbose && (hasSingleLineComment(jc.Comments[:]) || jc.JSXChildExpression.hasSingleLineComment()) {
 			ip = w.Indent()
 
 			jc.Comments[0].printSource(w, false, true)
@@ -3269,7 +3269,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 
 		if jc.JSXChildExpression != nil {
 			if jc.Spread {
-				if v {
+				if v == printVerbose {
 					jc.Comments[1].printSource(ip, true, false)
 				}
 
@@ -3279,7 +3279,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 			jc.JSXChildExpression.printSource(ip, v)
 		}
 
-		if v {
+		if v == printVerbose {
 			if w != ip {
 				w.WriteString("\n")
 			}
@@ -3291,7 +3291,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 	}
 }
 
-func (je *JSXElement) printSource(w writer, v bool) {
+func (je *JSXElement) printSource(w writer, v printFormatting) {
 	w.WriteString("<")
 	je.ElementName.printSource(w, v)
 
@@ -3324,7 +3324,7 @@ func (je *JSXElement) printSource(w writer, v bool) {
 	}
 }
 
-func (jn *JSXElementName) printSource(w writer, v bool) {
+func (jn *JSXElementName) printSource(w writer, v printFormatting) {
 	if jn.Identifier != nil {
 		if jn.Namespace != nil {
 			w.WriteString(jn.Namespace.Data)
@@ -3341,7 +3341,7 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 	}
 }
 
-func (jf *JSXFragment) printSource(w writer, v bool) {
+func (jf *JSXFragment) printSource(w writer, v printFormatting) {
 	w.WriteString("<>")
 
 	if len(jf.Children) > 1 {

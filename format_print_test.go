@@ -16,7 +16,7 @@ func (state) Width() (int, bool) { return 0, false }
 
 func (state) Precision() (int, bool) { return 0, false }
 
-func (s *state) Flag(c int) bool { return c == '+' == s.Verbose }
+func (s *state) Flag(c int) bool { return c == '+' && s.Verbose }
 
 func TestPrintingScript(t *testing.T) {
 	var st state
