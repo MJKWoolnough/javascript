@@ -1,7 +1,5 @@
 package javascript
 
-import "strings"
-
 func (s Script) printSource(w writer, v printFormatting) {
 	if v == printVerbose && len(s.Comments[0]) > 0 {
 		s.Comments[0].printSource(w, true, true)
@@ -62,7 +60,7 @@ func (s Statement) printSource(w writer, v printFormatting) {
 		} else if s.WithStatement != nil {
 			s.WithStatement.printSource(w, v)
 		} else if s.LabelIdentifier != nil {
-			w.WriteStringWithType(s.LabelIdentifier.Data, TokenIdentifier)
+			w.WriteToken(s.LabelIdentifier)
 
 			if v == printVerbose {
 				s.Comments[0].printSource(w, true, false)
@@ -101,7 +99,7 @@ func (s Statement) printSource(w writer, v printFormatting) {
 				w.WriteString(" ")
 			}
 
-			w.WriteStringWithType(s.LabelIdentifier.Data, TokenIdentifier)
+			w.WriteToken(s.LabelIdentifier)
 		}
 
 		if v == printVerbose {
@@ -532,7 +530,7 @@ func (i IterationStatementFor) printSource(w writer, v printFormatting) {
 		}
 
 		if i.ForBindingIdentifier != nil {
-			ip.WriteStringWithType(i.ForBindingIdentifier.Data, TokenIdentifier)
+			ip.WriteToken(i.ForBindingIdentifier)
 		} else if i.ForBindingPatternObject != nil {
 			i.ForBindingPatternObject.printSource(ip, v)
 		} else {
@@ -808,7 +806,7 @@ func (f FunctionDeclaration) printSource(w writer, v printFormatting) {
 	}
 
 	if f.BindingIdentifier != nil {
-		w.WriteStringWithType(f.BindingIdentifier.Data, TokenIdentifier)
+		w.WriteToken(f.BindingIdentifier)
 	}
 
 	if v == printVerbose {
@@ -869,7 +867,7 @@ func (t TryStatement) printSource(w writer, v printFormatting) {
 			}
 
 			if t.CatchParameterBindingIdentifier != nil {
-				ip.WriteStringWithType(t.CatchParameterBindingIdentifier.Data, TokenIdentifier)
+				ip.WriteToken(t.CatchParameterBindingIdentifier)
 			} else if t.CatchParameterArrayBindingPattern != nil {
 				t.CatchParameterArrayBindingPattern.printSource(ip, v)
 			} else if t.CatchParameterObjectBindingPattern != nil {
@@ -926,7 +924,7 @@ func (c ClassDeclaration) printSource(w writer, v printFormatting) {
 	}
 
 	if c.BindingIdentifier != nil {
-		w.WriteStringWithType(c.BindingIdentifier.Data, TokenIdentifier)
+		w.WriteToken(c.BindingIdentifier)
 		w.WriteString(" ")
 
 		if v == printVerbose {
@@ -1009,7 +1007,7 @@ func (l LexicalBinding) printSource(w writer, v printFormatting) {
 	}
 
 	if l.BindingIdentifier != nil {
-		w.WriteStringWithType(l.BindingIdentifier.Data, TokenIdentifier)
+		w.WriteToken(l.BindingIdentifier)
 	} else if l.ArrayBindingPattern != nil {
 		l.ArrayBindingPattern.printSource(w, v)
 	} else if l.ObjectBindingPattern != nil {
@@ -1315,7 +1313,7 @@ func (o ObjectBindingPattern) printSource(w writer, v printFormatting) {
 			o.Comments[2].printSource(ip, true, false)
 		}
 
-		ip.WriteStringWithType(o.BindingRestProperty.Data, TokenIdentifier)
+		ip.WriteToken(o.BindingRestProperty)
 
 		if v == printVerbose {
 			o.Comments[3].printSource(ip, true, false)
@@ -1451,7 +1449,7 @@ func (f FormalParameters) printSource(w writer, v printFormatting) {
 			f.Comments[2].printSource(ip, false, true)
 		}
 
-		ip.WriteStringWithType(f.BindingIdentifier.Data, TokenIdentifier)
+		ip.WriteToken(f.BindingIdentifier)
 
 		if v == printVerbose {
 			f.Comments[3].printSource(ip, false, true)
@@ -1620,7 +1618,7 @@ func (cen ClassElementName) printSource(w writer, v printFormatting) {
 	if cen.PropertyName != nil {
 		cen.PropertyName.printSource(w, v)
 	} else if cen.PrivateIdentifier != nil {
-		w.WriteStringWithType(cen.PrivateIdentifier.Data, TokenPrivateIdentifier)
+		w.WriteToken(cen.PrivateIdentifier)
 	}
 
 	if v == printVerbose {
@@ -1673,7 +1671,7 @@ func (a ArrowFunction) printSource(w writer, v printFormatting) {
 	}
 
 	if a.BindingIdentifier != nil {
-		w.WriteStringWithType(a.BindingIdentifier.Data, TokenIdentifier)
+		w.WriteToken(a.BindingIdentifier)
 		w.WriteString(" ")
 	} else if a.FormalParameters != nil {
 		a.FormalParameters.printSource(w, v)
@@ -1813,7 +1811,7 @@ func (c CallExpression) printSource(w writer, v printFormatting) {
 				c.Comments[2].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType(c.IdentifierName.Data, TokenIdentifier)
+			w.WriteToken(c.IdentifierName)
 		} else if c.TemplateLiteral != nil {
 			c.CallExpression.printSource(w, v)
 			c.TemplateLiteral.printSource(w, v)
@@ -1830,7 +1828,7 @@ func (c CallExpression) printSource(w writer, v printFormatting) {
 				c.Comments[2].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType(c.PrivateIdentifier.Data, TokenPrivateIdentifier)
+			w.WriteToken(c.PrivateIdentifier)
 		}
 	}
 
@@ -1865,7 +1863,7 @@ func (b BindingElement) printSource(w writer, v printFormatting) {
 	}
 
 	if b.SingleNameBinding != nil {
-		w.WriteStringWithType(b.SingleNameBinding.Data, TokenIdentifier)
+		w.WriteToken(b.SingleNameBinding)
 	} else if b.ArrayBindingPattern != nil {
 		b.ArrayBindingPattern.printSource(w, v)
 	} else if b.ObjectBindingPattern != nil {
@@ -1889,7 +1887,7 @@ func (b BindingElement) printSource(w writer, v printFormatting) {
 
 func (p PropertyName) printSource(w writer, v printFormatting) {
 	if p.LiteralPropertyName != nil {
-		w.WriteStringWithType(p.LiteralPropertyName.Data, TokenIdentifier)
+		w.WriteToken(p.LiteralPropertyName)
 	} else if p.ComputedPropertyName != nil {
 		w.WriteStringWithType("[", TokenPunctuator)
 
@@ -2045,7 +2043,7 @@ func (m MemberExpression) printSource(w writer, v printFormatting) {
 				m.Comments[1].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType(m.IdentifierName.Data, TokenIdentifier)
+			w.WriteToken(m.IdentifierName)
 		} else if m.PrivateIdentifier != nil {
 			m.MemberExpression.printSource(w, v)
 
@@ -2063,7 +2061,7 @@ func (m MemberExpression) printSource(w writer, v printFormatting) {
 				m.Comments[1].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType(m.PrivateIdentifier.Data, TokenPrivateIdentifier)
+			w.WriteToken(m.PrivateIdentifier)
 		} else if m.TemplateLiteral != nil {
 			m.MemberExpression.printSource(w, v)
 
@@ -2122,7 +2120,7 @@ func (m MemberExpression) printSource(w writer, v printFormatting) {
 				m.Comments[2].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType(m.IdentifierName.Data, TokenIdentifier)
+			w.WriteToken(m.IdentifierName)
 		}
 	} else if m.NewTarget {
 		w.WriteStringWithType("new", TokenKeyword)
@@ -2212,21 +2210,17 @@ func (a Arguments) printSource(w writer, v printFormatting) {
 
 func (t TemplateLiteral) printSource(w writer, v printFormatting) {
 	if t.NoSubstitutionTemplate != nil {
-		if len(t.NoSubstitutionTemplate.Data) > 0 {
-			w.WriteStringWithType(t.NoSubstitutionTemplate.Data, TokenNoSubstitutionTemplate)
-		}
+		w.WriteToken(t.NoSubstitutionTemplate)
 	} else if t.TemplateHead != nil && t.TemplateTail != nil && len(t.Expressions) == len(t.TemplateMiddleList)+1 {
-		if len(t.TemplateHead.Data) > 0 {
-			w.WriteStringWithType(t.TemplateHead.Data, TokenTemplateHead)
-			t.Expressions[0].printSource(w, v)
+		w.WriteToken(t.TemplateHead)
+		t.Expressions[0].printSource(w, v)
 
-			for n, e := range t.Expressions[1:] {
-				w.WriteStringWithType(t.TemplateMiddleList[n].Data, TokenTemplateMiddle)
-				e.printSource(w, v)
-			}
-
-			w.WriteStringWithType(t.TemplateTail.Data, TokenTemplateTail)
+		for n, e := range t.Expressions[1:] {
+			w.WriteToken(t.TemplateMiddleList[n])
+			e.printSource(w, v)
 		}
+
+		w.WriteToken(t.TemplateTail)
 	}
 }
 
@@ -2249,9 +2243,9 @@ func (p PrimaryExpression) printSource(w writer, v printFormatting) {
 	if p.This != nil {
 		w.WriteStringWithType("this", TokenKeyword)
 	} else if p.IdentifierReference != nil {
-		w.WriteStringWithType(p.IdentifierReference.Data, TokenIdentifier)
+		w.WriteToken(p.IdentifierReference)
 	} else if p.Literal != nil {
-		w.WriteStringWithType(p.Literal.Data, p.Literal.Type)
+		w.WriteToken(p.Literal)
 	} else if p.ArrayLiteral != nil {
 		p.ArrayLiteral.printSource(w, v)
 	} else if p.ObjectLiteral != nil {
@@ -2484,7 +2478,7 @@ func (r RelationalExpression) printSource(w writer, v printFormatting) {
 			r.Comments[0].printSource(w, true, false)
 		}
 
-		w.WriteStringWithType(r.PrivateIdentifier.Data, TokenPrivateIdentifier)
+		w.WriteToken(r.PrivateIdentifier)
 
 		if v == printVerbose && len(r.Comments[1]) > 0 {
 			r.Comments[1].printSource(w, true, false)
@@ -2704,7 +2698,7 @@ func (i ImportDeclaration) printSource(w writer, v printFormatting) {
 			i.Comments[1].printSource(w, true, false)
 		}
 
-		w.WriteString(i.FromClause.ModuleSpecifier.Data)
+		w.WriteToken(i.FromClause.ModuleSpecifier)
 	}
 
 	if i.WithClause != nil {
@@ -2758,7 +2752,7 @@ func (e ExportDeclaration) printSource(w writer, v printFormatting) {
 					e.Comments[3].printSource(w, true, false)
 				}
 
-				w.WriteStringWithType(e.ExportFromClause.Data, TokenStringLiteral)
+				w.WriteToken(e.ExportFromClause)
 			}
 		}
 
@@ -2950,7 +2944,7 @@ func (we WithEntry) printSource(w writer, v printFormatting) {
 		we.Comments[0].printSource(w, true, false)
 	}
 
-	w.WriteStringWithType(we.AttributeKey.Data, TokenStringLiteral)
+	w.WriteToken(we.AttributeKey)
 
 	if v == printVerbose {
 		we.Comments[1].printSource(w, false, false)
@@ -2963,7 +2957,7 @@ func (we WithEntry) printSource(w writer, v printFormatting) {
 		we.Comments[2].printSource(w, true, false)
 	}
 
-	w.WriteStringWithType(we.Value.Data, TokenStringLiteral)
+	w.WriteToken(we.Value)
 
 	if v == printVerbose {
 		we.Comments[3].printSource(w, false, false)
@@ -2976,7 +2970,7 @@ func (i ImportClause) printSource(w writer, v printFormatting) {
 	}
 
 	if i.ImportedDefaultBinding != nil {
-		w.WriteStringWithType(i.ImportedDefaultBinding.Data, TokenIdentifier)
+		w.WriteToken(i.ImportedDefaultBinding)
 
 		if v == printVerbose {
 			i.Comments[1].printSource(w, true, false)
@@ -3008,7 +3002,7 @@ func (i ImportClause) printSource(w writer, v printFormatting) {
 			i.Comments[4].printSource(w, true, false)
 		}
 
-		w.WriteStringWithType(i.NameSpaceImport.Data, TokenIdentifier)
+		w.WriteToken(i.NameSpaceImport)
 	} else if i.NamedImports != nil {
 		i.NamedImports.printSource(w, v)
 	}
@@ -3034,7 +3028,7 @@ func (f FromClause) printSource(w writer, v printFormatting) {
 		f.Comments.printSource(w, true, false)
 	}
 
-	w.WriteStringWithType(f.ModuleSpecifier.Data, TokenStringLiteral)
+	w.WriteToken(f.ModuleSpecifier)
 }
 
 func (e ExportClause) printSource(w writer, v printFormatting) {
@@ -3124,7 +3118,7 @@ func (e ExportSpecifier) printSource(w writer, v printFormatting) {
 		return
 	}
 
-	w.WriteStringWithType(e.IdentifierName.Data, TokenIdentifier)
+	w.WriteToken(e.IdentifierName)
 
 	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v == printVerbose) {
 		if v == printVerbose {
@@ -3142,7 +3136,7 @@ func (e ExportSpecifier) printSource(w writer, v printFormatting) {
 			e.Comments[2].printSource(w, true, false)
 		}
 
-		w.WriteString(e.EIdentifierName.Data)
+		w.WriteToken(e.EIdentifierName)
 	}
 
 	if v == printVerbose {
@@ -3160,7 +3154,7 @@ func (i ImportSpecifier) printSource(w writer, v printFormatting) {
 	}
 
 	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v == printVerbose) {
-		w.WriteStringWithType(i.IdentifierName.Data, TokenIdentifier)
+		w.WriteToken(i.IdentifierName)
 
 		if v == printVerbose {
 			i.Comments[1].printSource(w, false, false)
@@ -3178,7 +3172,7 @@ func (i ImportSpecifier) printSource(w writer, v printFormatting) {
 		}
 	}
 
-	w.WriteStringWithType(i.ImportedBinding.Data, TokenIdentifier)
+	w.WriteToken(i.ImportedBinding)
 
 	if v == printVerbose {
 		i.Comments[3].printSource(w, false, false)
@@ -3245,7 +3239,7 @@ func (oe OptionalChain) printSource(w writer, v printFormatting) {
 			}
 		}
 
-		w.WriteStringWithType(oe.IdentifierName.Data, TokenIdentifier)
+		w.WriteToken(oe.IdentifierName)
 	} else if oe.TemplateLiteral != nil {
 		oe.TemplateLiteral.printSource(w, v)
 	} else if oe.PrivateIdentifier != nil {
@@ -3257,7 +3251,7 @@ func (oe OptionalChain) printSource(w writer, v printFormatting) {
 			}
 		}
 
-		w.WriteStringWithType(oe.PrivateIdentifier.Data, TokenPrivateIdentifier)
+		w.WriteToken(oe.PrivateIdentifier)
 	}
 
 	if v == printVerbose {
@@ -3283,15 +3277,15 @@ func (ce CoalesceExpression) printSource(w writer, v printFormatting) {
 func (ja *JSXAttribute) printSource(w writer, v printFormatting) {
 	if ja.Identifier != nil {
 		if ja.Namespace != nil {
-			w.WriteStringWithType(ja.Namespace.Data, TokenJSXIdentifier)
+			w.WriteToken(ja.Namespace)
 			w.WriteStringWithType(":", TokenPunctuator)
 		}
 
-		w.WriteStringWithType(ja.Identifier.Data, TokenJSXIdentifier)
+		w.WriteToken(ja.Identifier)
 
 		if ja.JSXString != nil {
 			w.WriteStringWithType("=", TokenPunctuator)
-			w.WriteStringWithType(ja.JSXString.Data, TokenJSXString)
+			w.WriteToken(ja.JSXString)
 		} else if ja.JSXElement != nil {
 			w.WriteStringWithType("=", TokenPunctuator)
 			ja.JSXElement.printSource(w, v)
@@ -3357,7 +3351,7 @@ func (ja *JSXAttribute) printSource(w writer, v printFormatting) {
 
 func (jc *JSXChild) printSource(w writer, v printFormatting) {
 	if jc.JSXText != nil {
-		w.WriteStringWithType(strings.TrimSpace(jc.JSXText.Data), TokenJSXText)
+		w.WriteToken(jc.JSXText)
 	} else if jc.JSXElement != nil {
 		jc.JSXElement.printSource(w, v)
 	} else if jc.JSXFragment != nil {
@@ -3437,15 +3431,15 @@ func (je *JSXElement) printSource(w writer, v printFormatting) {
 func (jn *JSXElementName) printSource(w writer, v printFormatting) {
 	if jn.Identifier != nil {
 		if jn.Namespace != nil {
-			w.WriteStringWithType(jn.Namespace.Data, TokenJSXIdentifier)
+			w.WriteToken(jn.Namespace)
 			w.WriteStringWithType(":", TokenPunctuator)
-			w.WriteStringWithType(jn.Identifier.Data, TokenJSXIdentifier)
+			w.WriteToken(jn.Identifier)
 		} else {
-			w.WriteStringWithType(jn.Identifier.Data, TokenJSXIdentifier)
+			w.WriteToken(jn.Identifier)
 
 			for _, m := range jn.MemberExpression {
 				w.WriteStringWithType(".", TokenPunctuator)
-				w.WriteStringWithType(m.Data, TokenJSXIdentifier)
+				w.WriteToken(m)
 			}
 		}
 	}
