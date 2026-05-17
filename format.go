@@ -108,6 +108,8 @@ func (i *indentPrinter) WriteStringWithType(s string, tt parser.TokenType) {
 		fallthrough
 	case TokenTemplateMiddle, TokenTemplateTail:
 		w = i.Underlying()
+	case TokenJSXText:
+		s = strings.TrimSpace(s)
 	}
 
 	w.WriteString(s)
