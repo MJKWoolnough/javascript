@@ -3425,74 +3425,74 @@ func (oe OptionalExpression) printSource(w writer, v printFormatting) {
 	oe.OptionalChain.printSource(w, v)
 }
 
-func (oe OptionalChain) printSource(w writer, v printFormatting) {
-	w.Start(oe.Tokens, false)
+func (oc OptionalChain) printSource(w writer, v printFormatting) {
+	w.Start(oc.Tokens, false)
 	defer w.End()
 
-	if oe.OptionalChain != nil {
-		oe.OptionalChain.printSource(w, v)
+	if oc.OptionalChain != nil {
+		oc.OptionalChain.printSource(w, v)
 	} else {
 		w.WriteStringWithType("?.", TokenPunctuator)
 	}
 
 	if v == printVerbose {
-		oe.Comments[0].printSource(w, true, false)
+		oc.Comments[0].printSource(w, true, false)
 	}
 
-	if oe.Arguments != nil {
-		oe.Arguments.printSource(w, v)
-	} else if oe.Expression != nil {
+	if oc.Arguments != nil {
+		oc.Arguments.printSource(w, v)
+	} else if oc.Expression != nil {
 		w.WriteStringWithType("[", TokenPunctuator)
 
 		ip := w
 
 		if v == printVerbose {
-			if oe.Comments[1].hasSingleLineComment() || oe.Comments[2].hasSingleLineComment() || oe.Expression.hasSingleLineComment() {
+			if oc.Comments[1].hasSingleLineComment() || oc.Comments[2].hasSingleLineComment() || oc.Expression.hasSingleLineComment() {
 				ip = w.Indent()
 
-				oe.Comments[1].printSource(w, false, true)
+				oc.Comments[1].printSource(w, false, true)
 				ip.WriteString("\n")
 			} else {
-				oe.Comments[1].printSource(w, true, false)
+				oc.Comments[1].printSource(w, true, false)
 			}
 		}
 
-		oe.Expression.printSource(ip, v)
+		oc.Expression.printSource(ip, v)
 		if v == printVerbose {
-			if len(oe.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
+			if len(oc.Comments[2]) > 0 || w != ip && !w.LastIsWhitespace() {
 				w.WriteString("\n")
 			}
 
-			oe.Comments[2].printSource(w, false, w != ip)
+			oc.Comments[2].printSource(w, false, w != ip)
 		}
 
 		w.WriteStringWithType("]", TokenPunctuator)
-	} else if oe.IdentifierName != nil {
-		if oe.OptionalChain != nil {
+	} else if oc.IdentifierName != nil {
+		if oc.OptionalChain != nil {
 			w.WriteStringWithType(".", TokenPunctuator)
 
 			if v == printVerbose {
-				oe.Comments[1].printSource(w, true, false)
+				oc.Comments[1].printSource(w, true, false)
 			}
 		}
 
-		w.WriteToken(oe.IdentifierName)
-	} else if oe.TemplateLiteral != nil {
-		oe.TemplateLiteral.printSource(w, v)
-	} else if oe.PrivateIdentifier != nil {
-		if oe.OptionalChain != nil {
+		w.WriteToken(oc.IdentifierName)
+	} else if oc.TemplateLiteral != nil {
+		oc.TemplateLiteral.printSource(w, v)
+	} else if oc.PrivateIdentifier != nil {
+		if oc.OptionalChain != nil {
 			w.WriteStringWithType(".", TokenPunctuator)
 
 			if v == printVerbose {
-				oe.Comments[1].printSource(w, true, false)
+				oc.Comments[1].printSource(w, true, false)
 			}
 		}
 
-		w.WriteToken(oe.PrivateIdentifier)
+		w.WriteToken(oc.PrivateIdentifier)
 	}
 
 	if v == printVerbose {
-		oe.Comments[3].printSource(w, false, false)
+		oc.Comments[3].printSource(w, false, false)
 	}
 }
 
