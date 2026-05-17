@@ -26,6 +26,8 @@ type writer interface {
 	Pos() int
 	Indent() writer
 	Printf(string, ...any)
+	Start(Tokens, bool)
+	End()
 }
 
 type indentPrinter struct {
@@ -193,6 +195,9 @@ func (u *underlyingWriter) Indent() writer {
 func (u *underlyingWriter) Printf(format string, args ...any) {
 	fmt.Fprintf(u, format, args...)
 }
+
+func (underlyingWriter) Start(_ Tokens, _ bool) {}
+func (underlyingWriter) End()                   {}
 
 // Format implements the fmt.Formatter interface
 func (t Token) Format(s fmt.State, v rune) {
