@@ -1751,9 +1751,9 @@ func TestWalk(t *testing.T) {
 			w := walker{end: test.End(m)}
 
 			if err := w.Handle(m); err == nil && test.Level != nil {
-				t.Errorf("test %d: expected to recieve sentinel error, but didn't", n+1)
+				t.Errorf("test %d: expected to receive sentinel error, but didn't", n+1)
 			} else if err != nil && test.Level == nil {
-				t.Errorf("test %d: expected no error, but recieved %v", n+1, err)
+				t.Errorf("test %d: expected no error, but received %v", n+1, err)
 			} else if len(w.level) != len(test.Level) {
 				t.Errorf("test %d: expected to have %d levels, got %d", n+1, len(test.Level), len(w.level))
 			} else {
@@ -1802,9 +1802,9 @@ func TestWalkScript(t *testing.T) {
 			w := walker{end: test.End(m)}
 
 			if err := w.Handle(m); err == nil && test.Level != nil {
-				t.Errorf("test %d: expected to recieve sentinel error, but didn't", n+1)
+				t.Errorf("test %d: expected to receive sentinel error, but didn't", n+1)
 			} else if err != nil && test.Level == nil {
-				t.Errorf("test %d: expected no error, but recieved %v", n+1, err)
+				t.Errorf("test %d: expected no error, but received %v", n+1, err)
 			} else if len(w.level) != len(test.Level) {
 				t.Errorf("test %d: expected to have %d levels, got %d", n+1, len(test.Level), len(w.level))
 			} else {
