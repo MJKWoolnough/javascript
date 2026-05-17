@@ -2768,9 +2768,6 @@ func (e ExponentiationExpression) printSource(w writer, v printFormatting) {
 }
 
 func (u UnaryOperatorComments) printSource(w writer, v printFormatting) {
-	w.Start(u.Tokens, false)
-	defer w.End()
-
 	if v == printVerbose {
 		u.Comments.printSource(w, true, false)
 	}
