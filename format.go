@@ -18,6 +18,7 @@ type writer interface {
 	io.Writer
 	WriteString(string)
 	WriteStringWithType(string, parser.TokenType)
+	WriteToken(*Token)
 	Underlying() writer
 	PrintSemiColon()
 	LastChar() byte
@@ -112,6 +113,14 @@ func (i *indentPrinter) WriteStringWithType(s string, tt parser.TokenType) {
 	w.WriteString(s)
 }
 
+func (i *indentPrinter) WriteToken(tk *Token) {
+	if tk == nil {
+		return
+	}
+
+	i.WriteStringWithType(tk.Data, tk.Type)
+}
+
 func (i *indentPrinter) Indent() writer {
 	return &indentPrinter{writer: i}
 }
@@ -140,8 +149,16 @@ func (u *underlyingWriter) WriteString(s string) {
 	u.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
-func (u *underlyingWriter) WriteStringWithType(s string, _ parser.TokenType) {
+func (u *underlyingWriter) WriteStringWithType(s string, tk parser.TokenType) {
 	u.WriteString(s)
+}
+
+func (u *underlyingWriter) WriteToken(tk *Token) {
+	if tk == nil {
+		return
+	}
+
+	u.WriteString(tk.Data)
 }
 
 func (u *underlyingWriter) Underlying() writer {
