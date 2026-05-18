@@ -41,7 +41,7 @@ func TestProcess(t *testing.T) {
 		{ // 6
 			"const a = <b><c d=<a />/></b>",
 			`{{ if .InHTML }}import {TAG_NAME} from '@html';TAG_NAME(PARAMS, CHILDREN){{else}}tag('TAG_NAME', PARAMS, CHILDREN){{end}}`,
-			"import {a as a_1, b} from \"@html\";\n\nconst a = (b({}, [(tag(\"c\", {d: (a_1({}, []))}, []))]));",
+			"import {a as a_1, b as b} from \"@html\";\n\nconst a = (b({}, [(tag(\"c\", {d: (a_1({}, []))}, []))]));",
 		},
 		{ // 7
 			"import {b as z} from '@html';const a = <b><c d=<a />/></b>",
@@ -101,22 +101,37 @@ func TestProcess(t *testing.T) {
 		{ // 18
 			"const a = <div></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
-			"import {div} from \"@html\";\n\nconst a = (div({}, []));",
+			"import {div as div} from \"@html\";\n\nconst a = (div({}, []));",
 		},
 		{ // 19
 			"const a = <div><a /></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
-			"import {a as a_1, div} from \"@html\";\n\nconst a = (div({}, [(a_1({}, []))]));",
+			"import {a as a_1, div as div} from \"@html\";\n\nconst a = (div({}, [(a_1({}, []))]));",
 		},
 		{ // 20
 			"const a = <div><svg><a /></svg></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME(PARAMS, CHILDREN)`,
-			"import {a as a_1, svg} from \"@svg\";\n\nimport {div} from \"@html\";\n\nconst a = (div({}, [(svg({}, [(a_1({}, []))]))]));",
+			"import {a as a_1, svg as svg} from \"@svg\";\n\nimport {div as div} from \"@html\";\n\nconst a = (div({}, [(svg({}, [(a_1({}, []))]))]));",
 		},
 		{ // 21
 			"const a = <div><svg><a /></svg></div>",
 			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME({{ if .HasParams }}PARAMS{{ end }}{{ if .HasChildren}}{{if .HasParams }}, {{ end }}CHILDREN{{ end }})`,
-			"import {a as a_1, svg} from \"@svg\";\n\nimport {div} from \"@html\";\n\nconst a = (div([(svg([(a_1())]))]));",
+			"import {a as a_1, svg as svg} from \"@svg\";\n\nimport {div as div} from \"@html\";\n\nconst a = (div([(svg([(a_1())]))]));",
+		},
+		{ // 22
+			"const a = <b>{// A\nc // B\n}</b>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {}, [\n\t// A\n\tc // B\n]));",
+		},
+		{ // 23
+			"const a = <b>{// A\nc // B\n\n// C\n}</b>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {}, [\n\t// A\n\tc // B\n\n\t// C\n]));",
+		},
+		{ // 23
+			"const a = <b>{// A\n... /* B */ c\n// C\n}</b>",
+			`tag('TAG_NAME', PARAMS, CHILDREN)`,
+			"const a = (tag(\"b\", {}, [\n\t// A\n\t... /* B */ c // C\n]));",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
@@ -127,7 +142,7 @@ func TestProcess(t *testing.T) {
 			t.Errorf("test %d: unexpected error parsing template: %s", n+1, err)
 		} else if err := Process(m, tmp); err != nil {
 			t.Errorf("test %d: unexpected error processing: %s", n+1, err)
-		} else if output := fmt.Sprintf("%s", m); output != test.Output {
+		} else if output := fmt.Sprintf("%+s", m); output != test.Output {
 			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, output)
 		}
 	}
