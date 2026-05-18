@@ -1755,8 +1755,8 @@ func (j *jsParser) SkipMethodOverload(static bool, cen *ClassElementName, yield,
 
 			var csb, dsb strings.Builder
 
-			cen.printSource(&underlyingWriter{Writer: &csb}, printSimple)
-			den.printSource(&underlyingWriter{Writer: &dsb}, printSimple)
+			cen.printSource(&underlyingWriter{Writer: &csb}, false)
+			den.printSource(&underlyingWriter{Writer: &dsb}, false)
 
 			if csb.String() != dsb.String() {
 				return false

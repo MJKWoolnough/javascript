@@ -453,17 +453,9 @@ func isSingleLine(c Token) bool {
 	return c.Type == TokenSingleLineComment && !strings.Contains(c.Data, "\n")
 }
 
-type printFormatting uint8
-
-const (
-	printSimple printFormatting = iota
-	printVerbose
-	printOriginal
-)
-
 type formatter interface {
 	printType(writer, bool)
-	printSource(writer, printFormatting)
+	printSource(writer, bool)
 }
 
 func format(f formatter, s fmt.State, v rune) {
@@ -471,15 +463,17 @@ func format(f formatter, s fmt.State, v rune) {
 	case 'v':
 		f.printType(&underlyingWriter{Writer: s}, s.Flag('+'))
 	case 's':
-		var pf printFormatting
+		var v bool
 
 		if s.Flag('+') {
-			pf = printVerbose
-		} else if s.Flag('#') {
-			pf = printOriginal
+			v = true
 		}
 
-		f.printSource(&underlyingWriter{Writer: s}, pf)
+		if s.Flag('#') {
+			f.printSource(&originalWriter{w: s}, true)
+		} else {
+			f.printSource(&underlyingWriter{Writer: s}, v)
+		}
 	}
 }
 
