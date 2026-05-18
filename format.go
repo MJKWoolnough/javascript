@@ -207,12 +207,11 @@ func (underlyingWriter) Start(_ Tokens, _ bool) {}
 func (underlyingWriter) End()                   {}
 
 type originalWriter struct {
-	w          io.Writer
+	io.Writer
 	tokenStack []Tokens
 	blockStack []bool
 }
 
-func (o *originalWriter) Write([]byte) (int, error)                    { return 0, nil }
 func (o *originalWriter) WriteString(string)                           {}
 func (o *originalWriter) WriteStringWithType(string, parser.TokenType) {}
 func (o *originalWriter) WriteToken(*Token)                            {}
@@ -496,7 +495,7 @@ func format(f formatter, s fmt.State, v rune) {
 		}
 
 		if s.Flag('#') {
-			f.printSource(&originalWriter{w: s}, true)
+			f.printSource(&originalWriter{Writer: s}, true)
 		} else {
 			f.printSource(&underlyingWriter{Writer: s}, v)
 		}
