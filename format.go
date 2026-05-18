@@ -112,6 +112,8 @@ func (i *indentPrinter) WriteStringWithType(s string, tt parser.TokenType) {
 		w = i.Underlying()
 	case TokenJSXText:
 		s = strings.TrimSpace(s)
+	case tokenStringAsComment:
+		s = strings.ReplaceAll(s, "*/", "* /")
 	}
 
 	w.WriteString(s)
@@ -154,6 +156,11 @@ func (u *underlyingWriter) WriteString(s string) {
 }
 
 func (u *underlyingWriter) WriteStringWithType(s string, tk parser.TokenType) {
+	switch tk {
+	case tokenStringAsComment:
+		s = strings.ReplaceAll(s, "*/", "* /")
+	}
+
 	u.WriteString(s)
 }
 
@@ -394,7 +401,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 		}
 
 		if cp {
-			w.WriteString("*/")
+			w.WriteStringWithType("*/", tokenMultiLineEnd)
 		}
 
 		if postNewline || !lastWasMulti {
@@ -409,12 +416,20 @@ func (c Comments) LastIsMulti() bool {
 	return len(c) > 0 && c[len(c)-1].Type == TokenMultiLineComment
 }
 
+const (
+	tokenMultiLineStart parser.TokenType = 999 + iota
+	tokenMultiLineEnd
+	tokenSingleLineStart
+	tokenStringAsComment
+)
+
 func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 	var multi bool
 
 	if isSingleLine(c) {
 		if *cp {
-			w.WriteString("*/ ")
+			w.WriteStringWithType("*/ ", tokenMultiLineEnd)
+			w.WriteString(" ")
 
 			pos = max(0, pos-3)
 			*cp = false
@@ -423,27 +438,28 @@ func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 		w.WriteString(strings.Repeat(" ", pos))
 
 		if !strings.HasPrefix(c.Data, "//") {
-			w.WriteString("// ")
+			w.WriteStringWithType("// ", tokenSingleLineStart)
 		}
 	} else {
 		multi = true
 
 		if c.Type == TokenMultiLineComment {
 			if *cp {
-				w.WriteString("*/ ")
+				w.WriteStringWithType("*/", tokenMultiLineEnd)
+				w.WriteString(" ")
 			}
 
 			*cp = false
 		} else if !*cp {
-			w.WriteString("/*")
+			w.WriteStringWithType("/*", tokenMultiLineStart)
 			*cp = true
 		}
 	}
 
 	if *cp {
-		w.WriteString(strings.ReplaceAll(c.Data, "*/", "* /"))
+		w.WriteStringWithType(c.Data, tokenStringAsComment)
 	} else {
-		w.WriteString(strings.TrimSpace(c.Data))
+		w.WriteToken(&c)
 	}
 
 	return multi
