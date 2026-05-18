@@ -199,6 +199,24 @@ func (u *underlyingWriter) Printf(format string, args ...any) {
 func (underlyingWriter) Start(_ Tokens, _ bool) {}
 func (underlyingWriter) End()                   {}
 
+type originalWriter struct {
+	w io.Writer
+}
+
+func (o *originalWriter) Write([]byte) (int, error)                    { return 0, nil }
+func (o *originalWriter) WriteString(string)                           {}
+func (o *originalWriter) WriteStringWithType(string, parser.TokenType) {}
+func (o *originalWriter) WriteToken(*Token)                            {}
+func (o *originalWriter) Underlying() writer                           { return o }
+func (o *originalWriter) PrintSemiColon()                              {}
+func (o *originalWriter) LastChar() byte                               { return 0 }
+func (o *originalWriter) LastIsWhitespace() bool                       { return false }
+func (o *originalWriter) Pos() int                                     { return 0 }
+func (o *originalWriter) Indent() writer                               { return o }
+func (o *originalWriter) Printf(string, ...any)                        {}
+func (o *originalWriter) Start(Tokens, bool)                           {}
+func (o *originalWriter) End()                                         {}
+
 // Format implements the fmt.Formatter interface
 func (t Token) Format(s fmt.State, v rune) {
 	t.printType(s, s.Flag('+'))
