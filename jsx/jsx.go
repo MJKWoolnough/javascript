@@ -551,6 +551,9 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 				AssignmentExpression: ae,
 			})
 		}
+
+		ol.Comments[0] = combineComments(attr.Comments[0], attr.Comments[1])
+		ol.Comments[1] = attr.Comments[2]
 	}
 
 	return ol, nil
