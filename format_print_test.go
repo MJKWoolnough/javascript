@@ -9,14 +9,14 @@ import (
 
 type state struct {
 	bytes.Buffer
-	Verbose bool
+	flag int
 }
 
 func (state) Width() (int, bool) { return 0, false }
 
 func (state) Precision() (int, bool) { return 0, false }
 
-func (s *state) Flag(c int) bool { return c == '+' && s.Verbose }
+func (s *state) Flag(c int) bool { return c == s.flag }
 
 func TestPrintingScript(t *testing.T) {
 	var st state
@@ -2697,7 +2697,7 @@ func TestPrintingScript(t *testing.T) {
 				continue
 			}
 
-			st.Verbose = false
+			st.flag = 0
 
 			st.Reset()
 			s.Format(&st, 's')
@@ -2706,7 +2706,7 @@ func TestPrintingScript(t *testing.T) {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 
-			st.Verbose = true
+			st.flag = '+'
 
 			st.Reset()
 			s.Format(&st, 's')
@@ -3073,7 +3073,7 @@ func TestPrintingModule(t *testing.T) {
 				continue
 			}
 
-			st.Verbose = false
+			st.flag = 0
 
 			st.Reset()
 			s.Format(&st, 's')
@@ -3082,7 +3082,7 @@ func TestPrintingModule(t *testing.T) {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 
-			st.Verbose = true
+			st.flag = '+'
 
 			st.Reset()
 			s.Format(&st, 's')
@@ -3266,7 +3266,7 @@ func TestPrintingJSX(t *testing.T) {
 				continue
 			}
 
-			st.Verbose = false
+			st.flag = 0
 
 			st.Reset()
 			s.Format(&st, 's')
@@ -3275,7 +3275,7 @@ func TestPrintingJSX(t *testing.T) {
 				t.Errorf("test %d.%d.2: expecting %q, got %q\n%s", n+1, m+1, test.SimpleOutput, str, s)
 			}
 
-			st.Verbose = true
+			st.flag = '+'
 
 			st.Reset()
 			s.Format(&st, 's')

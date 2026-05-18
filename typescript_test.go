@@ -5381,7 +5381,7 @@ func TestAsTypescript(t *testing.T) {
 func TestPrintingTypescript(t *testing.T) {
 	var st state
 
-	st.Verbose = true
+	st.flag = '+'
 
 	for n, test := range [...]struct {
 		Input, Output string
