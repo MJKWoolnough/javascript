@@ -207,7 +207,9 @@ func (underlyingWriter) Start(_ Tokens, _ bool) {}
 func (underlyingWriter) End()                   {}
 
 type originalWriter struct {
-	w io.Writer
+	w          io.Writer
+	tokenStack []Tokens
+	blockStack []bool
 }
 
 func (o *originalWriter) Write([]byte) (int, error)                    { return 0, nil }
@@ -221,8 +223,16 @@ func (o *originalWriter) LastIsWhitespace() bool                       { return 
 func (o *originalWriter) Pos() int                                     { return 0 }
 func (o *originalWriter) Indent() writer                               { return o }
 func (o *originalWriter) Printf(string, ...any)                        {}
-func (o *originalWriter) Start(Tokens, bool)                           {}
-func (o *originalWriter) End()                                         {}
+
+func (o *originalWriter) Start(tks Tokens, block bool) {
+	o.tokenStack = append(o.tokenStack, tks)
+	o.blockStack = append(o.blockStack, block)
+}
+
+func (o *originalWriter) End() {
+	o.tokenStack = o.tokenStack[:len(o.tokenStack)-1]
+	o.blockStack = o.blockStack[:len(o.blockStack)-1]
+}
 
 // Format implements the fmt.Formatter interface
 func (t Token) Format(s fmt.State, v rune) {
