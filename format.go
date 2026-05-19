@@ -233,6 +233,16 @@ func (o *originalWriter) End() {
 	o.blockStack = o.blockStack[:len(o.blockStack)-1]
 }
 
+func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) int {
+	for n, tk := range o.tokenStack[len(o.tokenStack)] {
+		if tk.Type == tt && tk.Data == str {
+			return n
+		}
+	}
+
+	return -1
+}
+
 // Format implements the fmt.Formatter interface
 func (t Token) Format(s fmt.State, v rune) {
 	t.printType(s, s.Flag('+'))
