@@ -235,9 +235,23 @@ func push[T any](a *[]T, v T) {
 }
 
 func (o *originalWriter) End() {
+	tks := last(o.tokenStack)
+
 	pop(&o.tokenStack)
 	pop(&o.blockStack)
 	pop(&o.pos)
+
+	if len(tks) > 0 {
+		pos := o.findToken(&tks[len(tks)-1])
+
+		if pos >= 0 {
+			o.setPos(pos)
+		}
+	}
+}
+
+func (o *originalWriter) setPos(pos int) {
+	o.pos[len(o.pos)-1] = pos
 }
 
 func pop[T any](a *[]T) {
