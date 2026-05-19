@@ -210,6 +210,7 @@ type originalWriter struct {
 	io.Writer
 	tokenStack []Tokens
 	blockStack []bool
+	pos        []int
 }
 
 func (o *originalWriter) WriteString(string)                           {}
@@ -226,6 +227,7 @@ func (o *originalWriter) Printf(string, ...any)                        {}
 func (o *originalWriter) Start(tks Tokens, block bool) {
 	push(&o.tokenStack, tks)
 	push(&o.blockStack, block)
+	push(&o.pos, 0)
 }
 
 func push[T any](a *[]T, v T) {
@@ -235,6 +237,7 @@ func push[T any](a *[]T, v T) {
 func (o *originalWriter) End() {
 	pop(&o.tokenStack)
 	pop(&o.blockStack)
+	pop(&o.pos)
 }
 
 func pop[T any](a *[]T) {
@@ -242,7 +245,8 @@ func pop[T any](a *[]T) {
 }
 
 func (o *originalWriter) findToken(tk *Token) int {
-	ts := o.tokenStack[len(o.tokenStack)]
+	ts := last(o.tokenStack)
+
 	for n := range ts {
 		if tk == &ts[n] {
 			return n
@@ -252,8 +256,21 @@ func (o *originalWriter) findToken(tk *Token) int {
 	return o.findStringWithToken(tk.Data, tk.Type)
 }
 
+func last[T any](s []T) T {
+	return s[len(s)-1]
+}
+
 func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) int {
-	for n, tk := range o.tokenStack[len(o.tokenStack)] {
+	ts := last(o.tokenStack)
+	pos := last(o.pos)
+
+	for n, tk := range ts[pos:] {
+		if tk.Type == tt && tk.Data == str {
+			return n
+		}
+	}
+
+	for n, tk := range ts[:pos] {
 		if tk.Type == tt && tk.Data == str {
 			return n
 		}
