@@ -264,6 +264,18 @@ func (o *originalWriter) printWhitespaceAfter(pos int) {
 	}
 }
 
+func (o *originalWriter) printWhitespaceBefore(pos int) {
+	tks := last(o.tokenStack)
+
+	for n := pos - 1; pos > 0; pos-- {
+		tk := tks[n]
+
+		if tk.Type == TokenWhitespace || tk.Type == TokenLineTerminator {
+			io.WriteString(o.Writer, tk.Data)
+		}
+	}
+}
+
 func pop[T any](a *[]T) {
 	*a = (*a)[:len(*a)-1]
 }
