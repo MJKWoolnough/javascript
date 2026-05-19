@@ -233,6 +233,17 @@ func (o *originalWriter) End() {
 	o.blockStack = o.blockStack[:len(o.blockStack)-1]
 }
 
+func (o *originalWriter) findToken(tk *Token) int {
+	ts := o.tokenStack[len(o.tokenStack)]
+	for n := range ts {
+		if tk == &ts[n] {
+			return n
+		}
+	}
+
+	return o.findStringWithToken(tk.Data, tk.Type)
+}
+
 func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) int {
 	for n, tk := range o.tokenStack[len(o.tokenStack)] {
 		if tk.Type == tt && tk.Data == str {
