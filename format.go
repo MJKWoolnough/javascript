@@ -273,12 +273,18 @@ func (o *originalWriter) printWhitespaceAfter(pos int) {
 func (o *originalWriter) printWhitespaceBefore(pos int) {
 	tks := last(o.tokenStack)
 
-	for n := pos - 1; pos > 0; pos-- {
+	n := pos - 1
+
+	for ; pos > 0; pos-- {
 		tk := tks[n]
 
-		if tk.Type == TokenWhitespace || tk.Type == TokenLineTerminator {
-			io.WriteString(o.Writer, tk.Data)
+		if tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator {
+			break
 		}
+	}
+
+	for _, tk := range tks[n:pos] {
+		io.WriteString(o.Writer, tk.Data)
 	}
 }
 
