@@ -260,14 +260,17 @@ func (o *originalWriter) setPos(pos int) {
 	o.pos[len(o.pos)-1] = pos
 }
 
-func (o *originalWriter) printWhitespaceAfter(pos int) {
+func (o *originalWriter) printWhitespaceAfter(pos int) int {
 	tks := last(o.tokenStack)
 
 	for _, tk := range tks[pos:] {
 		if tk.Type == TokenWhitespace || tk.Type == TokenLineTerminator {
 			io.WriteString(o.Writer, tk.Data)
+			pos++
 		}
 	}
+
+	return pos
 }
 
 func (o *originalWriter) printWhitespaceBefore(pos int) {
