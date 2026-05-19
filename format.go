@@ -224,13 +224,21 @@ func (o *originalWriter) Indent() writer                               { return 
 func (o *originalWriter) Printf(string, ...any)                        {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
-	o.tokenStack = append(o.tokenStack, tks)
-	o.blockStack = append(o.blockStack, block)
+	push(&o.tokenStack, tks)
+	push(&o.blockStack, block)
+}
+
+func push[T any](a *[]T, v T) {
+	*a = append(*a, v)
 }
 
 func (o *originalWriter) End() {
-	o.tokenStack = o.tokenStack[:len(o.tokenStack)-1]
-	o.blockStack = o.blockStack[:len(o.blockStack)-1]
+	pop(&o.tokenStack)
+	pop(&o.blockStack)
+}
+
+func pop[T any](a *[]T) {
+	*a = (*a)[:len(*a)-1]
 }
 
 func (o *originalWriter) findToken(tk *Token) int {
