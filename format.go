@@ -225,6 +225,12 @@ func (o *originalWriter) Indent() writer                               { return 
 func (o *originalWriter) Printf(string, ...any)                        {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
+	if len(tks) > 0 {
+		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
+			o.printWhitespaceBefore(pos)
+		}
+	}
+
 	push(&o.tokenStack, tks)
 	push(&o.blockStack, block)
 	push(&o.pos, 0)
