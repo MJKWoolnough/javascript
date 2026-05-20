@@ -352,7 +352,7 @@ func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) in
 
 	for n, tk := range ts[pos:] {
 		if tk.Type == tt && tk.Data == str {
-			return n
+			return n + pos
 		}
 	}
 
