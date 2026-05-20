@@ -252,7 +252,7 @@ func (o *originalWriter) Printf(string, ...any)  {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
-		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
+		if pos := o.findToken(&tks[0]); pos >= 0 {
 			o.printWhitespaceBefore(pos)
 		}
 	}
