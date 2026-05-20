@@ -251,7 +251,7 @@ func (o *originalWriter) End() {
 		pos := o.findToken(&tks[len(tks)-1])
 
 		if pos >= 0 {
-			o.setPos(pos)
+			o.setPos(o.printWhitespaceAfter(pos))
 		}
 	}
 }
