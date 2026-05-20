@@ -291,6 +291,8 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 		}
 	}
 
+	n++
+
 	for _, tk := range tks[max(n, currPos):pos] {
 		io.WriteString(o.Writer, tk.Data)
 	}
