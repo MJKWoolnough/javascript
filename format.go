@@ -277,8 +277,9 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 	tks := last(o.tokenStack)
 
 	n := pos - 1
+	currPos := last(o.pos)
 
-	for ; pos > 0; pos-- {
+	for ; pos > currPos; pos-- {
 		tk := tks[n]
 
 		if tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator {
