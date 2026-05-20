@@ -279,7 +279,11 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 	n := pos - 1
 	currPos := last(o.pos)
 
-	for ; pos > currPos; pos-- {
+	if pos < currPos {
+		return
+	}
+
+	for ; n > currPos; n-- {
 		tk := tks[n]
 
 		if tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator {
@@ -287,7 +291,7 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 		}
 	}
 
-	for _, tk := range tks[n:pos] {
+	for _, tk := range tks[max(n, currPos):pos] {
 		io.WriteString(o.Writer, tk.Data)
 	}
 }
