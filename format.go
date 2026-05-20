@@ -290,10 +290,12 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 	tks := last(o.tokenStack)
 
 	for _, tk := range tks[pos:] {
-		if tk.Type == TokenWhitespace || tk.Type == TokenLineTerminator {
-			io.WriteString(o.Writer, tk.Data)
-			pos++
+		if tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator {
+			break
 		}
+
+		io.WriteString(o.Writer, tk.Data)
+		pos++
 	}
 
 	return pos
