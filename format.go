@@ -215,14 +215,27 @@ type originalWriter struct {
 
 func (o *originalWriter) WriteString(string)                           {}
 func (o *originalWriter) WriteStringWithType(string, parser.TokenType) {}
-func (o *originalWriter) WriteToken(*Token)                            {}
-func (o *originalWriter) Underlying() writer                           { return o }
-func (o *originalWriter) PrintSemiColon()                              {}
-func (o *originalWriter) LastChar() byte                               { return 0 }
-func (o *originalWriter) LastIsWhitespace() bool                       { return false }
-func (o *originalWriter) Pos() int                                     { return 0 }
-func (o *originalWriter) Indent() writer                               { return o }
-func (o *originalWriter) Printf(string, ...any)                        {}
+
+func (o *originalWriter) WriteToken(tk *Token) {
+	pos := o.findToken(tk)
+	if pos >= 0 {
+		o.printWhitespaceBefore(pos)
+	}
+
+	io.WriteString(o.Writer, tk.Data)
+
+	if pos >= 0 {
+		o.setPos(o.printWhitespaceAfter(pos))
+	}
+}
+
+func (o *originalWriter) Underlying() writer     { return o }
+func (o *originalWriter) PrintSemiColon()        {}
+func (o *originalWriter) LastChar() byte         { return 0 }
+func (o *originalWriter) LastIsWhitespace() bool { return false }
+func (o *originalWriter) Pos() int               { return 0 }
+func (o *originalWriter) Indent() writer         { return o }
+func (o *originalWriter) Printf(string, ...any)  {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
