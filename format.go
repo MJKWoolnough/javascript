@@ -213,8 +213,21 @@ type originalWriter struct {
 	pos        []int
 }
 
-func (o *originalWriter) WriteString(string)                           {}
-func (o *originalWriter) WriteStringWithType(string, parser.TokenType) {}
+func (o *originalWriter) WriteString(string) {}
+
+func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
+	pos := o.findStringWithToken(data, typ)
+
+	if pos >= 0 {
+		o.printWhitespaceBefore(pos)
+	}
+
+	io.WriteString(o.Writer, data)
+
+	if pos >= 0 {
+		o.setPos(o.printWhitespaceAfter(pos))
+	}
+}
 
 func (o *originalWriter) WriteToken(tk *Token) {
 	pos := o.findToken(tk)
