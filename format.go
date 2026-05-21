@@ -314,7 +314,7 @@ func (o *originalWriter) setPos(pos int) {
 func (o *originalWriter) printWhitespaceAfter(pos int) int {
 	tks := last(o.tokenStack)
 
-	for _, tk := range tks[pos:] {
+	for _, tk := range tks[pos+1:] {
 		if tk.Type != TokenWhitespace && tk.Type != TokenLineTerminator {
 			break
 		}
