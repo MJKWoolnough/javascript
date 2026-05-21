@@ -208,9 +208,10 @@ func (underlyingWriter) End()                   {}
 
 type originalWriter struct {
 	io.Writer
-	tokenStack []Tokens
-	blockStack []bool
-	pos        []int
+	tokenStack         []Tokens
+	blockStack         []bool
+	pos                []int
+	newline, semicolon bool
 }
 
 func (o *originalWriter) WriteString(string) {}
@@ -222,11 +223,22 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 		o.printWhitespaceBefore(pos)
 	}
 
-	io.WriteString(o.Writer, data)
+	o.writeTokenData(data, typ)
 
 	if pos >= 0 {
 		o.setPos(o.printWhitespaceAfter(pos))
 	}
+}
+
+func (o *originalWriter) writeTokenData(data string, typ parser.TokenType) {
+	if o.semicolon && typ != TokenPunctuator && typ != TokenRightBracePunctuator {
+		io.WriteString(o.Writer, "\n")
+	}
+
+	io.WriteString(o.Writer, data)
+
+	o.semicolon = false
+	o.newline = false
 }
 
 func (o *originalWriter) WriteToken(tk *Token) {
@@ -235,15 +247,25 @@ func (o *originalWriter) WriteToken(tk *Token) {
 		o.printWhitespaceBefore(pos)
 	}
 
-	io.WriteString(o.Writer, tk.Data)
+	o.writeTokenData(tk.Data, tk.Type)
 
 	if pos >= 0 {
 		o.setPos(o.printWhitespaceAfter(pos))
 	}
 }
 
-func (o *originalWriter) Underlying() writer     { return o }
-func (o *originalWriter) PrintSemiColon()        {}
+func (o *originalWriter) Underlying() writer { return o }
+
+func (o *originalWriter) PrintSemiColon() {
+	if pos := o.findStringWithToken(";", TokenPunctuator); pos >= 0 {
+		o.WriteStringWithType(";", TokenPunctuator)
+
+		return
+	}
+
+	o.semicolon = !o.newline
+}
+
 func (o *originalWriter) LastChar() byte         { return 0 }
 func (o *originalWriter) LastIsWhitespace() bool { return false }
 func (o *originalWriter) Pos() int               { return 0 }
@@ -294,7 +316,10 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 			break
 		}
 
+		o.newline = o.newline || tk.Type == TokenLineTerminator
+
 		io.WriteString(o.Writer, tk.Data)
+
 		pos++
 	}
 
