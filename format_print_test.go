@@ -2085,7 +2085,7 @@ func TestPrintingScript(t *testing.T) {
 			"// A\n\n// B\nimport // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n",
 		},
 		{ // 413
-			"// A\n\n// B\nsuper // C\n()// D\n`` // E",
+			"// A\n\n// B\nsuper // C\n()// D\n`` // E\n",
 			"super()``;",
 			"// A\n\n// B\nsuper // C\n() // D\n`` // E\n",
 		},
@@ -2095,17 +2095,17 @@ func TestPrintingScript(t *testing.T) {
 			"// A\n\n// B\nsuper // C\n() // D\n() // E\n",
 		},
 		{ // 415
-			"// A\n\n// B\nsuper // C\n()// D\n[ // E\n\n// F\na // G\n\n// H\n]// I",
+			"// A\n\n// B\nsuper // C\n()// D\n[ // E\n\n// F\na // G\n\n// H\n]// I\n",
 			"super()[a];",
 			"// A\n\n// B\nsuper // C\n() // D\n[ // E\n\n\t// F\n\ta // G\n\n// H\n] // I\n",
 		},
 		{ // 416
-			"// A\n\n// B\nsuper // C\n()// D\n. // E\na // F",
+			"// A\n\n// B\nsuper // C\n()// D\n. // E\na // F\n",
 			"super().a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\na // F\n",
 		},
 		{ // 417
-			"// A\n\n// B\nsuper // C\n()// D\n. // E\n#a // F",
+			"// A\n\n// B\nsuper // C\n()// D\n. // E\n#a // F\n",
 			"super().#a;",
 			"// A\n\n// B\nsuper // C\n() // D\n. // E\n#a // F\n",
 		},
@@ -2205,12 +2205,12 @@ func TestPrintingScript(t *testing.T) {
 			"let // A\na // B\n= // C\nb // D\n",
 		},
 		{ // 437
-			"let // A\n[]// B\n = // C\na // D",
+			"let // A\n[]// B\n = // C\na // D\n",
 			"let [] = a;",
 			"let // A\n[] // B\n= // C\na // D\n",
 		},
 		{ // 438
-			"let // A\n{}// B\n = // C\na // D",
+			"let // A\n{}// B\n = // C\na // D\n",
 			"let {} = a;",
 			"let // A\n{} // B\n= // C\na // D\n",
 		},
@@ -2275,12 +2275,12 @@ func TestPrintingScript(t *testing.T) {
 			"a /* A */ : // B\ndebugger;",
 		},
 		{ // 451
-			"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G",
+			"if // A\n( // B\n\n// C\na // D\n\n// E\n) // F\nb // G\n",
 			"if (a) b;",
 			"if // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\nb // G\n",
 		},
 		{ // 452
-			"// A\n\n// B\nif // C\n(// D\n\n// E\na // F\n\n// G\n) // H\n{// I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O",
+			"// A\n\n// B\nif // C\n(// D\n\n// E\na // F\n\n// G\n) // H\n{// I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O\n",
 			"if (a) {} else {}",
 			"// A\n\n// B\nif // C\n( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{ // I\n\n// J\n} // K\nelse // L\n{ // M\n\n// N\n} // O\n",
 		},
@@ -2320,17 +2320,17 @@ func TestPrintingScript(t *testing.T) {
 			"try // A\n{} // B\ncatch // C\n{}",
 		},
 		{ // 460
-			"try {}catch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{} // G",
+			"try {}catch // A\n( // B\n\n// C\na // D\n\n// E\n) // F\n{} // G\n",
 			"try {} catch (a) {}",
 			"try {} catch // A\n( // B\n\n\t// C\n\ta // D\n\n// E\n) // F\n{} // G\n",
 		},
 		{ // 461
-			"try{} // A\nfinally // B\n{} // C",
+			"try{} // A\nfinally // B\n{} // C\n",
 			"try {} finally {}",
 			"try {} // A\nfinally // B\n{} // C\n",
 		},
 		{ // 462
-			"try // A\n{}// B\ncatch /* C */ ( // D\n\n// E\na // F\n\n// G\n) // H\n{}// I\nfinally /* J */ {} // K",
+			"try // A\n{}// B\ncatch /* C */ ( // D\n\n// E\na // F\n\n// G\n) // H\n{}// I\nfinally /* J */ {} // K\n",
 			"try {} catch (a) {} finally {}",
 			"try // A\n{} // B\ncatch /* C */ ( // D\n\n\t// E\n\ta // F\n\n// G\n) // H\n{} // I\nfinally /* J */ {} // K\n",
 		},
@@ -2565,12 +2565,12 @@ func TestPrintingScript(t *testing.T) {
 			"a // A\n** // B\nb;",
 		},
 		{ // 509
-			"do /* A */a /* B */; /* C */ while ( // D\n\n// E\nb // F\n\n// G\n) // H",
+			"do /* A */a /* B */; /* C */ while ( // D\n\n// E\nb // F\n\n// G\n) // H\n",
 			"do a; while (b);",
 			"do /* A */ a /* B */; /* C */ while ( // D\n\n\t// E\n\tb // F\n\n// G\n) // H\n",
 		},
 		{ // 510
-			"do /* A */{}/* B */ while ( // C\n\n// D\nb // E\n\n// F\n) // G",
+			"do /* A */{}/* B */ while ( // C\n\n// D\nb // E\n\n// F\n) // G\n",
 			"do {} while (b);",
 			"do /* A */ {} /* B */ while ( // C\n\n\t// D\n\tb // E\n\n// F\n) // G\n",
 		},
@@ -2580,7 +2580,7 @@ func TestPrintingScript(t *testing.T) {
 			"([\n\ta // A\n\t= b\n] = c);",
 		},
 		{ // 512
-			"// A\n\n// B\n#a /* C */ in /* D */ b // E",
+			"// A\n\n// B\n#a /* C */ in /* D */ b // E\n",
 			"#a in b;",
 			"// A\n\n// B\n#a /* C */ in /* D */ b // E\n",
 		},
