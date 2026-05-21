@@ -296,9 +296,7 @@ func (o *originalWriter) End() {
 	pop(&o.pos)
 
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
-		pos := o.findToken(&tks[len(tks)-1])
-
-		if pos >= 0 {
+		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
 			o.setPos(o.printWhitespaceAfter(pos))
 		}
 	}
