@@ -217,7 +217,7 @@ type originalWriter struct {
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
-	pos := o.findStringWithToken(data, typ)
+	pos := o.findStringWithToken(data, typ, false)
 
 	if pos >= 0 {
 		o.printWhitespaceBefore(pos)
@@ -257,7 +257,7 @@ func (o *originalWriter) WriteToken(tk *Token) {
 func (o *originalWriter) Underlying() writer { return o }
 
 func (o *originalWriter) PrintSemiColon() {
-	if pos := o.findStringWithToken(";", TokenPunctuator); pos >= 0 {
+	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 {
 		o.WriteStringWithType(";", TokenPunctuator)
 
 		return
@@ -362,14 +362,14 @@ func (o *originalWriter) findToken(tk *Token) int {
 		}
 	}
 
-	return o.findStringWithToken(tk.Data, tk.Type)
+	return o.findStringWithToken(tk.Data, tk.Type, false)
 }
 
 func last[T any](s []T) T {
 	return s[len(s)-1]
 }
 
-func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) int {
+func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType, afterOnly bool) int {
 	ts := last(o.tokenStack)
 	pos := last(o.pos)
 
@@ -379,9 +379,11 @@ func (o *originalWriter) findStringWithToken(str string, tt parser.TokenType) in
 		}
 	}
 
-	for n, tk := range ts[:pos] {
-		if tk.Type == tt && tk.Data == str {
-			return n
+	if !afterOnly {
+		for n, tk := range ts[:pos] {
+			if tk.Type == tt && tk.Data == str {
+				return n
+			}
 		}
 	}
 
