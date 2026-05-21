@@ -1533,7 +1533,7 @@ func (f FormalParameters) printSource(w writer, v bool) {
 			f.Comments[1].printSource(ip, false, true)
 		}
 
-		ip.WriteString("...")
+		ip.WriteStringWithType("...", TokenPunctuator)
 
 		if v {
 			f.Comments[2].printSource(ip, false, true)
