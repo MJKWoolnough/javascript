@@ -1677,6 +1677,7 @@ func (ce ClassElement) printSource(w writer, v bool) {
 		ce.MethodDefinition.printSource(w, v)
 	} else if ce.FieldDefinition != nil {
 		ce.FieldDefinition.printSource(w, v)
+		w.PrintSemiColon()
 	} else if ce.ClassStaticBlock != nil {
 		ce.ClassStaticBlock.printSource(w, v)
 
@@ -1705,8 +1706,6 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 		w.WriteString(" ")
 		fd.Initializer.printSource(w, v)
 	}
-
-	w.PrintSemiColon()
 }
 
 func (cen ClassElementName) printSource(w writer, v bool) {
