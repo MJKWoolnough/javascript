@@ -252,6 +252,11 @@ func (o *originalWriter) WriteToken(tk *Token) {
 	if pos >= 0 {
 		o.setPos(o.printWhitespaceAfter(pos))
 	}
+
+	if tk.Type == TokenSingleLineComment && !o.newline {
+		io.WriteString(o.Writer, "\n")
+		o.newline = true
+	}
 }
 
 func (o *originalWriter) Underlying() writer { return o }
@@ -531,7 +536,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 
 		var cp commentPrinter
 
-		lastWasMulti := cp.print(w, *c[0], 0)
+		lastWasMulti := cp.print(w, c[0], 0)
 
 		if !lastWasMulti {
 			line++
@@ -559,7 +564,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 				}
 			}
 
-			if lastWasMulti = cp.print(w, *c, pos); lastWasMulti {
+			if lastWasMulti = cp.print(w, c, pos); lastWasMulti {
 				line += uint64(strings.Count(c.Data, "\n"))
 			} else {
 				line++
@@ -589,7 +594,7 @@ const (
 	tokenStringAsComment
 )
 
-func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
+func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
 	var multi bool
 
 	if isSingleLine(c) {
@@ -625,13 +630,13 @@ func (cp *commentPrinter) print(w writer, c Token, pos int) bool {
 	if *cp {
 		w.WriteStringWithType(c.Data, tokenStringAsComment)
 	} else {
-		w.WriteToken(&c)
+		w.WriteToken(c)
 	}
 
 	return multi
 }
 
-func isSingleLine(c Token) bool {
+func isSingleLine(c *Token) bool {
 	return c.Type == TokenSingleLineComment && !strings.Contains(c.Data, "\n")
 }
 
