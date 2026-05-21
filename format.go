@@ -266,7 +266,7 @@ func (o *originalWriter) PrintSemiColon() {
 		return
 	}
 
-	o.semicolon = !o.newline
+	o.semicolon = !o.newline && !o.slc
 }
 
 func (o *originalWriter) LastChar() byte         { return 0 }
@@ -302,6 +302,8 @@ func (o *originalWriter) End() {
 		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
 			o.setPos(o.printWhitespaceAfter(pos))
 		}
+	} else if len(o.tokenStack) == 0 && o.slc {
+		io.WriteString(o.Writer, "\n")
 	}
 }
 
