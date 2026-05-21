@@ -208,10 +208,10 @@ func (underlyingWriter) End()                   {}
 
 type originalWriter struct {
 	io.Writer
-	tokenStack         []Tokens
-	blockStack         []bool
-	pos                []int
-	newline, semicolon bool
+	tokenStack              []Tokens
+	blockStack              []bool
+	pos                     []int
+	newline, semicolon, slc bool
 }
 
 func (o *originalWriter) WriteString(string) {}
@@ -231,7 +231,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 }
 
 func (o *originalWriter) writeTokenData(data string, typ parser.TokenType) {
-	if o.semicolon && typ != TokenPunctuator && typ != TokenRightBracePunctuator {
+	if o.semicolon && typ != TokenPunctuator && typ != TokenRightBracePunctuator || o.slc && typ != TokenLineTerminator {
 		io.WriteString(o.Writer, "\n")
 	}
 
@@ -239,6 +239,7 @@ func (o *originalWriter) writeTokenData(data string, typ parser.TokenType) {
 
 	o.semicolon = false
 	o.newline = false
+	o.slc = false
 }
 
 func (o *originalWriter) WriteToken(tk *Token) {
@@ -249,13 +250,10 @@ func (o *originalWriter) WriteToken(tk *Token) {
 
 	o.writeTokenData(tk.Data, tk.Type)
 
+	o.slc = tk.Type == TokenSingleLineComment
+
 	if pos >= 0 {
 		o.setPos(o.printWhitespaceAfter(pos))
-	}
-
-	if tk.Type == TokenSingleLineComment && !o.newline {
-		io.WriteString(o.Writer, "\n")
-		o.newline = true
 	}
 }
 
@@ -321,7 +319,7 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 
 		o.newline = o.newline || tk.Type == TokenLineTerminator
 
-		io.WriteString(o.Writer, tk.Data)
+		o.writeTokenData(tk.Data, tk.Type)
 
 		pos++
 	}
@@ -350,7 +348,7 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 	n++
 
 	for _, tk := range tks[max(n, currPos):pos] {
-		io.WriteString(o.Writer, tk.Data)
+		o.writeTokenData(tk.Data, tk.Type)
 	}
 }
 
