@@ -232,6 +232,8 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 		} else {
 			o.writePDColon()
 		}
+	} else if len(o.pd) > 0 && (data == "}" || data == "," || data == "=") {
+		o.writePDColon()
 	}
 
 	pos := o.findStringWithToken(data, typ, false)
