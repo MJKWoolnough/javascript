@@ -1312,6 +1312,7 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 		a.Comments[0].printSource(w, true, false)
 	}
 
+	w.WriteStringWithType("", tokenPDSep)
 	a.PropertyName.printSource(w, v)
 
 	if v {
@@ -2557,6 +2558,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 				p.Comments[0].printSource(w, true, false)
 			}
 
+			w.WriteStringWithType("", tokenPDSep)
 			p.PropertyName.printSource(w, v)
 
 			if v {

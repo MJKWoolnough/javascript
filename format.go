@@ -211,12 +211,31 @@ type originalWriter struct {
 	tokenStack              []Tokens
 	blockStack              []bool
 	pos                     []int
+	pd                      *Token
+	pdLayer                 int
 	newline, semicolon, slc bool
 }
+
+var nextIsPD Token
 
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
+	if typ == tokenPDSep {
+		o.pd = &nextIsPD
+		o.pdLayer = len(o.tokenStack)
+
+		return
+	} else if o.pd != nil {
+		if data == ":" {
+			return
+		}
+
+		o.pd = nil
+
+		o.printSkippedColon()
+	}
+
 	pos := o.findStringWithToken(data, typ, false)
 
 	if pos >= 0 {
@@ -242,7 +261,32 @@ func (o *originalWriter) writeTokenData(data string, typ parser.TokenType) {
 	o.slc = false
 }
 
+func (o *originalWriter) printSkippedColon() {
+	tokens := o.tokenStack
+	pos := o.pos
+
+	o.tokenStack = o.tokenStack[:o.pdLayer]
+	o.pos = o.pos[:o.pdLayer]
+
+	o.WriteStringWithType(":", TokenPunctuator)
+
+	o.tokenStack = tokens
+	o.pos = pos
+}
+
 func (o *originalWriter) WriteToken(tk *Token) {
+	if pd := o.pd; pd == &nextIsPD {
+		o.pd = tk
+	} else if o.pd != nil {
+		o.pd = nil
+
+		if *tk == *pd {
+			return
+		}
+
+		o.printSkippedColon()
+	}
+
 	pos := o.findToken(tk)
 	if pos >= 0 {
 		o.printWhitespaceBefore(pos)
@@ -292,6 +336,10 @@ func push[T any](a *[]T, v T) {
 }
 
 func (o *originalWriter) End() {
+	if o.pd != nil {
+		return
+	}
+
 	tks := last(o.tokenStack)
 
 	pop(&o.tokenStack)
@@ -592,6 +640,7 @@ const (
 	tokenMultiLineEnd
 	tokenSingleLineStart
 	tokenStringAsComment
+	tokenPDSep
 )
 
 func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
