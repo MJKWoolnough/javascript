@@ -211,29 +211,27 @@ type originalWriter struct {
 	tokenStack              []Tokens
 	blockStack              []bool
 	pos                     []int
-	pd                      *Token
-	pdLayer                 int
+	pd                      []Token
+	pdColon                 *originalWriter
 	newline, semicolon, slc bool
 }
-
-var nextIsPD Token
 
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
 	if typ == tokenPDSep {
-		o.pd = &nextIsPD
-		o.pdLayer = len(o.tokenStack)
+		o.pd = []Token{}
 
 		return
-	} else if o.pd != nil {
-		if data == ":" {
-			return
+	} else if len(o.pd) > 0 && data == ":" {
+		p := *o
+		o.pdColon = &p
+	} else if o.pdColon != nil {
+		if data == "}" || data == "," || data == "=" {
+			o.unColon()
+		} else {
+			o.writePDColon()
 		}
-
-		o.pd = nil
-
-		o.printSkippedColon()
 	}
 
 	pos := o.findStringWithToken(data, typ, false)
@@ -242,49 +240,60 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 		o.printWhitespaceBefore(pos)
 	}
 
-	o.writeTokenData(data, typ)
+	o.writeTokenData(Token{Token: parser.Token{Type: typ, Data: data}})
 
 	if pos >= 0 {
 		o.setPos(o.printWhitespaceAfter(pos))
 	}
 }
 
-func (o *originalWriter) writeTokenData(data string, typ parser.TokenType) {
-	if o.semicolon && typ != TokenPunctuator && typ != TokenRightBracePunctuator || o.slc && typ != TokenLineTerminator {
-		io.WriteString(o.Writer, "\n")
+func (o *originalWriter) writeTokenData(tk Token) {
+	if o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator || o.slc && tk.Type != TokenLineTerminator {
+		o.semicolon = false
+		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
 	}
 
-	io.WriteString(o.Writer, data)
+	if o.pd != nil {
+		o.pd = append(o.pd, tk)
+	} else {
+		io.WriteString(o.Writer, tk.Data)
+	}
 
 	o.semicolon = false
 	o.newline = false
 	o.slc = false
 }
 
-func (o *originalWriter) printSkippedColon() {
-	tokens := o.tokenStack
-	pos := o.pos
+func (o *originalWriter) unColon() {
+	for len(o.tokenStack) > len(o.pdColon.tokenStack) {
+		o.pdColon.tokenStack = append(o.pdColon.tokenStack, nil)
+		o.pdColon.blockStack = append(o.blockStack, false)
+		o.pdColon.pos = append(o.pdColon.pos, 0)
+	}
 
-	o.tokenStack = o.tokenStack[:o.pdLayer]
-	o.pos = o.pos[:o.pdLayer]
+	*o = *o.pdColon
 
-	o.WriteStringWithType(":", TokenPunctuator)
+	o.writePDColon()
+}
 
-	o.tokenStack = tokens
-	o.pos = pos
+func (o *originalWriter) writePDColon() {
+	for _, tk := range o.pd {
+		io.WriteString(o.Writer, tk.Data)
+	}
+
+	o.pd = nil
+	o.pdColon = nil
 }
 
 func (o *originalWriter) WriteToken(tk *Token) {
-	if pd := o.pd; pd == &nextIsPD {
-		o.pd = tk
-	} else if o.pd != nil {
-		o.pd = nil
+	if o.pdColon != nil {
+		if o.pd[0] == *tk {
+			o.unColon()
 
-		if *tk == *pd {
 			return
 		}
 
-		o.printSkippedColon()
+		o.writePDColon()
 	}
 
 	pos := o.findToken(tk)
@@ -292,7 +301,7 @@ func (o *originalWriter) WriteToken(tk *Token) {
 		o.printWhitespaceBefore(pos)
 	}
 
-	o.writeTokenData(tk.Data, tk.Type)
+	o.writeTokenData(*tk)
 
 	o.slc = tk.Type == TokenSingleLineComment
 
@@ -320,7 +329,7 @@ func (o *originalWriter) Indent() writer         { return o }
 func (o *originalWriter) Printf(string, ...any)  {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
-	if len(tks) > 0 && len(o.tokenStack) > 0 && o.pd == nil {
+	if len(tks) > 0 && len(o.tokenStack) > 0 {
 		if pos := o.findToken(&tks[0]); pos >= 0 {
 			o.printWhitespaceBefore(pos)
 		}
@@ -342,16 +351,12 @@ func (o *originalWriter) End() {
 	pop(&o.blockStack)
 	pop(&o.pos)
 
-	if o.pd != nil {
-		return
-	}
-
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
 		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
 			o.setPos(o.printWhitespaceAfter(pos))
 		}
 	} else if len(o.tokenStack) == 0 && o.slc {
-		io.WriteString(o.Writer, "\n")
+		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
 	}
 }
 
@@ -369,7 +374,7 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 
 		o.newline = o.newline || tk.Type == TokenLineTerminator
 
-		o.writeTokenData(tk.Data, tk.Type)
+		o.writeTokenData(tk)
 
 		pos++
 	}
@@ -398,7 +403,7 @@ func (o *originalWriter) printWhitespaceBefore(pos int) {
 	n++
 
 	for _, tk := range tks[max(n, currPos):pos] {
-		o.writeTokenData(tk.Data, tk.Type)
+		o.writeTokenData(tk)
 	}
 }
 
