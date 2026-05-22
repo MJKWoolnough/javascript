@@ -320,7 +320,7 @@ func (o *originalWriter) Indent() writer         { return o }
 func (o *originalWriter) Printf(string, ...any)  {}
 
 func (o *originalWriter) Start(tks Tokens, block bool) {
-	if len(tks) > 0 && len(o.tokenStack) > 0 {
+	if len(tks) > 0 && len(o.tokenStack) > 0 && o.pd == nil {
 		if pos := o.findToken(&tks[0]); pos >= 0 {
 			o.printWhitespaceBefore(pos)
 		}
@@ -336,15 +336,15 @@ func push[T any](a *[]T, v T) {
 }
 
 func (o *originalWriter) End() {
-	if o.pd != nil {
-		return
-	}
-
 	tks := last(o.tokenStack)
 
 	pop(&o.tokenStack)
 	pop(&o.blockStack)
 	pop(&o.pos)
+
+	if o.pd != nil {
+		return
+	}
 
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
 		if pos := o.findToken(&tks[len(tks)-1]); pos >= 0 {
