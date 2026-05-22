@@ -250,7 +250,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 }
 
 func (o *originalWriter) writeTokenData(tk Token) {
-	if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator || o.slc) && tk.Type != TokenLineTerminator {
+	if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
 		o.semicolon = false
 		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
 	}
