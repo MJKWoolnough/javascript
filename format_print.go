@@ -607,7 +607,8 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 			ip.WriteString(sep)
 		}
 
-		ip.WriteString("in ")
+		ip.WriteStringWithType("in", TokenKeyword)
+		ip.WriteString(" ")
 		i.In.printSource(ip, v)
 	case ForOfLeftHandSide, ForOfVar, ForOfLet, ForOfConst, ForAwaitOfLeftHandSide, ForAwaitOfVar, ForAwaitOfLet, ForAwaitOfConst:
 		if v && len(i.Comments[5]) > 0 {
