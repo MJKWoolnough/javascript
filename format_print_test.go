@@ -540,7 +540,7 @@ func TestPrintingScript(t *testing.T) {
 			"class a {}",
 		},
 		{ // 104
-			"class\na\n{\n}\n",
+			"class\na\n{\n}",
 			"class a {}",
 			"class a {}",
 		},
@@ -575,7 +575,7 @@ func TestPrintingScript(t *testing.T) {
 			"let a = 1;",
 		},
 		{ // 111
-			"let\na\n=\n1\n",
+			"let\na\n=\n1",
 			"let a = 1;",
 			"let a = 1;",
 		},
@@ -590,7 +590,7 @@ func TestPrintingScript(t *testing.T) {
 			"const a = 1;",
 		},
 		{ // 114
-			"const\na\n=\n1\n",
+			"const\na\n=\n1",
 			"const a = 1;",
 			"const a = 1;",
 		},
@@ -605,7 +605,7 @@ func TestPrintingScript(t *testing.T) {
 			"let a;",
 		},
 		{ // 117
-			"let\na\n,\nb\n=\n1\n,\nc\n",
+			"let\na\n,\nb\n=\n1\n,\nc",
 			"let a, b = 1, c;",
 			"let a,\nb = 1,\nc;",
 		},
@@ -615,7 +615,7 @@ func TestPrintingScript(t *testing.T) {
 			"const a;",
 		},
 		{ // 119
-			"const\na\n,\nb\n=\n1\n,\nc\n",
+			"const\na\n,\nb\n=\n1\n,\nc",
 			"const a, b = 1, c;",
 			"const a,\nb = 1,\nc;",
 		},
@@ -760,7 +760,7 @@ func TestPrintingScript(t *testing.T) {
 			"function a(b) {}",
 		},
 		{ // 148
-			"function\na(\nb\n)\n{\n}\n",
+			"function\na(\nb\n)\n{\n}",
 			"function a(b) {}",
 			"function a(b) {}",
 		},
@@ -840,7 +840,7 @@ func TestPrintingScript(t *testing.T) {
 			"a ? b : c;",
 		},
 		{ // 164
-			"a\n?\nb\n:\nc\n",
+			"a\n?\nb\n:\nc",
 			"a ? b : c;",
 			"a ? b : c;",
 		},
@@ -955,7 +955,7 @@ func TestPrintingScript(t *testing.T) {
 			"var {a: a} = b;",
 		},
 		{ // 187
-			"var\n{\na\n:\nb\n}\n=\nc\n",
+			"var\n{\na\n:\nb\n}\n=\nc",
 			"var {a: b} = c;",
 			"var {a: b} = c;",
 		},
@@ -990,7 +990,7 @@ func TestPrintingScript(t *testing.T) {
 			"(a, b, c);",
 		},
 		{ // 194
-			"(\na\n,\nb\n,\nc\n)\n",
+			"(\na\n,\nb\n,\nc\n)",
 			"(a, b, c);",
 			"(a, b, c);",
 		},
@@ -1015,17 +1015,17 @@ func TestPrintingScript(t *testing.T) {
 			"new a();",
 		},
 		{ // 199
-			"new\nnew\na\n(\n)\n(\n)\n",
+			"new\nnew\na\n(\n)\n(\n)",
 			"new new a()();",
 			"new new a()();",
 		},
 		{ // 200
-			"a\n[\n1\n]\n",
+			"a\n[\n1\n]",
 			"a[1];",
 			"a[1];",
 		},
 		{ // 201
-			"a\n.\nb\n",
+			"a\n.\nb",
 			"a.b;",
 			"a\n.b;",
 		},
@@ -1035,7 +1035,7 @@ func TestPrintingScript(t *testing.T) {
 			"a`b`;",
 		},
 		{ // 203
-			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)\n",
+			"new\nsuper\n[\na\n]\n[\nb\n]\n.\nc`d`\n(\nnew\n.\ntarget\n)",
 			"new super[a][b].c`d`(new.target);",
 			"new super[a][b]\n.c`d`(new.target);",
 		},
@@ -1045,7 +1045,7 @@ func TestPrintingScript(t *testing.T) {
 			"a(b, c, ...d);",
 		},
 		{ // 205
-			"a\n(\n...\nb\n)\n",
+			"a\n(\n...\nb\n)",
 			"a(...b);",
 			"a(...b);",
 		},
@@ -1100,7 +1100,7 @@ func TestPrintingScript(t *testing.T) {
 			"1;",
 		},
 		{ // 216
-			"[\n]\n",
+			"[\n]",
 			"[];",
 			"[];",
 		},
@@ -1175,7 +1175,7 @@ func TestPrintingScript(t *testing.T) {
 			"a ^ b;",
 		},
 		{ // 231
-			"var a\n=\n{\nb\n:\nc\n,\nd\n,\ne\n=\nf\n,\ng\n(\n)\n{\n}\n,\n...\nh\n}\n",
+			"var a\n=\n{\nb\n:\nc\n,\nd\n,\ne\n=\nf\n,\ng\n(\n)\n{\n}\n,\n...\nh\n}",
 			"var a = {b: c, d, e = f, g() {}, ...h};",
 			"var a = {b: c, d: d, e = f, g() {}, ...h};",
 		},
@@ -1400,7 +1400,7 @@ func TestPrintingScript(t *testing.T) {
 			"var [{a: a}] = b;",
 		},
 		{ // 276
-			"super\n.\na\n",
+			"super\n.\na",
 			"super.a;",
 			"super.a;",
 		},
@@ -1655,17 +1655,17 @@ func TestPrintingScript(t *testing.T) {
 			"// A\n// B\n\na();\n// C\n// D\n",
 		},
 		{ // 327
-			"/* A *//* B */\n// C\n\na();\n// D\n/* E */   /* F */\n",
+			"/* A *//* B */\n// C\n\na();\n// D\n/* E */   /* F */",
 			"a();",
 			"/* A */ /* B */\n// C\n\na();\n// D\n/* E */ /* F */",
 		},
 		{ // 328
-			"/*\nA\n*//* B */\n// C\n\na();\n// D\n/* E */   /*\n\nF\n\n*/\n",
+			"/*\nA\n*//* B */\n// C\n\na();\n// D\n/* E */   /*\n\nF\n\n*/",
 			"a();",
 			"/*\nA\n*/ /* B */\n// C\n\na();\n// D\n/* E */ /*\n\nF\n\n*/",
 		},
 		{ // 329
-			"/*\nA\n*//* B */\n// C\n\n// D\na(); // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
+			"/*\nA\n*//* B */\n// C\n\n// D\na(); // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/",
 			"a();",
 			"/*\nA\n*/ /* B */\n// C\n\n// D\na(); // E\n     // F\n\n// G\n/* H */ /*\n\nI\n\n*/",
 		},
