@@ -212,21 +212,21 @@ type originalWriter struct {
 	blockStack              []bool
 	pos                     []int
 	pd                      []Token
-	pdColon                 *originalWriter
+	pdColonSplit            *originalWriter
 	newline, semicolon, slc bool
 }
 
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
-	if typ == tokenPDSep {
+	if typ == tokenColonSplit {
 		o.pd = []Token{}
 
 		return
 	} else if len(o.pd) > 0 && data == ":" {
 		p := *o
-		o.pdColon = &p
-	} else if o.pdColon != nil {
+		o.pdColonSplit = &p
+	} else if o.pdColonSplit != nil {
 		if data == "}" || data == "," || data == "=" {
 			o.unColon()
 		} else {
@@ -267,13 +267,13 @@ func (o *originalWriter) writeTokenData(tk Token) {
 }
 
 func (o *originalWriter) unColon() {
-	for len(o.tokenStack) > len(o.pdColon.tokenStack) {
-		o.pdColon.tokenStack = append(o.pdColon.tokenStack, nil)
-		o.pdColon.blockStack = append(o.blockStack, false)
-		o.pdColon.pos = append(o.pdColon.pos, 0)
+	for len(o.tokenStack) > len(o.pdColonSplit.tokenStack) {
+		o.pdColonSplit.tokenStack = append(o.pdColonSplit.tokenStack, nil)
+		o.pdColonSplit.blockStack = append(o.blockStack, false)
+		o.pdColonSplit.pos = append(o.pdColonSplit.pos, 0)
 	}
 
-	*o = *o.pdColon
+	*o = *o.pdColonSplit
 
 	o.writePDColon()
 }
@@ -284,11 +284,11 @@ func (o *originalWriter) writePDColon() {
 	}
 
 	o.pd = nil
-	o.pdColon = nil
+	o.pdColonSplit = nil
 }
 
 func (o *originalWriter) WriteToken(tk *Token) {
-	if o.pdColon != nil {
+	if o.pdColonSplit != nil {
 		if o.pd[0] == *tk {
 			o.unColon()
 
@@ -645,7 +645,7 @@ const (
 	tokenMultiLineEnd
 	tokenSingleLineStart
 	tokenStringAsComment
-	tokenPDSep
+	tokenColonSplit
 )
 
 func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {

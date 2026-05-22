@@ -1313,7 +1313,7 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 		a.Comments[0].printSource(w, true, false)
 	}
 
-	w.WriteStringWithType("", tokenPDSep)
+	w.WriteStringWithType("", tokenColonSplit)
 	a.PropertyName.printSource(w, v)
 
 	if v {
@@ -1963,7 +1963,7 @@ func (b BindingProperty) printSource(w writer, v bool) {
 			b.Comments[0].printSource(w, true, false)
 		}
 
-		w.WriteStringWithType("", tokenPDSep)
+		w.WriteStringWithType("", tokenColonSplit)
 		b.PropertyName.printSource(w, v)
 
 		if v {
@@ -2560,7 +2560,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 				p.Comments[0].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType("", tokenPDSep)
+			w.WriteStringWithType("", tokenColonSplit)
 			p.PropertyName.printSource(w, v)
 
 			if v {
