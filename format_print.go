@@ -1963,6 +1963,7 @@ func (b BindingProperty) printSource(w writer, v bool) {
 			b.Comments[0].printSource(w, true, false)
 		}
 
+		w.WriteStringWithType("", tokenPDSep)
 		b.PropertyName.printSource(w, v)
 
 		if v {
