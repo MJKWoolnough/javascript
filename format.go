@@ -236,7 +236,6 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 	}
 
 	pos := o.findStringWithToken(data, typ, false)
-
 	if pos >= 0 {
 		o.printWhitespaceBefore(pos)
 	}
@@ -251,6 +250,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 func (o *originalWriter) writeTokenData(tk Token) {
 	if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
 		o.semicolon = false
+
 		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
 	}
 
@@ -380,7 +380,6 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 
 func (o *originalWriter) printWhitespaceBefore(pos int) {
 	tks := last(o.tokenStack)
-
 	n := pos - 1
 	currPos := last(o.pos)
 
