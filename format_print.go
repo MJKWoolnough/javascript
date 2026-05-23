@@ -1313,7 +1313,6 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 		a.Comments[0].printSource(w, true, false)
 	}
 
-	w.WriteStringWithType("", tokenColonSplit)
 	a.PropertyName.printSource(w, v)
 
 	if v {
@@ -1963,7 +1962,6 @@ func (b BindingProperty) printSource(w writer, v bool) {
 			b.Comments[0].printSource(w, true, false)
 		}
 
-		w.WriteStringWithType("", tokenColonSplit)
 		b.PropertyName.printSource(w, v)
 
 		if v {
@@ -2012,6 +2010,7 @@ func (p PropertyName) printSource(w writer, v bool) {
 	defer w.End()
 
 	if p.LiteralPropertyName != nil {
+		w.WriteStringWithType("", tokenColonSplit)
 		w.WriteToken(p.LiteralPropertyName)
 	} else if p.ComputedPropertyName != nil {
 		w.WriteStringWithType("[", TokenPunctuator)
@@ -2560,7 +2559,6 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 				p.Comments[0].printSource(w, true, false)
 			}
 
-			w.WriteStringWithType("", tokenColonSplit)
 			p.PropertyName.printSource(w, v)
 
 			if v {
