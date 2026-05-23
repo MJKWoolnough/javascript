@@ -543,8 +543,7 @@ func (bp *BindingProperty) parse(j *jsParser, yield, await bool) error {
 
 		lpn := *bp.PropertyName.LiteralPropertyName
 		snb = &lpn
-		bp.BindingElement.Comments = bp.Comments
-		bp.Comments = [2]Comments{}
+		bp.Comments[1] = nil
 	} else {
 		h.AcceptRunWhitespaceNoComment()
 		g.Score(h)
