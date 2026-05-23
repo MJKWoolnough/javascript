@@ -1,7 +1,7 @@
 package javascript
 
 func (s Script) printSource(w writer, v bool) {
-	w.Start(s.Tokens, true)
+	w.Start(s.Tokens)
 	defer w.End()
 
 	if v && len(s.Comments[0]) > 0 {
@@ -25,7 +25,7 @@ func (s Script) printSource(w writer, v bool) {
 }
 
 func (s StatementListItem) printSource(w writer, v bool) {
-	w.Start(s.Tokens, false)
+	w.Start(s.Tokens)
 	defer w.End()
 
 	if v {
@@ -44,7 +44,7 @@ func (s StatementListItem) printSource(w writer, v bool) {
 }
 
 func (s Statement) printSource(w writer, v bool) {
-	w.Start(s.Tokens, false)
+	w.Start(s.Tokens)
 	defer w.End()
 
 	switch s.Type {
@@ -150,7 +150,7 @@ func (s Statement) printSource(w writer, v bool) {
 }
 
 func (d Declaration) printSource(w writer, v bool) {
-	w.Start(d.Tokens, false)
+	w.Start(d.Tokens)
 	defer w.End()
 
 	if d.ClassDeclaration != nil {
@@ -167,7 +167,7 @@ func (d Declaration) printSource(w writer, v bool) {
 }
 
 func (b Block) printSource(w writer, v bool) {
-	w.Start(b.Tokens, true)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -196,7 +196,7 @@ func (b Block) printSource(w writer, v bool) {
 }
 
 func (vs VariableStatement) printSource(w writer, v bool) {
-	w.Start(vs.Tokens, false)
+	w.Start(vs.Tokens)
 	defer w.End()
 
 	if len(vs.VariableDeclarationList) == 0 {
@@ -235,7 +235,7 @@ func (vs VariableStatement) printSource(w writer, v bool) {
 }
 
 func (e Expression) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	if len(e.Expressions) == 0 {
@@ -268,7 +268,7 @@ func (e Expression) printSource(w writer, v bool) {
 }
 
 func (i IfStatement) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("if", TokenKeyword)
@@ -332,7 +332,7 @@ func (i IfStatement) printSource(w writer, v bool) {
 }
 
 func (i IterationStatementDo) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("do", TokenKeyword)
@@ -394,7 +394,7 @@ func (i IterationStatementDo) printSource(w writer, v bool) {
 }
 
 func (i IterationStatementWhile) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("while", TokenKeyword)
@@ -440,7 +440,7 @@ func (i IterationStatementWhile) printSource(w writer, v bool) {
 }
 
 func (i IterationStatementFor) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	switch i.Type {
@@ -641,7 +641,7 @@ func (i IterationStatementFor) printSource(w writer, v bool) {
 }
 
 func (s SwitchStatement) printSource(w writer, v bool) {
-	w.Start(s.Tokens, false)
+	w.Start(s.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("switch", TokenKeyword)
@@ -738,7 +738,7 @@ func (s SwitchStatement) printSource(w writer, v bool) {
 }
 
 func (ws WithStatement) printSource(w writer, v bool) {
-	w.Start(ws.Tokens, false)
+	w.Start(ws.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("with", TokenKeyword)
@@ -784,7 +784,7 @@ func (ws WithStatement) printSource(w writer, v bool) {
 }
 
 func (f FunctionDeclaration) printSource(w writer, v bool) {
-	w.Start(f.Tokens, false)
+	w.Start(f.Tokens)
 	defer w.End()
 
 	switch f.Type {
@@ -866,7 +866,7 @@ func (f FunctionDeclaration) printSource(w writer, v bool) {
 }
 
 func (t TryStatement) printSource(w writer, v bool) {
-	w.Start(t.Tokens, false)
+	w.Start(t.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("try", TokenKeyword)
@@ -962,7 +962,7 @@ func (t TryStatement) printSource(w writer, v bool) {
 }
 
 func (c ClassDeclaration) printSource(w writer, v bool) {
-	w.Start(c.Tokens, false)
+	w.Start(c.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("class", TokenKeyword)
@@ -1020,7 +1020,7 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 }
 
 func (l LexicalDeclaration) printSource(w writer, v bool) {
-	w.Start(l.Tokens, false)
+	w.Start(l.Tokens)
 	defer w.End()
 
 	if len(l.BindingList) == 0 {
@@ -1054,7 +1054,7 @@ func (l LexicalDeclaration) printSource(w writer, v bool) {
 }
 
 func (l LexicalBinding) printSource(w writer, v bool) {
-	w.Start(l.Tokens, false)
+	w.Start(l.Tokens)
 	defer w.End()
 
 	if v {
@@ -1087,7 +1087,7 @@ func (l LexicalBinding) printSource(w writer, v bool) {
 }
 
 func (a AssignmentExpression) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if a.Yield && a.AssignmentExpression != nil {
@@ -1141,7 +1141,7 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 }
 
 func (l LeftHandSideExpression) printSource(w writer, v bool) {
-	w.Start(l.Tokens, false)
+	w.Start(l.Tokens)
 	defer w.End()
 
 	if l.NewExpression != nil {
@@ -1158,7 +1158,7 @@ func (l LeftHandSideExpression) printSource(w writer, v bool) {
 }
 
 func (a AssignmentPattern) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if v {
@@ -1177,7 +1177,7 @@ func (a AssignmentPattern) printSource(w writer, v bool) {
 }
 
 func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("[", TokenPunctuator)
@@ -1233,7 +1233,7 @@ func (a ArrayAssignmentPattern) printSource(w writer, v bool) {
 }
 
 func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
-	w.Start(o.Tokens, false)
+	w.Start(o.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -1289,7 +1289,7 @@ func (o ObjectAssignmentPattern) printSource(w writer, v bool) {
 }
 
 func (a AssignmentElement) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	a.DestructuringAssignmentTarget.printSource(w, v)
@@ -1306,7 +1306,7 @@ func (a AssignmentElement) printSource(w writer, v bool) {
 }
 
 func (a AssignmentProperty) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if v {
@@ -1339,7 +1339,7 @@ func (a AssignmentProperty) printSource(w writer, v bool) {
 }
 
 func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
-	w.Start(d.Tokens, false)
+	w.Start(d.Tokens)
 	defer w.End()
 
 	if d.LeftHandSideExpression != nil {
@@ -1350,7 +1350,7 @@ func (d DestructuringAssignmentTarget) printSource(w writer, v bool) {
 }
 
 func (o ObjectBindingPattern) printSource(w writer, v bool) {
-	w.Start(o.Tokens, false)
+	w.Start(o.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -1414,7 +1414,7 @@ func (o ObjectBindingPattern) printSource(w writer, v bool) {
 }
 
 func (a ArrayBindingPattern) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("[", TokenPunctuator)
@@ -1469,7 +1469,7 @@ func (a ArrayBindingPattern) printSource(w writer, v bool) {
 }
 
 func (c CaseClause) printSource(w writer, v bool) {
-	w.Start(c.Tokens, false)
+	w.Start(c.Tokens)
 	defer w.End()
 
 	if v {
@@ -1494,7 +1494,7 @@ func (c CaseClause) printSource(w writer, v bool) {
 }
 
 func (f FormalParameters) printSource(w writer, v bool) {
-	w.Start(f.Tokens, false)
+	w.Start(f.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("(", TokenPunctuator)
@@ -1592,7 +1592,7 @@ func (f FormalParameters) printSource(w writer, v bool) {
 }
 
 func (m MethodDefinition) printSource(w writer, v bool) {
-	w.Start(m.Tokens, false)
+	w.Start(m.Tokens)
 	defer w.End()
 
 	switch m.Type {
@@ -1658,7 +1658,7 @@ func (m MethodDefinition) printSource(w writer, v bool) {
 }
 
 func (ce ClassElement) printSource(w writer, v bool) {
-	w.Start(ce.Tokens, false)
+	w.Start(ce.Tokens)
 	defer w.End()
 
 	if v {
@@ -1689,7 +1689,7 @@ func (ce ClassElement) printSource(w writer, v bool) {
 }
 
 func (fd FieldDefinition) printSource(w writer, v bool) {
-	w.Start(fd.Tokens, false)
+	w.Start(fd.Tokens)
 	defer w.End()
 
 	fd.ClassElementName.printSource(w, v)
@@ -1710,7 +1710,7 @@ func (fd FieldDefinition) printSource(w writer, v bool) {
 }
 
 func (cen ClassElementName) printSource(w writer, v bool) {
-	w.Start(cen.Tokens, false)
+	w.Start(cen.Tokens)
 	defer w.End()
 
 	if v {
@@ -1729,7 +1729,7 @@ func (cen ClassElementName) printSource(w writer, v bool) {
 }
 
 func (c ConditionalExpression) printSource(w writer, v bool) {
-	w.Start(c.Tokens, false)
+	w.Start(c.Tokens)
 	defer w.End()
 
 	if c.LogicalORExpression != nil {
@@ -1758,7 +1758,7 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 }
 
 func (a ArrowFunction) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if a.FunctionBody == nil && a.AssignmentExpression == nil || a.BindingIdentifier == nil && a.FormalParameters == nil {
@@ -1808,7 +1808,7 @@ func (a ArrowFunction) printSource(w writer, v bool) {
 }
 
 func (n NewExpression) printSource(w writer, v bool) {
-	w.Start(n.Tokens, false)
+	w.Start(n.Tokens)
 	defer w.End()
 
 	for _, c := range n.News {
@@ -1824,7 +1824,7 @@ func (n NewExpression) printSource(w writer, v bool) {
 }
 
 func (c CallExpression) printSource(w writer, v bool) {
-	w.Start(c.Tokens, false)
+	w.Start(c.Tokens)
 	defer w.End()
 
 	if v {
@@ -1952,7 +1952,7 @@ func (c CallExpression) printSource(w writer, v bool) {
 }
 
 func (b BindingProperty) printSource(w writer, v bool) {
-	w.Start(b.Tokens, false)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	if !v && b.PropertyName.LiteralPropertyName != nil && b.BindingElement.SingleNameBinding != nil && b.PropertyName.LiteralPropertyName.Data == b.BindingElement.SingleNameBinding.Data {
@@ -1975,7 +1975,7 @@ func (b BindingProperty) printSource(w writer, v bool) {
 }
 
 func (b BindingElement) printSource(w writer, v bool) {
-	w.Start(b.Tokens, false)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	if v {
@@ -2006,7 +2006,7 @@ func (b BindingElement) printSource(w writer, v bool) {
 }
 
 func (p PropertyName) printSource(w writer, v bool) {
-	w.Start(p.Tokens, false)
+	w.Start(p.Tokens)
 	defer w.End()
 
 	if p.LiteralPropertyName != nil {
@@ -2043,7 +2043,7 @@ func (p PropertyName) printSource(w writer, v bool) {
 }
 
 func (l LogicalORExpression) printSource(w writer, v bool) {
-	w.Start(l.Tokens, false)
+	w.Start(l.Tokens)
 	defer w.End()
 
 	if l.LogicalORExpression != nil {
@@ -2061,7 +2061,7 @@ func (l LogicalORExpression) printSource(w writer, v bool) {
 }
 
 func (c ParenthesizedExpression) printSource(w writer, v bool) {
-	w.Start(c.Tokens, false)
+	w.Start(c.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("(", TokenPunctuator)
@@ -2103,7 +2103,7 @@ func (c ParenthesizedExpression) printSource(w writer, v bool) {
 }
 
 func (m MemberExpression) printSource(w writer, v bool) {
-	w.Start(m.Tokens, false)
+	w.Start(m.Tokens)
 	defer w.End()
 
 	if v {
@@ -2291,7 +2291,7 @@ func (m MemberExpression) printSource(w writer, v bool) {
 }
 
 func (a Argument) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if a.Spread {
@@ -2306,7 +2306,7 @@ func (a Argument) printSource(w writer, v bool) {
 }
 
 func (a Arguments) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("(", TokenPunctuator)
@@ -2348,7 +2348,7 @@ func (a Arguments) printSource(w writer, v bool) {
 }
 
 func (t TemplateLiteral) printSource(w writer, v bool) {
-	w.Start(t.Tokens, false)
+	w.Start(t.Tokens)
 	defer w.End()
 
 	if t.NoSubstitutionTemplate != nil {
@@ -2367,7 +2367,7 @@ func (t TemplateLiteral) printSource(w writer, v bool) {
 }
 
 func (l LogicalANDExpression) printSource(w writer, v bool) {
-	w.Start(l.Tokens, false)
+	w.Start(l.Tokens)
 	defer w.End()
 
 	if l.LogicalANDExpression != nil {
@@ -2385,7 +2385,7 @@ func (l LogicalANDExpression) printSource(w writer, v bool) {
 }
 
 func (p PrimaryExpression) printSource(w writer, v bool) {
-	w.Start(p.Tokens, false)
+	w.Start(p.Tokens)
 	defer w.End()
 
 	if p.This != nil {
@@ -2414,7 +2414,7 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 }
 
 func (b BitwiseORExpression) printSource(w writer, v bool) {
-	w.Start(b.Tokens, false)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	if b.BitwiseORExpression != nil {
@@ -2432,7 +2432,7 @@ func (b BitwiseORExpression) printSource(w writer, v bool) {
 }
 
 func (a ArrayElement) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if v {
@@ -2447,7 +2447,7 @@ func (a ArrayElement) printSource(w writer, v bool) {
 }
 
 func (a ArrayLiteral) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("[", TokenPunctuator)
@@ -2489,7 +2489,7 @@ func (a ArrayLiteral) printSource(w writer, v bool) {
 }
 
 func (o ObjectLiteral) printSource(w writer, v bool) {
-	w.Start(o.Tokens, false)
+	w.Start(o.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -2532,7 +2532,7 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 }
 
 func (b BitwiseXORExpression) printSource(w writer, v bool) {
-	w.Start(b.Tokens, false)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	if b.BitwiseXORExpression != nil {
@@ -2550,7 +2550,7 @@ func (b BitwiseXORExpression) printSource(w writer, v bool) {
 }
 
 func (p PropertyDefinition) printSource(w writer, v bool) {
-	w.Start(p.Tokens, false)
+	w.Start(p.Tokens)
 	defer w.End()
 
 	if p.AssignmentExpression != nil {
@@ -2604,7 +2604,7 @@ func (p PropertyDefinition) printSource(w writer, v bool) {
 }
 
 func (b BitwiseANDExpression) printSource(w writer, v bool) {
-	w.Start(b.Tokens, false)
+	w.Start(b.Tokens)
 	defer w.End()
 
 	if b.BitwiseANDExpression != nil {
@@ -2622,7 +2622,7 @@ func (b BitwiseANDExpression) printSource(w writer, v bool) {
 }
 
 func (e EqualityExpression) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	if e.EqualityExpression != nil {
@@ -2645,7 +2645,7 @@ func (e EqualityExpression) printSource(w writer, v bool) {
 }
 
 func (r RelationalExpression) printSource(w writer, v bool) {
-	w.Start(r.Tokens, false)
+	w.Start(r.Tokens)
 	defer w.End()
 
 	if r.PrivateIdentifier != nil {
@@ -2683,7 +2683,7 @@ func (r RelationalExpression) printSource(w writer, v bool) {
 }
 
 func (s ShiftExpression) printSource(w writer, v bool) {
-	w.Start(s.Tokens, false)
+	w.Start(s.Tokens)
 	defer w.End()
 
 	if s.ShiftExpression != nil {
@@ -2706,7 +2706,7 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 }
 
 func (a AdditiveExpression) printSource(w writer, v bool) {
-	w.Start(a.Tokens, false)
+	w.Start(a.Tokens)
 	defer w.End()
 
 	if a.AdditiveExpression != nil {
@@ -2728,7 +2728,7 @@ func (a AdditiveExpression) printSource(w writer, v bool) {
 }
 
 func (m MultiplicativeExpression) printSource(w writer, v bool) {
-	w.Start(m.Tokens, false)
+	w.Start(m.Tokens)
 	defer w.End()
 
 	if m.MultiplicativeExpression != nil {
@@ -2751,7 +2751,7 @@ func (m MultiplicativeExpression) printSource(w writer, v bool) {
 }
 
 func (e ExponentiationExpression) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	if e.ExponentiationExpression != nil {
@@ -2786,7 +2786,7 @@ func (u UnaryOperatorComments) printSource(w writer, v bool) {
 }
 
 func (u UnaryExpression) printSource(w writer, v bool) {
-	w.Start(u.Tokens, false)
+	w.Start(u.Tokens)
 	defer w.End()
 
 	for _, uo := range u.UnaryOperators {
@@ -2797,7 +2797,7 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 }
 
 func (u UpdateExpression) printSource(w writer, v bool) {
-	w.Start(u.Tokens, false)
+	w.Start(u.Tokens)
 	defer w.End()
 
 	if u.LeftHandSideExpression != nil {
@@ -2841,7 +2841,7 @@ func (u UpdateExpression) printSource(w writer, v bool) {
 }
 
 func (m Module) printSource(w writer, v bool) {
-	w.Start(m.Tokens, false)
+	w.Start(m.Tokens)
 	defer w.End()
 
 	if v && len(m.Comments[0]) > 0 {
@@ -2865,7 +2865,7 @@ func (m Module) printSource(w writer, v bool) {
 }
 
 func (m ModuleItem) printSource(w writer, v bool) {
-	w.Start(m.Tokens, false)
+	w.Start(m.Tokens)
 	defer w.End()
 
 	if m.ImportDeclaration != nil {
@@ -2878,7 +2878,7 @@ func (m ModuleItem) printSource(w writer, v bool) {
 }
 
 func (i ImportDeclaration) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	if v {
@@ -2920,7 +2920,7 @@ func (i ImportDeclaration) printSource(w writer, v bool) {
 }
 
 func (e ExportDeclaration) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	if e.FromClause != nil {
@@ -3091,7 +3091,7 @@ func (e ExportDeclaration) printSource(w writer, v bool) {
 }
 
 func (wc WithClause) printSource(w writer, v bool) {
-	w.Start(wc.Tokens, false)
+	w.Start(wc.Tokens)
 	defer w.End()
 
 	if v {
@@ -3144,7 +3144,7 @@ func (wc WithClause) printSource(w writer, v bool) {
 }
 
 func (we WithEntry) printSource(w writer, v bool) {
-	w.Start(we.Tokens, false)
+	w.Start(we.Tokens)
 	defer w.End()
 
 	if we.AttributeKey == nil || we.Value == nil {
@@ -3176,7 +3176,7 @@ func (we WithEntry) printSource(w writer, v bool) {
 }
 
 func (i ImportClause) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	if v {
@@ -3227,7 +3227,7 @@ func (i ImportClause) printSource(w writer, v bool) {
 }
 
 func (f FromClause) printSource(w writer, v bool) {
-	w.Start(f.Tokens, false)
+	w.Start(f.Tokens)
 	defer w.End()
 
 	if f.ModuleSpecifier == nil {
@@ -3249,7 +3249,7 @@ func (f FromClause) printSource(w writer, v bool) {
 }
 
 func (e ExportClause) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -3291,7 +3291,7 @@ func (e ExportClause) printSource(w writer, v bool) {
 }
 
 func (n NamedImports) printSource(w writer, v bool) {
-	w.Start(n.Tokens, false)
+	w.Start(n.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("{", TokenPunctuator)
@@ -3333,7 +3333,7 @@ func (n NamedImports) printSource(w writer, v bool) {
 }
 
 func (e ExportSpecifier) printSource(w writer, v bool) {
-	w.Start(e.Tokens, false)
+	w.Start(e.Tokens)
 	defer w.End()
 
 	if v {
@@ -3371,7 +3371,7 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 }
 
 func (i ImportSpecifier) printSource(w writer, v bool) {
-	w.Start(i.Tokens, false)
+	w.Start(i.Tokens)
 	defer w.End()
 
 	if i.ImportedBinding == nil {
@@ -3409,7 +3409,7 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 }
 
 func (oe OptionalExpression) printSource(w writer, v bool) {
-	w.Start(oe.Tokens, false)
+	w.Start(oe.Tokens)
 	defer w.End()
 
 	if oe.MemberExpression != nil {
@@ -3424,7 +3424,7 @@ func (oe OptionalExpression) printSource(w writer, v bool) {
 }
 
 func (oc OptionalChain) printSource(w writer, v bool) {
-	w.Start(oc.Tokens, false)
+	w.Start(oc.Tokens)
 	defer w.End()
 
 	if oc.OptionalChain != nil {
@@ -3495,7 +3495,7 @@ func (oc OptionalChain) printSource(w writer, v bool) {
 }
 
 func (ce CoalesceExpression) printSource(w writer, v bool) {
-	w.Start(ce.Tokens, false)
+	w.Start(ce.Tokens)
 	defer w.End()
 
 	if ce.CoalesceExpressionHead != nil {
@@ -3513,7 +3513,7 @@ func (ce CoalesceExpression) printSource(w writer, v bool) {
 }
 
 func (ja *JSXAttribute) printSource(w writer, v bool) {
-	w.Start(ja.Tokens, false)
+	w.Start(ja.Tokens)
 	defer w.End()
 
 	if ja.Identifier != nil {
@@ -3591,7 +3591,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 }
 
 func (jc *JSXChild) printSource(w writer, v bool) {
-	w.Start(jc.Tokens, false)
+	w.Start(jc.Tokens)
 	defer w.End()
 
 	if jc.JSXText != nil {
@@ -3637,7 +3637,7 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 }
 
 func (je *JSXElement) printSource(w writer, v bool) {
-	w.Start(je.Tokens, false)
+	w.Start(je.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("<", TokenJSXElementStart)
@@ -3676,7 +3676,7 @@ func (je *JSXElement) printSource(w writer, v bool) {
 }
 
 func (jn *JSXElementName) printSource(w writer, v bool) {
-	w.Start(jn.Tokens, false)
+	w.Start(jn.Tokens)
 	defer w.End()
 
 	if jn.Identifier != nil {
@@ -3696,7 +3696,7 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 }
 
 func (jf *JSXFragment) printSource(w writer, v bool) {
-	w.Start(jf.Tokens, false)
+	w.Start(jf.Tokens)
 	defer w.End()
 
 	w.WriteStringWithType("<", TokenJSXElementStart)

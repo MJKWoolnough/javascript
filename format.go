@@ -26,7 +26,7 @@ type writer interface {
 	Pos() int
 	Indent() writer
 	Printf(string, ...any)
-	Start(Tokens, bool)
+	Start(Tokens)
 	End()
 }
 
@@ -203,13 +203,12 @@ func (u *underlyingWriter) Printf(format string, args ...any) {
 	fmt.Fprintf(u, format, args...)
 }
 
-func (underlyingWriter) Start(_ Tokens, _ bool) {}
-func (underlyingWriter) End()                   {}
+func (underlyingWriter) Start(_ Tokens) {}
+func (underlyingWriter) End()           {}
 
 type originalWriter struct {
 	io.Writer
 	tokenStack              []Tokens
-	blockStack              []bool
 	pos                     []int
 	pd                      []Token
 	pdColonSplit            *originalWriter
@@ -269,7 +268,6 @@ func (o *originalWriter) writeTokenData(tk Token) {
 func (o *originalWriter) unColon() {
 	for len(o.tokenStack) > len(o.pdColonSplit.tokenStack) {
 		o.pdColonSplit.tokenStack = append(o.pdColonSplit.tokenStack, nil)
-		o.pdColonSplit.blockStack = append(o.blockStack, false)
 		o.pdColonSplit.pos = append(o.pdColonSplit.pos, 0)
 	}
 
@@ -330,7 +328,7 @@ func (o *originalWriter) Pos() int               { return 0 }
 func (o *originalWriter) Indent() writer         { return o }
 func (o *originalWriter) Printf(string, ...any)  {}
 
-func (o *originalWriter) Start(tks Tokens, block bool) {
+func (o *originalWriter) Start(tks Tokens) {
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
 		if pos := o.findToken(&tks[0]); pos >= 0 {
 			o.printWhitespaceBefore(pos)
@@ -338,7 +336,6 @@ func (o *originalWriter) Start(tks Tokens, block bool) {
 	}
 
 	push(&o.tokenStack, tks)
-	push(&o.blockStack, block)
 	push(&o.pos, 0)
 }
 
@@ -350,7 +347,6 @@ func (o *originalWriter) End() {
 	tks := last(o.tokenStack)
 
 	pop(&o.tokenStack)
-	pop(&o.blockStack)
 	pop(&o.pos)
 
 	if len(tks) > 0 && len(o.tokenStack) > 0 {
