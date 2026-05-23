@@ -247,11 +247,13 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 	}
 }
 
+var newline = Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}}
+
 func (o *originalWriter) writeTokenData(tk Token) {
 	if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
 		o.semicolon = false
 
-		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
+		o.writeTokenData(newline)
 	}
 
 	if o.pd != nil {
@@ -354,7 +356,7 @@ func (o *originalWriter) End() {
 			o.setPos(o.printWhitespaceAfter(pos))
 		}
 	} else if len(o.tokenStack) == 0 && o.slc {
-		o.writeTokenData(Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}})
+		o.writeTokenData(newline)
 	}
 }
 
