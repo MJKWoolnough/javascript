@@ -5618,6 +5618,10 @@ func TestPrintingTypescript(t *testing.T) {
 			"declare namespace A{ interface B {} }",
 			"/*declare namespace A{ interface B {} }*/",
 		},
+		{ // 59
+			"function a(b /* A */: c /* D */, e) {}",
+			"function a(b /* A */ /*: c*/ /* D */, e) {}",
+		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
 		if err != nil {
