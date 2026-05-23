@@ -1852,10 +1852,11 @@ func TestObjectBindingPattern(t *testing.T) {
 						},
 						BindingElement: BindingElement{
 							SingleNameBinding: &tk[6],
-							Comments:          [2]Comments{{&tk[4]}, {&tk[8]}},
+							Comments:          [2]Comments{nil, {&tk[8]}},
 							Tokens:            tk[4:9],
 						},
-						Tokens: tk[4:9],
+						Comments: [2]Comments{{&tk[4]}},
+						Tokens:   tk[4:9],
 					},
 				},
 				Comments: [5]Comments{{&tk[2]}, nil, nil, nil, {&tk[10]}},
@@ -1879,10 +1880,11 @@ func TestObjectBindingPattern(t *testing.T) {
 						},
 						BindingElement: BindingElement{
 							SingleNameBinding: &tk[6],
-							Comments:          [2]Comments{{&tk[4]}, {&tk[8]}},
+							Comments:          [2]Comments{nil, {&tk[8]}},
 							Tokens:            tk[4:9],
 						},
-						Tokens: tk[4:9],
+						Comments: [2]Comments{{&tk[4]}},
+						Tokens:   tk[4:9],
 					},
 				},
 				BindingRestProperty: &tk[17],
@@ -2016,10 +2018,11 @@ func TestBindingProperty(t *testing.T) {
 				},
 				BindingElement: BindingElement{
 					SingleNameBinding: &tk[2],
-					Comments:          [2]Comments{{&tk[0]}, {&tk[4]}},
+					Comments:          [2]Comments{nil, {&tk[4]}},
 					Tokens:            tk[:5],
 				},
-				Tokens: tk[:5],
+				Comments: [2]Comments{{&tk[0]}},
+				Tokens:   tk[:5],
 			}
 		}},
 		{"// A\na // B\n= // C\nb // D", func(t *test, tk Tokens) { // 11
@@ -2041,10 +2044,11 @@ func TestBindingProperty(t *testing.T) {
 						}),
 						Tokens: tk[8:13],
 					},
-					Comments: [2]Comments{{&tk[0]}, {&tk[4]}},
+					Comments: [2]Comments{nil, {&tk[4]}},
 					Tokens:   tk[:13],
 				},
-				Tokens: tk[:13],
+				Comments: [2]Comments{{&tk[0]}},
+				Tokens:   tk[:13],
 			}
 		}},
 		{"// A\na // B\n: // C\nb // D\n", func(t *test, tk Tokens) { // 12
