@@ -820,18 +820,18 @@ func (pd *PropertyDefinition) parse(j *jsParser, yield, await bool) error {
 				pd.IsCoverInitializedName = true
 			} else if t := k.Peek(); t.Type == TokenRightBracePunctuator || t == (parser.Token{Type: TokenPunctuator, Data: ","}) {
 				pd.PropertyName = &PropertyName{
-					LiteralPropertyName: i,
-					Tokens:              h.ToTokens(),
+					LiteralPropertyName: &Token{
+						Token:   i.Token,
+						Pos:     i.Pos,
+						Line:    i.Line,
+						LinePos: i.LinePos,
+					},
+					Tokens: h.ToTokens(),
 				}
 				pd.AssignmentExpression = &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						IdentifierReference: &Token{
-							Token:   i.Token,
-							Pos:     i.Pos,
-							Line:    i.Line,
-							LinePos: i.LinePos,
-						},
-						Tokens: pd.PropertyName.Tokens,
+						IdentifierReference: i,
+						Tokens:              pd.PropertyName.Tokens,
 					}),
 					Tokens: pd.PropertyName.Tokens,
 				}
