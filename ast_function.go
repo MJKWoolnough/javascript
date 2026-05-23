@@ -346,6 +346,7 @@ func (be *BindingElement) parse(j *jsParser, singleNameBinding *Token, yield, aw
 
 	if h.SkipOptionalColonType() {
 		be.Comments[1] = append(be.Comments[1], h.ToTypescriptComments()...)
+		be.Comments[1] = append(be.Comments[1], h.AcceptRunWhitespaceCommentsInList()...)
 
 		g.Score(h)
 		j.Score(g)
