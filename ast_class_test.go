@@ -403,7 +403,12 @@ func TestClassDeclaration(t *testing.T) {
 		{"class\na\n{\n;\n}", func(t *test, tk Tokens) { // 12
 			t.Output = ClassDeclaration{
 				BindingIdentifier: &tk[2],
-				Tokens:            tk[:9],
+				ClassBody: []ClassElement{
+					{
+						Tokens: tk[6:7],
+					},
+				},
+				Tokens: tk[:9],
 			}
 			t.Def = true
 		}},
@@ -415,6 +420,11 @@ func TestClassDeclaration(t *testing.T) {
 		}},
 		{"class\n{\n;\n}", func(t *test, tk Tokens) { // 14
 			t.Output = ClassDeclaration{
+				ClassBody: []ClassElement{
+					{
+						Tokens: tk[4:5],
+					},
+				},
 				Tokens: tk[:7],
 			}
 			t.Def = true
@@ -451,6 +461,9 @@ func TestClassDeclaration(t *testing.T) {
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
 					{
+						Tokens: tk[6:7],
+					},
+					{
 						MethodDefinition: &MethodDefinition{
 							ClassElementName: ClassElementName{
 								PropertyName: &PropertyName{
@@ -468,6 +481,9 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens: tk[8:13],
 						},
 						Tokens: tk[8:13],
+					},
+					{
+						Tokens: tk[14:15],
 					},
 				},
 				Tokens: tk[:17],
@@ -524,6 +540,9 @@ func TestClassDeclaration(t *testing.T) {
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
 					{
+						Tokens: tk[6:7],
+					},
+					{
 						MethodDefinition: &MethodDefinition{
 							ClassElementName: ClassElementName{
 								PropertyName: &PropertyName{
@@ -543,6 +562,9 @@ func TestClassDeclaration(t *testing.T) {
 						Tokens: tk[8:13],
 					},
 					{
+						Tokens: tk[14:15],
+					},
+					{
 						MethodDefinition: &MethodDefinition{
 							ClassElementName: ClassElementName{
 								PropertyName: &PropertyName{
@@ -560,6 +582,9 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens: tk[16:21],
 						},
 						Tokens: tk[16:21],
+					},
+					{
+						Tokens: tk[22:23],
 					},
 				},
 				Tokens: tk[:25],
@@ -920,6 +945,9 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens: tk[7:14],
 						},
 						Tokens: tk[5:15],
+					},
+					{
+						Tokens: tk[15:16],
 					},
 				},
 				Tokens: tk[:17],
@@ -1917,6 +1945,9 @@ func TestClassDeclaration(t *testing.T) {
 						},
 						Tokens: tk[5:13],
 					},
+					{
+						Tokens: tk[13:14],
+					},
 				},
 				Tokens: tk[:15],
 			}
@@ -2612,6 +2643,9 @@ func TestClassDeclaration(t *testing.T) {
 							Tokens: tk[23:28],
 						},
 						Tokens: tk[23:29],
+					},
+					{
+						Tokens: tk[29:30],
 					},
 					{
 						Static: true,
@@ -3310,14 +3344,25 @@ func TestClassDeclaration(t *testing.T) {
 				BindingIdentifier: &tk[2],
 				ClassBody: []ClassElement{
 					{
+						Comments: [3]Comments{nil, nil, {&tk[10]}},
+						Tokens:   tk[8:11],
+					},
+					{
+						Comments: [3]Comments{nil, nil, {&tk[14]}},
+						Tokens:   tk[12:15],
+					},
+					{
+						Comments: [3]Comments{nil, nil, {&tk[18]}},
+						Tokens:   tk[16:19],
+					},
+					{
 						MethodDefinition: &MethodDefinition{
 							ClassElementName: ClassElementName{
 								PropertyName: &PropertyName{
 									LiteralPropertyName: &tk[20],
 									Tokens:              tk[20:21],
 								},
-								Comments: [2]Comments{{&tk[18]}},
-								Tokens:   tk[18:21],
+								Tokens: tk[20:21],
 							},
 							Params: FormalParameters{
 								Tokens: tk[21:23],
@@ -3326,13 +3371,19 @@ func TestClassDeclaration(t *testing.T) {
 								Tokens: tk[23:25],
 							},
 							Comments: [4]Comments{nil, nil, nil, {&tk[26]}},
-							Tokens:   tk[18:27],
+							Tokens:   tk[20:27],
 						},
-						Comments: [3]Comments{{&tk[10], &tk[14]}},
-						Tokens:   tk[10:27],
+						Tokens: tk[20:27],
+					},
+					{
+						Comments: [3]Comments{nil, nil, {&tk[30]}},
+						Tokens:   tk[28:31],
+					},
+					{
+						Tokens: tk[32:33],
 					},
 				},
-				Comments: [5]Comments{nil, nil, nil, {&tk[6]}, {&tk[30], &tk[35]}},
+				Comments: [5]Comments{nil, nil, nil, {&tk[6]}, {&tk[35]}},
 				Tokens:   tk[:38],
 			}
 		}},
