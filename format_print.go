@@ -1681,10 +1681,10 @@ func (ce ClassElement) printSource(w writer, v bool) {
 		w.PrintSemiColon()
 	} else if ce.ClassStaticBlock != nil {
 		ce.ClassStaticBlock.printSource(w, v)
+	}
 
-		if v {
-			ce.Comments[2].printSource(w, false, false)
-		}
+	if v {
+		ce.Comments[2].printSource(w, false, false)
 	}
 }
 
