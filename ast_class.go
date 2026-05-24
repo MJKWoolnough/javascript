@@ -313,43 +313,41 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 				return j.Error("ClassElement", err)
 			}
 
-			if g.GetLastToken().Token != (parser.Token{Type: TokenPunctuator, Data: ";"}) {
-				var hasNewline bool
+			var hasNewline bool
 
-			Loop:
-				for _, tk := range slices.Backward(ce.FieldDefinition.Tokens) {
-					switch tk.Type {
-					case TokenSingleLineComment, TokenLineTerminator:
+		Loop:
+			for _, tk := range slices.Backward(ce.FieldDefinition.Tokens) {
+				switch tk.Type {
+				case TokenSingleLineComment, TokenLineTerminator:
+					hasNewline = true
+
+					break Loop
+				case TokenMultiLineComment:
+					if strings.Contains(tk.Data, "\n") {
 						hasNewline = true
 
 						break Loop
-					case TokenMultiLineComment:
-						if strings.Contains(tk.Data, "\n") {
-							hasNewline = true
-
-							break Loop
-						}
-					case TokenWhitespace:
-					default:
-						break Loop
 					}
+				case TokenWhitespace:
+				default:
+					break Loop
 				}
+			}
 
-				h := g.NewGoal()
+			h := g.NewGoal()
 
-				h.AcceptRunWhitespaceNoNewLine()
+			h.AcceptRunWhitespaceNoNewLine()
+
+			if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
+				g.Score(h)
+			} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) || hasNewline {
+				h.AcceptRunWhitespace()
 
 				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 					g.Score(h)
-				} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) || hasNewline {
-					h.AcceptRunWhitespace()
-
-					if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
-						g.Score(h)
-					}
-				} else if h.Peek() != (parser.Token{Type: TokenRightBracePunctuator, Data: "}"}) {
-					return h.Error("ClassElement", ErrMissingSemiColon)
 				}
+			} else if h.Peek() != (parser.Token{Type: TokenRightBracePunctuator, Data: "}"}) {
+				return h.Error("ClassElement", ErrMissingSemiColon)
 			}
 		}
 
@@ -360,6 +358,8 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 	return nil
 }
+
+var a = 0
 
 // ClassElementName as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-ClassElementName
