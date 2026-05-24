@@ -1002,6 +1002,10 @@ func (c ClassDeclaration) printSource(w writer, v bool) {
 
 	if len(c.ClassBody) > 0 {
 		for _, ce := range c.ClassBody {
+			if !v && ce.FieldDefinition == nil && ce.MethodDefinition == nil && ce.ClassStaticBlock == nil {
+				continue
+			}
+
 			ip.WriteString("\n")
 			ce.printSource(ip, v)
 		}
@@ -1681,6 +1685,8 @@ func (ce ClassElement) printSource(w writer, v bool) {
 		w.PrintSemiColon()
 	} else if ce.ClassStaticBlock != nil {
 		ce.ClassStaticBlock.printSource(w, v)
+	} else if v {
+		w.WriteStringWithType(";", TokenPunctuator)
 	}
 
 	if v {
