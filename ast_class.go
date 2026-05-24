@@ -340,11 +340,15 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 			if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 				g.Score(h)
+
+				ce.Comments[2] = g.AcceptRunWhitespaceNoNewlineComments()
 			} else if h.Accept(TokenLineTerminator, TokenSingleLineComment, TokenMultiLineComment) || hasNewline {
 				h.AcceptRunWhitespace()
 
 				if h.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ";"}) {
 					g.Score(h)
+
+					ce.Comments[2] = g.AcceptRunWhitespaceNoNewlineComments()
 				}
 			} else if h.Peek() != (parser.Token{Type: TokenRightBracePunctuator, Data: "}"}) {
 				return h.Error("ClassElement", ErrMissingSemiColon)
@@ -358,8 +362,6 @@ func (ce *ClassElement) parse(j *jsParser, yield, await bool) error {
 
 	return nil
 }
-
-var a = 0
 
 // ClassElementName as defined in ECMA-262
 // https://tc39.es/ecma262/#prod-ClassElementName
