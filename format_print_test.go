@@ -2689,6 +2689,16 @@ func TestPrintingScript(t *testing.T) {
 			"with (() => {\n\treturn a;\n}) {}",
 			"with ( // A\n\n\t() => {\n\t\treturn a;\n\t}\n) {}",
 		},
+		{ // 534
+			"class a {\nb; // A\n}",
+			"class a {\n\tb;\n}",
+			"class a {\n\tb; // A\n}",
+		},
+		{ // 535
+			"class a {\nb /* A */; // B\n}",
+			"class a {\n\tb;\n}",
+			"class a {\n\tb /* A */; // B\n}",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
