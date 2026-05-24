@@ -98,13 +98,17 @@ func (cd *ClassDeclaration) parse(j *jsParser, yield, await, def bool) error {
 
 			g.AcceptRunWhitespace()
 			g.Skip()
-			g.AcceptRunWhitespaceNoComment()
 
-			if len(c) == 0 {
-				j.Score(g)
+			cd.ClassBody = append(cd.ClassBody, ClassElement{
+				Comments: [3]Comments{c, nil, g.AcceptRunWhitespaceNoNewlineComments()},
+				Tokens:   g.ToTokens(),
+			})
 
-				g = j.NewGoal()
-			}
+			j.Score(g)
+			j.AcceptRunWhitespaceNoComment()
+
+			g = j.NewGoal()
+			c = nil
 
 			continue
 		} else if h.Accept(TokenRightBracePunctuator) {
