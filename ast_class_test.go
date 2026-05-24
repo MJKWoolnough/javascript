@@ -3387,6 +3387,75 @@ func TestClassDeclaration(t *testing.T) {
 				Tokens:   tk[:33],
 			}
 		}},
+		{"class a { b; // A\n}", func(t *test, tk Tokens) { // 114
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Comments: [3]Comments{nil, nil, {&tk[9]}},
+						Tokens:   tk[6:10],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{"class a { b // A\n; // B\n}", func(t *test, tk Tokens) { // 115
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[6],
+									Tokens:              tk[6:7],
+								},
+								Comments: [2]Comments{nil, {&tk[8]}},
+								Tokens:   tk[6:9],
+							},
+							Tokens: tk[6:9],
+						},
+						Comments: [3]Comments{nil, nil, {&tk[12]}},
+						Tokens:   tk[6:13],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"class a { // A\n\n// B\nb /* C */; // D\n\n// E\n}", func(t *test, tk Tokens) { // 116
+			t.Output = ClassDeclaration{
+				BindingIdentifier: &tk[2],
+				ClassBody: []ClassElement{
+					{
+						FieldDefinition: &FieldDefinition{
+							ClassElementName: ClassElementName{
+								PropertyName: &PropertyName{
+									LiteralPropertyName: &tk[10],
+									Tokens:              tk[10:11],
+								},
+								Comments: [2]Comments{{&tk[8]}, {&tk[12]}},
+								Tokens:   tk[8:13],
+							},
+							Tokens: tk[8:13],
+						},
+						Comments: [3]Comments{nil, nil, {&tk[15]}},
+						Tokens:   tk[8:16],
+					},
+				},
+				Comments: [5]Comments{nil, nil, nil, {&tk[6]}, {&tk[17]}},
+				Tokens:   tk[:20],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var cd ClassDeclaration
 
