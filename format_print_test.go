@@ -1617,7 +1617,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 319
 			"class a {static a;static b\nstatic c = 2;static d(){};static{}static{e}static{e;f}}",
 			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
-			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
+			"class a {\n\tstatic a;\n\tstatic b;\n\tstatic c = 2;\n\tstatic d() {}\n\t;\n\tstatic {}\n\tstatic {\n\t\te;\n\t}\n\tstatic {\n\t\te;\n\t\tf;\n\t}\n}",
 		},
 		{ // 320
 			"#a in b",
@@ -2187,7 +2187,7 @@ func TestPrintingScript(t *testing.T) {
 		{ // 433
 			"class a { // A\n; // B\n; // C\n; // D\na(){} // E\n; // F\n;\n // G\n}",
 			"class a {\n\ta() {}\n}",
-			"class a { // A\n\n\t// B\n\t// C\n\t// D\n\ta() {} // E\n\n// F\n\n// G\n}",
+			"class a { // A\n\n\t; // B\n\n\t; // C\n\n\t; // D\n\n\ta() {} // E\n\n\t; // F\n\n\t;\n\n// G\n}",
 		},
 		{ // 434
 			"class a { // A\n\n// B\na(){} // C\n// D\n\n// E\nb(){} // F\n\n// G\n}",
