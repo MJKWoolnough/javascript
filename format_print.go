@@ -2534,6 +2534,7 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 		o.Comments[1].printSource(w, false, w != ip)
 	}
 
+	w.WriteStringWithType("", tokenPossibleTrailingComma)
 	w.WriteStringWithType("}", TokenRightBracePunctuator)
 }
 
