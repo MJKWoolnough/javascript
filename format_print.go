@@ -3391,6 +3391,7 @@ func (i ImportSpecifier) printSource(w writer, v bool) {
 	}
 
 	if i.IdentifierName != nil && (i.IdentifierName.Type != i.ImportedBinding.Type || i.IdentifierName.Data != i.ImportedBinding.Data || v) {
+		w.WriteStringWithType("", tokenColonSplit)
 		w.WriteToken(i.IdentifierName)
 
 		if v {
