@@ -231,7 +231,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 		} else {
 			o.writePDColon()
 		}
-	} else if len(o.pd) > 0 && (data == "}" || data == "," || data == "=") {
+	} else if len(o.pd) > 0 && (data == "," || data == "=" || data == ";" || typ != TokenPunctuator) {
 		o.writePDColon()
 	}
 
@@ -269,8 +269,8 @@ func (o *originalWriter) writeTokenData(tk Token) {
 
 func (o *originalWriter) unColon() {
 	for len(o.tokenStack) > len(o.pdColonSplit.tokenStack) {
-		o.pdColonSplit.tokenStack = append(o.pdColonSplit.tokenStack, nil)
-		o.pdColonSplit.pos = append(o.pdColonSplit.pos, 0)
+		o.pdColonSplit.tokenStack = append(o.pdColonSplit.tokenStack, last(o.pdColonSplit.tokenStack))
+		o.pdColonSplit.pos = append(o.pdColonSplit.pos, last(o.pdColonSplit.pos))
 	}
 
 	*o = *o.pdColonSplit
