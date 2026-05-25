@@ -212,6 +212,7 @@ type originalWriter struct {
 	pos                     []int
 	pd                      []Token
 	pdColonSplit            *originalWriter
+	lastType                parser.TokenType
 	newline, semicolon, slc bool
 }
 
@@ -263,6 +264,8 @@ func (o *originalWriter) writeTokenData(tk Token) {
 		o.semicolon = false
 
 		o.writeTokenData(newline)
+	} else if (tk.Type == TokenKeyword || tk.Type == TokenIdentifier) && (o.lastType == TokenKeyword || o.lastType == TokenIdentifier) {
+		o.writeTokenData(Token{Token: parser.Token{Type: TokenWhitespace, Data: " "}})
 	}
 
 	if o.pd != nil {
@@ -271,6 +274,7 @@ func (o *originalWriter) writeTokenData(tk Token) {
 		io.WriteString(o.Writer, tk.Data)
 	}
 
+	o.lastType = tk.Type
 	o.semicolon = false
 	o.newline = tk.Type == TokenLineTerminator
 	o.slc = false
