@@ -2724,6 +2724,7 @@ func TestPrintingScript(t *testing.T) {
 			if str := st.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
+
 			st.flag = '#'
 
 			st.Reset()
@@ -2903,17 +2904,17 @@ func TestPrintingModule(t *testing.T) {
 			"// A\n// B\n\nexport default await b;\n// C\n// D\n",
 		},
 		{ // 33
-			"/* A *//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /* F */\n",
+			"/* A *//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /* F */",
 			"export default await b;",
 			"/* A */ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /* F */",
 		},
 		{ // 34
-			"/*\nA\n*//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /*\n\nF\n\n*/\n",
+			"/*\nA\n*//* B */\n// C\n\nexport default await b;\n// D\n/* E */   /*\n\nF\n\n*/",
 			"export default await b;",
 			"/*\nA\n*/ /* B */\n// C\n\nexport default await b;\n// D\n/* E */ /*\n\nF\n\n*/",
 		},
 		{ // 35
-			"/*\nA\n*//* B */\n// C\n\n// D\nimport a from './b'; // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/\n",
+			"/*\nA\n*//* B */\n// C\n\n// D\nimport a from './b'; // E\n// F\n\n// G\n/* H */   /*\n\nI\n\n*/",
 			"import a from './b';",
 			"/*\nA\n*/ /* B */\n// C\n\n// D\nimport a from './b'; // E\n                     // F\n\n// G\n/* H */ /*\n\nI\n\n*/",
 		},
@@ -3028,7 +3029,7 @@ func TestPrintingModule(t *testing.T) {
 			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */;",
 		},
 		{ // 58
-			"// A\n\n// B\nexport/* C */default/* D */1/* E */; // F\n\n// G",
+			"// A\n\n// B\nexport/* C */default/* D */1/* E */; // F\n\n// G\n",
 			"export default 1;",
 			"// A\n\n// B\nexport /* C */ default /* D */ 1 /* E */; // F\n\n// G\n",
 		},
