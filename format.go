@@ -218,6 +218,15 @@ type originalWriter struct {
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
+	if typ == tokenPossibleTrailingComma {
+		pos := o.findStringWithToken(",", TokenPunctuator, true)
+		if pos >= 0 {
+			o.WriteStringWithType(",", TokenPunctuator)
+		}
+
+		return
+	}
+
 	if typ == tokenColonSplit {
 		o.pd = []Token{}
 
@@ -643,6 +652,7 @@ const (
 	tokenSingleLineStart
 	tokenStringAsComment
 	tokenColonSplit
+	tokenPossibleTrailingComma
 )
 
 func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
