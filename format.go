@@ -232,7 +232,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 		o.pd = []Token{}
 
 		return
-	} else if len(o.pd) > 0 && data == ":" {
+	} else if len(o.pd) > 0 && (data == ":" || data == "as") {
 		p := *o
 		o.pdColonSplit = &p
 	} else if o.pdColonSplit != nil {
