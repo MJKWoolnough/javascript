@@ -3147,6 +3147,7 @@ func (wc WithClause) printSource(w writer, v bool) {
 		wc.Comments[3].printSource(w, false, w != ip)
 	}
 
+	w.WriteStringWithType("", tokenPossibleTrailingComma)
 	w.WriteStringWithType("}", TokenRightBracePunctuator)
 }
 
