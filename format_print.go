@@ -3351,6 +3351,7 @@ func (e ExportSpecifier) printSource(w writer, v bool) {
 		return
 	}
 
+	w.WriteStringWithType("", tokenColonSplit)
 	w.WriteToken(e.IdentifierName)
 
 	if e.EIdentifierName != nil && (e.EIdentifierName.Type != e.IdentifierName.Type || e.EIdentifierName.Data != e.IdentifierName.Data || v) {
