@@ -223,8 +223,7 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 	case tokenStringAsComment:
 		data = strings.ReplaceAll(data, "*/", "* /")
 	case tokenPossibleTrailingComma:
-		pos := o.findStringWithToken(",", TokenPunctuator, true)
-		if pos >= 0 {
+		if pos := o.findStringWithToken(",", TokenPunctuator, true); pos >= 0 {
 			o.WriteStringWithType(",", TokenPunctuator)
 		}
 
