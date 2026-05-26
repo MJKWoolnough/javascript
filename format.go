@@ -600,11 +600,10 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 			}
 		}
 
-		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
-		pos := w.Pos()
-
 		var cp commentPrinter
 
+		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
+		pos := w.Pos()
 		lastWasMulti := cp.print(w, c[0], 0)
 
 		if !lastWasMulti {
