@@ -374,7 +374,9 @@ func (o *originalWriter) End() {
 }
 
 func (o *originalWriter) setPos(pos int) {
-	o.pos[len(o.pos)-1] = pos
+	if pos > last(o.pos) {
+		o.pos[len(o.pos)-1] = pos
+	}
 }
 
 func (o *originalWriter) printWhitespaceAfter(pos int) int {
