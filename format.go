@@ -219,20 +219,23 @@ type originalWriter struct {
 func (o *originalWriter) WriteString(string) {}
 
 func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) {
-	if typ == tokenPossibleTrailingComma {
+	switch typ {
+	case tokenStringAsComment:
+		data = strings.ReplaceAll(data, "*/", "* /")
+	case tokenPossibleTrailingComma:
 		pos := o.findStringWithToken(",", TokenPunctuator, true)
 		if pos >= 0 {
 			o.WriteStringWithType(",", TokenPunctuator)
 		}
 
 		return
-	}
-
-	if typ == tokenColonSplit {
+	case tokenColonSplit:
 		o.pd = []Token{}
 
 		return
-	} else if len(o.pd) > 0 && (data == ":" || data == "as") {
+	}
+
+	if len(o.pd) > 0 && (data == ":" || data == "as") {
 		p := *o
 		o.pdColonSplit = &p
 	} else if o.pdColonSplit != nil {
