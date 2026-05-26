@@ -593,7 +593,9 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 		switch w.LastChar() {
 		case 0, ' ', '\n', '\t':
 		default:
-			w.WriteString(" ")
+			if c[0].Type == TokenSingleLineComment || c[0].Type == TokenMultiLineComment {
+				w.WriteString(" ")
+			}
 		}
 
 		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))

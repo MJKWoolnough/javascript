@@ -5388,7 +5388,7 @@ func TestPrintingTypescript(t *testing.T) {
 	}{
 		{ // 1
 			"let a: number = 1",
-			"let a /*: number*/ = 1;",
+			"let a/*: number*/ = 1;",
 		},
 		{ // 2
 			"let a /* A */ : number /* B */ = 1",
@@ -5396,7 +5396,7 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 3
 			"let a : /* A */ number = 1",
-			"let a /*: /* A * / number*/ = 1;",
+			"let a/*: /* A * / number*/ = 1;",
 		},
 		{ // 4
 			"abstract class A {}",
@@ -5408,7 +5408,7 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 6
 			"(<A>() => {})",
-			"( /*<A>*/ () => {});",
+			"(/*<A>*/ () => {});",
 		},
 		{ // 7
 			"(async <A>(): B => {})",
@@ -5456,23 +5456,23 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 18
 			"class A {b: string}",
-			"class A {\n\tb /*: string*/;\n}",
+			"class A {\n\tb/*: string*/;\n}",
 		},
 		{ // 19
 			"class A {b?: string}",
-			"class A {\n\tb /*?: string*/;\n}",
+			"class A {\n\tb/*?: string*/;\n}",
 		},
 		{ // 20
 			"class A {b!: string}",
-			"class A {\n\tb /*!: string*/;\n}",
+			"class A {\n\tb/*!: string*/;\n}",
 		},
 		{ // 21
 			"class A {b!}",
-			"class A {\n\tb /*!*/;\n}",
+			"class A {\n\tb/*!*/;\n}",
 		},
 		{ // 22
 			"class A{b<C>(){}}",
-			"class A {\n\tb /*<C>*/() {}\n}",
+			"class A {\n\tb/*<C>*/() {}\n}",
 		},
 		{ // 23
 			"class A{b /* A */<C>/* B */(){}}",
@@ -5480,7 +5480,7 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 24
 			"class A{*b<C>(){}}",
-			"class A {\n\t* b /*<C>*/() {}\n}",
+			"class A {\n\t* b/*<C>*/() {}\n}",
 		},
 		{ // 25
 			"class A{* /* A */ b /* B */ <C>/* C */(){}}",
@@ -5496,95 +5496,95 @@ func TestPrintingTypescript(t *testing.T) {
 		},
 		{ // 28
 			"class A{b();b(){}}",
-			"class A {\n\tb /*();b*/() {}\n}",
+			"class A {\n\tb/*();b*/() {}\n}",
 		},
 		{ // 29
 			"class A{b();b();b();b(){}}",
-			"class A {\n\tb /*();b();b();b*/() {}\n}",
+			"class A {\n\tb/*();b();b();b*/() {}\n}",
 		},
 		{ // 30
 			"a as b",
-			"a /*as b*/;",
+			"a/*as b*/;",
 		},
 		{ // 31
 			"a as b as c",
-			"a /*as b as c*/;",
+			"a/*as b as c*/;",
 		},
 		{ // 32
 			"a?.<b>()",
-			"a?. /*<b>*/ ();",
+			"a?./*<b>*/ ();",
 		},
 		{ // 33
 			"a?.b!",
-			"a?.b /*!*/;",
+			"a?.b/*!*/;",
 		},
 		{ // 34
 			"a?.b?.<c>()",
-			"a?.b?. /*<c>*/ ();",
+			"a?.b?./*<c>*/ ();",
 		},
 		{ // 35
 			"a?.b?.c!",
-			"a?.b?.c /*!*/;",
+			"a?.b?.c/*!*/;",
 		},
 		{ // 36
 			"a!",
-			"a /*!*/;",
+			"a/*!*/;",
 		},
 		{ // 37
 			"a!()",
-			"a /*!*/();",
+			"a/*!*/();",
 		},
 		{ // 38
 			"a.b.c!",
-			"a.b.c /*!*/;",
+			"a.b.c/*!*/;",
 		},
 		{ // 39
 			"a.b!()",
-			"a.b /*!*/();",
+			"a.b/*!*/();",
 		},
 		{ // 40
 			"a<b>()",
-			"a /*<b>*/ ();",
+			"a/*<b>*/ ();",
 		},
 		{ // 41
 			"a.b<c>()",
-			"a.b /*<c>*/ ();",
+			"a.b/*<c>*/ ();",
 		},
 		{ // 42
 			"a()!",
-			"a() /*!*/;",
+			"a()/*!*/;",
 		},
 		{ // 43
 			"a.b()!",
-			"a.b() /*!*/;",
+			"a.b()/*!*/;",
 		},
 		{ // 44
 			"function A<B>(): C {}",
-			"function A /*<B>*/ () /*: C*/ {}",
+			"function A/*<B>*/ () /*: C*/ {}",
 		},
 		{ // 45
 			"function a(): b;\nfunction a(): c;\nfunction a() {}",
-			"function a /*(): b;\nfunction a(): c;\nfunction a*/ () {}",
+			"function a/*(): b;\nfunction a(): c;\nfunction a*/ () {}",
 		},
 		{ // 46
 			"function a(this): A {}",
-			"function a( /*this*/) /*: A*/ {}",
+			"function a(/*this*/) /*: A*/ {}",
 		},
 		{ // 47
 			"function a(this: A): B {}",
-			"function a( /*this: A*/) /*: B*/ {}",
+			"function a(/*this: A*/) /*: B*/ {}",
 		},
 		{ // 48
 			"function a(this, b) {}",
-			"function a( /*this,*/ b) {}",
+			"function a(/*this,*/ b) {}",
 		},
 		{ // 49
 			"function a(this : A, b) {}",
-			"function a( /*this : A,*/ b) {}",
+			"function a(/*this : A,*/ b) {}",
 		},
 		{ // 50
 			"function a(b: c) {}",
-			"function a(b /*: c*/) {}",
+			"function a(b/*: c*/) {}",
 		},
 		{ // 51
 			"import type A from 'b'",
