@@ -3109,6 +3109,15 @@ func TestPrintingModule(t *testing.T) {
 			if str := st.String(); str != test.VerboseOutput {
 				t.Errorf("test %d.%d.3: expecting %q, got %q\n%s", n+1, m+1, test.VerboseOutput, str, s)
 			}
+
+			st.flag = '#'
+
+			st.Reset()
+			s.Format(&st, 's')
+
+			if str := st.String(); str != in {
+				t.Errorf("test %d.%d.4: expecting %q, got %q", n+1, m+1, in, str)
+			}
 		}
 	}
 }
