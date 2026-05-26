@@ -666,7 +666,7 @@ func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
 
 	if isSingleLine(c) {
 		if *cp {
-			w.WriteStringWithType("*/ ", tokenMultiLineEnd)
+			w.WriteStringWithType("*/", tokenMultiLineEnd)
 			w.WriteString(" ")
 
 			pos = max(0, pos-3)
