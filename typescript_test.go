@@ -5381,246 +5381,303 @@ func TestAsTypescript(t *testing.T) {
 func TestPrintingTypescript(t *testing.T) {
 	var st state
 
-	st.flag = '+'
-
 	for n, test := range [...]struct {
-		Input, Output string
+		Input, Output, Original string
 	}{
 		{ // 1
 			"let a: number = 1",
 			"let a/*: number*/ = 1;",
+			"let a/*: number*/ = 1",
 		},
 		{ // 2
 			"let a /* A */ : number /* B */ = 1",
 			"let a /* A */ /*: number*/ /* B */ = 1;",
+			"let a /* A */ /*: number*/ /* B */ = 1",
 		},
 		{ // 3
 			"let a : /* A */ number = 1",
 			"let a/*: /* A * / number*/ = 1;",
+			"let a /*: /* A * / number*/ = 1",
 		},
 		{ // 4
 			"abstract class A {}",
+			"/*abstract*/ class A {}",
 			"/*abstract*/ class A {}",
 		},
 		{ // 5
 			"// A\n\n// B\nabstract /* C */ class A {}",
 			"// A\n\n// B\n/*abstract /* C * /*/ class A {}",
+			"// A\n\n// B\n/*abstract /* C * /*/ class A {}",
 		},
 		{ // 6
 			"(<A>() => {})",
 			"(/*<A>*/ () => {});",
+			"(/*<A>*/() => {})",
 		},
 		{ // 7
 			"(async <A>(): B => {})",
 			"(async /*<A>*/ () /*: B*/ => {});",
+			"(async /*<A>*/()/*: B*/ => {})",
 		},
 		{ // 8
 			"(async /* A */ <B> /* C */ () /* D */: B/* E */ => {})",
 			"(async /* A */ /*<B>*/ /* C */ () /* D */ /*: B*/ /* E */ => {});",
+			"(async /* A */ /*<B>*/ /* C */ () /* D *//*: B*//* E */ => {})",
 		},
 		{ // 9
 			"class A<B> {}",
 			"class A /*<B>*/ {}",
+			"class A/*<B>*/ {}",
 		},
 		{ // 10
 			"class A /* A */ <B> /* B */ extends C<D> {}",
 			"class A /* A */ /*<B>*/ /* B */ extends C /*<D>*/ {}",
+			"class A /* A */ /*<B>*/ /* B */ extends C/*<D>*/ {}",
 		},
 		{ // 11
 			"class A implements B {}",
+			"class A /*implements B*/ {}",
 			"class A /*implements B*/ {}",
 		},
 		{ // 12
 			"class A /* A */ <B> /* B */ extends C<D> /* C */ implements E /* D */ {}",
 			"class A /* A */ /*<B>*/ /* B */ extends C /*<D>*/ /* C */ /*implements E /* D * /*/ {}",
+			"class A /* A */ /*<B>*/ /* B */ extends C/*<D>*/ /* C */ /*implements E /* D * /*/ {}",
 		},
 		{ // 13
 			"class A {abstract a(): string; abstract b; abstract c: number; public abstract d; }",
 			"class A {\n/*abstract a(): string;abstract b;abstract c: number;public abstract d;*/\n}",
+			"class A {/*abstract a(): string;abstract b;abstract c: number;public abstract d;*/ }",
 		},
 		{ // 14
 			"class A {[b: number]: string;[c] = d;}",
 			"class A {\n\t/*[b: number]: string;*/\n\t[c] = d;\n}",
+			"class A {/*[b: number]: string;*/[c] = d;}",
 		},
 		{ // 15
 			"class A {\n// A\npublic /* B */ b;}",
 			"class A {\n\t// A\n\t/*public*/\n\t/* B */ b;\n}",
+			"class A {\n// A\n/*public*/ /* B */ b;}",
 		},
 		{ // 16
 			"class A {\n// A\nprivate /* B */ readonly /* C */ b;}",
 			"class A {\n\t// A\n\t/*private*/\n\t/* B */ /*readonly*/ /* C */ b;\n}",
+			"class A {\n// A\n/*private*/ /* B */ /*readonly*/ /* C */ b;}",
 		},
 		{ // 17
 			"class A {\n// A\n/* B */ static /* C */ readonly /* D */ {b}}",
 			"class A {\n\t// A\n\t/* B */\n\tstatic /* C */ /*readonly*/ /* D */ {\n\t\tb;\n\t}\n}",
+			"class A {\n// A\n/* B */ static /* C */ /*readonly*/ /* D */ {b}}",
 		},
 		{ // 18
 			"class A {b: string}",
 			"class A {\n\tb/*: string*/;\n}",
+			"class A {b/*: string*/}",
 		},
 		{ // 19
 			"class A {b?: string}",
 			"class A {\n\tb/*?: string*/;\n}",
+			"class A {b/*?: string*/}",
 		},
 		{ // 20
 			"class A {b!: string}",
 			"class A {\n\tb/*!: string*/;\n}",
+			"class A {b/*!: string*/}",
 		},
 		{ // 21
 			"class A {b!}",
 			"class A {\n\tb/*!*/;\n}",
+			"class A {b/*!*/}",
 		},
 		{ // 22
 			"class A{b<C>(){}}",
 			"class A {\n\tb/*<C>*/() {}\n}",
+			"class A{b/*<C>*/(){}}",
 		},
 		{ // 23
 			"class A{b /* A */<C>/* B */(){}}",
 			"class A {\n\tb /* A */ /*<C>*/ /* B */() {}\n}",
+			"class A{b /* A *//*<C>*//* B */(){}}",
 		},
 		{ // 24
 			"class A{*b<C>(){}}",
 			"class A {\n\t* b/*<C>*/() {}\n}",
+			"class A{*b/*<C>*/(){}}",
 		},
 		{ // 25
 			"class A{* /* A */ b /* B */ <C>/* C */(){}}",
 			"class A {\n\t* /* A */ b /* B */ /*<C>*/ /* C */() {}\n}",
+			"class A{* /* A */ b /* B */ /*<C>*//* C */(){}}",
 		},
 		{ // 26
 			"class A {b(): c{}}",
 			"class A {\n\tb() /*: c*/ {}\n}",
+			"class A {b()/*: c*/{}}",
 		},
 		{ // 27
 			"class A {b() /* A */: c /* B */{}}",
 			"class A {\n\tb() /* A */ /*: c*/ /* B */ {}\n}",
+			"class A {b() /* A *//*: c*/ /* B */{}}",
 		},
 		{ // 28
 			"class A{b();b(){}}",
 			"class A {\n\tb/*();b*/() {}\n}",
+			"class A{b/*();b*/(){}}",
 		},
 		{ // 29
 			"class A{b();b();b();b(){}}",
 			"class A {\n\tb/*();b();b();b*/() {}\n}",
+			"class A{b/*();b();b();b*/(){}}",
 		},
 		{ // 30
 			"a as b",
 			"a/*as b*/;",
+			"a /*as b*/",
 		},
 		{ // 31
 			"a as b as c",
 			"a/*as b as c*/;",
+			"a /*as b as c*/",
 		},
 		{ // 32
 			"a?.<b>()",
 			"a?./*<b>*/ ();",
+			"a?./*<b>*/()",
 		},
 		{ // 33
 			"a?.b!",
 			"a?.b/*!*/;",
+			"a?.b/*!*/",
 		},
 		{ // 34
 			"a?.b?.<c>()",
 			"a?.b?./*<c>*/ ();",
+			"a?.b?./*<c>*/()",
 		},
 		{ // 35
 			"a?.b?.c!",
 			"a?.b?.c/*!*/;",
+			"a?.b?.c/*!*/",
 		},
 		{ // 36
 			"a!",
 			"a/*!*/;",
+			"a/*!*/",
 		},
 		{ // 37
 			"a!()",
 			"a/*!*/();",
+			"a/*!*/()",
 		},
 		{ // 38
 			"a.b.c!",
 			"a.b.c/*!*/;",
+			"a.b.c/*!*/",
 		},
 		{ // 39
 			"a.b!()",
 			"a.b/*!*/();",
+			"a.b/*!*/()",
 		},
 		{ // 40
 			"a<b>()",
 			"a/*<b>*/ ();",
+			"a/*<b>*/()",
 		},
 		{ // 41
 			"a.b<c>()",
 			"a.b/*<c>*/ ();",
+			"a.b/*<c>*/()",
 		},
 		{ // 42
 			"a()!",
 			"a()/*!*/;",
+			"a()/*!*/",
 		},
 		{ // 43
 			"a.b()!",
 			"a.b()/*!*/;",
+			"a.b()/*!*/",
 		},
 		{ // 44
 			"function A<B>(): C {}",
 			"function A/*<B>*/ () /*: C*/ {}",
+			"function A/*<B>*/()/*: C*/ {}",
 		},
 		{ // 45
 			"function a(): b;\nfunction a(): c;\nfunction a() {}",
 			"function a/*(): b;\nfunction a(): c;\nfunction a*/ () {}",
+			"function a/*(): b;\nfunction a(): c;\nfunction a*/() {}",
 		},
 		{ // 46
 			"function a(this): A {}",
 			"function a(/*this*/) /*: A*/ {}",
+			"function a(/*this*/)/*: A*/ {}",
 		},
 		{ // 47
 			"function a(this: A): B {}",
 			"function a(/*this: A*/) /*: B*/ {}",
+			"function a(/*this: A*/)/*: B*/ {}",
 		},
 		{ // 48
 			"function a(this, b) {}",
+			"function a(/*this,*/ b) {}",
 			"function a(/*this,*/ b) {}",
 		},
 		{ // 49
 			"function a(this : A, b) {}",
 			"function a(/*this : A,*/ b) {}",
+			"function a(/*this : A,*/ b) {}",
 		},
 		{ // 50
 			"function a(b: c) {}",
+			"function a(b/*: c*/) {}",
 			"function a(b/*: c*/) {}",
 		},
 		{ // 51
 			"import type A from 'b'",
 			"/*import type A from 'b'*/",
+			"/*import type A from 'b'*/",
 		},
 		{ // 52
 			"export type A = B",
+			"/*export type A = B*/",
 			"/*export type A = B*/",
 		},
 		{ // 53
 			"import {type A as B} from './c'",
 			"import {\n/*type A as B*/} from './c';",
+			"import {/*type A as B*/} from './c'",
 		},
 		{ // 54
 			"import {a, type A as B, c} from './c'",
 			"import {a as a, /*type A as B,*/ c as c} from './c';",
+			"import {a,  /*type A as B,*/c} from './c'",
 		},
 		{ // 55
 			"export default abstract class A {}",
+			"export default /*abstract*/ class A {}",
 			"export default /*abstract*/ class A {}",
 		},
 		{ // 56
 			"type A = B",
 			"/*type A = B*/",
+			"/*type A = B*/",
 		},
 		{ // 57
 			"interface A {}",
+			"/*interface A {}*/",
 			"/*interface A {}*/",
 		},
 		{ // 58
 			"declare namespace A{ interface B {} }",
 			"/*declare namespace A{ interface B {} }*/",
+			"/*declare namespace A{ interface B {} }*/",
 		},
 		{ // 59
 			"function a(b /* A */: c /* D */, e) {}",
 			"function a(b /* A */ /*: c*/ /* D */, e) {}",
+			"function a(b /* A *//*: c*/ /* D */, e) {}",
 		},
 	} {
 		s, err := ParseModule(AsTypescript(makeTokeniser(parser.NewStringTokeniser(test.Input))))
@@ -5630,11 +5687,22 @@ func TestPrintingTypescript(t *testing.T) {
 			continue
 		}
 
+		st.flag = '+'
+
 		st.Buffer.Reset()
 		s.Format(&st, 's')
 
 		if str := st.Buffer.String(); str != test.Output {
 			t.Errorf("test %d.2: expecting %q, got %q\n%s", n+1, test.Output, str, s)
+		}
+
+		st.flag = '#'
+
+		st.Reset()
+		s.Format(&st, 's')
+
+		if str := st.String(); str != test.Original {
+			t.Errorf("test %d.3: expecting %q, got %q", n+1, test.Original, str)
 		}
 	}
 }
