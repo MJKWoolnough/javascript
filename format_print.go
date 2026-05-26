@@ -3686,20 +3686,17 @@ func (je *JSXElement) printSource(w writer, v bool) {
 }
 
 func (jn *JSXElementName) printSource(w writer, v bool) {
-	w.Start(jn.Tokens)
-	defer w.End()
-
 	if jn.Identifier != nil {
 		if jn.Namespace != nil {
-			w.WriteToken(jn.Namespace)
+			w.WriteStringWithType(jn.Namespace.Data, jn.Namespace.Type)
 			w.WriteStringWithType(":", TokenPunctuator)
-			w.WriteToken(jn.Identifier)
+			w.WriteStringWithType(jn.Identifier.Data, jn.Identifier.Type)
 		} else {
-			w.WriteToken(jn.Identifier)
+			w.WriteStringWithType(jn.Identifier.Data, jn.Identifier.Type)
 
 			for _, m := range jn.MemberExpression {
 				w.WriteStringWithType(".", TokenPunctuator)
-				w.WriteToken(m)
+				w.WriteStringWithType(m.Data, m.Type)
 			}
 		}
 	}
