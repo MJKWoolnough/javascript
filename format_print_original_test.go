@@ -27,6 +27,18 @@ func TestPrintingOriginal(t *testing.T) {
 			"a = 1;b=2",
 			"a=1;b=2;",
 		},
+		{ // 4
+			"import a from './b'",
+			"import a from'./b';",
+		},
+		{ // 5
+			"import {a as b} from './b'",
+			"import{a as b}from'./b';",
+		},
+		{ // 6
+			"export {a as b}",
+			"export{a as b};",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
