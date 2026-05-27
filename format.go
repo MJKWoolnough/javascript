@@ -330,7 +330,7 @@ func (o *originalWriter) WriteToken(tk *Token) {
 func (o *originalWriter) Underlying() writer { return o }
 
 func (o *originalWriter) PrintSemiColon() {
-	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 {
+	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 || last(o.tokenStack) == nil {
 		o.WriteStringWithType(";", TokenPunctuator)
 
 		return
