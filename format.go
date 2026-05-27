@@ -268,7 +268,9 @@ func (o *originalWriter) writeTokenData(tk Token) {
 	if o.semicolon && last(o.tokenStack) == nil {
 		o.semicolon = false
 
-		o.writeTokenData(semicolon)
+		if tk.Type != TokenRightBracePunctuator {
+			o.writeTokenData(semicolon)
+		}
 	} else if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
 		o.semicolon = false
 
