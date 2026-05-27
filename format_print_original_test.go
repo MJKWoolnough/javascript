@@ -51,6 +51,10 @@ func TestPrintingOriginal(t *testing.T) {
 			"#a in b",
 			"#a in b",
 		},
+		{ // 10
+			"{a=1}",
+			"{a=1}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
