@@ -14,7 +14,20 @@ import (
 func TestPrintingOriginal(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
-	}{} {
+	}{
+		{ // 1
+			"a = 1",
+			"a=1;",
+		},
+		{ // 2
+			"a = 1;",
+			"a=1;",
+		},
+		{ // 3
+			"a = 1;b=2",
+			"a=1;b=2;",
+		},
+	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
 		m, err := javascript.ParseModule(&tk)
