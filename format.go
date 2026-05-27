@@ -259,10 +259,17 @@ func (o *originalWriter) WriteStringWithType(data string, typ parser.TokenType) 
 	}
 }
 
-var newline = Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}}
+var (
+	newline   = Token{Token: parser.Token{Type: TokenLineTerminator, Data: "\n"}}
+	semicolon = Token{Token: parser.Token{Type: TokenPunctuator, Data: ";"}}
+)
 
 func (o *originalWriter) writeTokenData(tk Token) {
-	if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
+	if o.semicolon && last(o.tokenStack) == nil {
+		o.semicolon = false
+
+		o.writeTokenData(semicolon)
+	} else if (o.semicolon && tk.Type != TokenPunctuator && tk.Type != TokenRightBracePunctuator && tk.Type != TokenWhitespace || o.slc) && tk.Type != TokenLineTerminator {
 		o.semicolon = false
 
 		o.writeTokenData(newline)
@@ -330,7 +337,7 @@ func (o *originalWriter) WriteToken(tk *Token) {
 func (o *originalWriter) Underlying() writer { return o }
 
 func (o *originalWriter) PrintSemiColon() {
-	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 || last(o.tokenStack) == nil {
+	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 {
 		o.WriteStringWithType(";", TokenPunctuator)
 
 		return
