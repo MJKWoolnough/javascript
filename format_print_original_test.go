@@ -47,6 +47,10 @@ func TestPrintingOriginal(t *testing.T) {
 			"for (const [a] of [b]) {}",
 			"for(const[a]of[b]){}",
 		},
+		{ // 9
+			"#a in b",
+			"#a in b",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
