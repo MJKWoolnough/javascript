@@ -275,7 +275,7 @@ func (o *originalWriter) writeTokenData(tk Token) {
 		o.semicolon = false
 
 		o.writeTokenData(newline)
-	} else if (tk.Type == TokenKeyword || tk.Type == TokenIdentifier) && (o.lastType == TokenKeyword || o.lastType == TokenIdentifier || o.lastType == TokenPrivateIdentifier) {
+	} else if (tk.Type == TokenKeyword || tk.Type == TokenIdentifier || tk.Type == TokenNumericLiteral) && (o.lastType == TokenKeyword || o.lastType == TokenIdentifier || o.lastType == TokenPrivateIdentifier) {
 		o.writeTokenData(Token{Token: parser.Token{Type: TokenWhitespace, Data: " "}})
 	}
 
