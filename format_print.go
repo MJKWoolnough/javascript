@@ -2516,7 +2516,6 @@ func (o ObjectLiteral) printSource(w writer, v bool) {
 	}
 
 	if len(o.PropertyDefinitionList) > 0 {
-
 		o.PropertyDefinitionList[0].printSource(ip, v)
 
 		for _, pd := range o.PropertyDefinitionList[1:] {
