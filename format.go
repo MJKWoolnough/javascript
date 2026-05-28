@@ -339,6 +339,10 @@ func (o *originalWriter) WriteToken(tk *Token) {
 func (o *originalWriter) Underlying() writer { return o }
 
 func (o *originalWriter) PrintSemiColon() {
+	if len(o.pd) > 0 {
+		o.writePDColon()
+	}
+
 	if pos := o.findStringWithToken(";", TokenPunctuator, true); pos >= 0 {
 		o.WriteStringWithType(";", TokenPunctuator)
 
