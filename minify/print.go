@@ -70,6 +70,30 @@ func Print(w io.Writer, m *javascript.Module) (int64, error) {
 				v := *t.PropertyName.LiteralPropertyName
 				t.BindingElement.SingleNameBinding = &v
 			}
+		case *javascript.ArrayAssignmentPattern:
+			if t.AssignmentRestElement != nil {
+				break
+			}
+
+			for n := len(t.AssignmentElements) - 1; n >= 0; n-- {
+				if t.AssignmentElements[n].DestructuringAssignmentTarget.AssignmentPattern == nil && t.AssignmentElements[n].DestructuringAssignmentTarget.LeftHandSideExpression == nil {
+					t.AssignmentElements = t.AssignmentElements[:n]
+				} else {
+					break
+				}
+			}
+		case *javascript.ArrayBindingPattern:
+			if t.BindingRestElement != nil {
+				break
+			}
+
+			for n := len(t.BindingElementList) - 1; n >= 0; n-- {
+				if (t.BindingElementList[n].SingleNameBinding == nil || t.BindingElementList[n].SingleNameBinding.Data == "") && t.BindingElementList[n].ArrayBindingPattern == nil && t.BindingElementList[n].ObjectBindingPattern == nil {
+					t.BindingElementList = t.BindingElementList[:n]
+				} else {
+					break
+				}
+			}
 		}
 
 		v := reflect.ValueOf(t)
