@@ -63,6 +63,26 @@ func TestPrintingOriginal(t *testing.T) {
 			"class A{a;b;c;d(){}e}",
 			"class A{a;b;c;d(){}e}",
 		},
+		{ // 13
+			"({a})",
+			"({a})",
+		},
+		{ // 14
+			"({a,b})",
+			"({a,b})",
+		},
+		{ // 15
+			"({a:d,b:c})",
+			"({a:d,b:c})",
+		},
+		{ // 16
+			"({a,b:c})",
+			"({a,b:c})",
+		},
+		{ // 17
+			"for(const{a,b}in c){}",
+			"for(const{a,b}in c){}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
