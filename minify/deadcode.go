@@ -64,6 +64,11 @@ func (p *processor) deadWalker(t javascript.Type) error {
 			t.IfStatement = nil
 			p.changed = true
 		}
+
+		if t.ExpressionStatement != nil && len(t.ExpressionStatement.Expressions) == 0 {
+			t.ExpressionStatement = nil
+			p.changed = true
+		}
 	case *javascript.ParenthesizedExpression:
 		if newExpressions := removeDeadExpressions(t.Expressions[:len(t.Expressions)-1]); len(newExpressions) != len(t.Expressions)-1 {
 			t.Expressions = append(newExpressions, t.Expressions[len(t.Expressions)-1])
