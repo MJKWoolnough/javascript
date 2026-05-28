@@ -2,11 +2,14 @@ package minify
 
 import (
 	"errors"
+	"fmt"
 	"io"
+	"reflect"
 	"unicode/utf8"
 
 	"vimagination.zapto.org/javascript"
 	"vimagination.zapto.org/javascript/internal"
+	"vimagination.zapto.org/javascript/walk"
 )
 
 type writer struct {
@@ -44,17 +47,27 @@ func (w *writer) WriteEOS() {
 }
 
 func Print(w io.Writer, m *javascript.Module) (int64, error) {
-	wr := writer{Writer: w, lastChar: -1}
+	var h walk.Handler
 
-	for n := range m.ModuleListItems {
-		if n > 0 {
-			wr.WriteEOS()
+	h = walk.HandlerFunc(func(t javascript.Type) error {
+		v := reflect.ValueOf(t)
+
+		if v.Type().Kind() != reflect.Pointer || v.Type().Elem().Kind() != reflect.Struct {
+			return nil
 		}
 
-		wr.WriteModuleListItem(&m.ModuleListItems[n])
-	}
+		if f, ok := v.Type().Elem().FieldByName("Tokens"); ok {
+			v.Elem().FieldByIndex(f.Index).SetZero()
+		}
 
-	return wr.count, wr.err
+		return walk.Walk(t, h)
+	})
+
+	h.Handle(m)
+
+	n, err := fmt.Fprintf(w, "%#s", m)
+
+	return int64(n), err
 }
 
 func (w *writer) WriteModuleListItem(mi *javascript.ModuleItem) {
