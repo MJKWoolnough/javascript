@@ -3548,23 +3548,14 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v && (ja.Comments[0].hasSingleLineComment() || ja.Comments[1].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+			if v && (ja.Comments.hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
 				ip = w.Indent()
 
-				ja.Comments[0].printSource(w, false, true)
 				ip.WriteString("\n")
+				ja.Comments.printSource(ip, false, true)
 			}
 
 			ja.AssignmentExpression.printSource(ip, v)
-
-			if v {
-				if w != ip {
-					w.WriteString("\n")
-				}
-
-				ja.Comments[2].printSource(w, false, w != ip)
-			}
-
 			w.WriteStringWithType("}", TokenRightBracePunctuator)
 		}
 	} else if ja.AssignmentExpression != nil {
@@ -3572,27 +3563,20 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v && (hasSingleLineComment(ja.Comments[:]) || ja.AssignmentExpression.hasSingleLineComment()) {
+		if v && (ja.Comments.hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
 			ip = w.Indent()
 
-			ja.Comments[0].printSource(w, false, true)
-			ip.WriteString("\n")
-		}
-
-		if v {
-			ja.Comments[1].printSource(ip, true, false)
+			if ja.Comments.hasSingleLineComment() {
+				ip.WriteString("\n")
+				ja.Comments.printSource(ip, false, true)
+			}
 		}
 
 		ip.WriteStringWithType("...", TokenPunctuator)
-
 		ja.AssignmentExpression.printSource(ip, v)
 
-		if v {
-			if w != ip {
-				w.WriteString("\n")
-			}
-
-			ja.Comments[2].printSource(w, false, w != ip)
+		if v && w != ip && w.LastChar() != '\n' {
+			w.WriteString("\n")
 		}
 
 		w.WriteStringWithType("}", TokenRightBracePunctuator)
@@ -3614,31 +3598,23 @@ func (jc *JSXChild) printSource(w writer, v bool) {
 
 		w.WriteStringWithType("{", TokenPunctuator)
 
-		if v && (hasSingleLineComment(jc.Comments[:]) || jc.JSXChildExpression.hasSingleLineComment()) {
+		if v && (jc.Comments.hasSingleLineComment() || jc.JSXChildExpression.hasSingleLineComment()) {
 			ip = w.Indent()
 
-			jc.Comments[0].printSource(w, false, true)
 			ip.WriteString("\n")
+			jc.Comments.printSource(ip, false, true)
 		}
 
 		if jc.JSXChildExpression != nil {
 			if jc.Spread {
-				if v {
-					jc.Comments[1].printSource(ip, true, false)
-				}
-
 				ip.WriteStringWithType("...", TokenPunctuator)
 			}
 
 			jc.JSXChildExpression.printSource(ip, v)
 		}
 
-		if v {
-			if w != ip {
-				w.WriteString("\n")
-			}
-
-			jc.Comments[2].printSource(w, false, w != ip)
+		if v && w != ip && w.LastChar() != '\n' {
+			w.WriteString("\n")
 		}
 
 		w.WriteStringWithType("}", TokenRightBracePunctuator)
