@@ -5652,7 +5652,7 @@ func TestPrintingTypescript(t *testing.T) {
 		{ // 54
 			"import {a, type A as B, c} from './c'",
 			"import {a as a, /*type A as B,*/ c as c} from './c';",
-			"import {a,  /*type A as B,*/c} from './c'",
+			"import {a, /*type A as B,*/c} from './c'",
 		},
 		{ // 55
 			"export default abstract class A {}",

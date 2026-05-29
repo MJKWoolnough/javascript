@@ -411,6 +411,10 @@ func (o *originalWriter) printWhitespaceAfter(pos int) int {
 }
 
 func (o *originalWriter) printWhitespaceBefore(pos int) {
+	if o.lastType == TokenWhitespace || o.lastType == TokenLineTerminator {
+		return
+	}
+
 	tks := last(o.tokenStack)
 	n := pos - 1
 	currPos := last(o.pos)
