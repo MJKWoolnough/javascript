@@ -2704,6 +2704,7 @@ func TestPrintingScript(t *testing.T) {
 			s, err := ParseScript(makeTokeniser(parser.NewStringTokeniser(in)))
 			if err != nil {
 				t.Errorf("test %d.%d.1: unexpected error: %s", n+1, m+1, err)
+
 				continue
 			}
 
@@ -3261,27 +3262,27 @@ func TestPrintingJSX(t *testing.T) {
 		{ // 29
 			"<>{ // A\n\n// B\nb // C\n\n// D\n}</>",
 			"<>{b}</>;",
-			"<>{ // A\n\n\t// B\n\tb // C\n\n// D\n}</>;",
+			"<>{\n\t// A\n\n\t// B\n\tb // C\n\n\t// D\n}</>;",
 		},
 		{ // 30
 			"<>{ // A\n\n // B\n... // C\nb // D\n\n// E\n}</>",
 			"<>{...b}</>;",
-			"<>{ // A\n\n\t// B\n\t... // C\n\tb // D\n\n// E\n}</>;",
+			"<>{\n\t// A\n\n\t// B\n\t... // C\n\tb // D\n\n\t// E\n}</>;",
 		},
 		{ // 31
 			"<a b={ // A\n\n// B\nc // C\n\n// D\n} />",
 			"<a b={c} />;",
-			"<a b={ // A\n\n\t// B\n\tc // C\n\n// D\n} />;",
+			"<a b={\n\t// A\n\n\t// B\n\tc // C\n\n\t// D\n} />;",
 		},
 		{ // 32
 			"<a { // A\n\n// B\n... // C\nb // D\n\n// E\n} />",
 			"<a {...b} />;",
-			"<a { // A\n\n\t// B\n\t... // C\n\tb // D\n\n// E\n} />;",
+			"<a {\n\t// A\n\n\t// B\n\t... // C\n\tb // D\n\n\t// E\n} />;",
 		},
 		{ // 33
 			"<>{ // A\n\n// B\n\n// C\n}</>",
 			"<>{}</>;",
-			"<>{ // A\n\n\n// B\n\n// C\n}</>;",
+			"<>{\n\t// A\n\n\t// B\n\n\t// C\n}</>;",
 		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
