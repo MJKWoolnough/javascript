@@ -82,8 +82,11 @@ func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression
 			return nil, err
 		}
 
+		al.Tokens = t.JSXFragment.Tokens
+
 		return &javascript.PrimaryExpression{
 			ArrayLiteral: al,
+			Tokens:       t.Tokens,
 		}, nil
 	}
 
@@ -101,12 +104,13 @@ func (j *jsxTransformer) childrenToArray(children []javascript.JSXChild) (*javas
 			return nil, err
 		}
 
-		setAEComments(&ae, child.Comments[1], child.Comments[2])
+		ae.Tokens = child.Tokens
 
 		al.ElementList = append(al.ElementList, javascript.ArrayElement{
 			Spread:               child.Spread,
 			AssignmentExpression: ae,
-			Comments:             child.Comments[0],
+			Comments:             child.Comments,
+			Tokens:               child.Tokens,
 		})
 	}
 
@@ -400,7 +404,9 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	return &javascript.PrimaryExpression{
 		ParenthesizedExpression: &javascript.ParenthesizedExpression{
 			Expressions: expression.Expressions,
+			Tokens:      e.Tokens,
 		},
+		Tokens: e.Tokens,
 	}, nil
 }
 
@@ -552,8 +558,7 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 			})
 		}
 
-		ol.Comments[0] = combineComments(attr.Comments[0], attr.Comments[1])
-		ol.Comments[1] = attr.Comments[2]
+		ol.Comments = [2]javascript.Comments{attr.Comments}
 	}
 
 	return ol, nil
