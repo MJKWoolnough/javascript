@@ -123,11 +123,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 
 			switch j.lastState() {
 			case 'X', 'j':
-				return t.Return(TokenRightBracePunctuator, j.jsxElement)
+				return t.Return(TokenPunctuator, j.jsxElement)
 			case 'J':
 				j.state = j.state[:len(j.state)-1]
 
-				return t.Return(TokenRightBracePunctuator, j.jsxChildren)
+				return t.Return(TokenPunctuator, j.jsxChildren)
 			}
 
 			return t.Return(TokenRightBracePunctuator, j.inputElement)
