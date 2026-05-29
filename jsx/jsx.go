@@ -760,6 +760,7 @@ func (imp *importData) getExistingBindingOrMake(s *scope.Scope, b map[string][]s
 	if !ok {
 		tk := &javascript.Token{
 			Token: parser.Token{
+				Type: javascript.TokenIdentifier,
 				Data: ident,
 			},
 		}
@@ -778,6 +779,7 @@ func (imp *importData) getExistingBindingOrMake(s *scope.Scope, b map[string][]s
 			imp.NamedImports.ImportList = append(imp.NamedImports.ImportList, javascript.ImportSpecifier{
 				IdentifierName: &javascript.Token{
 					Token: parser.Token{
+						Type: javascript.TokenIdentifier,
 						Data: ident,
 					},
 				},
