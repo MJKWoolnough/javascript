@@ -207,14 +207,13 @@ type JSXAttribute struct {
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
-	Comments             [3]Comments
+	Comments             Comments
 	Tokens               Tokens
 }
 
 func (ja *JSXAttribute) parse(j *jsParser) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		ja.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
-		ja.Comments[1] = j.AcceptRunWhitespaceComments()
+		ja.Comments = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
 
@@ -232,12 +231,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 
 		j.Score(g)
-
-		ja.Comments[2] = j.AcceptRunWhitespaceComments()
-
 		j.AcceptRunWhitespace()
 
-		if !j.Accept(TokenRightBracePunctuator) {
+		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
 			return j.Error("JSXAttribute", ErrMissingClosingBrace)
 		}
 	} else {
@@ -260,8 +256,6 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 			if j.Accept(TokenJSXString) {
 				ja.JSXString = j.GetLastToken()
 			} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-				ja.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
-
 				j.AcceptRunWhitespaceNoComment()
 
 				g := j.NewGoal()
@@ -272,12 +266,9 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 				}
 
 				j.Score(g)
-
-				ja.Comments[2] = j.AcceptRunWhitespaceComments()
-
 				j.AcceptRunWhitespace()
 
-				if !j.Accept(TokenRightBracePunctuator) {
+				if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
 					return j.Error("JSXAttribute", ErrMissingClosingBrace)
 				}
 			} else if tk := j.Peek(); tk.Type == TokenJSXElementStart {
@@ -330,7 +321,7 @@ type JSXChild struct {
 	JSXFragment        *JSXFragment
 	Spread             bool
 	JSXChildExpression *AssignmentExpression
-	Comments           [3]Comments
+	Comments           Comments
 	Tokens             Tokens
 }
 
@@ -338,15 +329,15 @@ func (jc *JSXChild) parse(j *jsParser) error {
 	if j.Accept(TokenJSXText) {
 		jc.JSXText = j.GetLastToken()
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		jc.Comments[0] = j.AcceptRunWhitespaceNoNewlineComments()
-
 		g := j.NewGoal()
 
 		g.AcceptRunWhitespace()
 
-		if !g.Accept(TokenRightBracePunctuator) {
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
+			jc.Comments = j.AcceptRunWhitespaceComments()
+		} else {
 			if jc.Spread = g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "..."}); jc.Spread {
-				jc.Comments[1] = j.AcceptRunWhitespaceComments()
+				jc.Comments = j.AcceptRunWhitespaceComments()
 
 				j.AcceptRunWhitespace()
 				j.Skip()
@@ -364,11 +355,9 @@ func (jc *JSXChild) parse(j *jsParser) error {
 			j.Score(g)
 		}
 
-		jc.Comments[2] = j.AcceptRunWhitespaceComments()
-
 		j.AcceptRunWhitespace()
 
-		if !j.Accept(TokenRightBracePunctuator) {
+		if !j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "}"}) {
 			return j.Error("JSXChild", ErrMissingClosingBrace)
 		}
 	} else {
