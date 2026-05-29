@@ -1756,16 +1756,8 @@ func (f *JSXAttribute) printType(w writer, v bool) {
 		pp.WriteString("\nAssignmentExpression: nil")
 	}
 
-	pp.WriteString("\nComments: [")
-
-	ipp := pp.Indent()
-
-	for n, e := range f.Comments {
-		ipp.Printf("\n%d: ", n)
-		e.printType(ipp, v)
-	}
-
-	pp.WriteString("\n]")
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
@@ -1810,16 +1802,8 @@ func (f *JSXChild) printType(w writer, v bool) {
 		pp.WriteString("\nJSXChildExpression: nil")
 	}
 
-	pp.WriteString("\nComments: [")
-
-	ipp := pp.Indent()
-
-	for n, e := range f.Comments {
-		ipp.Printf("\n%d: ", n)
-		e.printType(ipp, v)
-	}
-
-	pp.WriteString("\n]")
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
