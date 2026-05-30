@@ -2779,12 +2779,12 @@ func (u UnaryOperatorComments) printSource(w writer, v bool) {
 		u.Comments.printSource(w, true, false)
 	}
 
-	uo := u.UnaryOperator.String()
+	uo := u.String()
 	if uo == "" || uo == unknown {
 		return
 	}
 
-	w.WriteStringWithType(uo, u.UnaryOperator.tokenType())
+	w.WriteStringWithType(uo, u.tokenType())
 
 	if len(uo) > 1 {
 		w.WriteString(" ")
