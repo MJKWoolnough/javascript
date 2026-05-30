@@ -451,7 +451,7 @@ type importData struct {
 // Process transforms any JSX within the given parsed Module using the template
 // to generate the required JavaScript.
 //
-// Within the template, you can use the TAG_NAME placehold in place of the
+// Within the template, you can use the TAG_NAME placeholder in place of the
 // element name. It can be represented as an identifier or as a string literal.
 //
 // The PARAMS placeholder will be replaced with an object containing the
@@ -670,6 +670,6 @@ func renameNewBindings(s *scope.Scope, rename []string) {
 
 var (
 	ErrInvalidTransformation = errors.New("invalid transformation")
-	ErrTooManyStatements     = errors.New("too many statments")
+	ErrTooManyStatements     = errors.New("too many statements")
 	ErrMissingChild          = errors.New("missing JSX child")
 )
