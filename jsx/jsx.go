@@ -495,7 +495,7 @@ func addImports(m *javascript.Module, existing map[string]*importData, imports m
 	slices.Sort(imps)
 
 	for _, from := range imps {
-		imp, ok := existing[from]
+		_, ok := existing[from]
 		if ok {
 			continue
 		}
@@ -514,7 +514,7 @@ func addImports(m *javascript.Module, existing map[string]*importData, imports m
 			ImportDeclaration: id,
 		})
 
-		imp = &importData{
+		imp := &importData{
 			ImportDeclaration: id,
 			bindings:          make(map[string]string),
 		}
