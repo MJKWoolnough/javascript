@@ -59,7 +59,7 @@ func walkScope(s *scope.Scope, b []binding) []binding {
 }
 
 func renameIdentifiers(m *javascript.Module) error {
-	s, err := scope.ModuleScope(m, nil)
+	s, err := scope.Build(m, nil)
 	if err != nil {
 		return err
 	}

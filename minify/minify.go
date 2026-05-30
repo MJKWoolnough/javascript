@@ -457,7 +457,7 @@ func (p *processor) minifyNonHoistableNames(pe *javascript.PrimaryExpression) {
 func (p *processor) minifyFunctionExpressionAsArrowFunc(ae *javascript.AssignmentExpression) {
 	if p.Has(FunctionExpressionToArrowFunc) && ae.AssignmentOperator == javascript.AssignmentNone && ae.ConditionalExpression != nil {
 		if fe, ok := javascript.UnwrapConditional(ae.ConditionalExpression).(*javascript.FunctionDeclaration); ok && (fe.Type == javascript.FunctionAsync || fe.Type == javascript.FunctionNormal) {
-			s, err := scope.ScriptScope(&javascript.Script{
+			s, err := scope.Build(&javascript.Script{
 				StatementList: fe.FunctionBody.StatementList,
 			}, nil)
 			if err != nil {

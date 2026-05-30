@@ -60,7 +60,7 @@ func TestOrderedScope(t *testing.T) {
 
 		if m, err := javascript.ParseModule(&tk); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
-		} else if s, err := scope.ModuleScope(m, nil); err != nil {
+		} else if s, err := scope.Build(m, nil); err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		} else {
 			bs := orderedScope(s)
