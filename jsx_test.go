@@ -369,7 +369,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:4],
 			}
 		}},
-		{"<>{a}</>", func(t *test, tk Tokens) { // 2
+		{"<>{a}</>", func(t *test, tk Tokens) { // 3
 			t.Output = JSXChild{
 				JSXChildExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
@@ -381,14 +381,14 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:5],
 			}
 		}},
-		{"<>{,}</>", func(t *test, tk Tokens) { // 3
+		{"<>{,}</>", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err:     assignmentCustomError(tk[3], ErrMissingIdentifier),
 				Parsing: "JSXChild",
 				Token:   tk[3],
 			}
 		}},
-		{"<>{ a }</>", func(t *test, tk Tokens) { // 4
+		{"<>{ a }</>", func(t *test, tk Tokens) { // 5
 			t.Output = JSXChild{
 				JSXChildExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
@@ -400,14 +400,14 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:7],
 			}
 		}},
-		{"<>{a b}</>", func(t *test, tk Tokens) { // 5
+		{"<>{a b}</>", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "JSXChild",
 				Token:   tk[5],
 			}
 		}},
-		{"<>{...a}</>", func(t *test, tk Tokens) { // 6
+		{"<>{...a}</>", func(t *test, tk Tokens) { // 7
 			t.Output = JSXChild{
 				Spread: true,
 				JSXChildExpression: &AssignmentExpression{
@@ -420,7 +420,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:6],
 			}
 		}},
-		{"<>{ ... a }</>", func(t *test, tk Tokens) { // 7
+		{"<>{ ... a }</>", func(t *test, tk Tokens) { // 8
 			t.Output = JSXChild{
 				Spread: true,
 				JSXChildExpression: &AssignmentExpression{
@@ -433,7 +433,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:9],
 			}
 		}},
-		{"<><a/></>", func(t *test, tk Tokens) { // 8
+		{"<><a/></>", func(t *test, tk Tokens) { // 9
 			t.Output = JSXChild{
 				JSXElement: &JSXElement{
 					ElementName: JSXElementName{
@@ -446,7 +446,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:6],
 			}
 		}},
-		{"<><></></>", func(t *test, tk Tokens) { // 9
+		{"<><></></>", func(t *test, tk Tokens) { // 10
 			t.Output = JSXChild{
 				JSXFragment: &JSXFragment{
 					Tokens: tk[2:7],
@@ -454,7 +454,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:7],
 			}
 		}},
-		{"<><></b></>", func(t *test, tk Tokens) { // 10
+		{"<><></b></>", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingTagClose,
@@ -465,7 +465,7 @@ func TestJSXChild(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"<><b></c></>", func(t *test, tk Tokens) { // 11
+		{"<><b></c></>", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrInvalidClosingTag,
@@ -476,7 +476,7 @@ func TestJSXChild(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"<>{ // A\n\n// B\na // C\n\n// D\n}</>", func(t *test, tk Tokens) { // 12
+		{"<>{ // A\n\n// B\na // C\n\n// D\n}</>", func(t *test, tk Tokens) { // 13
 			t.Output = JSXChild{
 				JSXChildExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&MemberExpression{
@@ -492,7 +492,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens: tk[2:15],
 			}
 		}},
-		{"<>{ // A\n\n// B\n... // C\na // D\n\n// E\n}</>", func(t *test, tk Tokens) { // 13
+		{"<>{ // A\n\n// B\n... // C\na // D\n\n// E\n}</>", func(t *test, tk Tokens) { // 14
 			t.Output = JSXChild{
 				Spread: true,
 				JSXChildExpression: &AssignmentExpression{
@@ -510,7 +510,7 @@ func TestJSXChild(t *testing.T) {
 				Tokens:   tk[2:19],
 			}
 		}},
-		{"<>{ // A\n\n// B\n\n// C\n}</>", func(t *test, tk Tokens) { // 14
+		{"<>{ // A\n\n// B\n\n// C\n}</>", func(t *test, tk Tokens) { // 15
 			t.Output = JSXChild{
 				Comments: Comments{&tk[4], &tk[6], &tk[8]},
 				Tokens:   tk[2:11],
