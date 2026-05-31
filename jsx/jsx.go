@@ -460,6 +460,17 @@ type importData struct {
 // The CHILDREN placeholder will be replaced with an array of the child
 // elements.
 //
+// In addition, the following template variables are available:
+//
+//	.Namespace:  Automatically determined namespace; one of html, svg, mathml.
+//	.InHTML:     Set to true if tag name is a known HTML tag.
+//	.InSVG       Set to true if tag name is a known SVG tag.
+//	.InMathML    Set to true if tag name is a known MathML tag.
+//	.HasParams   Set to true if params have been set.
+//	.HasChildren Set to true if children have been set.
+//	.NumParams   Number of parameters.
+//	.NumChildren Number of children.
+//
 // Any import statement will be added to the Module, with import bindings being
 // potentially renamed on a clash.
 func Process(m *javascript.Module, tmpl *template.Template) error {
