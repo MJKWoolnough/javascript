@@ -386,7 +386,13 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 		} else {
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				PropertyName: &javascript.PropertyName{
-					LiteralPropertyName: attr.Identifier,
+					LiteralPropertyName: &javascript.Token{
+						Token: parser.Token{
+							Type: javascript.TokenStringLiteral,
+							Data: strconv.Quote(attr.Identifier.Data),
+						},
+					},
+					Tokens: attr.Tokens,
 				},
 				AssignmentExpression: ae,
 			})

@@ -31,22 +31,22 @@ func TestProcess(t *testing.T) {
 		{ // 4
 			"const a = <b c='1'/>",
 			`tag('TAG_NAME', PARAMS)`,
-			"const a = (tag(\"b\", {c:\"1\"}))",
+			"const a = (tag(\"b\", {\"c\":\"1\"}))",
 		},
 		{ // 5
 			"const a = <b><c d=<e />/></b>",
 			`tag('TAG_NAME', PARAMS, CHILDREN)`,
-			"const a = (tag(\"b\", {}, [(tag(\"c\", {d:(tag(\"e\", {}, []))}, []))]))",
+			"const a = (tag(\"b\", {}, [(tag(\"c\", {\"d\":(tag(\"e\", {}, []))}, []))]))",
 		},
 		{ // 6
 			"const a = <b><c d=<a />/></b>",
 			`{{ if .InHTML }}import {TAG_NAME} from '@html';TAG_NAME(PARAMS, CHILDREN){{else}}tag('TAG_NAME', PARAMS, CHILDREN){{end}}`,
-			"import{a as a_1,b}from\"@html\"\nconst a = (b({}, [(tag(\"c\", {d:(a_1({}, []))}, []))]))",
+			"import{a as a_1,b}from\"@html\"\nconst a = (b({}, [(tag(\"c\", {\"d\":(a_1({}, []))}, []))]))",
 		},
 		{ // 7
 			"import {b as z} from '@html';const a = <b><c d=<a />/></b>",
 			`{{ if .InHTML }}import {TAG_NAME} from '@html';TAG_NAME(PARAMS, CHILDREN){{else}}tag('TAG_NAME', PARAMS, CHILDREN){{end}}`,
-			"import {a as a_1,b as z} from '@html';const a = (z({}, [(tag(\"c\", {d:(a_1({}, []))}, []))]))",
+			"import {a as a_1,b as z} from '@html';const a = (z({}, [(tag(\"c\", {\"d\":(a_1({}, []))}, []))]))",
 		},
 		{ // 8
 			"const a = <b />",
@@ -96,7 +96,7 @@ func TestProcess(t *testing.T) {
 		{ // 17
 			"const a = <b c=<></> />",
 			`tag('TAG_NAME', PARAMS, CHILDREN)`,
-			"const a = (tag(\"b\", {c:[]}, []))",
+			"const a = (tag(\"b\", {\"c\":[]}, []))",
 		},
 		{ // 18
 			"const a = <div></div>",
