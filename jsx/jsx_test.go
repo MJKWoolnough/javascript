@@ -143,6 +143,11 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS)`,
 			"const a = (tag(\"b\", {// A\n.../* B */ d // C\n}))",
 		},
+		{ // 27
+			"const a = <div><svg:a /></div>",
+			`{{ if or .InHTML .InSVG }}import {TAG_NAME} from '@{{.Namespace}}';{{ end }}TAG_NAME({{ if .HasParams }}PARAMS{{ end }}{{ if .HasChildren}}{{if .HasParams }}, {{ end }}CHILDREN{{ end }})`,
+			"import{a as a_1}from\"@svg\";import{div}from\"@html\"\nconst a = (div([(a_1())]))",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
