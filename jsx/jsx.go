@@ -31,12 +31,11 @@ type jsxTransformer struct {
 func (j *jsxTransformer) Handle(t javascript.Type) error {
 	switch t := t.(type) {
 	case *javascript.JSXElement:
-		name := t.ElementName.Identifier
-		if name == nil {
+		if t.ElementName.Identifier == nil {
 			return javascript.ErrMissingIdentifier
 		}
 
-		defer j.setNamespace(name)()
+		defer j.setNamespace(t.ElementName)()
 	}
 
 	if err := walk.Walk(t, j); err != nil {
@@ -58,10 +57,12 @@ func (j *jsxTransformer) Handle(t javascript.Type) error {
 	return nil
 }
 
-func (j *jsxTransformer) setNamespace(name *javascript.Token) func() {
+func (j *jsxTransformer) setNamespace(name javascript.JSXElementName) func() {
 	ns := j.namespace
 
-	if inHTML, inSVG, inMathML := nsIn(name); inHTML && !inSVG {
+	if name.Namespace != nil {
+		j.namespace = name.Namespace.Data
+	} else if inHTML, inSVG, inMathML := nsIn(name.Identifier); inHTML && !inSVG {
 		j.namespace = "html"
 	} else if inSVG && !inHTML {
 		j.namespace = "svg"
@@ -166,14 +167,13 @@ type templateVars struct {
 }
 
 func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
-	name := e.ElementName.Identifier
-	if name == nil {
+	if e.ElementName.Identifier == nil {
 		return nil, javascript.ErrMissingIdentifier
 	}
 
-	defer j.setNamespace(name)()
+	defer j.setNamespace(e.ElementName)()
 
-	inHTML, inSVG, inMathML := nsIn(name)
+	inHTML, inSVG, inMathML := nsIn(e.ElementName.Identifier)
 
 	var sb strings.Builder
 
