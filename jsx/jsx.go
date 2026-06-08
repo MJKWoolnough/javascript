@@ -468,7 +468,7 @@ type importData struct {
 //
 // In addition, the following template variables are available:
 //
-//	.Namespace:  Automatically determined namespace; one of html, svg, mathml.
+//	.Namespace:  Specified namespace, or automatically determined to one of html, svg, mathml.
 //	.InHTML:     Set to true if tag name is a known HTML tag.
 //	.InSVG       Set to true if tag name is a known SVG tag.
 //	.InMathML    Set to true if tag name is a known MathML tag.
