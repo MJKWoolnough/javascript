@@ -65,6 +65,10 @@ func Print(w io.Writer, m *javascript.Module) (int64, error) {
 			return nil
 		}
 
+		if f, ok := v.Type().Elem().FieldByName("Comments"); ok {
+			v.Elem().FieldByIndex(f.Index).SetZero()
+		}
+
 		if f, ok := v.Type().Elem().FieldByName("Tokens"); ok {
 			v.Elem().FieldByIndex(f.Index).SetZero()
 		}
