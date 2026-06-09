@@ -446,7 +446,16 @@ func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.Assignm
 		return t.AssignmentExpression, nil
 	}
 
-	return nil, javascript.ErrInvalidAssignment
+	return &javascript.AssignmentExpression{
+		ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
+			Literal: &javascript.Token{
+				Token: parser.Token{
+					Data: "true",
+					Type: javascript.TokenBooleanLiteral,
+				},
+			},
+		}),
+	}, nil
 }
 
 type importData struct {
