@@ -1459,10 +1459,11 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 		},
 		{ // 158
-			Input: "<a>() => {}",
+			Input: "<a,>() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
 				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: ","},
 				{Type: TokenPunctuator, Data: ">"},
 				{Type: TokenPunctuator, Data: "("},
 				{Type: TokenPunctuator, Data: ")"},
@@ -1477,10 +1478,11 @@ func TestTokeniser(t *testing.T) {
 			TS:  true,
 		},
 		{ // 159
-			Input: "<a>// abc\n() => {}",
+			Input: "<a,>// abc\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
 				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenPunctuator, Data: ","},
 				{Type: TokenPunctuator, Data: ">"},
 				{Type: TokenSingleLineComment, Data: "// abc"},
 				{Type: TokenLineTerminator, Data: "\n"},
@@ -1521,48 +1523,6 @@ func TestTokeniser(t *testing.T) {
 			TS:  true,
 		},
 		{ // 161
-			Input: "< a>// </a>\n() => {}",
-			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </a>"},
-				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenPunctuator, Data: "("},
-				{Type: TokenPunctuator, Data: ")"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenPunctuator, Data: "=>"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenPunctuator, Data: "{"},
-				{Type: TokenRightBracePunctuator, Data: "}"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-			JSX: true,
-			TS:  true,
-		},
-		{ // 162
-			Input: "<\na>// </a>\n() => {}",
-			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenIdentifier, Data: "a"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </a>"},
-				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenPunctuator, Data: "("},
-				{Type: TokenPunctuator, Data: ")"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenPunctuator, Data: "=>"},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenPunctuator, Data: "{"},
-				{Type: TokenRightBracePunctuator, Data: "}"},
-				{Type: parser.TokenDone, Data: ""},
-			},
-			JSX: true,
-			TS:  true,
-		},
-		{ // 163
 			Input: "<>// </>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1584,7 +1544,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 164
+		{ // 162
 			Input: "<!>// </a>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
@@ -1604,7 +1564,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 165
+		{ // 163
 			Input: "<abc.def>// </abc.def>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1632,7 +1592,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 166
+		{ // 164
 			Input: "<abc-def>// </abc-def>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1656,7 +1616,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 167
+		{ // 165
 			Input: "<abc:def>// </abc:def>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1684,7 +1644,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 168
+		{ // 166
 			Input: "<abc=def>// </abc>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
@@ -1706,7 +1666,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 169
+		{ // 167
 			Input: "<abc , def>// </abc>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
@@ -1730,7 +1690,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 170
+		{ // 168
 			Input: "<abc extends def>// </abc>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenPunctuator, Data: "<"},
@@ -1754,14 +1714,18 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 171
+		{ // 169
 			Input: "<abc/*def*/>// </abc>\n() => {}",
 			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenIdentifier, Data: "abc"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "abc"},
 				{Type: TokenMultiLineComment, Data: "/*def*/"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </abc>"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXText, Data: "// "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "abc"},
+				{Type: TokenJSXElementEnd, Data: ">"},
 				{Type: TokenLineTerminator, Data: "\n"},
 				{Type: TokenPunctuator, Data: "("},
 				{Type: TokenPunctuator, Data: ")"},
@@ -1775,15 +1739,19 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 172
+		{ // 170
 			Input: "<abc// def\n>// </abc>\n() => {}",
 			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenIdentifier, Data: "abc"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "abc"},
 				{Type: TokenSingleLineComment, Data: "// def"},
 				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </abc>"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXText, Data: "// "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "abc"},
+				{Type: TokenJSXElementEnd, Data: ">"},
 				{Type: TokenLineTerminator, Data: "\n"},
 				{Type: TokenPunctuator, Data: "("},
 				{Type: TokenPunctuator, Data: ")"},
@@ -1797,7 +1765,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 173
+		{ // 171
 			Input: "<abc def='1'>// </abc>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1825,7 +1793,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 174
+		{ // 172
 			Input: "<abc>/* </abc>\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1849,7 +1817,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 175
+		{ // 173
 			Input: "<abc>/!\n() => {}",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1863,7 +1831,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 176
+		{ // 174
 			Input: "<abc> </abc>",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1879,7 +1847,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 177
+		{ // 175
 			Input: "<const></const>",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1894,7 +1862,7 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 178
+		{ // 176
 			Input: "<const ></const>",
 			Output: []parser.Token{
 				{Type: TokenJSXElementStart, Data: "<"},
@@ -1910,36 +1878,44 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 			TS:  true,
 		},
-		{ // 179
+		{ // 177
 			Input: "<const // def\n>// </const>",
 			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenKeyword, Data: "const"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "const"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenSingleLineComment, Data: "// def"},
 				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </const>"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXText, Data: "// "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "const"},
+				{Type: TokenJSXElementEnd, Data: ">"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 			JSX: true,
 			TS:  true,
 		},
-		{ // 180
+		{ // 178
 			Input: "<const /*def*/>// </const>",
 			Output: []parser.Token{
-				{Type: TokenPunctuator, Data: "<"},
-				{Type: TokenKeyword, Data: "const"},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "const"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenMultiLineComment, Data: "/*def*/"},
-				{Type: TokenPunctuator, Data: ">"},
-				{Type: TokenSingleLineComment, Data: "// </const>"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenJSXText, Data: "// "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "const"},
+				{Type: TokenJSXElementEnd, Data: ">"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 			JSX: true,
 			TS:  true,
 		},
-		{ // 181
+		{ // 179
 			Input: "a < b",
 			Output: []parser.Token{
 				{Type: TokenIdentifier, Data: "a"},

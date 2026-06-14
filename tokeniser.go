@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	whitespace      = "\t\v\f \u00a0\ufeff" // Tab, Vertical Tab, Form Feed, Space, No-break space, ZeroWidth No-Break Space, https://262.ecma-international.org/11.0/#table-32
-	lineTerminators = "\n\r\u2028\u2029"    // Line Feed, Carriage Return, Line Separator, Paragraph Separator, https://262.ecma-international.org/11.0/#table-33
+	whitespace         = "\t\v\f \u00a0\ufeff" // Tab, Vertical Tab, Form Feed, Space, No-break space, ZeroWidth No-Break Space, https://262.ecma-international.org/11.0/#table-32
+	lineTerminators    = "\n\r\u2028\u2029"    // Line Feed, Carriage Return, Line Separator, Paragraph Separator, https://262.ecma-international.org/11.0/#table-33
+	combinedWhitespace = whitespace + lineTerminators
 
 	singleEscapeChar = "'\"\\bfnrtv"
 	binaryDigit      = "01"
@@ -273,9 +274,11 @@ func (j *jsTokeniser) inputElement(t *parser.Tokeniser) (parser.Token, parser.To
 			}
 		case '<':
 			if !allowDivision && j.isJSX {
-				j.state = append(j.state, 'j', 'X')
+				if !j.isTypescript || checkForJSX(t) {
+					j.state = append(j.state, 'j', 'X')
 
-				return t.Return(TokenJSXElementStart, j.jsxElement)
+					return t.Return(TokenJSXElementStart, j.jsxElement)
+				}
 			}
 
 			fallthrough
@@ -714,6 +717,15 @@ func (j *jsTokeniser) jsxElement(t *parser.Tokeniser) (parser.Token, parser.Toke
 
 		return t.Return(TokenLineTerminator, j.jsxElement)
 	} else if t.Accept("/") {
+		if tk := t.Peek(); partialComment(t) {
+			switch tk {
+			case '/':
+				return t.Return(TokenSingleLineComment, j.jsxElement)
+			case '*':
+				return t.Return(TokenMultiLineComment, j.jsxElement)
+			}
+		}
+
 		if j.lastState() == 'X' {
 			j.state = j.state[:len(j.state)-1]
 		}
@@ -833,4 +845,66 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 	default:
 		return t.ReturnError(ErrInvalidCharacter)
 	}
+}
+
+func checkForJSX(t *parser.Tokeniser) bool {
+	defer t.State().Reset()
+
+	t.AcceptRun(combinedWhitespace)
+
+	if t.Accept(">") {
+		return true
+	} else if t.Accept("/") && !partialComment(t) {
+		return true
+	}
+
+	if state := t.State(); t.AcceptString("const", false) != 5 && t.Accept(combinedWhitespace) {
+		t.AcceptRun(combinedWhitespace)
+	} else {
+		state.Reset()
+	}
+
+	if !internal.IsIDStart(t.Next()) {
+		return false
+	}
+
+	for internal.IsIDContinue(t.Peek()) {
+		t.Next()
+	}
+
+	t.AcceptRun(combinedWhitespace)
+
+	if t.Accept("/") && !partialComment(t) {
+		return true
+	}
+
+	if t.AcceptString("extends ", false) == 8 {
+		t.AcceptRun(combinedWhitespace)
+
+		if t.Accept("/") && !partialComment(t) {
+			return true
+		}
+
+		return t.Accept("=>")
+	}
+
+	return t.Except(",=")
+}
+
+func partialComment(t *parser.Tokeniser) bool {
+	if t.Accept("/") {
+		t.ExceptRun(lineTerminators)
+
+		return true
+	} else if t.Accept("*") {
+		for t.ExceptRun("*") != -1 {
+			t.Next()
+
+			if t.Accept("/") {
+				return true
+			}
+		}
+	}
+
+	return false
 }
