@@ -1927,6 +1927,41 @@ func TestTokeniser(t *testing.T) {
 			},
 			JSX: true,
 		},
+		{ // 180
+			Input: "+ <Foo,> bar",
+			Output: []parser.Token{
+				{Type: TokenPunctuator, Data: "+"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenPunctuator, Data: "<"},
+				{Type: TokenIdentifier, Data: "Foo"},
+				{Type: TokenPunctuator, Data: ","},
+				{Type: TokenPunctuator, Data: ">"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "bar"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			TS:  true,
+			JSX: true,
+		},
+		{ // 181
+			Input: "+ <Foo> bar </Foo>",
+			Output: []parser.Token{
+				{Type: TokenPunctuator, Data: "+"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenJSXIdentifier, Data: "Foo"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenJSXText, Data: "bar "},
+				{Type: TokenJSXElementStart, Data: "<"},
+				{Type: TokenPunctuator, Data: "/"},
+				{Type: TokenJSXIdentifier, Data: "Foo"},
+				{Type: TokenJSXElementEnd, Data: ">"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+			TS:  true,
+			JSX: true,
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
