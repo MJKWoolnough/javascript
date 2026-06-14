@@ -1394,7 +1394,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenPunctuator, Data: "="},
 				{Type: TokenPunctuator, Data: "{"},
 				{Type: TokenStringLiteral, Data: "\"c\""},
-				{Type: TokenRightBracePunctuator, Data: "}"},
+				{Type: TokenPunctuator, Data: "}"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenPunctuator, Data: "/"},
 				{Type: TokenJSXElementEnd, Data: ">"},
@@ -1430,7 +1430,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenJSXElementEnd, Data: ">"},
 				{Type: TokenPunctuator, Data: "{"},
 				{Type: TokenStringLiteral, Data: "\"b\""},
-				{Type: TokenRightBracePunctuator, Data: "}"},
+				{Type: TokenPunctuator, Data: "}"},
 				{Type: TokenJSXElementStart, Data: "<"},
 				{Type: TokenPunctuator, Data: "/"},
 				{Type: TokenJSXIdentifier, Data: "a"},
@@ -1448,7 +1448,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenJSXText, Data: "one"},
 				{Type: TokenPunctuator, Data: "{"},
 				{Type: TokenStringLiteral, Data: "\"b\""},
-				{Type: TokenRightBracePunctuator, Data: "}"},
+				{Type: TokenPunctuator, Data: "}"},
 				{Type: TokenJSXText, Data: "two"},
 				{Type: TokenJSXElementStart, Data: "<"},
 				{Type: TokenPunctuator, Data: "/"},
@@ -1952,10 +1952,6 @@ func TestTokeniser(t *testing.T) {
 			JSX: true,
 		},
 	} {
-		if n != 180 {
-			continue
-		}
-
 		p := parser.NewStringTokeniser(test.Input)
 
 		var tks Tokeniser = SetTokeniser(&p)
