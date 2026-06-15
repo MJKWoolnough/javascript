@@ -398,7 +398,7 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 			})
 		}
 
-		ol.Comments = [2]javascript.Comments{attr.Comments}
+		ol.Comments = [2]javascript.Comments{attr.Comments[0]}
 	}
 
 	return ol, nil
