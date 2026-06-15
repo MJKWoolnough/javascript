@@ -621,7 +621,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 
 		line := c[0].Line + uint64(strings.Count(c[0].Data, "\n"))
 		pos := w.Pos()
-		lastWasMulti := cp.print(w, c[0], 0)
+		lastWasMulti := cp.print(w, c[0], 0, false)
 
 		if !lastWasMulti {
 			line++
@@ -649,7 +649,7 @@ func (c Comments) printSource(w writer, postSpace, postNewline bool) {
 				}
 			}
 
-			if lastWasMulti = cp.print(w, c, pos); lastWasMulti {
+			if lastWasMulti = cp.print(w, c, pos, lastWasMulti); lastWasMulti {
 				line += uint64(strings.Count(c.Data, "\n"))
 			} else {
 				line++
@@ -681,7 +681,7 @@ const (
 	tokenPossibleTrailingComma
 )
 
-func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
+func (cp *commentPrinter) print(w writer, c *Token, pos int, lastWasMulti bool) bool {
 	var multi bool
 
 	if isSingleLine(c) {
@@ -691,9 +691,9 @@ func (cp *commentPrinter) print(w writer, c *Token, pos int) bool {
 
 			pos = max(0, pos-3)
 			*cp = false
+		} else if !lastWasMulti {
+			w.WriteString(strings.Repeat(" ", pos))
 		}
-
-		w.WriteString(strings.Repeat(" ", pos))
 
 		if !strings.HasPrefix(c.Data, "//") {
 			w.WriteStringWithType("// ", tokenSingleLineStart)
