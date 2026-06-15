@@ -3581,6 +3581,10 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 		w.WriteStringWithType("}", TokenRightBracePunctuator)
 	}
+
+	if v {
+		ja.Comments[1].printSource(w, false, false)
+	}
 }
 
 func (jc *JSXChild) printSource(w writer, v bool) {
