@@ -3674,6 +3674,10 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 				w.WriteStringWithType(m.Data, m.Type)
 			}
 		}
+
+		if v {
+			jn.Comments.printSource(w, false, false)
+		}
 	}
 }
 
