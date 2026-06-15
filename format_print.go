@@ -3548,11 +3548,11 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 			ip := w
 
-			if v && (ja.Comments.hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+			if v && (ja.Comments[0].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
 				ip = w.Indent()
 
 				ip.WriteString("\n")
-				ja.Comments.printSource(ip, false, true)
+				ja.Comments[0].printSource(ip, false, true)
 			}
 
 			ja.AssignmentExpression.printSource(ip, v)
@@ -3563,12 +3563,12 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 
 		ip := w
 
-		if v && (ja.Comments.hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+		if v && (ja.Comments[0].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
 			ip = w.Indent()
 
-			if ja.Comments.hasSingleLineComment() {
+			if ja.Comments[0].hasSingleLineComment() {
 				ip.WriteString("\n")
-				ja.Comments.printSource(ip, false, true)
+				ja.Comments[0].printSource(ip, false, true)
 			}
 		}
 

@@ -137,6 +137,7 @@ type JSXElementName struct {
 	Namespace        *Token
 	Identifier       *Token
 	MemberExpression []*Token
+	Comments         Comments
 	Tokens           Tokens
 }
 
@@ -164,6 +165,7 @@ func (jn *JSXElementName) parse(j *jsParser) error {
 		}
 	}
 
+	jn.Comments = j.AcceptRunWhitespaceComments()
 	jn.Tokens = j.ToTokens()
 
 	return nil
@@ -207,13 +209,13 @@ type JSXAttribute struct {
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
-	Comments             Comments
+	Comments             [2]Comments
 	Tokens               Tokens
 }
 
 func (ja *JSXAttribute) parse(j *jsParser) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
-		ja.Comments = j.AcceptRunWhitespaceComments()
+		ja.Comments[0] = j.AcceptRunWhitespaceComments()
 
 		j.AcceptRunWhitespace()
 
@@ -303,6 +305,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 	}
 
+	ja.Comments[1] = j.AcceptRunWhitespaceComments()
 	ja.Tokens = j.ToTokens()
 
 	return nil

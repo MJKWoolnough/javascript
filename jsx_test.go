@@ -341,7 +341,7 @@ func TestJSXAttribute(t *testing.T) {
 					}),
 					Tokens: tk[9:16],
 				},
-				Comments: Comments{&tk[3], &tk[5]},
+				Comments: [2]Comments{{&tk[3], &tk[5]}},
 				Tokens:   tk[1:18],
 			}
 		}},
