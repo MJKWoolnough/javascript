@@ -710,6 +710,27 @@ func TestJSXElement(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
+		{"<a // A\n></a>", func(t *test, tk Tokens) { // 14
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Comments:   Comments{&tk[3]},
+					Tokens:     tk[1:4],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"<a /* A */ // B\n />", func(t *test, tk Tokens) { // 15
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[1],
+					Comments:   Comments{&tk[3], &tk[5]},
+					Tokens:     tk[1:6],
+				},
+				SelfClosing: true,
+				Tokens:      tk[:10],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var je JSXElement
 
