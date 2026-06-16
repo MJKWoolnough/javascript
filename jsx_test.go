@@ -759,6 +759,28 @@ func TestJSXElement(t *testing.T) {
 				Tokens:      tk[:10],
 			}
 		}},
+		{"<// A\na/ // B\n>", func(t *test, tk Tokens) { // 16
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[3],
+					Tokens:     tk[3:4],
+				},
+				SelfClosing: true,
+				Comments:    [4]Comments{{&tk[1]}, nil, nil, {&tk[6]}},
+				Tokens:      tk[:9],
+			}
+		}},
+		{"<// A\na // B\n></*C*// /*D*/a/*E*/>", func(t *test, tk Tokens) { // 17
+			t.Output = JSXElement{
+				ElementName: JSXElementName{
+					Identifier: &tk[3],
+					Comments:   Comments{&tk[5]},
+					Tokens:     tk[3:6],
+				},
+				Comments: [4]Comments{{&tk[1]}, {&tk[9]}, {&tk[12]}, {&tk[14]}},
+				Tokens:   tk[:16],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var je JSXElement
 
