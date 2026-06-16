@@ -1949,6 +1949,17 @@ func (f *JSXFragment) printType(w writer, v bool) {
 		pp.WriteString("\nChildren: []")
 	}
 
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
