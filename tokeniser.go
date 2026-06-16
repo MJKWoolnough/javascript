@@ -835,9 +835,23 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 	case '<':
 		t.Next()
 
-		if t.Peek() != '/' {
-			j.state = append(j.state, 'j', 'X')
+		state := t.State()
+
+		for {
+			t.AcceptRun(combinedWhitespace)
+
+			if t.Accept("/") {
+				if !partialComment(t) {
+					break
+				}
+			} else {
+				j.state = append(j.state, 'j', 'X')
+
+				break
+			}
 		}
+
+		state.Reset()
 
 		return t.Return(TokenJSXElementStart, j.jsxElement)
 	case -1:
@@ -850,16 +864,14 @@ func (j *jsTokeniser) jsxChildren(t *parser.Tokeniser) (parser.Token, parser.Tok
 func checkForJSX(t *parser.Tokeniser) bool {
 	defer t.State().Reset()
 
-	t.AcceptRun(combinedWhitespace)
+	acceptJSXWhitespace(t)
 
 	if t.Accept(">") {
-		return true
-	} else if t.Accept("/") && !partialComment(t) {
 		return true
 	}
 
 	if state := t.State(); t.AcceptString("const", false) != 5 && t.Accept(combinedWhitespace) {
-		t.AcceptRun(combinedWhitespace)
+		acceptJSXWhitespace(t)
 	} else {
 		state.Reset()
 	}
@@ -872,16 +884,16 @@ func checkForJSX(t *parser.Tokeniser) bool {
 		t.Next()
 	}
 
-	t.AcceptRun(combinedWhitespace)
+	acceptJSXWhitespace(t)
 
-	if t.Accept("/") && !partialComment(t) {
+	if t.Accept("/") {
 		return true
 	}
 
 	if t.AcceptString("extends ", false) == 8 {
-		t.AcceptRun(combinedWhitespace)
+		acceptJSXWhitespace(t)
 
-		if t.Accept("/") && !partialComment(t) {
+		if t.Accept("/") {
 			return true
 		}
 
@@ -889,6 +901,26 @@ func checkForJSX(t *parser.Tokeniser) bool {
 	}
 
 	return t.Except(",=")
+}
+
+func acceptJSXWhitespace(t *parser.Tokeniser) {
+	for t.Accept(combinedWhitespace) {
+		t.AcceptRun(combinedWhitespace)
+
+		for {
+			state := t.State()
+
+			if !t.Accept("/") {
+				break
+			}
+
+			if !partialComment(t) {
+				state.Reset()
+
+				break
+			}
+		}
+	}
 }
 
 func partialComment(t *parser.Tokeniser) bool {
