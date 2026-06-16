@@ -3630,6 +3630,11 @@ func (je *JSXElement) printSource(w writer, v bool) {
 	defer w.End()
 
 	w.WriteStringWithType("<", TokenJSXElementStart)
+
+	if v {
+		je.Comments[0].printSource(w, false, false)
+	}
+
 	je.ElementName.printSource(w, v)
 
 	for _, attr := range je.Attributes {
@@ -3640,6 +3645,11 @@ func (je *JSXElement) printSource(w writer, v bool) {
 	if je.SelfClosing {
 		w.WriteString(" ")
 		w.WriteStringWithType("/", TokenPunctuator)
+
+		if v {
+			je.Comments[3].printSource(w, false, false)
+		}
+
 		w.WriteStringWithType(">", TokenJSXElementEnd)
 	} else {
 		w.WriteStringWithType(">", TokenJSXElementEnd)
@@ -3658,8 +3668,23 @@ func (je *JSXElement) printSource(w writer, v bool) {
 		}
 
 		w.WriteStringWithType("<", TokenJSXElementStart)
+
+		if v {
+			je.Comments[1].printSource(w, false, false)
+		}
+
 		w.WriteStringWithType("/", TokenPunctuator)
-		je.ElementName.printSource(w, v)
+
+		if v {
+			je.Comments[2].printSource(w, false, false)
+		}
+
+		je.ElementName.printSource(w, false)
+
+		if v {
+			je.Comments[3].printSource(w, false, false)
+		}
+
 		w.WriteStringWithType(">", TokenJSXElementEnd)
 	}
 }
