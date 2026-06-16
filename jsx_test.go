@@ -870,6 +870,12 @@ func TestJSXFragment(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"<// A\n/*B*/></*C*///D\n/ //E\n>", func(t *test, tk Tokens) { // 7
+			t.Output = JSXFragment{
+				Comments: [3]Comments{{&tk[1], &tk[3]}, {&tk[6], &tk[7]}, {&tk[11]}},
+				Tokens:   tk[:14],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var jf JSXFragment
 
