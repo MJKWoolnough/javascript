@@ -32,11 +32,16 @@ type JSXElement struct {
 	Attributes  []JSXAttribute
 	SelfClosing bool
 	Children    []JSXChild
+	Comments    [4]Comments
 	Tokens      Tokens
 }
 
 func (je *JSXElement) parse(j *jsParser) error {
 	j.Skip()
+
+	je.Comments[0] = j.AcceptRunWhitespaceComments()
+
+	j.AcceptRunWhitespace()
 
 	g := j.NewGoal()
 
@@ -50,6 +55,10 @@ func (je *JSXElement) parse(j *jsParser) error {
 		j.AcceptRunWhitespace()
 
 		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+			je.Comments[3] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+
 			je.SelfClosing = true
 
 			if !j.AcceptToken(parser.Token{Type: TokenJSXElementEnd, Data: ">"}) {
@@ -80,10 +89,19 @@ func (je *JSXElement) parse(j *jsParser) error {
 		for {
 			g = j.NewGoal()
 
-			if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
-				j.Score(g)
+			if g.Accept(TokenJSXElementStart) {
+				je.Comments[1] = g.AcceptRunWhitespaceComments()
 
-				break
+				g.AcceptRunWhitespace()
+
+				if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+					je.Comments[2] = g.AcceptRunWhitespaceComments()
+
+					g.AcceptRunWhitespace()
+					j.Score(g)
+
+					break
+				}
 			}
 
 			g = j.NewGoal()
@@ -100,8 +118,6 @@ func (je *JSXElement) parse(j *jsParser) error {
 			j.AcceptRunWhitespace()
 		}
 
-		j.AcceptRunWhitespace()
-
 		g = j.NewGoal()
 
 		var closing JSXElementName
@@ -115,6 +131,8 @@ func (je *JSXElement) parse(j *jsParser) error {
 		if !je.ElementName.equal(&closing) {
 			return j.Error("JSXElement", ErrInvalidClosingTag)
 		}
+
+		je.Comments[3] = closing.Comments
 
 		j.AcceptRunWhitespace()
 
