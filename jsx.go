@@ -416,11 +416,15 @@ func (jc *JSXChild) parse(j *jsParser) error {
 // https://facebook.github.io/jsx/#prod-JSXFragment
 type JSXFragment struct {
 	Children []JSXChild
+	Comments [3]Comments
 	Tokens   Tokens
 }
 
 func (jf *JSXFragment) parse(j *jsParser) error {
 	j.Skip()
+
+	jf.Comments[0] = j.AcceptRunWhitespaceComments()
+
 	j.AcceptRunWhitespace()
 	j.Skip()
 
@@ -429,8 +433,19 @@ func (jf *JSXFragment) parse(j *jsParser) error {
 
 		g := j.NewGoal()
 
-		if g.Accept(TokenJSXElementStart) && g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
-			break
+		if g.Accept(TokenJSXElementStart) {
+			jf.Comments[1] = g.AcceptRunWhitespaceComments()
+
+			g.AcceptRunWhitespace()
+
+			if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "/"}) {
+				jf.Comments[2] = g.AcceptRunWhitespaceComments()
+
+				g.AcceptRunWhitespace()
+				j.Score(g)
+
+				break
+			}
 		}
 
 		g = j.NewGoal()
@@ -446,10 +461,6 @@ func (jf *JSXFragment) parse(j *jsParser) error {
 		j.Score(g)
 		j.AcceptRunWhitespace()
 	}
-
-	j.Skip()
-	j.Skip()
-	j.AcceptRunWhitespace()
 
 	if !j.Accept(TokenJSXElementEnd) {
 		return j.Error("JSXFragment", ErrMissingTagClose)
