@@ -132,7 +132,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 			return j.Error("JSXElement", ErrInvalidClosingTag)
 		}
 
-		je.Comments[3] = closing.Comments
+		je.Comments[3] = closing.Comments[2]
 
 		j.AcceptRunWhitespace()
 
@@ -154,8 +154,8 @@ func (je *JSXElement) parse(j *jsParser) error {
 type JSXElementName struct {
 	Namespace        *Token
 	Identifier       *Token
-	MemberExpression []*Token
-	Comments         Comments
+	MemberExpression []CommentsToken
+	Comments         [3]Comments
 	Tokens           Tokens
 }
 
@@ -166,7 +166,19 @@ func (jn *JSXElementName) parse(j *jsParser) error {
 
 	jn.Identifier = j.GetLastToken()
 
-	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+	g := j.NewGoal()
+
+	g.AcceptRunWhitespace()
+
+	if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+		jn.Comments[0] = j.AcceptRunWhitespaceComments()
+
+		j.AcceptRunWhitespace()
+		j.Skip()
+
+		jn.Comments[1] = j.AcceptRunWhitespaceComments()
+		j.AcceptRunWhitespace()
+
 		if !j.Accept(TokenJSXIdentifier) {
 			return j.Error("JSXElementName", ErrMissingIdentifier)
 		}
@@ -174,16 +186,33 @@ func (jn *JSXElementName) parse(j *jsParser) error {
 		jn.Namespace = jn.Identifier
 		jn.Identifier = j.GetLastToken()
 	} else {
-		for j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+		for g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "."}) {
+			var ct CommentsToken
+
+			ct.Comments[0] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+
+			ct.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+
 			if !j.Accept(TokenJSXIdentifier) {
 				return j.Error("JSXElementName", ErrMissingIdentifier)
 			}
 
-			jn.MemberExpression = append(jn.MemberExpression, j.GetLastToken())
+			ct.Token = j.GetLastToken()
+
+			jn.MemberExpression = append(jn.MemberExpression, ct)
+
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
 		}
 	}
 
-	jn.Comments = j.AcceptRunWhitespaceComments()
+	jn.Comments[2] = j.AcceptRunWhitespaceComments()
 	jn.Tokens = j.ToTokens()
 
 	return nil
@@ -195,7 +224,7 @@ func (jn *JSXElementName) equal(cn *JSXElementName) bool {
 	}
 
 	for n := range jn.MemberExpression {
-		if !jn.MemberExpression[n].equal(cn.MemberExpression[n]) {
+		if !jn.MemberExpression[n].equal(cn.MemberExpression[n].Token) {
 			return false
 		}
 	}
@@ -211,6 +240,11 @@ func (t *Token) equal(s *Token) bool {
 	}
 
 	return t.Data == s.Data
+}
+
+type CommentsToken struct {
+	Comments [2]Comments
+	*Token
 }
 
 // JSXAttribute as defined in:

@@ -25,7 +25,7 @@ func TestJSXElementName(t *testing.T) {
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "JSXElementName",
-				Token:   tk[3],
+				Token:   tk[4],
 			}
 		}},
 		{"<a:b />", func(t *test, tk Tokens) { // 4
@@ -39,14 +39,14 @@ func TestJSXElementName(t *testing.T) {
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "JSXElementName",
-				Token:   tk[3],
+				Token:   tk[4],
 			}
 		}},
 		{"<a.b />", func(t *test, tk Tokens) { // 6
 			t.Output = JSXElementName{
 				Identifier: &tk[1],
-				MemberExpression: []*Token{
-					&tk[3],
+				MemberExpression: []CommentsToken{
+					{Token: &tk[3]},
 				},
 				Tokens: tk[1:4],
 			}
@@ -55,15 +55,15 @@ func TestJSXElementName(t *testing.T) {
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "JSXElementName",
-				Token:   tk[5],
+				Token:   tk[6],
 			}
 		}},
 		{"<a.b.c />", func(t *test, tk Tokens) { // 8
 			t.Output = JSXElementName{
 				Identifier: &tk[1],
-				MemberExpression: []*Token{
-					&tk[3],
-					&tk[5],
+				MemberExpression: []CommentsToken{
+					{Token: &tk[3]},
+					{Token: &tk[5]},
 				},
 				Tokens: tk[1:6],
 			}
@@ -115,23 +115,23 @@ func TestJSXElementNameEqual(t *testing.T) {
 			Match: true,
 		},
 		{ // 7
-			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			A:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
 			B:     JSXElementName{Identifier: &Token{Token: parser.Token{Data: "A"}}},
 			Match: false,
 		},
 		{ // 8
-			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
-			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			A:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
 			Match: true,
 		},
 		{ // 9
-			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
-			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "D"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			A:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "C"}}}, {Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "C"}}}, {Token: &Token{Token: parser.Token{Data: "D"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
 			Match: false,
 		},
 		{ // 10
-			A:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
-			B:     JSXElementName{MemberExpression: []*Token{{Token: parser.Token{Data: "C"}}, {Token: parser.Token{Data: "B"}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			A:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "C"}}}, {Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
+			B:     JSXElementName{MemberExpression: []CommentsToken{{Token: &Token{Token: parser.Token{Data: "C"}}}, {Token: &Token{Token: parser.Token{Data: "B"}}}}, Identifier: &Token{Token: parser.Token{Data: "A"}}},
 			Match: true,
 		},
 	} {
@@ -759,7 +759,7 @@ func TestJSXElement(t *testing.T) {
 			t.Output = JSXElement{
 				ElementName: JSXElementName{
 					Identifier: &tk[1],
-					Comments:   Comments{&tk[3]},
+					Comments:   [3]Comments{nil, nil, {&tk[3]}},
 					Tokens:     tk[1:4],
 				},
 				Tokens: tk[:10],
@@ -769,7 +769,7 @@ func TestJSXElement(t *testing.T) {
 			t.Output = JSXElement{
 				ElementName: JSXElementName{
 					Identifier: &tk[1],
-					Comments:   Comments{&tk[3], &tk[5]},
+					Comments:   [3]Comments{nil, nil, {&tk[3], &tk[5]}},
 					Tokens:     tk[1:6],
 				},
 				SelfClosing: true,
@@ -791,7 +791,7 @@ func TestJSXElement(t *testing.T) {
 			t.Output = JSXElement{
 				ElementName: JSXElementName{
 					Identifier: &tk[3],
-					Comments:   Comments{&tk[5]},
+					Comments:   [3]Comments{nil, nil, {&tk[5]}},
 					Tokens:     tk[3:6],
 				},
 				Comments: [4]Comments{{&tk[1]}, {&tk[9]}, {&tk[12]}, {&tk[14]}},

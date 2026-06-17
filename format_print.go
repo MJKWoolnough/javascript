@@ -3722,7 +3722,7 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 		}
 
 		if v {
-			jn.Comments.printSource(w, false, false)
+			jn.Comments[2].printSource(w, false, false)
 		}
 	}
 }
