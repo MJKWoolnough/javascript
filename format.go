@@ -573,6 +573,20 @@ func (t Tokens) printType(w writer, v bool) {
 	w.WriteString("\n]")
 }
 
+func (c CommentsToken) printSource(w writer, v bool) {
+	if v {
+		c.Comments[0].printSource(w, true, false)
+	}
+
+	w.WriteStringWithType(".", TokenPunctuator)
+
+	if v {
+		c.Comments[1].printSource(w, true, false)
+	}
+
+	w.WriteStringWithType(c.Data, c.Type)
+}
+
 func (c Comments) printType(w writer, v bool) {
 	if c == nil {
 		w.WriteString("nil")
