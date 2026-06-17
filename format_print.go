@@ -3715,6 +3715,11 @@ func (jf *JSXFragment) printSource(w writer, v bool) {
 	defer w.End()
 
 	w.WriteStringWithType("<", TokenJSXElementStart)
+
+	if v {
+		jf.Comments[0].printSource(w, false, false)
+	}
+
 	w.WriteStringWithType(">", TokenJSXElementEnd)
 
 	if len(jf.Children) > 1 {
@@ -3731,6 +3736,16 @@ func (jf *JSXFragment) printSource(w writer, v bool) {
 	}
 
 	w.WriteStringWithType("<", TokenJSXElementStart)
+
+	if v {
+		jf.Comments[1].printSource(w, false, false)
+	}
+
 	w.WriteStringWithType("/", TokenPunctuator)
+
+	if v {
+		jf.Comments[2].printSource(w, false, false)
+	}
+
 	w.WriteStringWithType(">", TokenJSXElementEnd)
 }
