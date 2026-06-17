@@ -3710,14 +3710,23 @@ func (jn *JSXElementName) printSource(w writer, v bool) {
 	if jn.Identifier != nil {
 		if jn.Namespace != nil {
 			w.WriteStringWithType(jn.Namespace.Data, jn.Namespace.Type)
+
+			if v {
+				jn.Comments[0].printSource(w, true, false)
+			}
+
 			w.WriteStringWithType(":", TokenPunctuator)
+
+			if v {
+				jn.Comments[1].printSource(w, true, false)
+			}
+
 			w.WriteStringWithType(jn.Identifier.Data, jn.Identifier.Type)
 		} else {
 			w.WriteStringWithType(jn.Identifier.Data, jn.Identifier.Type)
 
 			for _, m := range jn.MemberExpression {
-				w.WriteStringWithType(".", TokenPunctuator)
-				w.WriteStringWithType(m.Data, m.Type)
+				m.printSource(w, v)
 			}
 		}
 
