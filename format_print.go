@@ -3528,35 +3528,52 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 	if ja.Identifier != nil {
 		if ja.Namespace != nil {
 			w.WriteToken(ja.Namespace)
+
+			if v {
+				ja.Comments[0].printSource(w, true, false)
+			}
+
 			w.WriteStringWithType(":", TokenPunctuator)
+
+			if v {
+				ja.Comments[1].printSource(w, true, false)
+			}
 		}
 
 		w.WriteToken(ja.Identifier)
 
-		if ja.JSXString != nil {
-			w.WriteStringWithType("=", TokenPunctuator)
-			w.WriteToken(ja.JSXString)
-		} else if ja.JSXElement != nil {
-			w.WriteStringWithType("=", TokenPunctuator)
-			ja.JSXElement.printSource(w, v)
-		} else if ja.JSXFragment != nil {
-			w.WriteStringWithType("=", TokenPunctuator)
-			ja.JSXFragment.printSource(w, v)
-		} else if ja.AssignmentExpression != nil {
-			w.WriteStringWithType("=", TokenPunctuator)
-			w.WriteStringWithType("{", TokenPunctuator)
-
-			ip := w
-
-			if v && (ja.Comments[0].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
-				ip = w.Indent()
-
-				ip.WriteString("\n")
-				ja.Comments[0].printSource(ip, false, true)
+		if ja.JSXString != nil || ja.JSXElement != nil || ja.JSXFragment != nil || ja.AssignmentExpression != nil {
+			if v {
+				ja.Comments[2].printSource(w, true, false)
 			}
 
-			ja.AssignmentExpression.printSource(ip, v)
-			w.WriteStringWithType("}", TokenRightBracePunctuator)
+			w.WriteStringWithType("=", TokenPunctuator)
+
+			if v {
+				ja.Comments[3].printSource(w, true, false)
+			}
+
+			if ja.JSXString != nil {
+				w.WriteToken(ja.JSXString)
+			} else if ja.JSXElement != nil {
+				ja.JSXElement.printSource(w, v)
+			} else if ja.JSXFragment != nil {
+				ja.JSXFragment.printSource(w, v)
+			} else if ja.AssignmentExpression != nil {
+				w.WriteStringWithType("{", TokenPunctuator)
+
+				ip := w
+
+				if v && (ja.Comments[0].hasSingleLineComment() || ja.AssignmentExpression.hasSingleLineComment()) {
+					ip = w.Indent()
+
+					ip.WriteString("\n")
+					ja.Comments[0].printSource(ip, false, true)
+				}
+
+				ja.AssignmentExpression.printSource(ip, v)
+				w.WriteStringWithType("}", TokenRightBracePunctuator)
+			}
 		}
 	} else if ja.AssignmentExpression != nil {
 		w.WriteStringWithType("{", TokenPunctuator)
