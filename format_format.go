@@ -293,6 +293,18 @@ func (f CoalesceExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f CommentsToken) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = CommentsToken
+		type CommentsToken X
+
+		fmt.Fprintf(s, "%#v", CommentsToken(f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f ConditionalExpression) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = ConditionalExpression

@@ -917,6 +917,32 @@ func (f *CoalesceExpression) printType(w writer, v bool) {
 	w.WriteString("\n}")
 }
 
+func (f *CommentsToken) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("CommentsToken {")
+
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
+
+	if f.Token != nil {
+		pp.WriteString("\nToken: ")
+		f.Token.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nToken: nil")
+	}
+
+	w.WriteString("\n}")
+}
+
 func (f *ConditionalExpression) printType(w writer, v bool) {
 	pp := w.Indent()
 
@@ -1918,8 +1944,16 @@ func (f *JSXElementName) printType(w writer, v bool) {
 		pp.WriteString("\nMemberExpression: []")
 	}
 
-	pp.WriteString("\nComments: ")
-	f.Comments.printType(pp, v)
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
