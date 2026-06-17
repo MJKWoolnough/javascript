@@ -3329,6 +3329,11 @@ func TestPrintingJSX(t *testing.T) {
 			"<a />;",
 			"< /* A */a / /* B */>;",
 		},
+		{ // 41
+			"< /* A */ /* B */><// C\n/\n// D\n>",
+			"<></>;",
+			"< /* A */ /* B */>< // C\n/ // D\n>;",
+		},
 	} {
 		for m, in := range [2]string{test.Input, test.VerboseOutput} {
 			tk := parser.NewStringTokeniser(in)
