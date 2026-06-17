@@ -227,7 +227,7 @@ type JSXAttribute struct {
 	JSXFragment          *JSXFragment
 	JSXElement           *JSXElement
 	AssignmentExpression *AssignmentExpression
-	Comments             [2]Comments
+	Comments             [5]Comments
 	Tokens               Tokens
 }
 
@@ -263,16 +263,42 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 
 		ja.Identifier = j.GetLastToken()
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+		g := j.NewGoal()
+
+		g.AcceptRunWhitespace()
+
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: ":"}) {
+			ja.Comments[0] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+
+			ja.Comments[1] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+
 			if !j.Accept(TokenJSXIdentifier) {
 				return j.Error("JSXAttribute", ErrMissingIdentifier)
 			}
 
 			ja.Namespace = ja.Identifier
 			ja.Identifier = j.GetLastToken()
+
+			g = j.NewGoal()
+
+			g.AcceptRunWhitespace()
 		}
 
-		if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+		if g.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "="}) {
+			ja.Comments[2] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+			j.Skip()
+
+			ja.Comments[3] = j.AcceptRunWhitespaceComments()
+
+			j.AcceptRunWhitespace()
+
 			if j.Accept(TokenJSXString) {
 				ja.JSXString = j.GetLastToken()
 			} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
@@ -323,7 +349,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		}
 	}
 
-	ja.Comments[1] = j.AcceptRunWhitespaceComments()
+	ja.Comments[4] = j.AcceptRunWhitespaceComments()
 	ja.Tokens = j.ToTokens()
 
 	return nil

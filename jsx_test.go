@@ -341,14 +341,14 @@ func TestJSXAttribute(t *testing.T) {
 					}),
 					Tokens: tk[9:16],
 				},
-				Comments: [2]Comments{{&tk[3], &tk[5]}},
+				Comments: [5]Comments{{&tk[3], &tk[5]}},
 				Tokens:   tk[1:18],
 			}
 		}},
 		{"<a // A\n/>", func(t *test, tk Tokens) { // 3
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
-				Comments:   [2]Comments{nil, {&tk[3]}},
+				Comments:   [5]Comments{nil, nil, nil, nil, {&tk[3]}},
 				Tokens:     tk[1:4],
 			}
 		}},
@@ -356,7 +356,7 @@ func TestJSXAttribute(t *testing.T) {
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXString:  &tk[3],
-				Comments:   [2]Comments{nil, {&tk[5]}},
+				Comments:   [5]Comments{nil, nil, nil, nil, {&tk[5]}},
 				Tokens:     tk[1:6],
 			}
 		}},
@@ -369,7 +369,7 @@ func TestJSXAttribute(t *testing.T) {
 					}),
 					Tokens: tk[3:4],
 				},
-				Comments: [2]Comments{nil, {&tk[6], &tk[8]}},
+				Comments: [5]Comments{nil, nil, nil, nil, {&tk[6], &tk[8]}},
 				Tokens:   tk[1:9],
 			}
 		}},

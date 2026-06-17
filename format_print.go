@@ -3583,7 +3583,7 @@ func (ja *JSXAttribute) printSource(w writer, v bool) {
 	}
 
 	if v {
-		ja.Comments[1].printSource(w, false, false)
+		ja.Comments[4].printSource(w, false, false)
 	}
 }
 
