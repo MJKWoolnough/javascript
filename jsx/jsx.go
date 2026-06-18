@@ -205,7 +205,9 @@ func nsIn(name *javascript.Token) (bool, bool, bool) {
 }
 
 func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
-	replaceTagName(m, e)
+	if err := replaceTagName(m, e); err != nil {
+		return nil, err
+	}
 
 	s, err := scope.Build(m, nil)
 	if err != nil {
@@ -248,7 +250,7 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	}, nil
 }
 
-func replaceTagName(m *javascript.Module, e *javascript.JSXElement) {
+func replaceTagName(m *javascript.Module, e *javascript.JSXElement) error {
 	var h walk.Handler
 
 	h = walk.HandlerFunc(func(t javascript.Type) error {
@@ -259,6 +261,10 @@ func replaceTagName(m *javascript.Module, e *javascript.JSXElement) {
 			if pe := t.PrimaryExpression; pe != nil {
 				if pe.Literal != nil && pe.Literal.Type == javascript.TokenStringLiteral {
 					if str, _ := javascript.Unquote(pe.Literal.Data); str == tagName {
+						if e.ElementName.MemberExpression != nil {
+							return ErrInvalidTagTemplate
+						}
+
 						pe.Literal.Data = strconv.Quote(e.ElementName.Identifier.Data)
 						pe.Tokens = e.ElementName.Tokens
 						t.Comments[0] = e.Comments[0]
@@ -269,6 +275,15 @@ func replaceTagName(m *javascript.Module, e *javascript.JSXElement) {
 					pe.IdentifierReference = e.ElementName.Identifier
 					pe.Tokens = e.ElementName.Tokens
 					t.Comments[0] = e.Comments[0]
+
+					for _, ct := range e.ElementName.MemberExpression {
+						x := *t
+						*t = javascript.MemberExpression{
+							MemberExpression: &x,
+							IdentifierName:   ct.Token,
+						}
+					}
+
 					t.Comments[4] = e.ElementName.Comments[2]
 					t.Tokens = e.ElementName.Tokens
 				}
@@ -292,7 +307,7 @@ func replaceTagName(m *javascript.Module, e *javascript.JSXElement) {
 		return nil
 	})
 
-	walk.Walk(m, h)
+	return walk.Walk(m, h)
 }
 
 func (j *jsxTransformer) replaceParamsAndChildren(m *javascript.Module, e *javascript.JSXElement) error {
@@ -712,4 +727,5 @@ var (
 	ErrInvalidTransformation = errors.New("invalid transformation")
 	ErrTooManyStatements     = errors.New("too many statements")
 	ErrMissingChild          = errors.New("missing JSX child")
+	ErrInvalidTagTemplate    = errors.New("cannot convert member expression JSX Element name to string")
 )
