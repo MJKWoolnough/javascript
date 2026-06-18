@@ -68,6 +68,31 @@ func TestJSXElementName(t *testing.T) {
 				Tokens: tk[1:6],
 			}
 		}},
+		{"<a /*A*/ : /*B*/ b /*C*/ />", func(t *test, tk Tokens) { // 9
+			t.Output = JSXElementName{
+				Namespace:  &tk[1],
+				Identifier: &tk[9],
+				Comments:   [3]Comments{{&tk[3]}, {&tk[7]}, {&tk[11]}},
+				Tokens:     tk[1:12],
+			}
+		}},
+		{"<a /*A*/ . /*B*/ b /*C*/ . /*D*/ c /*E*/ />", func(t *test, tk Tokens) { // 10
+			t.Output = JSXElementName{
+				Identifier: &tk[1],
+				MemberExpression: []CommentsToken{
+					{
+						Comments: [2]Comments{{&tk[3]}, {&tk[7]}},
+						Token:    &tk[9],
+					},
+					{
+						Comments: [2]Comments{{&tk[11]}, {&tk[15]}},
+						Token:    &tk[17],
+					},
+				},
+				Comments: [3]Comments{nil, nil, {&tk[19]}},
+				Tokens:   tk[1:20],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var jn JSXElementName
 
