@@ -205,7 +205,7 @@ func nsIn(name *javascript.Token) (bool, bool, bool) {
 }
 
 func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
-	replaceTagName(m, e.ElementName.Identifier.Data)
+	replaceTagName(m, e)
 
 	s, err := scope.Build(m, nil)
 	if err != nil {
@@ -238,40 +238,54 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	return &javascript.PrimaryExpression{
 		ParenthesizedExpression: &javascript.ParenthesizedExpression{
 			Expressions: expression.Expressions,
-			Tokens:      e.Tokens,
+			Comments: [2]javascript.Comments{
+				nil,
+				append(append(make(javascript.Comments, 0, len(e.Comments[2])+len(e.Comments[3])), e.Comments[2]...), e.Comments[3]...),
+			},
+			Tokens: e.Tokens,
 		},
 		Tokens: e.Tokens,
 	}, nil
 }
 
-func replaceTagName(m *javascript.Module, name string) {
+func replaceTagName(m *javascript.Module, e *javascript.JSXElement) {
 	var h walk.Handler
 
 	h = walk.HandlerFunc(func(t javascript.Type) error {
 		walk.Walk(t, h)
 
 		switch t := t.(type) {
-		case *javascript.PrimaryExpression:
-			if t.Literal != nil && t.Literal.Type == javascript.TokenStringLiteral {
-				if str, _ := javascript.Unquote(t.Literal.Data); str == tagName {
-					t.Literal.Data = strconv.Quote(name)
+		case *javascript.MemberExpression:
+			if pe := t.PrimaryExpression; pe != nil {
+				if pe.Literal != nil && pe.Literal.Type == javascript.TokenStringLiteral {
+					if str, _ := javascript.Unquote(pe.Literal.Data); str == tagName {
+						pe.Literal.Data = strconv.Quote(e.ElementName.Identifier.Data)
+						pe.Tokens = e.ElementName.Tokens
+						t.Comments[0] = e.Comments[0]
+						t.Comments[4] = e.ElementName.Comments[2]
+						t.Tokens = e.ElementName.Tokens
+					}
+				} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == tagName {
+					pe.IdentifierReference = e.ElementName.Identifier
+					pe.Tokens = e.ElementName.Tokens
+					t.Comments[0] = e.Comments[0]
+					t.Comments[4] = e.ElementName.Comments[2]
+					t.Tokens = e.ElementName.Tokens
 				}
-			} else if t.IdentifierReference != nil && t.IdentifierReference.Data == tagName {
-				t.IdentifierReference.Data = name
 			}
 		case *javascript.ImportClause:
 			if t.ImportedDefaultBinding != nil && t.ImportedDefaultBinding.Data == tagName {
-				t.ImportedDefaultBinding.Data = name
+				t.ImportedDefaultBinding = e.ElementName.Identifier
 			} else if t.NameSpaceImport != nil && t.NameSpaceImport.Data == tagName {
-				t.NameSpaceImport.Data = name
+				t.NameSpaceImport = e.ElementName.Identifier
 			}
 		case *javascript.ImportSpecifier:
 			if t.IdentifierName != nil && t.IdentifierName.Data == tagName {
-				t.IdentifierName.Data = name
+				t.IdentifierName = e.ElementName.Identifier
 			}
 
 			if t.ImportedBinding != nil && t.ImportedBinding.Data == tagName {
-				t.ImportedBinding.Data = name
+				t.ImportedBinding = e.ElementName.Identifier
 			}
 		}
 
