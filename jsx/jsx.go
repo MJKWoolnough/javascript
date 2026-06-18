@@ -277,10 +277,12 @@ func replaceTagName(m *javascript.Module, e *javascript.JSXElement) error {
 					t.Comments[0] = e.Comments[0]
 
 					for _, ct := range e.ElementName.MemberExpression {
+						t.Comments[4] = ct.Comments[0]
 						x := *t
 						*t = javascript.MemberExpression{
 							MemberExpression: &x,
 							IdentifierName:   ct.Token,
+							Comments:         [5]javascript.Comments{nil, ct.Comments[1]},
 						}
 					}
 
