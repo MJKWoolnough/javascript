@@ -158,6 +158,16 @@ func TestProcess(t *testing.T) {
 			`TAG_NAME(PARAMS, CHILDREN)`,
 			"const a = (b // C\n({}, []))",
 		},
+		{ // 30
+			"const a = <b.c />",
+			`TAG_NAME()`,
+			"const a = (b.c())",
+		},
+		{ // 31
+			"const a = <b.c.d />",
+			`TAG_NAME()`,
+			"const a = (b.c.d())",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
