@@ -62,6 +62,8 @@ func (ClassElementName) javascriptType() {}
 
 func (CoalesceExpression) javascriptType() {}
 
+func (CommentsToken) javascriptType() {}
+
 func (ConditionalExpression) javascriptType() {}
 
 func (Declaration) javascriptType() {}
