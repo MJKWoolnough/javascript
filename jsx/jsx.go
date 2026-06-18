@@ -274,7 +274,7 @@ func replaceTagName(m *javascript.Module, e *javascript.JSXElement) error {
 				} else if pe.IdentifierReference != nil && pe.IdentifierReference.Data == tagName {
 					pe.IdentifierReference = e.ElementName.Identifier
 					pe.Tokens = e.ElementName.Tokens
-					t.Comments[0] = e.Comments[0]
+					t.Comments[0] = slices.Concat(e.Comments[0], e.ElementName.Comments[0], e.ElementName.Comments[1])
 
 					for _, ct := range e.ElementName.MemberExpression {
 						t.Comments[4] = ct.Comments[0]
