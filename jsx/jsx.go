@@ -2,6 +2,7 @@
 package jsx
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"maps"
@@ -83,7 +84,7 @@ func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression
 		}
 
 		al.Comments[0] = t.JSXFragment.Comments[0]
-		al.Comments[1] = append(append(make(javascript.Comments, 0, len(t.JSXFragment.Comments[1])+len(t.JSXFragment.Comments[2])), t.JSXFragment.Comments[1]...), t.JSXFragment.Comments[2]...)
+		al.Comments[1] = combineComments(t.JSXFragment.Comments[1:3]...)
 		al.Tokens = t.JSXFragment.Tokens
 
 		return &javascript.PrimaryExpression{
@@ -242,11 +243,8 @@ func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module)
 	return &javascript.PrimaryExpression{
 		ParenthesizedExpression: &javascript.ParenthesizedExpression{
 			Expressions: expression.Expressions,
-			Comments: [2]javascript.Comments{
-				nil,
-				append(append(make(javascript.Comments, 0, len(e.Comments[2])+len(e.Comments[3])), e.Comments[2]...), e.Comments[3]...),
-			},
-			Tokens: e.Tokens,
+			Comments:    [2]javascript.Comments{nil, combineComments(e.Comments[2:4]...)},
+			Tokens:      e.Tokens,
 		},
 		Tokens: e.Tokens,
 	}, nil
@@ -413,10 +411,31 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 		}
 
 		if attr.Identifier == nil {
+			first, last := firstLast(ae)
+
+			if first != nil {
+				*first = combineComments(attr.Comments[3], *first)
+			}
+
+			if last != nil {
+				*last = combineComments(*last, attr.Comments[4])
+			}
+
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				AssignmentExpression: ae,
+				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
 			})
 		} else {
+			first, last := firstLast(ae)
+
+			if first != nil {
+				*first = combineComments(attr.Comments[3], *first)
+			}
+
+			if last != nil {
+				*last = combineComments(*last, attr.Comments[4])
+			}
+
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				PropertyName: &javascript.PropertyName{
 					LiteralPropertyName: &javascript.Token{
@@ -428,13 +447,74 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 					Tokens: attr.Tokens,
 				},
 				AssignmentExpression: ae,
+				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
 			})
 		}
-
-		ol.Comments = [2]javascript.Comments{attr.Comments[0]}
 	}
 
 	return ol, nil
+}
+
+func firstLast(ae *javascript.AssignmentExpression) (*javascript.Comments, *javascript.Comments) {
+	var first, last *javascript.Comments
+
+	var fn walk.HandlerFunc
+
+	fn = func(t javascript.Type) error {
+		switch t := t.(type) {
+		case *javascript.AssignmentExpression:
+			if t.Yield {
+				first = cmp.Or(first, &t.Comments[0])
+			}
+		case *javascript.ArrowFunction:
+			first = cmp.Or(first, &t.Comments[0])
+		case *javascript.AssignmentPattern:
+			first = cmp.Or(first, &t.Comments[0])
+		case *javascript.NewExpression:
+			if len(t.News) > 0 {
+				first = cmp.Or(first, &t.News[0])
+			}
+		case *javascript.MemberExpression:
+			first = cmp.Or(first, &t.Comments[0])
+		case *javascript.CallExpression:
+			first = cmp.Or(first, &t.Comments[0])
+		}
+
+		walk.Walk(t, fn)
+
+		switch t := t.(type) {
+		case *javascript.ArrowFunction:
+			last = &t.Comments[4]
+		case *javascript.MemberExpression:
+			last = &t.Comments[4]
+		case *javascript.CallExpression:
+			last = &t.Comments[4]
+		case *javascript.OptionalChain:
+			last = &t.Comments[3]
+		}
+
+		return nil
+	}
+
+	fn(ae)
+
+	return first, last
+}
+
+func combineComments(cs ...javascript.Comments) javascript.Comments {
+	l := 0
+
+	for _, c := range cs {
+		l += len(c)
+	}
+
+	jc := make(javascript.Comments, 0, l)
+
+	for _, c := range cs {
+		jc = append(jc, c...)
+	}
+
+	return jc
 }
 
 func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.AssignmentExpression, error) {
