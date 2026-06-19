@@ -424,6 +424,7 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				AssignmentExpression: ae,
 				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
+				Tokens:               attr.Tokens,
 			})
 		} else {
 			first, last := firstLast(ae)
@@ -448,6 +449,7 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 				},
 				AssignmentExpression: ae,
 				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
+				Tokens:               attr.Tokens,
 			})
 		}
 	}

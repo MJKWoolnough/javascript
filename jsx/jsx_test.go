@@ -136,12 +136,12 @@ func TestProcess(t *testing.T) {
 		{ // 25
 			"const a = <b {// A\n... /* B */ d // C\n}/>",
 			`tag('TAG_NAME', PARAMS)`,
-			"const a = (tag(\"b\", {// A\n.../* B */ d // C\n}))",
+			"const a = (tag(\"b\", {// A\n... /* B */ d // C\n}))",
 		},
 		{ // 26
 			"const a = <b {\n// A\n... /* B */ d // C\n}/>",
 			`tag('TAG_NAME', PARAMS)`,
-			"const a = (tag(\"b\", {// A\n.../* B */ d // C\n}))",
+			"const a = (tag(\"b\", {\n// A\n... /* B */ d // C\n}))",
 		},
 		{ // 27
 			"const a = <div><svg:a /></div>",
