@@ -36,7 +36,7 @@ type JSXElement struct {
 	Tokens      Tokens
 }
 
-func (je *JSXElement) parse(j *jsParser) error {
+func (je *JSXElement) parse(j *jsParser, yield, await bool) error {
 	j.Skip()
 
 	je.Comments[0] = j.AcceptRunWhitespaceComments()
@@ -76,7 +76,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 		var a JSXAttribute
 
-		if err := a.parse(&g); err != nil {
+		if err := a.parse(&g, yield, await); err != nil {
 			return j.Error("JSXElement", err)
 		}
 
@@ -108,7 +108,7 @@ func (je *JSXElement) parse(j *jsParser) error {
 
 			var child JSXChild
 
-			if err := child.parse(&g); err != nil {
+			if err := child.parse(&g, yield, await); err != nil {
 				return j.Error("JSXElement", err)
 			}
 
@@ -265,7 +265,7 @@ type JSXAttribute struct {
 	Tokens               Tokens
 }
 
-func (ja *JSXAttribute) parse(j *jsParser) error {
+func (ja *JSXAttribute) parse(j *jsParser, yield, await bool) error {
 	if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
 		ja.Comments[0] = j.AcceptRunWhitespaceComments()
 
@@ -280,7 +280,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 		g := j.NewGoal()
 		ja.AssignmentExpression = new(AssignmentExpression)
 
-		if err := ja.AssignmentExpression.parse(&g, false, false, false); err != nil {
+		if err := ja.AssignmentExpression.parse(&g, false, yield, await); err != nil {
 			return j.Error("JSXAttribute", err)
 		}
 
@@ -341,7 +341,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 				g := j.NewGoal()
 				ja.AssignmentExpression = new(AssignmentExpression)
 
-				if err := ja.AssignmentExpression.parse(&g, false, false, false); err != nil {
+				if err := ja.AssignmentExpression.parse(&g, false, yield, await); err != nil {
 					return j.Error("JSXAttribute", err)
 				}
 
@@ -360,7 +360,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 					g = j.NewGoal()
 					ja.JSXFragment = new(JSXFragment)
 
-					if err := ja.JSXFragment.parse(&g); err != nil {
+					if err := ja.JSXFragment.parse(&g, yield, await); err != nil {
 						return j.Error("JSXAttribute", err)
 					}
 
@@ -369,7 +369,7 @@ func (ja *JSXAttribute) parse(j *jsParser) error {
 					g = j.NewGoal()
 					ja.JSXElement = new(JSXElement)
 
-					if err := ja.JSXElement.parse(&g); err != nil {
+					if err := ja.JSXElement.parse(&g, yield, await); err != nil {
 						return j.Error("JSXAttribute", err)
 					}
 
@@ -406,7 +406,7 @@ type JSXChild struct {
 	Tokens             Tokens
 }
 
-func (jc *JSXChild) parse(j *jsParser) error {
+func (jc *JSXChild) parse(j *jsParser, yield, await bool) error {
 	if j.Accept(TokenJSXText) {
 		jc.JSXText = j.GetLastToken()
 	} else if j.AcceptToken(parser.Token{Type: TokenPunctuator, Data: "{"}) {
@@ -429,7 +429,7 @@ func (jc *JSXChild) parse(j *jsParser) error {
 			g = j.NewGoal()
 			jc.JSXChildExpression = new(AssignmentExpression)
 
-			if err := jc.JSXChildExpression.parse(&g, false, false, false); err != nil {
+			if err := jc.JSXChildExpression.parse(&g, false, yield, await); err != nil {
 				return j.Error("JSXChild", err)
 			}
 
@@ -450,7 +450,7 @@ func (jc *JSXChild) parse(j *jsParser) error {
 			g = j.NewGoal()
 			jc.JSXFragment = new(JSXFragment)
 
-			if err := jc.JSXFragment.parse(&g); err != nil {
+			if err := jc.JSXFragment.parse(&g, yield, await); err != nil {
 				return j.Error("JSXChild", err)
 			}
 
@@ -459,7 +459,7 @@ func (jc *JSXChild) parse(j *jsParser) error {
 			g = j.NewGoal()
 			jc.JSXElement = new(JSXElement)
 
-			if err := jc.JSXElement.parse(&g); err != nil {
+			if err := jc.JSXElement.parse(&g, yield, await); err != nil {
 				return j.Error("JSXChild", err)
 			}
 
@@ -480,7 +480,7 @@ type JSXFragment struct {
 	Tokens   Tokens
 }
 
-func (jf *JSXFragment) parse(j *jsParser) error {
+func (jf *JSXFragment) parse(j *jsParser, yield, await bool) error {
 	j.Skip()
 
 	jf.Comments[0] = j.AcceptRunWhitespaceComments()
@@ -512,7 +512,7 @@ func (jf *JSXFragment) parse(j *jsParser) error {
 
 		var child JSXChild
 
-		if err := child.parse(&g); err != nil {
+		if err := child.parse(&g, yield, await); err != nil {
 			return j.Error("JSXFragment", err)
 		}
 

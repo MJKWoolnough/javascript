@@ -1589,7 +1589,7 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 			g = j.NewGoal()
 			pe.JSXFragment = new(JSXFragment)
 
-			if err := pe.JSXFragment.parse(&g); err != nil {
+			if err := pe.JSXFragment.parse(&g, yield, await); err != nil {
 				return j.Error("PrimaryExpression", err)
 			}
 
@@ -1598,7 +1598,7 @@ func (pe *PrimaryExpression) parse(j *jsParser, yield, await bool) error {
 			g = j.NewGoal()
 			pe.JSXElement = new(JSXElement)
 
-			if err := pe.JSXElement.parse(&g); err != nil {
+			if err := pe.JSXElement.parse(&g, yield, await); err != nil {
 				return j.Error("PrimaryExpression", err)
 			}
 
