@@ -178,10 +178,15 @@ func TestProcess(t *testing.T) {
 			`TAG_NAME()`,
 			"const a = (/*A*//*B*//*C*/c/*D*/())",
 		},
-		{ // 33
+		{ // 34
 			"const a = </*A*/></*B*// /*C*/>",
 			`TAG_NAME()`,
 			"const a = [/*A*//*B*/ /*C*/]",
+		},
+		{ // 35
+			"const a = <b c/*A*/=/*B*/\"d\"/*C*/></b>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {\"c\"/*A*/:/*B*/\"d\"/*C*/}))",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
