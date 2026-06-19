@@ -82,6 +82,8 @@ func (j *jsxTransformer) handlePrimaryExpression(t *javascript.PrimaryExpression
 			return nil, err
 		}
 
+		al.Comments[0] = t.JSXFragment.Comments[0]
+		al.Comments[1] = append(append(make(javascript.Comments, 0, len(t.JSXFragment.Comments[1])+len(t.JSXFragment.Comments[2])), t.JSXFragment.Comments[1]...), t.JSXFragment.Comments[2]...)
 		al.Tokens = t.JSXFragment.Tokens
 
 		return &javascript.PrimaryExpression{
