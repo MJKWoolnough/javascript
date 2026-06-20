@@ -587,6 +587,10 @@ func walkAssignmentExpression(t *javascript.AssignmentExpression, h Handler) err
 		if t.AssignmentExpression != nil {
 			return h.Handle(t.AssignmentExpression)
 		}
+	} else if t.Yield {
+		if t.AssignmentExpression != nil {
+			return h.Handle(t.AssignmentExpression)
+		}
 	} else if t.AssignmentPattern != nil {
 		if err := h.Handle(t.AssignmentPattern); err != nil {
 			return err
