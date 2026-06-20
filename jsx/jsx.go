@@ -427,12 +427,18 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 				Tokens:               attr.Tokens,
 			})
 		} else {
+			name := attr.Identifier.Data
+
+			if attr.Namespace != nil {
+				name = attr.Namespace.Data + ":" + name
+			}
+
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				PropertyName: &javascript.PropertyName{
 					LiteralPropertyName: &javascript.Token{
 						Token: parser.Token{
 							Type: javascript.TokenStringLiteral,
-							Data: strconv.Quote(attr.Identifier.Data),
+							Data: strconv.Quote(name),
 						},
 					},
 					Tokens: attr.Tokens,
