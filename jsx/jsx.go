@@ -410,33 +410,23 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 			return nil, err
 		}
 
+		first, last := firstLast(ae)
+
+		if first != nil {
+			*first = combineComments(attr.Comments[3], *first)
+		}
+
+		if last != nil {
+			*last = combineComments(*last, attr.Comments[4])
+		}
+
 		if attr.Identifier == nil {
-			first, last := firstLast(ae)
-
-			if first != nil {
-				*first = combineComments(attr.Comments[3], *first)
-			}
-
-			if last != nil {
-				*last = combineComments(*last, attr.Comments[4])
-			}
-
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				AssignmentExpression: ae,
 				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
 				Tokens:               attr.Tokens,
 			})
 		} else {
-			first, last := firstLast(ae)
-
-			if first != nil {
-				*first = combineComments(attr.Comments[3], *first)
-			}
-
-			if last != nil {
-				*last = combineComments(*last, attr.Comments[4])
-			}
-
 			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
 				PropertyName: &javascript.PropertyName{
 					LiteralPropertyName: &javascript.Token{
