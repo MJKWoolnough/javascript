@@ -208,6 +208,11 @@ func TestProcess(t *testing.T) {
 			`TAG_NAME(PARAMS)`,
 			"function* a() {return (b({\"c\":/*A*//*B*/yield/*C*/d/*E*//*F*/}))}",
 		},
+		{ // 40
+			"async function a() {return <b c=/*A*/{/*B*/await/*C*/d/*E*/}/*F*/></b>}",
+			`TAG_NAME(PARAMS)`,
+			"async function a() {return (b({\"c\":/*A*//*B*/await/*C*/d/*E*//*F*/}))}",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
