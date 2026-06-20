@@ -472,6 +472,10 @@ func firstLast(ae *javascript.AssignmentExpression) (*javascript.Comments, *java
 			first = cmp.Or(first, &t.Comments[0])
 		case *javascript.AssignmentPattern:
 			first = cmp.Or(first, &t.Comments[0])
+		case *javascript.UnaryExpression:
+			if len(t.UnaryOperators) > 0 {
+				first = cmp.Or(first, &t.UnaryOperators[0].Comments)
+			}
 		case *javascript.NewExpression:
 			if len(t.News) > 0 {
 				first = cmp.Or(first, &t.News[0])
