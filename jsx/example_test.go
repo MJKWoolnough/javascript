@@ -11,7 +11,7 @@ import (
 
 func Example() {
 	js := `function MyElement() {
-	return <div>Hello, World</div>
+	return <div id="example">Hello, World</div>
 }`
 
 	tk := parser.NewStringTokeniser(js)
@@ -36,6 +36,6 @@ func Example() {
 	// Output:
 	// import{createElement}from"@elements"
 	// function MyElement() {
-	// 	return (createElement("div", {}, ["Hello, World"]))
+	// 	return (createElement("div", {"id":"example"}, ["Hello, World"]))
 	// }
 }
