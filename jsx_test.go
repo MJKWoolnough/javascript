@@ -269,21 +269,60 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"<a={b c}/>", func(t *test, tk Tokens) { // 13
+		{"<a={await b}/>", func(t *test, tk Tokens) { // 13
+			t.Await = true
+			t.Output = JSXAttribute{
+				Identifier: &tk[1],
+				AssignmentExpression: &AssignmentExpression{
+					ConditionalExpression: WrapConditional(&UnaryExpression{
+						UnaryOperators: []UnaryOperatorComments{
+							{UnaryOperator: UnaryAwait},
+						},
+						UpdateExpression: UpdateExpression{
+							LeftHandSideExpression: &LeftHandSideExpression{
+								NewExpression: &NewExpression{
+									MemberExpression: MemberExpression{
+										PrimaryExpression: &PrimaryExpression{
+											IdentifierReference: &tk[6],
+											Tokens:              tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[4:7],
+					}),
+					Tokens: tk[4:7],
+				},
+				Tokens: tk[1:8],
+			}
+		}},
+		{"<a={await b}/>", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "JSXAttribute",
 				Token:   tk[6],
 			}
 		}},
-		{"<a={,}/>", func(t *test, tk Tokens) { // 14
+		{"<a={b c}/>", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMissingClosingBrace,
+				Parsing: "JSXAttribute",
+				Token:   tk[6],
+			}
+		}},
+		{"<a={,}/>", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     assignmentCustomError(tk[4], ErrMissingIdentifier),
 				Parsing: "JSXAttribute",
 				Token:   tk[4],
 			}
 		}},
-		{"<a=<></>/>", func(t *test, tk Tokens) { // 15
+		{"<a=<></>/>", func(t *test, tk Tokens) { // 17
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXFragment: &JSXFragment{
@@ -292,7 +331,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:8],
 			}
 		}},
-		{"<a=<></b>/>", func(t *test, tk Tokens) { // 16
+		{"<a=<></b>/>", func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingTagClose,
@@ -303,7 +342,7 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"<a=<b/>/>", func(t *test, tk Tokens) { // 17
+		{"<a=<b/>/>", func(t *test, tk Tokens) { // 19
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXElement: &JSXElement{
@@ -317,7 +356,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:7],
 			}
 		}},
-		{"<a=<b></c>/>", func(t *test, tk Tokens) { // 18
+		{"<a=<b></c>/>", func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrInvalidClosingTag,
@@ -328,21 +367,21 @@ func TestJSXAttribute(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"<{}/>", func(t *test, tk Tokens) { // 19
+		{"<{}/>", func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err:     ErrMissingSpread,
 				Parsing: "JSXAttribute",
 				Token:   tk[2],
 			}
 		}},
-		{"<{...,}/>", func(t *test, tk Tokens) { // 20
+		{"<{...,}/>", func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err:     assignmentCustomError(tk[3], ErrMissingIdentifier),
 				Parsing: "JSXAttribute",
 				Token:   tk[3],
 			}
 		}},
-		{"<{...a}/>", func(t *test, tk Tokens) { // 21
+		{"<{...a}/>", func(t *test, tk Tokens) { // 23
 			t.Output = JSXAttribute{
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
@@ -354,14 +393,14 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:5],
 			}
 		}},
-		{"<{...a b}/>", func(t *test, tk Tokens) { // 22
+		{"<{...a b}/>", func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "JSXAttribute",
 				Token:   tk[5],
 			}
 		}},
-		{"<a={ // A\n\n// B\nb // C\n\n// D\n}/>", func(t *test, tk Tokens) { // 23
+		{"<a={ // A\n\n// B\nb // C\n\n// D\n}/>", func(t *test, tk Tokens) { // 25
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				AssignmentExpression: &AssignmentExpression{
@@ -378,7 +417,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens: tk[1:16],
 			}
 		}},
-		{"<{ // A\n\n// B\n... // C\na // D\n\n// E\n}/>", func(t *test, tk Tokens) { // 24
+		{"<{ // A\n\n// B\n... // C\na // D\n\n// E\n}/>", func(t *test, tk Tokens) { // 26
 			t.Output = JSXAttribute{
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&MemberExpression{
@@ -395,14 +434,14 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens:   tk[1:18],
 			}
 		}},
-		{"<a // A\n/>", func(t *test, tk Tokens) { // 25
+		{"<a // A\n/>", func(t *test, tk Tokens) { // 27
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				Comments:   [5]Comments{nil, nil, nil, nil, {&tk[3]}},
 				Tokens:     tk[1:4],
 			}
 		}},
-		{"<a='' // A\n/>", func(t *test, tk Tokens) { // 26
+		{"<a='' // A\n/>", func(t *test, tk Tokens) { // 28
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXString:  &tk[3],
@@ -410,7 +449,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens:     tk[1:6],
 			}
 		}},
-		{"<{...a} // A\n// B\n/>", func(t *test, tk Tokens) { // 27
+		{"<{...a} // A\n// B\n/>", func(t *test, tk Tokens) { // 29
 			t.Output = JSXAttribute{
 				AssignmentExpression: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&PrimaryExpression{
@@ -423,7 +462,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens:   tk[1:9],
 			}
 		}},
-		{"<a /*A*/ = /*B*/ '' // C\n/>", func(t *test, tk Tokens) { // 28
+		{"<a /*A*/ = /*B*/ '' // C\n/>", func(t *test, tk Tokens) { // 30
 			t.Output = JSXAttribute{
 				Identifier: &tk[1],
 				JSXString:  &tk[9],
@@ -431,7 +470,7 @@ func TestJSXAttribute(t *testing.T) {
 				Tokens:     tk[1:12],
 			}
 		}},
-		{"<a /*A*/ : /*B*/ b /*C*/ = /*D*/ '' // E\n/>", func(t *test, tk Tokens) { // 29
+		{"<a /*A*/ : /*B*/ b /*C*/ = /*D*/ '' // E\n/>", func(t *test, tk Tokens) { // 31
 			t.Output = JSXAttribute{
 				Namespace:  &tk[1],
 				Identifier: &tk[9],
