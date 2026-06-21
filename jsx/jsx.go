@@ -427,26 +427,79 @@ func (j *jsxTransformer) paramsToObject(attrs []javascript.JSXAttribute) (*javas
 				Tokens:               attr.Tokens,
 			})
 		} else {
-			name := attr.Identifier.Data
-
-			if attr.Namespace != nil {
-				name = attr.Namespace.Data + ":" + name
-			}
-
-			ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
-				PropertyName: &javascript.PropertyName{
-					LiteralPropertyName: &javascript.Token{
-						Token: parser.Token{
-							Type: javascript.TokenStringLiteral,
-							Data: strconv.Quote(name),
+			if attr.Namespace == nil {
+				ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
+					PropertyName: &javascript.PropertyName{
+						LiteralPropertyName: &javascript.Token{
+							Token: parser.Token{
+								Type: javascript.TokenStringLiteral,
+								Data: strconv.Quote(attr.Identifier.Data),
+							},
 						},
+						Tokens: attr.Tokens,
 					},
-					Tokens: attr.Tokens,
-				},
-				AssignmentExpression: ae,
-				Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
-				Tokens:               attr.Tokens,
-			})
+					AssignmentExpression: ae,
+					Comments:             [2]javascript.Comments{combineComments(attr.Comments[:2]...), attr.Comments[2]},
+					Tokens:               attr.Tokens,
+				})
+			} else {
+				ol.PropertyDefinitionList = append(ol.PropertyDefinitionList, javascript.PropertyDefinition{
+					PropertyName: &javascript.PropertyName{
+						ComputedPropertyName: &javascript.AssignmentExpression{
+							ConditionalExpression: javascript.WrapConditional(&javascript.AdditiveExpression{
+								AdditiveOperator: javascript.AdditiveAdd,
+								AdditiveExpression: &javascript.AdditiveExpression{
+									AdditiveOperator: javascript.AdditiveAdd,
+									AdditiveExpression: &javascript.WrapConditional(&javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											Literal: &javascript.Token{
+												Token: parser.Token{
+													Type: javascript.TokenStringLiteral,
+													Data: strconv.Quote(attr.Namespace.Data),
+												},
+											},
+											Tokens: attr.Tokens,
+										},
+										Tokens: attr.Tokens,
+									}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
+									MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
+										PrimaryExpression: &javascript.PrimaryExpression{
+											Literal: &javascript.Token{
+												Token: parser.Token{
+													Type: javascript.TokenStringLiteral,
+													Data: "\":\"",
+												},
+											},
+											Tokens: attr.Tokens,
+										},
+										Comments: [5]javascript.Comments{attr.Comments[0], nil, nil, nil, attr.Comments[1]},
+										Tokens:   attr.Tokens,
+									}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+									Tokens: attr.Tokens,
+								},
+								MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
+									PrimaryExpression: &javascript.PrimaryExpression{
+										Literal: &javascript.Token{
+											Token: parser.Token{
+												Type: javascript.TokenStringLiteral,
+												Data: strconv.Quote(attr.Identifier.Data),
+											},
+										},
+										Tokens: attr.Tokens,
+									},
+									Tokens: attr.Tokens,
+								}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
+								Tokens: attr.Tokens,
+							}),
+							Tokens: attr.Tokens,
+						},
+						Tokens: attr.Tokens,
+					},
+					AssignmentExpression: ae,
+					Comments:             [2]javascript.Comments{nil, attr.Comments[2]},
+					Tokens:               attr.Tokens,
+				})
+			}
 		}
 	}
 

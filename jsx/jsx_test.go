@@ -201,7 +201,7 @@ func TestProcess(t *testing.T) {
 		{ // 38
 			"const a = <b c/*A*/:/*B*/d/*C*/=/*D*/{/*E*/\"d\"/*F*/}/*G*/></b>",
 			`tag('TAG_NAME', PARAMS)`,
-			"const a = (tag(\"b\", {/*A*//*B*/\"c:d\"/*C*/:/*D*//*E*/\"d\"/*F*//*G*/}))",
+			"const a = (tag(\"b\", {[\"c\"+/*A*/\":\"/*B*/+\"d\"]/*C*/:/*D*//*E*/\"d\"/*F*//*G*/}))",
 		},
 		{ // 39
 			"function* a() {return <b c=/*A*/{/*B*/yield/*C*/d/*E*/}/*F*/></b>}",
