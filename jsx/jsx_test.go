@@ -213,6 +213,11 @@ func TestProcess(t *testing.T) {
 			`TAG_NAME(PARAMS)`,
 			"async function a() {return (b({\"c\":/*A*//*B*/await/*C*/d/*E*//*F*/}))}",
 		},
+		{ // 41
+			"const a = <b c /*A*/ : /*B*/ d /*C*/ = /*D*/ { /*E*/ \"e\" /*F*/ } /*G*/></b>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {[\"c\"+ /*A*/ \":\"/*B*/ +\"d\"]/*C*/ : /*D*//*E*/ \"e\" /*F*//*G*/ }))",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
