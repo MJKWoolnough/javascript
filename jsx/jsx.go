@@ -581,6 +581,8 @@ func combineComments(cs ...javascript.Comments) javascript.Comments {
 }
 
 func simpleIdentifier(attr javascript.JSXAttribute) *javascript.PropertyName {
+	p := tokenPos(attr.Tokens, attr.Identifier)
+
 	return &javascript.PropertyName{
 		LiteralPropertyName: &javascript.Token{
 			Token: parser.Token{
@@ -588,11 +590,37 @@ func simpleIdentifier(attr javascript.JSXAttribute) *javascript.PropertyName {
 				Data: strconv.Quote(attr.Identifier.Data),
 			},
 		},
-		Tokens: attr.Tokens,
+		Tokens: attr.Tokens[max(0, p) : p+1],
 	}
 }
 
+func tokenPos(tokens []javascript.Token, tk *javascript.Token) int {
+	for n := range tokens {
+		if &tokens[n] == tk {
+			return n
+		}
+	}
+
+	return tkPos(tokens, tk.Type, tk.Data)
+}
+
+func tkPos(tokens []javascript.Token, typ parser.TokenType, data string) int {
+	for n, tk := range tokens {
+		if tk.Type == typ && tk.Data == data {
+			return n
+		}
+	}
+
+	return -1
+}
+
 func namespaceBoth(attr javascript.JSXAttribute) *javascript.PropertyName {
+	ns := tokenPos(attr.Tokens, attr.Namespace)
+	c1 := tokenPos(attr.Tokens, attr.Comments[0][0])
+	c := tkPos(attr.Tokens, javascript.TokenPunctuator, ":")
+	c2 := tokenPos(attr.Tokens, attr.Comments[1][len(attr.Comments[1])-1])
+	i := tokenPos(attr.Tokens, attr.Identifier)
+
 	return &javascript.PropertyName{
 		ComputedPropertyName: &javascript.AssignmentExpression{
 			ConditionalExpression: javascript.WrapConditional(&javascript.AdditiveExpression{
@@ -607,9 +635,9 @@ func namespaceBoth(attr javascript.JSXAttribute) *javascript.PropertyName {
 									Data: strconv.Quote(attr.Namespace.Data),
 								},
 							},
-							Tokens: attr.Tokens,
+							Tokens: attr.Tokens[max(0, ns) : ns+1],
 						},
-						Tokens: attr.Tokens,
+						Tokens: attr.Tokens[max(0, ns) : ns+1],
 					}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
 					MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
 						PrimaryExpression: &javascript.PrimaryExpression{
@@ -619,12 +647,12 @@ func namespaceBoth(attr javascript.JSXAttribute) *javascript.PropertyName {
 									Data: "\":\"",
 								},
 							},
-							Tokens: attr.Tokens,
+							Tokens: attr.Tokens[max(0, c) : c+1],
 						},
 						Comments: [5]javascript.Comments{attr.Comments[0], nil, nil, nil, attr.Comments[1]},
-						Tokens:   attr.Tokens,
+						Tokens:   attr.Tokens[max(0, min(c1, c, c2)) : max(c1, c, c2)+1],
 					}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
-					Tokens: attr.Tokens,
+					Tokens: attr.Tokens[max(0, min(ns, c1, c, c2)) : max(ns, c1, c, c2)+1],
 				},
 				MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
 					PrimaryExpression: &javascript.PrimaryExpression{
@@ -636,17 +664,22 @@ func namespaceBoth(attr javascript.JSXAttribute) *javascript.PropertyName {
 						},
 						Tokens: attr.Tokens,
 					},
-					Tokens: attr.Tokens,
+					Tokens: attr.Tokens[max(0, i) : i+1],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
-				Tokens: attr.Tokens,
+				Tokens: attr.Tokens[max(0, min(ns, c1, c, c2, i)) : max(ns, c1, c, c2, i)+1],
 			}),
-			Tokens: attr.Tokens,
+			Tokens: attr.Tokens[max(0, min(ns, c1, c, c2, i)) : max(ns, c1, c, c2, i)+1],
 		},
-		Tokens: attr.Tokens,
+		Tokens: attr.Tokens[max(0, min(ns, c1, c, c2, i)) : max(ns, c1, c, c2, i)+1],
 	}
 }
 
 func namespaceLeft(attr javascript.JSXAttribute) *javascript.PropertyName {
+	ns := tokenPos(attr.Tokens, attr.Namespace)
+	c1 := tokenPos(attr.Tokens, attr.Comments[0][0])
+	c := tkPos(attr.Tokens, javascript.TokenPunctuator, ":")
+	i := tokenPos(attr.Tokens, attr.Identifier)
+
 	return &javascript.PropertyName{
 		ComputedPropertyName: &javascript.AssignmentExpression{
 			ConditionalExpression: javascript.WrapConditional(&javascript.AdditiveExpression{
@@ -659,10 +692,10 @@ func namespaceLeft(attr javascript.JSXAttribute) *javascript.PropertyName {
 								Data: strconv.Quote(attr.Namespace.Data),
 							},
 						},
-						Tokens: attr.Tokens,
+						Tokens: attr.Tokens[max(0, ns) : ns+1],
 					},
 					Comments: [5]javascript.Comments{nil, nil, nil, nil, attr.Comments[0]},
-					Tokens:   attr.Tokens,
+					Tokens:   attr.Tokens[max(0, min(ns, c1)) : max(ns, c1)+1],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
 				MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
 					PrimaryExpression: &javascript.PrimaryExpression{
@@ -672,19 +705,24 @@ func namespaceLeft(attr javascript.JSXAttribute) *javascript.PropertyName {
 								Data: strconv.Quote(":" + attr.Identifier.Data),
 							},
 						},
-						Tokens: attr.Tokens,
+						Tokens: attr.Tokens[max(0, min(c, i)) : max(c, i)+1],
 					},
-					Tokens: attr.Tokens,
+					Tokens: attr.Tokens[max(0, min(c, i)) : max(c, i)+1],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
-				Tokens: attr.Tokens,
+				Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 			}),
-			Tokens: attr.Tokens,
+			Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 		},
-		Tokens: attr.Tokens,
+		Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(c, i)+1],
 	}
 }
 
 func namespaceRight(attr javascript.JSXAttribute) *javascript.PropertyName {
+	ns := tokenPos(attr.Tokens, attr.Namespace)
+	c := tkPos(attr.Tokens, javascript.TokenPunctuator, ":")
+	c2 := tokenPos(attr.Tokens, attr.Comments[1][len(attr.Comments[1])-1])
+	i := tokenPos(attr.Tokens, attr.Identifier)
+
 	return &javascript.PropertyName{
 		ComputedPropertyName: &javascript.AssignmentExpression{
 			ConditionalExpression: javascript.WrapConditional(&javascript.AdditiveExpression{
@@ -697,9 +735,10 @@ func namespaceRight(attr javascript.JSXAttribute) *javascript.PropertyName {
 								Data: strconv.Quote(attr.Namespace.Data + ":"),
 							},
 						},
-						Tokens: attr.Tokens,
+						Tokens: attr.Tokens[max(0, min(ns, c)) : max(ns, c)+1],
 					},
 					Comments: [5]javascript.Comments{nil, nil, nil, nil, attr.Comments[1]},
+					Tokens:   attr.Tokens[max(0, min(ns, c, c2)) : max(ns, c, c2)+1],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression,
 				MultiplicativeExpression: javascript.WrapConditional(&javascript.MemberExpression{
 					PrimaryExpression: &javascript.PrimaryExpression{
@@ -709,19 +748,23 @@ func namespaceRight(attr javascript.JSXAttribute) *javascript.PropertyName {
 								Data: strconv.Quote(attr.Identifier.Data),
 							},
 						},
-						Tokens: attr.Tokens,
+						Tokens: attr.Tokens[max(0, i) : i+1],
 					},
-					Tokens: attr.Tokens,
+					Tokens: attr.Tokens[max(0, i) : i+1],
 				}).LogicalORExpression.LogicalANDExpression.BitwiseORExpression.BitwiseXORExpression.BitwiseANDExpression.EqualityExpression.RelationalExpression.ShiftExpression.AdditiveExpression.MultiplicativeExpression,
-				Tokens: attr.Tokens,
+				Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 			}),
-			Tokens: attr.Tokens,
+			Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 		},
-		Tokens: attr.Tokens,
+		Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 	}
 }
 
 func namespaceNone(attr javascript.JSXAttribute) *javascript.PropertyName {
+	ns := tokenPos(attr.Tokens, attr.Namespace)
+	c := tkPos(attr.Tokens, javascript.TokenPunctuator, ":")
+	i := tokenPos(attr.Tokens, attr.Identifier)
+
 	return &javascript.PropertyName{
 		LiteralPropertyName: &javascript.Token{
 			Token: parser.Token{
@@ -729,7 +772,7 @@ func namespaceNone(attr javascript.JSXAttribute) *javascript.PropertyName {
 				Data: strconv.Quote(attr.Namespace.Data + ":" + attr.Identifier.Data),
 			},
 		},
-		Tokens: attr.Tokens,
+		Tokens: attr.Tokens[max(0, min(ns, c, i)) : max(ns, c, i)+1],
 	}
 }
 
@@ -752,15 +795,14 @@ type importData struct {
 //
 // In addition, the following template variables are available:
 //
-//	.Namespace:        Specified namespace, or automatically determined to one of html, svg, mathml.
-//	.InHTML:           Set to true if tag name is a known HTML tag.
-//	.InSVG             Set to true if tag name is a known SVG tag.
-//	.InMathML          Set to true if tag name is a known MathML tag.
-//	.HasParams         Set to true if params have been set.
-//	.HasParamNamespace Set to true if any attribute has a namespace.
-//	.HasChildren       Set to true if children have been set.
-//	.NumParams         Number of parameters.
-//	.NumChildren       Number of children.
+//	.Namespace:  Specified namespace, or automatically determined to one of html, svg, mathml.
+//	.InHTML:     Set to true if tag name is a known HTML tag.
+//	.InSVG       Set to true if tag name is a known SVG tag.
+//	.InMathML    Set to true if tag name is a known MathML tag.
+//	.HasParams   Set to true if params have been set.
+//	.HasChildren Set to true if children have been set.
+//	.NumParams   Number of parameters.
+//	.NumChildren Number of children.
 //
 // Any import statement will be added to the Module, with import bindings being
 // potentially renamed on a clash.
