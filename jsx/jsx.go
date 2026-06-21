@@ -752,14 +752,15 @@ type importData struct {
 //
 // In addition, the following template variables are available:
 //
-//	.Namespace:  Specified namespace, or automatically determined to one of html, svg, mathml.
-//	.InHTML:     Set to true if tag name is a known HTML tag.
-//	.InSVG       Set to true if tag name is a known SVG tag.
-//	.InMathML    Set to true if tag name is a known MathML tag.
-//	.HasParams   Set to true if params have been set.
-//	.HasChildren Set to true if children have been set.
-//	.NumParams   Number of parameters.
-//	.NumChildren Number of children.
+//	.Namespace:        Specified namespace, or automatically determined to one of html, svg, mathml.
+//	.InHTML:           Set to true if tag name is a known HTML tag.
+//	.InSVG             Set to true if tag name is a known SVG tag.
+//	.InMathML          Set to true if tag name is a known MathML tag.
+//	.HasParams         Set to true if params have been set.
+//	.HasParamNamespace Set to true if any attribute has a namespace.
+//	.HasChildren       Set to true if children have been set.
+//	.NumParams         Number of parameters.
+//	.NumChildren       Number of children.
 //
 // Any import statement will be added to the Module, with import bindings being
 // potentially renamed on a clash.
