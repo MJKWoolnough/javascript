@@ -233,6 +233,16 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS)`,
 			"const a = (tag(\"b\", {\"c:d\"/*A*/:/*B*//*C*/\"d\"/*D*//*E*/}))",
 		},
+		{ // 45
+			"const a = <b c=\"d\" />",
+			`TAG_NAME({{ if .HasParamNamespace }}namespaceHandler(PARAMS){{ else }}PARAMS{{end}})`,
+			"const a = (b({\"c\":\"d\"}))",
+		},
+		{ // 45
+			"const a = <b c:d=\"e\" />",
+			`TAG_NAME({{ if .HasParamNamespace }}namespaceHandler(PARAMS){{ else }}PARAMS{{end}})`,
+			"const a = (b(namespaceHandler({\"c:d\":\"e\"})))",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
