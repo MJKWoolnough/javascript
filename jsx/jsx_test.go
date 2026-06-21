@@ -218,6 +218,21 @@ func TestProcess(t *testing.T) {
 			`tag('TAG_NAME', PARAMS)`,
 			"const a = (tag(\"b\", {[\"c\"+ /*A*/ \":\"/*B*/ +\"d\"]/*C*/ : /*D*//*E*/ \"e\" /*F*//*G*/ }))",
 		},
+		{ // 42
+			"const a = <b c/*A*/:d/*B*/=/*C*/{/*D*/\"d\"/*E*/}/*F*/></b>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {[\"c\"/*A*/+\":d\"]/*B*/:/*C*//*D*/\"d\"/*E*//*F*/}))",
+		},
+		{ // 43
+			"const a = <b c:/*A*/d/*B*/=/*C*/{/*D*/\"d\"/*E*/}/*F*/></b>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {[\"c:\"/*A*/+\"d\"]/*B*/:/*C*//*D*/\"d\"/*E*//*F*/}))",
+		},
+		{ // 44
+			"const a = <b c:d/*A*/=/*B*/{/*C*/\"d\"/*D*/}/*E*/></b>",
+			`tag('TAG_NAME', PARAMS)`,
+			"const a = (tag(\"b\", {\"c:d\"/*A*/:/*B*//*C*/\"d\"/*D*//*E*/}))",
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
