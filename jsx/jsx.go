@@ -467,8 +467,11 @@ func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.Assignm
 			return nil, err
 		}
 
+		ce := javascript.WrapConditional(pe)
+
 		return &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(pe),
+			ConditionalExpression: ce,
+			Tokens:                ce.Tokens,
 		}, nil
 	} else if t.JSXFragment != nil {
 		al, err := j.childrenToArray(t.JSXFragment.Children)
@@ -476,8 +479,11 @@ func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.Assignm
 			return nil, err
 		}
 
+		ce := javascript.WrapConditional(al)
+
 		return &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(al),
+			ConditionalExpression: ce,
+			Tokens:                ce.Tokens,
 		}, nil
 	} else if t.JSXString != nil {
 		str, err := javascript.UnescapeJSXString(t.JSXString.Data)
@@ -485,32 +491,38 @@ func (j *jsxTransformer) paramTo(t javascript.JSXAttribute) (*javascript.Assignm
 			return nil, err
 		}
 
-		return &javascript.AssignmentExpression{
-			ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-				Literal: &javascript.Token{
-					Token: parser.Token{
-						Data: strconv.Quote(str),
-						Type: javascript.TokenStringLiteral,
-					},
-					Pos:     t.JSXString.Pos,
-					Line:    t.JSXString.Line,
-					LinePos: t.JSXString.LinePos,
+		ce := javascript.WrapConditional(&javascript.PrimaryExpression{
+			Literal: &javascript.Token{
+				Token: parser.Token{
+					Data: strconv.Quote(str),
+					Type: javascript.TokenStringLiteral,
 				},
-			}),
+				Pos:     t.JSXString.Pos,
+				Line:    t.JSXString.Line,
+				LinePos: t.JSXString.LinePos,
+			},
+		})
+
+		return &javascript.AssignmentExpression{
+			ConditionalExpression: ce,
+			Tokens:                ce.Tokens,
 		}, nil
 	} else if t.AssignmentExpression != nil {
 		return t.AssignmentExpression, nil
 	}
 
-	return &javascript.AssignmentExpression{
-		ConditionalExpression: javascript.WrapConditional(&javascript.PrimaryExpression{
-			Literal: &javascript.Token{
-				Token: parser.Token{
-					Data: "true",
-					Type: javascript.TokenBooleanLiteral,
-				},
+	ce := javascript.WrapConditional(&javascript.PrimaryExpression{
+		Literal: &javascript.Token{
+			Token: parser.Token{
+				Data: "true",
+				Type: javascript.TokenBooleanLiteral,
 			},
-		}),
+		},
+	})
+
+	return &javascript.AssignmentExpression{
+		ConditionalExpression: ce,
+		Tokens:                ce.Tokens,
 	}, nil
 }
 
