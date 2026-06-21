@@ -167,6 +167,7 @@ type templateVars struct {
 	InHTML, InSVG, InMathML bool
 	HasParams, HasChildren  bool
 	NumParams, NumChildren  int
+	HasParamNamespace       bool
 }
 
 func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.PrimaryExpression, error) {
@@ -181,14 +182,15 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 	var sb strings.Builder
 
 	if err := j.tmpl.Execute(&sb, templateVars{
-		Namespace:   j.namespace,
-		InHTML:      inHTML,
-		InSVG:       inSVG,
-		InMathML:    inMathML,
-		HasParams:   len(e.Attributes) > 0,
-		HasChildren: len(e.Children) > 0,
-		NumParams:   len(e.Attributes),
-		NumChildren: len(e.Children),
+		Namespace:         j.namespace,
+		InHTML:            inHTML,
+		InSVG:             inSVG,
+		InMathML:          inMathML,
+		HasParams:         len(e.Attributes) > 0,
+		HasChildren:       len(e.Children) > 0,
+		NumParams:         len(e.Attributes),
+		NumChildren:       len(e.Children),
+		HasParamNamespace: hasParamNamespace(e.Attributes),
 	}); err != nil {
 		return nil, fmt.Errorf("error while executing JSX template: %w", err)
 	}
@@ -205,6 +207,16 @@ func (j *jsxTransformer) transform(e *javascript.JSXElement) (*javascript.Primar
 
 func nsIn(name *javascript.Token) (bool, bool, bool) {
 	return slices.Contains(htmlElements[:], name.Data), slices.Contains(svgElements[:], name.Data), slices.Contains(mathMLElement[:], name.Data)
+}
+
+func hasParamNamespace(attrs []javascript.JSXAttribute) bool {
+	for _, attr := range attrs {
+		if attr.Namespace != nil {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (j *jsxTransformer) process(e *javascript.JSXElement, m *javascript.Module) (*javascript.PrimaryExpression, error) {
