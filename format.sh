@@ -20,6 +20,7 @@ HEREDOC
 		echo "	pp := w.Indent()";
 		echo;
 		echo "	pp.WriteString(\"$type {\")";
+
 		while read fieldName fieldType; do
 			if [ -z "$fieldType" ]; then
 				fieldType="$fieldName";
