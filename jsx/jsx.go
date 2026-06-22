@@ -340,8 +340,28 @@ func (j *jsxTransformer) replaceParamsAndChildren(m *javascript.Module, e *javas
 						return err
 					}
 
+					first := 0
+					last := len(e.Tokens) - 1
+
+					for _, attr := range e.Attributes {
+						if len(attr.Tokens) == 0 {
+							continue
+						}
+
+						first = max(first, tokenPos(e.Tokens, &attr.Tokens[0]))
+
+						if pos := tokenPos(e.Tokens, &attr.Tokens[len(attr.Tokens)-1]); pos != -1 && pos < last {
+							last = pos
+						}
+					}
+
+					if first <= last {
+						ol.Tokens = e.Tokens[first : last+1]
+					}
+
 					t.IdentifierReference = nil
 					t.ObjectLiteral = ol
+					t.Tokens = ol.Tokens
 				case "CHILDREN":
 					al, err := j.childrenToArray(e.Children)
 					if err != nil {
@@ -350,6 +370,7 @@ func (j *jsxTransformer) replaceParamsAndChildren(m *javascript.Module, e *javas
 
 					t.IdentifierReference = nil
 					t.ArrayLiteral = al
+					t.Tokens = al.Tokens
 				}
 			}
 		}

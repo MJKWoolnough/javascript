@@ -216,7 +216,7 @@ func TestProcess(t *testing.T) {
 		{ // 41
 			"const a = <b c /*A*/ : /*B*/ d /*C*/ = /*D*/ { /*E*/ \"e\" /*F*/ } /*G*/></b>",
 			`tag('TAG_NAME', PARAMS)`,
-			"const a = (tag(\"b\", {[\"c\" +/*A*/ \":\" /*B*/ +\"d\"] /*C*/ : /*D*//*E*/ \"e\" /*F*//*G*/ }))",
+			"const a = (tag(\"b\", { [\"c\" +/*A*/ \":\" /*B*/ +\"d\"] /*C*/ : /*D*//*E*/ \"e\" /*F*//*G*/ }))",
 		},
 		{ // 42
 			"const a = <b c/*A*/:d/*B*/=/*C*/{/*D*/\"d\"/*E*/}/*F*/></b>",
@@ -238,7 +238,7 @@ func TestProcess(t *testing.T) {
 			`TAG_NAME({{ if .HasParamNamespace }}namespaceHandler(PARAMS){{ else }}PARAMS{{end}})`,
 			"const a = (b({\"c\":\"d\"}))",
 		},
-		{ // 45
+		{ // 46
 			"const a = <b c:d=\"e\" />",
 			`TAG_NAME({{ if .HasParamNamespace }}namespaceHandler(PARAMS){{ else }}PARAMS{{end}})`,
 			"const a = (b(namespaceHandler({\"c:d\":\"e\"})))",
