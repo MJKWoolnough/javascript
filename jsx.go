@@ -12,7 +12,7 @@ func (j *jsx) hasFlags() (bool, bool) {
 	return t, true
 }
 
-// AsJSX converts the tokeniser to one that handles the JSX extentions to
+// AsJSX converts the tokeniser to one that handles the JSX extensions to
 // JavaScript.
 //
 // Can be combined with AsTSX to read TSX.
