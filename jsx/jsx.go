@@ -129,6 +129,7 @@ func (j *jsxTransformer) childToAE(t javascript.JSXChild) (javascript.Assignment
 
 		return javascript.AssignmentExpression{
 			ConditionalExpression: javascript.WrapConditional(pe),
+			Tokens:                pe.Tokens,
 		}, nil
 	} else if t.JSXFragment != nil {
 		al, err := j.childrenToArray(t.JSXFragment.Children)
@@ -136,8 +137,11 @@ func (j *jsxTransformer) childToAE(t javascript.JSXChild) (javascript.Assignment
 			return javascript.AssignmentExpression{}, err
 		}
 
+		al.Tokens = t.Tokens
+
 		return javascript.AssignmentExpression{
 			ConditionalExpression: javascript.WrapConditional(al),
+			Tokens:                t.Tokens,
 		}, nil
 	} else if t.JSXText != nil {
 		return javascript.AssignmentExpression{
@@ -147,7 +151,9 @@ func (j *jsxTransformer) childToAE(t javascript.JSXChild) (javascript.Assignment
 						Data: strconv.Quote(t.JSXText.Data),
 					},
 				},
+				Tokens: t.Tokens,
 			}),
+			Tokens: t.Tokens,
 		}, nil
 	} else if t.JSXChildExpression == nil {
 		return javascript.AssignmentExpression{}, ErrMissingChild
