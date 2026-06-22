@@ -18,7 +18,7 @@ func Example() {
 
 	m, err := javascript.ParseModule(javascript.AsJSX(&tk))
 	if err != nil {
-		fmt.Println("unexepected error: ", err)
+		fmt.Println("unexpected error: ", err)
 
 		return
 	}
@@ -26,7 +26,7 @@ func Example() {
 	tmpl := template.Must(template.New("").Parse("import {createElement} from '@elements';\ncreateElement(\"TAG_NAME\", PARAMS, CHILDREN);"))
 
 	if err = jsx.Process(m, tmpl); err != nil {
-		fmt.Println("unexepected error: ", err)
+		fmt.Println("unexpected error: ", err)
 
 		return
 	}
