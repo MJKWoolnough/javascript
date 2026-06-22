@@ -254,9 +254,14 @@ func TestProcess(t *testing.T) {
 			"const a = (b({\"c\":/*A*/ [d] = e // B\n}))",
 		},
 		{ // 49
-			"const a = <b c={/*A*/ new e // B\n} />",
+			"const a = <b c={/*A*/ new d // B\n} />",
 			`TAG_NAME(PARAMS)`,
-			"const a = (b({\"c\":/*A*/ new e // B\n}))",
+			"const a = (b({\"c\":/*A*/ new d // B\n}))",
+		},
+		{ // 50
+			"const a = <b c={/*A*/ d?.e // B\n} />",
+			`TAG_NAME(PARAMS)`,
+			"const a = (b({\"c\":/*A*/ d?.e // B\n}))",
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
