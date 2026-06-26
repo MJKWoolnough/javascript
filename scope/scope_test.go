@@ -5877,6 +5877,34 @@ func TestModuleScope(t *testing.T) {
 				}
 			},
 		},
+		{ // 166
+			"function a(b) {var b = 2;}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingVar,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
