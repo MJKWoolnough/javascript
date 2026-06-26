@@ -4175,26 +4175,38 @@ func TestPropertyName(t *testing.T) {
 			}
 		}},
 		{`null`, func(t *test, tk Tokens) { // 9
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`"null"`, func(t *test, tk Tokens) { // 10
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`/a/`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrInvalidPropertyName,
 				Parsing: "PropertyName",
 				Token:   tk[0],
 			}
 		}},
-		{`[a, b]`, func(t *test, tk Tokens) { // 10
+		{`[a, b]`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "PropertyName",
 				Token:   tk[2],
 			}
 		}},
-		{`await`, func(t *test, tk Tokens) { // 11
+		{`await`, func(t *test, tk Tokens) { // 13
 			t.Output = PropertyName{
 				LiteralPropertyName: &tk[0],
 				Tokens:              tk[:1],
 			}
 		}},
-		{"[ // A\n\n// B\na // C\n\n// D\n]", func(t *test, tk Tokens) { // 12
+		{"[ // A\n\n// B\na // C\n\n// D\n]", func(t *test, tk Tokens) { // 14
 			t.Output = PropertyName{
 				ComputedPropertyName: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&MemberExpression{

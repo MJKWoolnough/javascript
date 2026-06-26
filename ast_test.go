@@ -1754,7 +1754,7 @@ func TestObjectBindingPattern(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"{\nnull\n}", func(t *test, tk Tokens) { // 7
+		{"{\n/a/\n}", func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1914,7 +1914,7 @@ func TestBindingProperty(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`null`, func(t *test, tk Tokens) { // 2
+		{`/a/`, func(t *test, tk Tokens) { // 2
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrInvalidPropertyName,
