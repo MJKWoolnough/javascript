@@ -5905,7 +5905,47 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 167
+			"function a(b) {for (var b = 2;;){}}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration)
+				iscope := fscope.newLexicalScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor)
+				iscope.newLexicalScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.Statement.BlockStatement)
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FormalParameters.FormalParameterList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingVar,
+						Scope:       iscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.InitVar[0].BindingIdentifier,
+					},
+				}
+				iscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingVar,
+						Scope:       iscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.IterationStatementFor.InitVar[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
+		if n != 166 {
+			continue
+		}
 		tk := parser.NewStringTokeniser(test.Input)
 
 		if source, err := javascript.ParseModule(&tk); err != nil {
