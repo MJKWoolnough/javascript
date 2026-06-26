@@ -4162,27 +4162,39 @@ func TestPropertyName(t *testing.T) {
 				Tokens:              tk[:1],
 			}
 		}},
-		{`null`, func(t *test, tk Tokens) { // 7
+		{`false`, func(t *test, tk Tokens) { // 7
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`"false"`, func(t *test, tk Tokens) { // 8
+			t.Output = PropertyName{
+				LiteralPropertyName: &tk[0],
+				Tokens:              tk[:1],
+			}
+		}},
+		{`null`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrInvalidPropertyName,
 				Parsing: "PropertyName",
 				Token:   tk[0],
 			}
 		}},
-		{`[a, b]`, func(t *test, tk Tokens) { // 8
+		{`[a, b]`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "PropertyName",
 				Token:   tk[2],
 			}
 		}},
-		{`await`, func(t *test, tk Tokens) { // 9
+		{`await`, func(t *test, tk Tokens) { // 11
 			t.Output = PropertyName{
 				LiteralPropertyName: &tk[0],
 				Tokens:              tk[:1],
 			}
 		}},
-		{"[ // A\n\n// B\na // C\n\n// D\n]", func(t *test, tk Tokens) { // 10
+		{"[ // A\n\n// B\na // C\n\n// D\n]", func(t *test, tk Tokens) { // 12
 			t.Output = PropertyName{
 				ComputedPropertyName: &AssignmentExpression{
 					ConditionalExpression: WrapConditional(&MemberExpression{
