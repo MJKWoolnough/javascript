@@ -51,7 +51,7 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
 
 	if b, ok := s.Bindings[name]; ok {
-		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch) {
+		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch || b[0].BindingType == BindingFunctionParam) {
 			s.Bindings[name] = append(b, binding)
 
 			if b[0].BindingType == BindingCatch && bindingType == BindingVar {
