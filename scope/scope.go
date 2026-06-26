@@ -83,7 +83,7 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 					switch b[0].BindingType {
 					case BindingCatch:
 						break Loop
-					case BindingVar, BindingBare:
+					case BindingVar, BindingBare, BindingFunctionParam:
 					default:
 						return ErrDuplicateDeclaration{
 							Declaration: b[0].Token,
