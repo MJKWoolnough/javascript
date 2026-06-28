@@ -85,9 +85,75 @@ func (s *scoper) Handle(t javascript.Type) error {
 		return s.processPrimaryExpression(t)
 	case *javascript.JSXElement:
 		return s.processJSXElement(t)
+	case *javascript.Block:
+		if err := s.processBlock(t.StatementList); err != nil {
+			return err
+		}
+	case *javascript.Script:
+		if err := s.processBlock(t.StatementList); err != nil {
+			return err
+		}
+	case *javascript.Module:
+		if err := s.processModule(t.ModuleListItems); err != nil {
+			return err
+		}
 	}
 
 	return walk.Walk(t, s)
+}
+
+func (s *scoper) processBlock(sl []javascript.StatementListItem) error {
+	for n := range sl {
+		if err := s.processStatementListItem(&sl[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *scoper) processModule(ml []javascript.ModuleItem) error {
+	for n := range ml {
+		if ml[n].StatementListItem != nil {
+			if err := s.processStatementListItem(ml[n].StatementListItem); err != nil {
+				return err
+			}
+		} else if ml[n].ExportDeclaration != nil {
+			if err := s.processExports(ml[n].ExportDeclaration); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *scoper) processStatementListItem(sli *javascript.StatementListItem) error {
+	if sli.Statement != nil && sli.Statement.LabelledItemFunction != nil && sli.Statement.LabelledItemFunction.BindingIdentifier != nil {
+		return s.scope.setBinding(sli.Statement.LabelledItemFunction.BindingIdentifier, BindingHoistable)
+	} else if sli.Declaration != nil {
+		if sli.Declaration.FunctionDeclaration != nil && sli.Declaration.FunctionDeclaration.BindingIdentifier != nil {
+			return s.scope.setBinding(sli.Declaration.FunctionDeclaration.BindingIdentifier, BindingHoistable)
+		} else if sli.Declaration.ClassDeclaration != nil && sli.Declaration.ClassDeclaration.BindingIdentifier != nil {
+			return s.scope.setBinding(sli.Declaration.ClassDeclaration.BindingIdentifier, BindingHoistable)
+		}
+	}
+
+	return nil
+}
+
+func (s *scoper) processExports(ed *javascript.ExportDeclaration) error {
+	if ed.DefaultFunction != nil && ed.DefaultFunction.BindingIdentifier != nil {
+		return s.scope.setBinding(ed.DefaultFunction.BindingIdentifier, BindingHoistable)
+	} else if ed.DefaultClass != nil && ed.DefaultClass.BindingIdentifier != nil {
+		return s.scope.setBinding(ed.DefaultClass.BindingIdentifier, BindingHoistable)
+	} else if ed.Declaration != nil && ed.Declaration.FunctionDeclaration != nil && ed.Declaration.FunctionDeclaration.BindingIdentifier != nil {
+		return s.scope.setBinding(ed.Declaration.FunctionDeclaration.BindingIdentifier, BindingHoistable)
+	} else if ed.Declaration != nil && ed.Declaration.ClassDeclaration != nil && ed.Declaration.ClassDeclaration.BindingIdentifier != nil {
+		return s.scope.setBinding(ed.Declaration.ClassDeclaration.BindingIdentifier, BindingHoistable)
+	}
+
+	return nil
 }
 
 func (s *scoper) processImportDeclaration(t *javascript.ImportDeclaration) error {
@@ -204,12 +270,6 @@ func (s *scoper) processSwitchStatement(t *javascript.SwitchStatement) error {
 }
 
 func (s *scoper) processFunctionDeclaration(t *javascript.FunctionDeclaration) error {
-	if s.bt == BindingHoistable && s.set && t.BindingIdentifier != nil {
-		if err := s.scope.setBinding(t.BindingIdentifier, BindingHoistable); err != nil {
-			return err
-		}
-	}
-
 	return walk.Walk(t, s.newFunctionScope(t))
 }
 
@@ -246,12 +306,6 @@ func (s *scoper) processTryStatement(t *javascript.TryStatement) error {
 }
 
 func (s *scoper) processClassDeclaration(t *javascript.ClassDeclaration) error {
-	if s.bt == BindingHoistable && s.set && t.BindingIdentifier != nil {
-		if err := s.scope.setBinding(t.BindingIdentifier, BindingHoistable); err != nil {
-			return err
-		}
-	}
-
 	return walk.Walk(t, s.setBindingType(BindingRef))
 }
 

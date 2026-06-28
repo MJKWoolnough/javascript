@@ -3898,8 +3898,8 @@ func TestModuleScope(t *testing.T) {
 			`import a from './b';export default function a(){};`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
-					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
-					Duplicate:   m.ModuleListItems[1].ExportDeclaration.DefaultFunction.BindingIdentifier,
+					Declaration: m.ModuleListItems[1].ExportDeclaration.DefaultFunction.BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
 				}
 			},
 		},
@@ -3907,8 +3907,8 @@ func TestModuleScope(t *testing.T) {
 			`import a from './b';export default class a{};`,
 			func(m *javascript.Module) (*Scope, error) {
 				return nil, ErrDuplicateDeclaration{
-					Declaration: m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
-					Duplicate:   m.ModuleListItems[1].ExportDeclaration.DefaultClass.BindingIdentifier,
+					Declaration: m.ModuleListItems[1].ExportDeclaration.DefaultClass.BindingIdentifier,
+					Duplicate:   m.ModuleListItems[0].ImportDeclaration.ImportedDefaultBinding,
 				}
 			},
 		},
@@ -5943,9 +5943,6 @@ func TestModuleScope(t *testing.T) {
 			},
 		},
 	} {
-		if n != 166 {
-			continue
-		}
 		tk := parser.NewStringTokeniser(test.Input)
 
 		if source, err := javascript.ParseModule(&tk); err != nil {

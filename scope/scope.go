@@ -51,7 +51,7 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 	binding := Binding{BindingType: bindingType, Token: t, Scope: s}
 
 	if b, ok := s.Bindings[name]; ok {
-		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch || b[0].BindingType == BindingFunctionParam) {
+		if bindingType == BindingVar && len(b) > 0 && (b[0].BindingType == BindingVar || b[0].BindingType == BindingCatch || b[0].BindingType == BindingFunctionParam || b[0].BindingType == BindingHoistable && s.Parent == nil) {
 			s.Bindings[name] = append(b, binding)
 
 			if b[0].BindingType == BindingCatch && bindingType == BindingVar {
@@ -84,6 +84,12 @@ func (s *Scope) setBinding(t *javascript.Token, bindingType BindingType) error {
 					case BindingCatch:
 						break Loop
 					case BindingVar, BindingBare, BindingFunctionParam:
+					case BindingHoistable:
+						if s.Parent != nil {
+							continue
+						}
+
+						fallthrough
 					default:
 						return ErrDuplicateDeclaration{
 							Declaration: b[0].Token,
@@ -203,10 +209,9 @@ func Build(t javascript.Type, global *Scope) (*Scope, error) {
 		global = NewScope()
 	}
 
-	if err := walk.Walk(t, &scoper{
-		scope: global,
-		set:   true,
-	}); err != nil {
+	s := scoper{scope: global, set: true}
+
+	if err := s.Handle(t); err != nil {
 		return nil, err
 	}
 
