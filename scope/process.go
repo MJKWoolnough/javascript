@@ -86,16 +86,22 @@ func (s *scoper) Handle(t javascript.Type) error {
 	case *javascript.JSXElement:
 		return s.processJSXElement(t)
 	case *javascript.Block:
-		if err := s.processBlock(t.StatementList); err != nil {
-			return err
+		if s.set {
+			if err := s.processBlock(t.StatementList); err != nil {
+				return err
+			}
 		}
 	case *javascript.Script:
-		if err := s.processBlock(t.StatementList); err != nil {
-			return err
+		if s.set {
+			if err := s.processBlock(t.StatementList); err != nil {
+				return err
+			}
 		}
 	case *javascript.Module:
-		if err := s.processModule(t.ModuleListItems); err != nil {
-			return err
+		if s.set {
+			if err := s.processModule(t.ModuleListItems); err != nil {
+				return err
+			}
 		}
 	}
 
