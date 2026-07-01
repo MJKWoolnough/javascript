@@ -121,9 +121,7 @@ func (s *Scope) addBinding(t *javascript.Token, bindingType BindingType) {
 			if !s.IsLexicalScope || len(bs) == 0 || bs[0].BindingType != BindingVar {
 				return
 			}
-		}
-
-		if s.Parent == nil {
+		} else if s.Parent == nil {
 			s.Bindings[name] = []Binding{binding}
 
 			return
