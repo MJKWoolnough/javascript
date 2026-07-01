@@ -6033,6 +6033,90 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 172
+			"var a = b => b;\nvar d = a(1);",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newArrowFunctionScope(m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].Initializer.ArrowFunction)
+
+				scope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingVar,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       scope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[1].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].Initializer.ConditionalExpression).(*javascript.CallExpression).MemberExpression.PrimaryExpression.IdentifierReference,
+					},
+				}
+				scope.Bindings["d"] = []Binding{
+					{
+						BindingType: BindingVar,
+						Scope:       scope,
+						Token:       m.ModuleListItems[1].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+				}
+
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].Initializer.ArrowFunction.BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.VariableStatement.VariableDeclarationList[0].Initializer.ArrowFunction.AssignmentExpression.ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+
+				return scope, nil
+			},
+		},
+		{ // 173
+			"function b() {{var a}function a(){}a}",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				fscope := scope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration)
+				lscope := fscope.newLexicalScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.BlockStatement)
+				fscope.newFunctionScope(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Declaration.FunctionDeclaration)
+				scope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       scope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+				}
+				fscope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingHoistable,
+						Scope:       fscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[1].Declaration.FunctionDeclaration.BindingIdentifier,
+					},
+					{
+						BindingType: BindingVar,
+						Scope:       lscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.BlockStatement.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+					{
+						BindingType: BindingRef,
+						Scope:       fscope,
+						Token:       javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[2].Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.PrimaryExpression).IdentifierReference,
+					},
+				}
+				lscope.Bindings["a"] = []Binding{
+					{
+						BindingType: BindingVar,
+						Scope:       lscope,
+						Token:       m.ModuleListItems[0].StatementListItem.Declaration.FunctionDeclaration.FunctionBody.StatementList[0].Statement.BlockStatement.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
