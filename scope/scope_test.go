@@ -5905,6 +5905,29 @@ func TestModuleScope(t *testing.T) {
 				return scope, nil
 			},
 		},
+		{ // 166
+			"({a(b) {var b = 2;}})",
+			func(m *javascript.Module) (*Scope, error) {
+				scope := NewScope()
+				base := javascript.UnwrapConditional(javascript.UnwrapConditional(m.ModuleListItems[0].StatementListItem.Statement.ExpressionStatement.Expressions[0].ConditionalExpression).(*javascript.ParenthesizedExpression).Expressions[0].ConditionalExpression).(*javascript.ObjectLiteral).PropertyDefinitionList[0].MethodDefinition
+				fscope := scope.newFunctionScope(base)
+
+				fscope.Bindings["b"] = []Binding{
+					{
+						BindingType: BindingFunctionParam,
+						Scope:       fscope,
+						Token:       base.Params.FormalParameterList[0].SingleNameBinding,
+					},
+					{
+						BindingType: BindingVar,
+						Scope:       fscope,
+						Token:       base.FunctionBody.StatementList[0].Statement.VariableStatement.VariableDeclarationList[0].BindingIdentifier,
+					},
+				}
+
+				return scope, nil
+			},
+		},
 		{ // 167
 			"function a(b) {for (var b = 2;;){}}",
 			func(m *javascript.Module) (*Scope, error) {
