@@ -424,11 +424,11 @@ func (s *scoper) processMethodDefinition(t *javascript.MethodDefinition) error {
 
 	s = s.newFunctionScope(t)
 
-	if err := walk.Walk(&t.Params, s); err != nil {
+	if err := s.Handle(&t.Params); err != nil {
 		return err
 	}
 
-	return walk.Walk(&t.FunctionBody, s)
+	return s.Handle(&t.FunctionBody)
 }
 
 func (s *scoper) processArrowFunction(t *javascript.ArrowFunction) error {
